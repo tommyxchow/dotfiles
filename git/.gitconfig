@@ -1,6 +1,11 @@
 [user]
 	name = Tommy Chow
 	email = tommyxchow@gmail.com
+[core]
+	fsmonitor = true
+	untrackedCache = true
+[index]
+	skipHash = true
 [init]
 	defaultBranch = main
 [pull]
@@ -12,15 +17,20 @@
 	prune = true
 	pruneTags = true
 	all = true
+	writeCommitGraph = true
+[transfer]
+	fsckobjects = true
 [rebase]
 	autoStash = true
 	autoSquash = true
 	updateRefs = true
 [diff]
 	algorithm = histogram
-	colorMoved = plain
-	mnemonicPrefix = true
-	renames = true
+	colorMoved = zebra
+[log]
+	date = iso-local
+[status]
+	showUntrackedFiles = all
 [rerere]
 	enabled = true
 	autoupdate = true
@@ -35,6 +45,9 @@
 [commit]
 	verbose = true
 [help]
-	autocorrect = immediate
+	autocorrect = prompt
+[advice]
+	statusHints = false
+	detachedHead = false
 [grep]
 	patternType = perl
