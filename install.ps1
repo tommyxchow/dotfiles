@@ -1,0 +1,63 @@
+# Dotfiles installer — creates symlinks from this repo to config locations.
+# Requires Developer Mode (Settings > System > For developers) for symlinks.
+# Usage: pwsh -File install.ps1
+
+$ErrorActionPreference = "Stop"
+$dotfiles = $PSScriptRoot
+
+$links = @(
+    @{ Source = "git/.gitconfig";                              Target = "$HOME/.gitconfig" }
+    @{ Source = "vscode/settings.json";                        Target = "$env:APPDATA/Code/User/settings.json" }
+    @{ Source = "vscode/keybindings.json";                     Target = "$env:APPDATA/Code/User/keybindings.json" }
+    @{ Source = "powershell/Microsoft.PowerShell_profile.ps1"; Target = "$HOME/Documents/PowerShell/Microsoft.PowerShell_profile.ps1" }
+    @{ Source = ".claude/settings.json";                       Target = "$HOME/.claude/settings.json" }
+    @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.claude/CLAUDE.md" }
+    @{ Source = ".claude/notify.sh";                           Target = "$HOME/.claude/notify.sh" }
+)
+
+# Claude skills: symlink each skill dir individually so future untracked skills
+# at ~/.claude/skills/ aren't swept inside the repo.
+$skillsDir = Join-Path $dotfiles ".claude/skills"
+if (Test-Path $skillsDir) {
+    foreach ($skill in Get-ChildItem $skillsDir -Directory) {
+        $links += @{
+            Source = ".claude/skills/$($skill.Name)"
+            Target = "$HOME/.claude/skills/$($skill.Name)"
+        }
+    }
+}
+
+foreach ($link in $links) {
+    $source = Join-Path $dotfiles $link.Source
+    $target = $link.Target
+
+    if (-not (Test-Path $source)) {
+        Write-Host "  SKIP  $($link.Source) (not in repo)" -ForegroundColor DarkGray
+        continue
+    }
+
+    $sourcePath = (Resolve-Path $source).Path
+    $targetDir = Split-Path $target -Parent
+    if (-not (Test-Path $targetDir)) {
+        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+    }
+
+    $existing = Get-Item $target -ErrorAction SilentlyContinue
+    if ($existing -and $existing.LinkType -eq "SymbolicLink") {
+        if ($existing.Target -eq $sourcePath) {
+            Write-Host "  OK    $target" -ForegroundColor Green
+            continue
+        }
+        Remove-Item $target -Force
+    }
+    elseif ($existing) {
+        $backup = "$target.bak"
+        Move-Item $target $backup -Force
+        Write-Host "  BAK   $target -> $backup" -ForegroundColor Yellow
+    }
+
+    New-Item -ItemType SymbolicLink -Path $target -Value $sourcePath | Out-Null
+    Write-Host "  LINK  $target -> $($link.Source)" -ForegroundColor Cyan
+}
+
+Write-Host "`nDone." -ForegroundColor Green
