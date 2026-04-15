@@ -1,0 +1,32 @@
+[
+  {
+    "key": "ctrl+shift+r",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        "workbench.action.terminal.kill",
+        "workbench.action.terminal.new",
+      ],
+    },
+    "when": "terminalFocus && !isMac",
+  },
+  {
+    "key": "cmd+shift+r",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        "workbench.action.terminal.kill",
+        "workbench.action.terminal.new",
+      ],
+    },
+    "when": "terminalFocus && isMac",
+  },
+  {
+    "key": "shift+enter",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {
+      "text": "\u001b\r",
+    },
+    "when": "terminalFocus",
+  },
+]

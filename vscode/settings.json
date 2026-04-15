@@ -1,0 +1,105 @@
+{
+  "editor.fontFamily": "'Ioskeley Mono', 'Symbols Nerd Font', monospace",
+  "editor.fontSize": 12,
+  "editor.lineHeight": 1.2,
+  "editor.fontLigatures": true,
+  "editor.linkedEditing": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.suggest.preview": true,
+  "editor.inlayHints.enabled": "onUnlessPressed",
+  "editor.formatOnSave": true,
+  "editor.minimap.showSlider": "always",
+  "editor.minimap.renderCharacters": false,
+
+  "typescript.inlayHints.parameterNames.enabled": "literals",
+  "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.enumMemberValues.enabled": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+
+  // Tailwind recommended settings
+  "files.associations": {
+    "*.css": "tailwindcss",
+  },
+  "editor.quickSuggestions": {
+    "strings": "on",
+  },
+
+  // Dart recommended settings
+  "debug.internalConsoleOptions": "openOnSessionStart",
+  "[dart][python]": {
+    "editor.rulers": [80],
+    "editor.selectionHighlight": false,
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": "off",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit",
+      "source.addMissingImports": "explicit",
+    },
+  },
+
+  "[css][javascript][javascriptreact][typescript][typescriptreact]": {
+    "editor.rulers": [80],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.addMissingImports": "explicit",
+    },
+  },
+  "[json][jsonc][markdown][mdx]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on",
+  },
+
+  "debug.console.fontFamily": "'Ioskeley Mono', 'Symbols Nerd Font', monospace",
+  "debug.console.fontSize": 12,
+
+  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.fontLigatures.enabled": true,
+  "terminal.integrated.fontSize": 12,
+  "terminal.integrated.hideOnLastClosed": false,
+
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.blame.editorDecoration.enabled": true,
+
+  "window.dialogStyle": "custom",
+  "workbench.colorTheme": "Bearded Theme Monokai Black",
+  "workbench.iconTheme": "catppuccin-mocha",
+  "workbench.activityBar.location": "top",
+  "explorer.fileNesting.enabled": true,
+  "diffEditor.ignoreTrimWhitespace": true,
+
+  "chat.editor.fontSize": 12,
+  "chat.editor.lineHeight": 1.2,
+  "chat.agent.maxRequests": 100,
+  "chat.checkpoints.showFileChanges": true,
+
+  "claudeCode.preferredLocation": "sidebar",
+
+  "cSpell.enabled": false,
+
+  "material-icon-theme.activeIconPack": "react_redux",
+  "material-icon-theme.hidesExplorerArrows": true,
+
+  "telemetry.telemetryLevel": "off",
+  "redhat.telemetry.enabled": false,
+  "errorLens.excludePatterns": ["**/*.md"],
+  "dart.flutterSdkPath": "C:\\Users\\Tommy\\Developer\\flutter",
+  "terminal.integrated.commandsToSkipShell": ["-workbench.action.quickOpen"],
+  "window.commandCenter": false,
+  "terminal.integrated.suggest.quickSuggestions": {
+    "commands": "on",
+    "arguments": "on",
+    "unknown": "off",
+  },
+  "terminal.integrated.suggest.suggestOnTriggerCharacters": true,
+  "terminal.integrated.minimumContrastRatio": 1,
+
+  "chat.disableAIFeatures": true,
+}
