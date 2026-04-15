@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "statusLine": {
+    "type": "command",
+    "command": "bash \"$HOME/.claude/statusline-command.sh\"",
+    "padding": 0
+  },
+  "permissions": {
+    "deny": [
+      "Read(.env*)",
+      "Read(.dev.vars*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(.wrangler/**)",
+      "Edit(.env*)",
+      "Edit(.dev.vars*)",
+      "Edit(**/*.pem)",
+      "Edit(**/*.key)",
+      "Edit(.wrangler/**)",
+      "Write(.env*)",
+      "Write(.dev.vars*)",
+      "Write(**/*.pem)",
+      "Write(**/*.key)",
+      "Write(.wrangler/**)",
+
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(yarn *)",
+
+      "Bash(find *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(sed *)",
+      "Bash(awk *)",
+      "Bash(echo *)",
+
+      "Bash(git push --force)",
+      "Bash(git push --force *)",
+      "Bash(git push -f)",
+      "Bash(git push -f *)",
+      "Bash(gh repo delete *)",
+      "Bash(gh issue delete *)",
+      "Bash(gh api -X DELETE *)",
+      "Bash(gh api --method DELETE *)"
+    ],
+    "ask": [
+      "Bash(rm *)",
+
+      "Bash(pnpm deploy *)",
+      "Bash(pnpm upload *)",
+      "Bash(pnpm nuke *)",
+
+      "Bash(git reset --hard)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -f)",
+      "Bash(git clean -f *)",
+      "Bash(git clean -fd)",
+      "Bash(git clean -fd *)",
+
+      "Bash(gh pr merge)",
+      "Bash(gh pr merge *)"
+    ],
+    "allow": [
+      "WebFetch",
+      "WebSearch",
+
+      "mcp__next-devtools__*",
+      "mcp__chrome-devtools__*",
+      "mcp__shadcn__*",
+
+      "Bash(git *)",
+      "Bash(gh *)",
+
+      "Bash(pnpm *)",
+      "Bash(corepack *)",
+
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(which *)",
+      "Bash(wc *)",
+      "Bash(mkdir *)",
+      "Bash(mv *)",
+      "Bash(cp *)",
+      "Bash(touch *)",
+      "Bash(test *)"
+    ]
+  },
+  "worktree": {
+    "symlinkDirectories": ["node_modules"]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/notify.sh\" \"Task Complete\" \"Ready for review\" Glass Information 2>/dev/null || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const f=JSON.parse(require('fs').readFileSync(0,'utf8')).tool_input.file_path;const{execSync:r}=require('child_process');try{r('pnpm exec prettier --write --ignore-unknown '+JSON.stringify(f),{stdio:'ignore'})}catch{};try{r('pnpm exec eslint --fix '+JSON.stringify(f),{stdio:'ignore'})}catch{}\" 2>/dev/null; exit 0",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/notify.sh\" \"Permission Needed\" \"Approve or deny\" Ping Warning 2>/dev/null || true",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/notify.sh\" \"Needs Input\" \"Waiting for you\" Pop Question 2>/dev/null || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "enabledMcpjsonServers": ["next-devtools", "chrome-devtools", "shadcn"],
+  "enabledPlugins": {
+    "feature-dev@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true
+  },
+  "sandbox": {
+    "enabled": true,
+    "enableWeakerNetworkIsolation": true
+  }
+}
