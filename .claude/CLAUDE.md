@@ -1,7 +1,5 @@
 IDE: VSCode. Use pnpm, not npm.
 
-# Author Preferences
-
 ## Behavior
 
 - When asked to add items to a list (models, emotes, constants, etc.), be thorough on the first pass. Read the source data completely and add ALL relevant items, not just the first few.
@@ -10,11 +8,12 @@ IDE: VSCode. Use pnpm, not npm.
 - When new code supersedes existing functionality, find and remove everything it makes redundant.
 - When asked to "verify", always use web search to check current documentation and sources before responding. Do not rely solely on training data.
 - Default to searching for factual questions, technical details, framework/library APIs, and version-specific behavior. Only skip search if the answer is absolutely foundational and unchanging.
-- Favor parallel tool calls and subagents when tasks are independent.
+- When setting up new tooling or infrastructure, surface key config decisions upfront as choices — don't silently pick defaults.
 
 ## Code Opinions
 
 - `UPPER_SNAKE_CASE` for constants
+- When editing config files (JSON, YAML), append new keys at the end — not the top or middle
 - Derive state where possible — avoid duplicating what can be computed
 - Inline until a pattern repeats 3+ times, then extract
 - For new components/hooks/APIs: include a usage example
@@ -52,10 +51,6 @@ Not priorities: WCAG compliance (easy wins only), public accessibility, SEO, pro
 - Adapt external designs (Figma specs, reference implementations) to codebase conventions before implementing. External descriptions may contain AI-generated rough drafts — always cross-reference against actual codebase patterns.
 - (React) When UI visibility depends on an async query (modals, banners, gates), default to hidden and only show after loading completes — never let `defaultValue` flash the UI while the query is in flight.
 
-## Infrastructure Checklist
-
-When creating new infrastructure (routes, API handlers, providers), use exploration findings as a **checklist** — systematically verify each convention is followed before writing code.
-
 ## Code Review
 
 - Label severity: `critical` / `major` / `minor`
@@ -65,17 +60,18 @@ When creating new infrastructure (routes, API handlers, providers), use explorat
 
 ## Testing
 
-- Suggest tests when changes touch logic, but don't write tests unless asked.
+- Suggest tests when changes touch logic, but **IMPORTANT: do not write tests unless asked**.
 - Run targeted tests for relevant files, not the full suite.
 - After finishing implementation that touches backend logic or adds new code paths, present a concrete list of test cases that should be added or updated. List each as a one-line description (happy path, sad path, edge cases). Surface this clearly, don't bury it.
 
 ## Commit Convention
 
-Use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/): `type(optional scope): description` (lowercase, no period). Types: `feat`, `fix`, `chore`, `refactor`, `style`, `docs`, `test`, `perf`, `ci`, `build`. Append `!` before `:` for breaking changes (e.g., `feat!: remove legacy api`). Keep commits tightly scoped. Examples: `feat: add swipe gesture support`, `fix: landscape bottom padding`.
+Conventional commits: `type(scope): description` — lowercase, no period, tightly scoped. Append `!` before `:` for breaking changes. Examples: `feat: add swipe gesture`, `fix: landscape padding`.
 
 ## Branching
 
 New branches: prefix with your GitHub username (e.g., `tommyxchow/add-auth-flow`). Run `gh api user --jq .login` to find it.
+Confirm cwd and target repo before `git push` or any multi-repo operation.
 
 ## Aliases
 
@@ -84,4 +80,5 @@ New branches: prefix with your GitHub username (e.g., `tommyxchow/add-auth-flow`
 ## Never
 
 - Never use `npm`, `npx`, or `yarn` — always use `pnpm` / `pnpx`
-- Never install a new dependency without asking first
+- **IMPORTANT**: Never install a new dependency without asking first
+- Never create project-level settings overrides — use global settings unless explicitly asked otherwise
