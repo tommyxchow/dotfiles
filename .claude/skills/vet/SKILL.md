@@ -29,6 +29,8 @@ Read every changed file in full. Review for:
 
 When flagging signature changes, use LSP `findReferences` first to avoid false positives — text grep produces noise on common names.
 
+For TypeScript projects (tsconfig.json present), run `pnpm typecheck` (or `pnpm tsc --noEmit` if no typecheck script) before reporting clean — catches cross-file type errors LSP may miss inline. Report failures under Critical.
+
 ### 3. Cross-reference project conventions
 
 Actively check the diff against the project conventions already in your context. Convention drift is the most common review miss — flag every violation.
