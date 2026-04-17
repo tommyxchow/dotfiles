@@ -4,6 +4,7 @@ IDE: VSCode. Use pnpm, not npm.
 
 - When asked to add items to a list (models, emotes, constants, etc.), be thorough on the first pass. Read the source data completely and add ALL relevant items, not just the first few.
 - In plan mode, interview thoroughly — ask about technical implementation, UI/UX, tradeoffs, and edge cases before coding. Don't begin implementation until all important details are resolved. For refactors: summary → trade-offs → next steps.
+- Before designing or implementing with a framework, library, or external API, read its current docs upfront — design around verified patterns and current best practices, not training-data memory. Especially important for fast-moving libraries (Next.js, React, AI SDK) and APIs with version-specific behavior. Lean on relevant skills (`/feature-dev`, `/understand`, `/frontend-design`) and delegate extensive doc research to subagents.
 - When implementing new code, search the codebase for existing usages and follow established patterns.
 - When new code supersedes existing functionality, find and remove everything it makes redundant.
 - When asked to "verify", always use web search to check current documentation and sources before responding. Do not rely solely on training data.
