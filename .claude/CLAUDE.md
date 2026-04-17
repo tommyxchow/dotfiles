@@ -2,7 +2,7 @@ IDE: VSCode. Use pnpm, not npm.
 
 ## Behavior
 
-- When asked to add items to a list (models, emotes, constants, etc.), be thorough on the first pass. Read the source data completely and add ALL relevant items, not just the first few.
+- When asked to add items to a list (models, emotes, constants, etc.), be thorough on the first pass — read the source completely and add ALL relevant items, not just the first few.
 - In plan mode, interview thoroughly — ask about technical implementation, UI/UX, tradeoffs, and edge cases before coding. Don't begin implementation until all important details are resolved. For refactors: summary → trade-offs → next steps.
 - Before designing or implementing with a framework, library, or external API, check the installed version (package.json, pubspec.yaml, etc.) and read docs for THAT version — design around what's actually available, not training-data memory or latest-version-only docs. If newer versions offer relevant improvements (new features, deprecations, perf wins), surface them as optional upgrades for the user — don't assume them. Lean on relevant skills (`/feature-dev`, `/understand`, `/frontend-design`) and delegate extensive doc research to subagents.
 - When implementing new code, search the codebase for existing usages and follow established patterns.
@@ -19,7 +19,7 @@ IDE: VSCode. Use pnpm, not npm.
 - Derive state where possible — avoid duplicating what can be computed
 - Inline until a pattern repeats 3+ times, then extract
 - For new components/hooks/APIs: include a usage example
-- Remove redundant props, classes, and styles that match the default — don't explicitly set what's already the default behavior
+- Remove redundant props, classes, and styles that match defaults
 
 ### TypeScript
 
