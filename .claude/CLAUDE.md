@@ -9,6 +9,7 @@ IDE: VSCode. Use pnpm, not npm.
 - When asked to "verify", always use web search to check current documentation and sources before responding. Do not rely solely on training data.
 - Default to searching for factual questions, technical details, framework/library APIs, and version-specific behavior. Only skip search if the answer is absolutely foundational and unchanging.
 - When setting up new tooling or infrastructure, surface key config decisions upfront as choices — don't silently pick defaults.
+- **IMPORTANT**: When adding code that uses a new import, add the import AND the usage in the same Edit/Write call. The PostToolUse hook (prettier + eslint --fix) runs on every file write and strips unused imports — staging the import in a separate edit means it gets removed before the usage lands.
 
 ## Code Opinions
 
@@ -17,6 +18,7 @@ IDE: VSCode. Use pnpm, not npm.
 - Derive state where possible — avoid duplicating what can be computed
 - Inline until a pattern repeats 3+ times, then extract
 - For new components/hooks/APIs: include a usage example
+- Remove redundant props, classes, and styles that match the default — don't explicitly set what's already the default behavior
 
 ### TypeScript
 
@@ -27,9 +29,11 @@ IDE: VSCode. Use pnpm, not npm.
 
 ### React
 
-- State progression: useState → Context → Zustand as needed
+- State progression: useState → Jotai → Context as needed
 - Avoid `useRef` unless DOM access or imperative work
 - Extract related/grouped logic (state, effects, handlers) into dedicated custom hooks when it improves readability — keep components focused on rendering
+- Use React `key` to force remount when a component stays in the same JSX position but needs state reset (e.g., tab switches)
+- Before swapping a component's underlying library or layout strategy, ask first. If an approved swap breaks the UI, revert immediately rather than attempting fixes
 
 ## Quality Priorities
 
@@ -41,10 +45,11 @@ Not priorities: WCAG compliance (easy wins only), public accessibility, SEO, pro
 
 - Prefer LSP over Grep for semantic navigation:
   - `findReferences` before changing a function/component signature (no false positives)
-  - `hover` to resolve inferred/computed types (Zustand stores, Zod schemas, AI SDK generics)
+  - `hover` to resolve inferred/computed types (Jotai atoms, Zod schemas, AI SDK generics)
   - `goToDefinition` to navigate through re-exports and barrel files
   - `incomingCalls`/`outgoingCalls` to trace call chains across routes, hooks, components
 - When debugging third-party libraries, **read the extension source in `node_modules` first** — don't speculate about behavior. Check for validation, protocol restrictions, and attribute filtering before writing code.
+- Spawn subagents (Task tool) when fanning out across files/repos or for research that would clutter context — don't spawn one for work you can complete in a single response.
 
 ## UI Patterns
 
@@ -53,7 +58,7 @@ Not priorities: WCAG compliance (easy wins only), public accessibility, SEO, pro
 
 ## Code Review
 
-- Label severity: `critical` / `major` / `minor`
+- Surface ALL findings labeled `critical` / `major` / `minor` — severity is for ranking, not filtering. Don't drop low-severity findings to "be conservative"
 - Prefer minimal, tightly scoped diffs — don't switch layout strategies (e.g., grid to flex) unless explicitly asked, as it often breaks dependent sizing
 - Flag unnecessary complexity with a simpler alternative
 - Flag security issues (XSS, CSRF, injection, auth gaps) with fixes
@@ -71,7 +76,6 @@ Conventional commits: `type(scope): description` — lowercase, no period, tight
 ## Branching
 
 New branches: prefix with your GitHub username (e.g., `tommyxchow/add-auth-flow`). Run `gh api user --jq .login` to find it.
-Confirm cwd and target repo before `git push` or any multi-repo operation.
 
 ## Aliases
 
@@ -82,3 +86,5 @@ Confirm cwd and target repo before `git push` or any multi-repo operation.
 - Never use `npm`, `npx`, or `yarn` — always use `pnpm` / `pnpx`
 - **IMPORTANT**: Never install a new dependency without asking first
 - Never create project-level settings overrides — use global settings unless explicitly asked otherwise
+- **IMPORTANT**: Never `git add` or `git commit` without first showing what will be staged, confirming the branch with `git branch --show-current`, and waiting for approval
+- **IMPORTANT**: Never `git push` without first confirming `pwd` and the target remote — pushing to the wrong repo in a multi-repo workflow has caused incidents

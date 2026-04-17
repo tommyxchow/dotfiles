@@ -7,7 +7,7 @@ This directory contains the global Claude Code configuration, managed as dotfile
 | File | Purpose |
 |------|---------|
 | `CLAUDE.md` | Global instructions loaded every session across all projects |
-| `settings.json` | Permissions, hooks, MCP servers, sandbox, plugins |
+| `settings.json` | Permissions, hooks, sandbox, plugins, statusline |
 | `notify.sh` | Desktop notification script used by hooks |
 | `skills/` | Custom global skills (vet, understand, etc.) |
 
@@ -42,7 +42,7 @@ Present a table: suggestion | source (insights/memory) | verdict (add/skip) | re
 ## Phase 3: Audit skills
 
 For each existing skill, assess:
-- Does the frontmatter use only valid fields (name, description, disable-model-invocation, paths)?
+- Does the frontmatter use only valid fields per [official docs](https://code.claude.com/docs/en/skills#frontmatter-reference) (name, description, when_to_use, argument-hint, disable-model-invocation, user-invocable, allowed-tools, model, effort, context, agent, hooks, paths, shell)?
 - Is the description optimized for triggering (specific trigger phrases, not vague)?
 - Is the skill body under 500 lines with clear structure?
 - Are there instructions that duplicate what's already in CLAUDE.md?
@@ -76,7 +76,7 @@ cd <dotfiles-path> && git diff
 ## Maintenance
 
 - **Pruning test**: For each line in `CLAUDE.md`, ask: "Would removing this cause Claude to make mistakes?" If not, cut it.
-- **Target size**: Under 200 lines (currently ~85). Longer files reduce adherence.
+- **Target size**: Under 200 lines. Longer files reduce adherence.
 - **Emphasis**: Use `IMPORTANT` / `YOU MUST` on critical rules that must not be ignored.
 - **Don't duplicate**: Rules already enforced by `settings.json` deny rules or hooks don't need prose unless the "why" adds context.
 - Run `/insights` periodically to generate fresh usage data before syncing.

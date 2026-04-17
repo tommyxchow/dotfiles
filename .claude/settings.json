@@ -11,31 +11,18 @@
       "Read(.dev.vars*)",
       "Read(**/*.pem)",
       "Read(**/*.key)",
-      "Read(.wrangler/**)",
       "Edit(.env*)",
       "Edit(.dev.vars*)",
       "Edit(**/*.pem)",
       "Edit(**/*.key)",
-      "Edit(.wrangler/**)",
       "Write(.env*)",
       "Write(.dev.vars*)",
       "Write(**/*.pem)",
       "Write(**/*.key)",
-      "Write(.wrangler/**)",
 
       "Bash(npm *)",
       "Bash(npx *)",
       "Bash(yarn *)",
-
-      "Bash(find *)",
-      "Bash(cat *)",
-      "Bash(head *)",
-      "Bash(tail *)",
-      "Bash(grep *)",
-      "Bash(rg *)",
-      "Bash(sed *)",
-      "Bash(awk *)",
-      "Bash(echo *)",
 
       "Bash(git push --force)",
       "Bash(git push --force *)",
@@ -46,46 +33,9 @@
       "Bash(gh api -X DELETE *)",
       "Bash(gh api --method DELETE *)"
     ],
-    "ask": [
-      "Bash(rm *)",
-
-      "Bash(pnpm deploy *)",
-      "Bash(pnpm upload *)",
-      "Bash(pnpm nuke *)",
-
-      "Bash(git reset --hard)",
-      "Bash(git reset --hard *)",
-      "Bash(git clean -f)",
-      "Bash(git clean -f *)",
-      "Bash(git clean -fd)",
-      "Bash(git clean -fd *)",
-
-      "Bash(gh pr merge)",
-      "Bash(gh pr merge *)"
-    ],
     "allow": [
-      "WebFetch",
       "WebSearch",
-
-      "mcp__next-devtools__*",
-      "mcp__chrome-devtools__*",
-      "mcp__shadcn__*",
-
-      "Bash(git *)",
-      "Bash(gh *)",
-
-      "Bash(pnpm *)",
-      "Bash(corepack *)",
-
-      "Bash(ls *)",
-      "Bash(pwd)",
-      "Bash(which *)",
-      "Bash(wc *)",
-      "Bash(mkdir *)",
-      "Bash(mv *)",
-      "Bash(cp *)",
-      "Bash(touch *)",
-      "Bash(test *)"
+      "WebFetch"
     ]
   },
   "worktree": {
@@ -139,7 +89,6 @@
       }
     ]
   },
-  "enabledMcpjsonServers": ["next-devtools", "chrome-devtools", "shadcn"],
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
