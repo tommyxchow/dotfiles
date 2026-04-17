@@ -25,6 +25,7 @@ Read every changed file in full. Review for:
 - **Consistency**: does the new code follow patterns established elsewhere in the codebase?
 - **Completeness**: missing edge cases, error handling gaps, unfinished implementations
 - **What's missing**: dead code left behind, imports not cleaned up, types not updated, related files that should have changed but didn't
+- **Approach**: is this the simplest implementation that achieves the goal? Could a stdlib/existing utility or cleaner pattern replace what's there? Is the architectural choice (data structure, abstraction, library) right?
 
 When flagging signature changes, use LSP `findReferences` first to avoid false positives — text grep produces noise on common names.
 
@@ -67,6 +68,9 @@ Present findings in a structured format:
 ### Convention drift
 - [file:line] violates [CLAUDE.md / AGENTS.md / rule] — fix
 
+### Approach
+- [file:line] suggests a cleaner pattern, simpler abstraction, or better architectural choice — with rationale
+
 ### Verified
 - [what was checked] — confirmed correct per [source URL or node_modules path]
 
@@ -75,8 +79,14 @@ Present findings in a structured format:
 
 ### Missing
 - [what should exist but doesn't]
+
+### Next steps
+- Suggested priority order (critical/security first, then quick wins, then larger refactors, then optional approach suggestions)
+- End with: "Want me to address [specific items], all critical/major, or skip?"
 ```
 
-If everything looks clean, say so — don't manufacture issues. A clean vet is a valid outcome.
+Vet reports — it does not fix. After presenting the report, **wait for explicit user approval** before applying any changes. The Next steps section is a nudge, not a license to act.
+
+If everything looks clean, say so — don't manufacture issues. A clean vet is a valid outcome (skip Next steps in that case).
 
 Keep the report concise. Link to sources when citing external documentation.
