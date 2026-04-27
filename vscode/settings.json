@@ -11,22 +11,22 @@
   "editor.minimap.showSlider": "always",
   "editor.minimap.renderCharacters": false,
 
-  "typescript.inlayHints.parameterNames.enabled": "literals",
-  "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
-  "typescript.inlayHints.parameterTypes.enabled": true,
-  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
-  "typescript.inlayHints.enumMemberValues.enabled": true,
-  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "typescript.inlayHints.variableTypes.enabled": true,
-  "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
+  "js/ts.inlayHints.parameterNames.enabled": "literals",
+  "js/ts.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+  "js/ts.inlayHints.parameterTypes.enabled": true,
+  "js/ts.inlayHints.propertyDeclarationTypes.enabled": true,
+  "js/ts.inlayHints.enumMemberValues.enabled": true,
+  "js/ts.inlayHints.functionLikeReturnTypes.enabled": true,
+  "js/ts.inlayHints.variableTypes.enabled": true,
+  "js/ts.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
+  "js/ts.updateImportsOnFileMove.enabled": "always",
 
   // Tailwind recommended settings
   "files.associations": {
-    "*.css": "tailwindcss",
+    "*.css": "tailwindcss"
   },
   "editor.quickSuggestions": {
-    "strings": "on",
+    "strings": "on"
   },
 
   // Dart recommended settings
@@ -39,8 +39,8 @@
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",
       "source.organizeImports": "explicit",
-      "source.addMissingImports": "explicit",
-    },
+      "source.addMissingImports": "explicit"
+    }
   },
 
   "[css][javascript][javascriptreact][typescript][typescriptreact]": {
@@ -48,12 +48,12 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",
-      "source.addMissingImports": "explicit",
-    },
+      "source.addMissingImports": "explicit"
+    }
   },
   "[json][jsonc][markdown][mdx]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.wordWrap": "on",
+    "editor.wordWrap": "on"
   },
 
   "debug.console.fontFamily": "'JetBrainsMono Nerd Font', 'Symbols Nerd Font', monospace",
@@ -71,7 +71,7 @@
   "git.openRepositoryInParentFolders": "always",
 
   "window.dialogStyle": "custom",
-  "workbench.colorTheme": "Ayu Dark",
+  "workbench.colorTheme": "Bearded Theme Monokai Black",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.activityBar.location": "top",
   "explorer.fileNesting.enabled": true,
@@ -90,11 +90,11 @@
   "terminal.integrated.suggest.quickSuggestions": {
     "commands": "on",
     "arguments": "on",
-    "unknown": "off",
+    "unknown": "off"
   },
   "terminal.integrated.suggest.suggestOnTriggerCharacters": true,
   "terminal.integrated.minimumContrastRatio": 1,
 
   "chat.disableAIFeatures": true,
-  "extensions.ignoreRecommendations": true,
+  "extensions.ignoreRecommendations": true
 }
