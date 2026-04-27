@@ -1,6 +1,6 @@
 ---
 name: vet
-description: Review recent code changes for correctness, quality, and completeness — cross-check claims against current official documentation (web search) or vendored source in node_modules, and flag what's missing as well as what's wrong. Use before any commit, PR, or "I think it's done" moment — including phrases like "vet", "vet this", "cross-check", "review and verify", or "final pass" — since convention drift and unverified API claims are easy to miss without a structured pass. Distinct from /simplify (cleanup) and /review-pr (PR-level review).
+description: Review recent code changes OR recent assistant responses for correctness, completeness, and freshness — cross-check claims against current official docs (web search) or vendored source, and flag what's missing as well as what's wrong. Use before any commit, PR, or "I think it's done" moment, OR after the assistant makes claims/recommendations you want verified — including phrases like "vet", "vet this", "cross-check", "double check", "verify", "verify your response", "review and verify", "review and audit", "research online", "check as of today", or "final pass". Distinct from /simplify (cleanup/refactor for elegance) and /review-pr (PR-level review).
 disable-model-invocation: true
 argument-hint: "[staged | branch | <pr-number>]"
 allowed-tools: Bash(git diff *) Bash(git status *) Bash(git log *) Bash(git branch *)
@@ -10,15 +10,16 @@ allowed-tools: Bash(git diff *) Bash(git status *) Bash(git log *) Bash(git bran
 
 ### 1. Identify scope
 
-Determine what to review. If `$ARGUMENTS` specifies files or a scope, use that. Otherwise:
+Determine what to review:
 
-- Run `git diff --stat` to see unstaged changes
-- Run `git diff --cached --stat` to see staged changes
-- If no changes, ask the user what to review
+- If `$ARGUMENTS` specifies files or a scope → use that
+- If recent code changes exist → run `git diff --stat` and `git diff --cached --stat`, review the diff
+- If invoked after recent assistant responses with no code changes → audit the conversation: extract claims, recommendations, and factual assertions made in the recent turns, then verify each against fresh sources
+- If neither is obvious → ask the user what to review
 
-### 2. Read and review all changed files
+### 2. Read and review
 
-Read every changed file in full. Review for:
+**Code review mode** — read every changed file in full. Review for:
 
 - **Correctness**: logic errors, off-by-ones, race conditions, null/undefined gaps
 - **Security**: XSS, injection, auth gaps, exposed secrets, OWASP top 10
@@ -30,6 +31,16 @@ Read every changed file in full. Review for:
 When flagging signature changes, use LSP `findReferences` first to avoid false positives — text grep produces noise on common names.
 
 For TypeScript projects (tsconfig.json present), run `pnpm typecheck` (or `pnpm tsc --noEmit` if no typecheck script) before reporting clean — catches cross-file type errors LSP may miss inline. Report failures under Critical.
+
+**Conversation audit mode** — extract assertions from recent assistant turns. Review for:
+
+- **Factual claims**: version numbers, API behaviors, library features, doc references — anything checkable against an external source
+- **Recommendations**: does the proposed approach hold up against current best practices and the user's stated context?
+- **Tool result interpretation**: did conclusions actually follow from tool outputs (web search, file reads, command results), or fill gaps with assumption?
+- **Logical gaps**: were there steps in the reasoning that weren't validated? Was anything skipped or hand-waved?
+- **Hedges and uncertainty**: what did the assistant say it was unsure about, and is the uncertainty warranted (or is it overconfident on something it should have hedged)?
+
+List each assertion explicitly before verifying — don't audit invisibly. The user should see what's being checked.
 
 ### 3. Cross-reference project conventions
 
@@ -59,13 +70,13 @@ Present findings in a structured format:
 ## Vet Report
 
 ### Critical
-- [file:line] description of issue — with fix
+- [file:line] (confidence: high/medium/low) description of issue — with fix
 
 ### Major
-- [file:line] description of issue — with fix or recommendation
+- [file:line] (confidence: high/medium/low) description of issue — with fix or recommendation
 
 ### Minor
-- [file:line] description of issue
+- [file:line] (confidence: high/medium/low) description of issue
 
 ### Convention drift
 - [file:line] violates [CLAUDE.md / AGENTS.md / rule] — fix
@@ -86,6 +97,8 @@ Present findings in a structured format:
 - Suggested priority order (critical/security first, then quick wins, then larger refactors, then optional approach suggestions)
 - End with: "Want me to address [specific items], all critical/major, or skip?"
 ```
+
+Include confidence per finding (high/medium/low) so you can triage when there are many. Severity is "how bad if true"; confidence is "how sure I am it's real." Both inform priority differently.
 
 Vet reports — it does not fix. After presenting the report, **wait for explicit user approval** before applying any changes. The Next steps section is a nudge, not a license to act.
 
