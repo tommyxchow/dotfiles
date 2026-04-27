@@ -1,7 +1,6 @@
 ---
 name: vet
 description: Review recent code changes OR recent assistant responses for correctness, completeness, and freshness — cross-check claims against current official docs (web search) or vendored source, and flag what's missing as well as what's wrong. Use before any commit, PR, or "I think it's done" moment, OR after the assistant makes claims/recommendations you want verified — including phrases like "vet", "vet this", "cross-check", "double check", "verify", "verify your response", "review and verify", "review and audit", "research online", "check as of today", or "final pass". Distinct from /simplify (cleanup/refactor for elegance) and /review-pr (PR-level review).
-disable-model-invocation: true
 argument-hint: "[staged | branch | <pr-number>]"
 allowed-tools: Bash(git diff *) Bash(git status *) Bash(git log *) Bash(git branch *)
 ---
@@ -64,41 +63,51 @@ This is what distinguishes /vet from a normal code review. For any of the follow
 
 ### 5. Report findings
 
-Present findings in a structured format:
+Present findings in a structured, skim-friendly format. **Always lead with a one-line TL;DR. Skip empty sections entirely** (don't render headers for buckets with zero findings).
 
 ```
 ## Vet Report
 
+**TL;DR**: N critical · N major · N minor · N verified  *(or "All clear." if nothing flagged)*
+
 ### Critical
-- [file:line] (confidence: high/medium/low) description of issue — with fix
+- `file:line` [H] Issue description
+  → Fix: concrete action
 
 ### Major
-- [file:line] (confidence: high/medium/low) description of issue — with fix or recommendation
+- `file:line` [H] Issue description
+  → Fix: concrete action or recommendation
 
 ### Minor
-- [file:line] (confidence: high/medium/low) description of issue
+- `file:line` [M] Brief description
 
 ### Convention drift
-- [file:line] violates [CLAUDE.md / AGENTS.md / rule] — fix
+- `file:line` Violates [CLAUDE.md / AGENTS.md / rule]
+  → Fix: concrete action
 
 ### Approach
-- [file:line] suggests a cleaner pattern, simpler abstraction, or better architectural choice — with rationale
+- `file:line` Cleaner alternative — rationale
 
 ### Verified
-- [what was checked] — confirmed correct per [source URL or node_modules path]
+- ✓ What was checked — per [source URL or node_modules path]
 
 ### Unverified
-- [what couldn't be checked] — why (e.g., web search blocked, no vendored source)
+- ? What couldn't be checked — why (e.g., web search blocked, no vendored source)
 
 ### Missing
-- [what should exist but doesn't]
+- What should exist but doesn't
 
 ### Next steps
-- Suggested priority order (critical/security first, then quick wins, then larger refactors, then optional approach suggestions)
-- End with: "Want me to address [specific items], all critical/major, or skip?"
+1. Critical/security first
+2. Quick wins
+3. (optional) Approach suggestions
+
+→ Address critical, all critical+major, or skip?
 ```
 
-Include confidence per finding (high/medium/low) so you can triage when there are many. Severity is "how bad if true"; confidence is "how sure I am it's real." Both inform priority differently.
+**Confidence notation**: `[H]` / `[M]` / `[L]` after the file:line. Severity is "how bad if true" (the section bucket); confidence is "how sure I am it's real" (the bracket). Both inform priority differently.
+
+**Empty section rule**: if Critical/Major/Minor/Convention drift/Approach/Unverified/Missing has nothing, omit the heading and bullets entirely. Don't render `*(none)*` placeholders. Always render TL;DR; render Verified if anything was checked; render Next steps only if there's actionable work.
 
 Vet reports — it does not fix. After presenting the report, **wait for explicit user approval** before applying any changes. The Next steps section is a nudge, not a license to act.
 

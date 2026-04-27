@@ -16,7 +16,7 @@
 ## Delegation
 
 - Parallelize tool calls when independent (within one message). Spawn subagents (Task tool) for fan-out across files/repos, independent workstreams, or research that would clutter context.
-- Auto-invoke loaded skills and MCPs proactively when their description matches the task (e.g., `vet` before commits, `chrome-devtools` for UI verification, `understand` for unfamiliar repos) — don't reinvent workflows that exist. Opus 4.7 under-uses these by default.
+- Auto-invoke loaded skills and MCPs proactively when their description matches the task (e.g., `vet` before commits or to verify recent claims, `chrome-devtools` for UI verification, `understand` for unfamiliar repos) — don't reinvent workflows that exist. Opus 4.7 under-uses these by default.
 
 ## Code
 
