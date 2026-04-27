@@ -2,30 +2,21 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "deny": [
-      "Read(.env*)",
-      "Read(.dev.vars*)",
-      "Read(**/*.pem)",
-      "Read(**/*.key)",
-      "Read(.wrangler/**)",
-      "Edit(.env*)",
-      "Edit(.dev.vars*)",
-      "Edit(**/*.pem)",
-      "Edit(**/*.key)",
-      "Edit(.wrangler/**)",
-      "Write(.env*)",
-      "Write(.dev.vars*)",
-      "Write(**/*.pem)",
-      "Write(**/*.key)",
-      "Write(.wrangler/**)",
       "Bash(npm:*)",
       "Bash(npx:*)",
       "Bash(yarn:*)",
       "Bash(git push --force:*)",
-      "Bash(git push -f:*)",
-      "Bash(gh repo delete:*)",
-      "Bash(gh issue delete:*)",
-      "Bash(gh api -X DELETE:*)",
-      "Bash(gh api --method DELETE:*)"
+      "Bash(git push -f:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm dlx:*)",
+      "Bash(pnpx:*)"
+    ],
+    "allow": [
+      "WebFetch",
+      "WebSearch"
     ],
     "defaultMode": "auto"
   },
