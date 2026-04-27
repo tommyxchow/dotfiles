@@ -39,6 +39,16 @@ link() {
 
   ln -sfn "$src" "$target"
   printf "  LINK  %s -> %s\n" "$target" "$rel"
+
+  # Cleanup: drop .bak if it's byte-identical to the new symlink target.
+  # Keeps .bak only when it actually preserves unique content.
+  if [ -e "$target.bak" ]; then
+    if [ -d "$src" ] && [ -d "$target.bak" ]; then
+      diff -rq "$target.bak" "$src" > /dev/null 2>&1 && { rm -rf "$target.bak"; printf "  CLEAN %s.bak (identical)\n" "$target"; }
+    elif [ -f "$src" ] && [ -f "$target.bak" ]; then
+      cmp -s "$target.bak" "$src" && { rm -f "$target.bak"; printf "  CLEAN %s.bak (identical)\n" "$target"; }
+    fi
+  fi
 }
 
 link "git/.gitconfig"          "$HOME/.gitconfig"

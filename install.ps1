@@ -37,6 +37,7 @@ foreach ($link in $links) {
     }
 
     $sourcePath = (Resolve-Path $source).Path
+    $backup = "$target.bak"
     $targetDir = Split-Path $target -Parent
     if (-not (Test-Path $targetDir)) {
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
@@ -51,13 +52,32 @@ foreach ($link in $links) {
         Remove-Item $target -Force
     }
     elseif ($existing) {
-        $backup = "$target.bak"
         Move-Item $target $backup -Force
         Write-Host "  BAK   $target -> $backup" -ForegroundColor Yellow
     }
 
     New-Item -ItemType SymbolicLink -Path $target -Value $sourcePath | Out-Null
     Write-Host "  LINK  $target -> $($link.Source)" -ForegroundColor Cyan
+
+    # Cleanup: drop .bak if it's byte-identical to the new symlink target.
+    # Keeps .bak only when it actually preserves unique content.
+    if (Test-Path $backup) {
+        $bakItem = Get-Item $backup
+        $identical = $false
+        if ($bakItem.PSIsContainer -and (Test-Path $sourcePath -PathType Container)) {
+            $identical = -not (Compare-Object `
+                (Get-ChildItem -Recurse -File $sourcePath | ForEach-Object { [PSCustomObject]@{ rel = $_.FullName.Substring($sourcePath.Length); hash = (Get-FileHash $_.FullName).Hash } }) `
+                (Get-ChildItem -Recurse -File $backup     | ForEach-Object { [PSCustomObject]@{ rel = $_.FullName.Substring($backup.Length);     hash = (Get-FileHash $_.FullName).Hash } }) `
+                -Property rel, hash)
+        }
+        elseif (-not $bakItem.PSIsContainer -and (Test-Path $sourcePath -PathType Leaf)) {
+            $identical = (Get-FileHash $backup).Hash -eq (Get-FileHash $sourcePath).Hash
+        }
+        if ($identical) {
+            Remove-Item -Recurse -Force $backup
+            Write-Host "  CLEAN $backup (identical)" -ForegroundColor DarkGray
+        }
+    }
 }
 
 Write-Host "`nDone." -ForegroundColor Green

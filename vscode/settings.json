@@ -56,7 +56,7 @@
     "editor.wordWrap": "on",
   },
 
-  "debug.console.fontFamily": "'Maple Mono', 'Symbols Nerd Font', monospace",
+  "debug.console.fontFamily": "'JetBrainsMono Nerd Font', 'Symbols Nerd Font', monospace",
   "debug.console.fontSize": 12,
 
   "terminal.integrated.scrollback": 10000,
@@ -67,22 +67,17 @@
   "git.autofetch": true,
   "git.confirmSync": false,
   "git.blame.editorDecoration.enabled": true,
+  "git.repositoryScanMaxDepth": 3,
+  "git.openRepositoryInParentFolders": "always",
 
   "window.dialogStyle": "custom",
-  "workbench.colorTheme": "Bearded Theme Monokai Black",
-  "workbench.iconTheme": "catppuccin-mocha",
+  "workbench.colorTheme": "Ayu Dark",
+  "workbench.iconTheme": "material-icon-theme",
   "workbench.activityBar.location": "top",
   "explorer.fileNesting.enabled": true,
   "diffEditor.ignoreTrimWhitespace": true,
 
-  "chat.editor.fontSize": 12,
-  "chat.editor.lineHeight": 1.2,
-  "chat.agent.maxRequests": 100,
-  "chat.checkpoints.showFileChanges": true,
-
   "claudeCode.preferredLocation": "sidebar",
-
-  "cSpell.enabled": false,
 
   "material-icon-theme.activeIconPack": "react_redux",
   "material-icon-theme.hidesExplorerArrows": true,
@@ -101,4 +96,5 @@
   "terminal.integrated.minimumContrastRatio": 1,
 
   "chat.disableAIFeatures": true,
+  "extensions.ignoreRecommendations": true,
 }

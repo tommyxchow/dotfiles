@@ -1,28 +1,25 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "statusLine": {
-    "type": "command",
-    "command": "bash \"$HOME/.claude/statusline-command.sh\""
-  },
   "permissions": {
     "deny": [
       "Read(.env*)",
       "Read(.dev.vars*)",
       "Read(**/*.pem)",
       "Read(**/*.key)",
+      "Read(.wrangler/**)",
       "Edit(.env*)",
       "Edit(.dev.vars*)",
       "Edit(**/*.pem)",
       "Edit(**/*.key)",
+      "Edit(.wrangler/**)",
       "Write(.env*)",
       "Write(.dev.vars*)",
       "Write(**/*.pem)",
       "Write(**/*.key)",
-
+      "Write(.wrangler/**)",
       "Bash(npm *)",
       "Bash(npx *)",
       "Bash(yarn *)",
-
       "Bash(git push --force)",
       "Bash(git push --force *)",
       "Bash(git push -f)",
@@ -32,13 +29,7 @@
       "Bash(gh api -X DELETE *)",
       "Bash(gh api --method DELETE *)"
     ],
-    "allow": [
-      "WebSearch",
-      "WebFetch"
-    ]
-  },
-  "worktree": {
-    "symlinkDirectories": ["node_modules"]
+    "defaultMode": "auto"
   },
   "hooks": {
     "Stop": [
@@ -87,16 +78,19 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash \"$HOME/.claude/statusline-command.sh\""
+  },
   "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "commit-commands@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "session-report@claude-plugins-official": true
   },
   "sandbox": {
     "enabled": true,
     "enableWeakerNetworkIsolation": true
-  }
+  },
+  "skipAutoPermissionPrompt": true
 }
