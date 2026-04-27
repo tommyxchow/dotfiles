@@ -90,5 +90,6 @@
     "enabled": true,
     "enableWeakerNetworkIsolation": true
   },
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "tui": "fullscreen"
 }
