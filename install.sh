@@ -56,6 +56,8 @@ link "vscode/settings.json"    "$VSCODE_USER/settings.json"
 link "vscode/keybindings.json" "$VSCODE_USER/keybindings.json"
 link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
+link ".claude/CLAUDE.md"       "$HOME/.codex/AGENTS.md"
+link ".claude/CLAUDE.md"       "$HOME/.config/opencode/AGENTS.md"
 link ".claude/notify.sh"       "$HOME/.claude/notify.sh"
 
 # Claude skills: symlink each skill dir individually so future untracked skills

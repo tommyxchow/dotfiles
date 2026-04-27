@@ -12,6 +12,8 @@ $links = @(
     @{ Source = "powershell/Microsoft.PowerShell_profile.ps1"; Target = "$HOME/Documents/PowerShell/Microsoft.PowerShell_profile.ps1" }
     @{ Source = ".claude/settings.json";                       Target = "$HOME/.claude/settings.json" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.claude/CLAUDE.md" }
+    @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.codex/AGENTS.md" }
+    @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.config/opencode/AGENTS.md" }
     @{ Source = ".claude/notify.sh";                           Target = "$HOME/.claude/notify.sh" }
 )
 
