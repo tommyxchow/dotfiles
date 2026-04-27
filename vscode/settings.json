@@ -63,6 +63,7 @@
   "terminal.integrated.fontLigatures.enabled": true,
   "terminal.integrated.fontSize": 12,
   "terminal.integrated.hideOnLastClosed": false,
+  "terminal.integrated.macOptionIsMeta": true,
 
   "git.autofetch": true,
   "git.confirmSync": false,
