@@ -1,19 +1,25 @@
-# Claude Code Global Config
+# Shared Agent Config
 
-This directory contains the global Claude Code configuration, managed as dotfiles and symlinked to `~/.claude/`.
+This directory contains the global agent configuration, managed as dotfiles and symlinked into the tool-specific homes that need it.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Global instructions loaded every session across all projects |
-| `settings.json` | Permissions, hooks, sandbox, plugins, statusline |
-| `notify.sh` | Desktop notification script used by hooks |
-| `skills/` | Custom global skills (vet, understand, etc.) |
+| `CLAUDE.md` | Single source of truth for global instructions |
+| `settings.json` | Claude Code permissions, hooks, sandbox, plugins, statusline |
+| `notify.sh` | Desktop notification script used by Claude Code hooks |
+| `skills/` | Shared global skills (vet, understand, etc.) |
 
 ## Setup
 
-Run the dotfiles installer to symlink these files to `~/.claude/`. The dotfiles repo is the source of truth — with symlinks, edits to `~/.claude/` automatically update the repo.
+Run the dotfiles installer to create symlinks:
+
+- Claude Code: `CLAUDE.md`, `settings.json`, `notify.sh`, and skills go to `~/.claude/`.
+- Codex: the same `CLAUDE.md` is linked as `~/.codex/AGENTS.md`, and the same skills are linked into `~/.agents/skills/`.
+- OpenCode: uses its Claude Code compatibility fallback to read `~/.claude/CLAUDE.md` and `~/.claude/skills/`.
+
+The dotfiles repo is the source of truth. With symlinks, edits from the tool homes flow back to the repo without duplicate instruction files.
 
 ## Syncing Config Across Machines
 

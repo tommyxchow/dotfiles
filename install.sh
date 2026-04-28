@@ -57,17 +57,23 @@ link "vscode/keybindings.json" "$VSCODE_USER/keybindings.json"
 link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.codex/AGENTS.md"
-link ".claude/CLAUDE.md"       "$HOME/.config/opencode/AGENTS.md"
 link ".claude/notify.sh"       "$HOME/.claude/notify.sh"
 
-# Claude skills: symlink each skill dir individually so future untracked skills
-# at ~/.claude/skills/ aren't swept inside the repo.
+stale_opencode_agents="$HOME/.config/opencode/AGENTS.md"
+if [ -L "$stale_opencode_agents" ] && [ "$(readlink "$stale_opencode_agents")" = "$DOTFILES/.claude/CLAUDE.md" ]; then
+  rm -f "$stale_opencode_agents"
+  printf "  CLEAN %s (opencode uses ~/.claude fallback)\n" "$stale_opencode_agents"
+fi
+
+# Shared skills: symlink each skill dir individually so future untracked skills
+# at ~/.claude/skills/ or ~/.agents/skills/ aren't swept inside the repo.
 if [ -d "$DOTFILES/.claude/skills" ]; then
   for skill in "$DOTFILES/.claude/skills"/*/; do
     [ -d "$skill" ] || continue
     name="${skill%/}"
     name="${name##*/}"
     link ".claude/skills/$name" "$HOME/.claude/skills/$name"
+    link ".claude/skills/$name" "$HOME/.agents/skills/$name"
   done
 fi
 

@@ -13,19 +13,36 @@ $links = @(
     @{ Source = ".claude/settings.json";                       Target = "$HOME/.claude/settings.json" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.claude/CLAUDE.md" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.codex/AGENTS.md" }
-    @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.config/opencode/AGENTS.md" }
     @{ Source = ".claude/notify.sh";                           Target = "$HOME/.claude/notify.sh" }
 )
 
-# Claude skills: symlink each skill dir individually so future untracked skills
-# at ~/.claude/skills/ aren't swept inside the repo.
+# Shared skills: symlink each skill dir individually so future untracked skills
+# at ~/.claude/skills/ or ~/.agents/skills/ aren't swept inside the repo.
 $skillsDir = Join-Path $dotfiles ".claude/skills"
 if (Test-Path $skillsDir) {
     foreach ($skill in Get-ChildItem $skillsDir -Directory) {
+        $skillSource = ".claude/skills/$($skill.Name)"
         $links += @{
-            Source = ".claude/skills/$($skill.Name)"
+            Source = $skillSource
             Target = "$HOME/.claude/skills/$($skill.Name)"
         }
+        $links += @{
+            Source = $skillSource
+            Target = "$HOME/.agents/skills/$($skill.Name)"
+        }
+    }
+}
+
+$staleOpenCodeAgents = "$HOME/.config/opencode/AGENTS.md"
+$sharedInstructionsSource = Join-Path $dotfiles ".claude/CLAUDE.md"
+if (Test-Path $sharedInstructionsSource) {
+    $sharedInstructions = (Resolve-Path $sharedInstructionsSource).Path
+    $staleOpenCodeItem = Get-Item $staleOpenCodeAgents -ErrorAction SilentlyContinue
+    if ($staleOpenCodeItem -and
+        $staleOpenCodeItem.LinkType -eq "SymbolicLink" -and
+        $staleOpenCodeItem.Target -eq $sharedInstructions) {
+        Remove-Item $staleOpenCodeAgents -Force
+        Write-Host "  CLEAN $staleOpenCodeAgents (opencode uses ~/.claude fallback)" -ForegroundColor DarkGray
     }
 }
 
