@@ -65,6 +65,19 @@ if [ -L "$stale_opencode_agents" ] && [ "$(readlink "$stale_opencode_agents")" =
   printf "  CLEAN %s (opencode uses ~/.claude fallback)\n" "$stale_opencode_agents"
 fi
 
+# Skills that depend on Claude Code-specific features (subagents, statusline
+# JSON schema, etc.) — linked only to ~/.claude/skills, never the shared
+# ~/.agents/skills picked up by codex/opencode.
+CLAUDE_ONLY_SKILLS=(statusline-install)
+
+is_claude_only() {
+  local name="$1"
+  for s in "${CLAUDE_ONLY_SKILLS[@]}"; do
+    [ "$s" = "$name" ] && return 0
+  done
+  return 1
+}
+
 # Shared skills: symlink each skill dir individually so future untracked skills
 # at ~/.claude/skills/ or ~/.agents/skills/ aren't swept inside the repo.
 if [ -d "$DOTFILES/.claude/skills" ]; then
@@ -73,7 +86,7 @@ if [ -d "$DOTFILES/.claude/skills" ]; then
     name="${skill%/}"
     name="${name##*/}"
     link ".claude/skills/$name" "$HOME/.claude/skills/$name"
-    link ".claude/skills/$name" "$HOME/.agents/skills/$name"
+    is_claude_only "$name" || link ".claude/skills/$name" "$HOME/.agents/skills/$name"
   done
 fi
 

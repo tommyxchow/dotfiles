@@ -16,6 +16,11 @@ $links = @(
     @{ Source = ".claude/notify.sh";                           Target = "$HOME/.claude/notify.sh" }
 )
 
+# Skills that depend on Claude Code-specific features (subagents, statusline
+# JSON schema, etc.) — linked only to ~/.claude/skills, never the shared
+# ~/.agents/skills picked up by codex/opencode.
+$claudeOnlySkills = @("statusline-install")
+
 # Shared skills: symlink each skill dir individually so future untracked skills
 # at ~/.claude/skills/ or ~/.agents/skills/ aren't swept inside the repo.
 $skillsDir = Join-Path $dotfiles ".claude/skills"
@@ -26,9 +31,11 @@ if (Test-Path $skillsDir) {
             Source = $skillSource
             Target = "$HOME/.claude/skills/$($skill.Name)"
         }
-        $links += @{
-            Source = $skillSource
-            Target = "$HOME/.agents/skills/$($skill.Name)"
+        if ($skill.Name -notin $claudeOnlySkills) {
+            $links += @{
+                Source = $skillSource
+                Target = "$HOME/.agents/skills/$($skill.Name)"
+            }
         }
     }
 }
