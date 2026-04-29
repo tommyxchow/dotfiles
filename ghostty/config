@@ -1,4 +1,10 @@
 font-family = Maple Mono
 font-family = Symbols Nerd Font Mono
 font-size = 12
-theme = Monokai Remastered
+font-thicken = true
+theme = Monokai Soda
+
+window-padding-x = 10
+window-padding-y = 10
+mouse-hide-while-typing = true
+macos-option-as-alt = true
