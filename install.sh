@@ -54,6 +54,7 @@ link() {
 link "git/.gitconfig"          "$HOME/.gitconfig"
 link "vscode/settings.json"    "$VSCODE_USER/settings.json"
 link "vscode/keybindings.json" "$VSCODE_USER/keybindings.json"
+link "ghostty/config"          "$HOME/.config/ghostty/config"
 link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.codex/AGENTS.md"
