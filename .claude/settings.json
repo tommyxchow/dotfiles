@@ -32,18 +32,6 @@
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node -e \"const f=JSON.parse(require('fs').readFileSync(0,'utf8')).tool_input.file_path;const{execSync:r}=require('child_process');try{r('pnpm exec prettier --write --ignore-unknown '+JSON.stringify(f),{stdio:'ignore'})}catch{};try{r('pnpm exec eslint --fix '+JSON.stringify(f),{stdio:'ignore'})}catch{}\" 2>/dev/null; exit 0",
-            "timeout": 30
-          }
-        ]
-      }
-    ],
     "Notification": [
       {
         "matcher": "permission_prompt",
