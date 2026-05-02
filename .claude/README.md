@@ -11,15 +11,23 @@ This directory contains the global agent configuration, managed as dotfiles and 
 | `notify.sh` | Desktop notification script used by Claude Code hooks |
 | `skills/` | Shared global skills (vet, understand, etc.) |
 
+Codex-native portable settings live in the repo-level `codex/` directory:
+
+| File | Purpose |
+|------|---------|
+| `codex/config.toml` | Portable Codex preferences |
+
 ## Setup
 
 Run the dotfiles installer to create symlinks:
 
 - Claude Code: `CLAUDE.md`, `settings.json`, `notify.sh`, and skills go to `~/.claude/`.
-- Codex: the same `CLAUDE.md` is linked as `~/.codex/AGENTS.md`, and the same skills are linked into `~/.agents/skills/`.
+- Codex: the same `CLAUDE.md` is linked as `~/.codex/AGENTS.md`, and shared skills are linked into `~/.agents/skills/`.
 - OpenCode: uses its Claude Code compatibility fallback to read `~/.claude/CLAUDE.md` and `~/.claude/skills/`.
 
 The dotfiles repo is the source of truth. With symlinks, edits from the tool homes flow back to the repo without duplicate instruction files.
+
+Do not symlink or copy `~/.codex/config.toml` wholesale into the repo. Codex writes machine-local state there, including cache paths, marketplace timestamps, trusted project paths, and UI state. The installer upserts only the stable top-level preferences from `codex/config.toml` into `~/.codex/config.toml`.
 
 ## Syncing Config Across Machines
 

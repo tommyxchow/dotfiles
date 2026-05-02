@@ -71,6 +71,15 @@ fi
 # ~/.agents/skills picked up by codex/opencode.
 CLAUDE_ONLY_SKILLS=(statusline-install)
 
+for name in "${CLAUDE_ONLY_SKILLS[@]}"; do
+  stale_shared_skill="$HOME/.agents/skills/$name"
+  repo_skill="$DOTFILES/.claude/skills/$name"
+  if [ -L "$stale_shared_skill" ] && [ "$(readlink "$stale_shared_skill")" = "$repo_skill" ]; then
+    rm -f "$stale_shared_skill"
+    printf "  CLEAN %s (Claude-only skill)\n" "$stale_shared_skill"
+  fi
+done
+
 is_claude_only() {
   local name="$1"
   for s in "${CLAUDE_ONLY_SKILLS[@]}"; do
@@ -90,6 +99,81 @@ if [ -d "$DOTFILES/.claude/skills" ]; then
     is_claude_only "$name" || link ".claude/skills/$name" "$HOME/.agents/skills/$name"
   done
 fi
+
+upsert_codex_config() {
+  local src="$DOTFILES/codex/config.toml"
+  local target="$HOME/.codex/config.toml"
+  local tmp
+  [ -f "$src" ] || return 0
+
+  mkdir -p "$(dirname "$target")"
+  touch "$target"
+  tmp="$(mktemp)"
+
+  awk '
+    FNR == NR {
+      if ($0 ~ /^[[:space:]]*[A-Za-z0-9_]+[[:space:]]*=/) {
+        key = $0
+        sub(/=.*/, "", key)
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", key)
+        if (!(key in settings)) {
+          order[++count] = key
+        }
+        settings[key] = $0
+      }
+      next
+    }
+
+    function emit_missing() {
+      if (emitted) {
+        return
+      }
+      for (i = 1; i <= count; i++) {
+        if (!(order[i] in seen)) {
+          print settings[order[i]]
+          wrote_head = 1
+        }
+      }
+      emitted = 1
+    }
+
+    /^[[:space:]]*\[/ && !in_tables {
+      emit_missing()
+      if (wrote_head) {
+        print ""
+      }
+      in_tables = 1
+    }
+
+    !in_tables && $0 ~ /^[[:space:]]*[A-Za-z0-9_]+[[:space:]]*=/ {
+      key = $0
+      sub(/=.*/, "", key)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", key)
+      if (key in settings) {
+        print settings[key]
+        seen[key] = 1
+        wrote_head = 1
+        next
+      }
+    }
+
+    {
+      print
+      if (!in_tables && $0 !~ /^[[:space:]]*$/) {
+        wrote_head = 1
+      }
+    }
+
+    END {
+      emit_missing()
+    }
+  ' "$src" "$target" > "$tmp"
+  mv "$tmp" "$target"
+
+  printf "  MERGE %s <- codex/config.toml\n" "$target"
+}
+
+upsert_codex_config
 
 echo
 echo "Done."
