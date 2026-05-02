@@ -43,17 +43,27 @@ List each assertion explicitly before verifying — don't audit invisibly. The u
 
 ### 3. Cross-reference project conventions
 
-Actively check the diff against the project conventions already in your context. Convention drift is the most common review miss — flag every violation.
+Actively check the diff against the project conventions already in your context. Convention drift is the most common review miss — flag every violation. _(Skip this step in conversation audit mode — convention drift doesn't apply to claims.)_
 
 ### 4. Verify claims against external sources
 
-This is what distinguishes /vet from a normal code review. For any of the following in the changed code, verify against current official documentation:
+This is what distinguishes /vet from a normal code review or a vibe-check. **Applies to both modes** — anything checkable against an authoritative source should be checked, never asserted from training data alone.
+
+**In code review mode**, common things worth verifying in the diff against current official documentation (not exhaustive — verify anything else in the diff that's checkable):
 
 - Framework/library API usage (correct function signatures, deprecated APIs, version-specific behavior)
 - Third-party service integration (correct endpoints, auth patterns, rate limits)
 - Configuration values (correct option names, valid values, default behavior)
 - Security patterns (current best practices, known vulnerabilities in dependencies)
 - Platform-specific behavior (browser APIs, Node.js APIs, OS-specific paths)
+
+**In conversation audit mode**, common assertions worth verifying (not exhaustive — verify any other checkable claim made):
+
+- Version numbers, release dates, deprecation status
+- Library/framework features claimed to exist or behave a certain way
+- Doc references cited (does the linked page actually say what was claimed?)
+- Benchmark numbers, performance claims, industry sentiment shifts
+- Best-practice recommendations (does the current consensus actually agree?)
 
 **Verification preference:**
 
@@ -63,12 +73,16 @@ This is what distinguishes /vet from a normal code review. For any of the follow
 
 ### 5. Report findings
 
-Present findings in a structured, skim-friendly format. **Always lead with a one-line TL;DR. Skip empty sections entirely** (don't render headers for buckets with zero findings).
+Pick the report shape based on what was audited. **Code reviews and claim audits have different shapes — don't force one into the other.** Always lead with a one-line TL;DR.
+
+#### Code review mode — severity buckets
+
+Use when the audit was on changed code. Findings are independent and need triage decisions, so severity buckets earn their keep.
 
 ```
 ## Vet Report
 
-**TL;DR**: N critical · N major · N minor · N verified  *(or "All clear." if nothing flagged)*
+**TL;DR** — N critical · N major · N minor · N verified  *(or "All clear." if nothing flagged)*
 
 ### Critical
 - `file:line` [H] Issue description
@@ -88,8 +102,10 @@ Present findings in a structured, skim-friendly format. **Always lead with a one
 ### Approach
 - `file:line` Cleaner alternative — rationale
 
+---
+
 ### Verified
-- ✓ What was checked — per [source URL or node_modules path]
+- ✓ What was checked — per [source name](url) or `node_modules/path`
 
 ### Unverified
 - ? What couldn't be checked — why (e.g., web search blocked, no vendored source)
@@ -105,11 +121,72 @@ Present findings in a structured, skim-friendly format. **Always lead with a one
 → Address critical, all critical+major, or skip?
 ```
 
-**Confidence notation**: `[H]` / `[M]` / `[L]` after the file:line. Severity is "how bad if true" (the section bucket); confidence is "how sure I am it's real" (the bracket). Both inform priority differently.
+**Confidence notation** — `[H]` / `[M]` / `[L]` after the `file:line`. Severity is "how bad if true" (the section bucket); confidence is "how sure I am it's real" (the bracket). Both inform priority differently.
 
-**Empty section rule**: if Critical/Major/Minor/Convention drift/Approach/Unverified/Missing has nothing, omit the heading and bullets entirely. Don't render `*(none)*` placeholders. Always render TL;DR; render Verified if anything was checked; render Next steps only if there's actionable work.
+#### Conversation audit mode — verdict cards or table
 
-Vet reports — it does not fix. After presenting the report, **wait for explicit user approval** before applying any changes. The Next steps section is a nudge, not a license to act.
+Use when the audit was on assistant claims. **Drop severity buckets and `[H]/[M]/[L]` brackets** — every finding's "severity" is the same shape ("the claim was wrong / partly / right"), and confidence is carried by the source link itself, not a tag. **Drop `→ Fix:`** — for a claim, the corrected reality IS the fix.
+
+Verdict glyphs: `✗ Wrong` · `⚠ Partly` · `✓ Holds`.
+
+**For ≤3 claims, use cards.** Heading-as-verdict puts the answer in the largest, boldest text on screen — F-pattern reading land. The blockquote visually offsets the _original_ claim from the _corrected_ version, killing "wait which one is the real take?" ambiguity. One card per claim, separated by `---`.
+
+```
+## Vet Report
+
+**TL;DR** — N wrong · N partly · N hold
+
+---
+
+### ✗ Wrong: <short label of claim>
+
+> Original claim: <quote or paraphrase of what was said>
+
+**Reality** — <2–3 sentence corrected version>
+
+**Evidence**
+- [Source name (date)](url) — specific finding or number
+- [Source name (date)](url) — specific finding or number
+
+**Missed** — <nuance or related point not surfaced originally>
+
+---
+
+### ⚠ Partly: <short label>
+
+> Original claim: ...
+
+**Reality** — ...
+```
+
+**For 4+ claims, use a table.** Sweep-the-verdict-column reading beats wall-of-cards once the list grows.
+
+```
+## Vet Report
+
+**TL;DR** — N wrong · N partly · N hold
+
+|     | Claim     | Reality                                     |
+| --- | --------- | ------------------------------------------- |
+| ✗   | <claim 1> | Opposite — <correction>, per [Source](url)  |
+| ⚠   | <claim 2> | <partial correction>, per [Source](url)     |
+| ✓   | <claim 3> | Holds — <one-line confirmation>             |
+
+**Missed**
+- <nuance not surfaced inline>
+- <related claim that should have been made>
+```
+
+#### Common rules for both modes
+
+- **Empty section rule** — omit any zero-finding section entirely. No `*(none)*` placeholders.
+- **Always render TL;DR.** Render `Verified` if anything was checked. Render `Next steps` only if there's actionable work.
+- **Autolinked source names**, not bare URLs — `[Scalekit (Mar 2026)](url)` beats `→ source: https://...`
+- **Em-dash `—` for inline label/value separators** when bolding labels — `**Reality** — text` reads denser than `**Reality:** text`.
+- **Inline `code spans`** for tool, file, function, and config names — renders as a monospace pill in the terminal.
+- **Horizontal rules `---`** between claim cards (conversation-audit mode), and once between the action-bucket sections (Critical / Major / Minor / Convention drift / Approach) and the coverage-bucket sections (Verified / Unverified / Missing) in code-review mode. Skip the code-review divider when only one zone rendered content.
+
+**/vet reports findings — it doesn't apply them.** After presenting the report, **wait for explicit user approval** before making any changes. The Next steps section is a nudge, not a license to act.
 
 If everything looks clean, say so — don't manufacture issues. A clean vet is a valid outcome (skip Next steps in that case).
 
