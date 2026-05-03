@@ -20,6 +20,7 @@
   "js/ts.inlayHints.variableTypes.enabled": true,
   "js/ts.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
   "js/ts.updateImportsOnFileMove.enabled": "always",
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
 
   // Tailwind recommended settings
   "files.associations": {
