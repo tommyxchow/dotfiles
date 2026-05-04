@@ -32,7 +32,7 @@
 
 - Run targeted tests for relevant files, not the full suite.
 - Conventional commits: `type(scope): description` — lowercase, no period, tightly scoped. Append `!` before `:` for breaking changes.
-- New branches: prefix with GitHub username (e.g., `tommyxchow/add-auth-flow`). Run `gh api user --jq .login` to find it.
+- New branches: prefix with `tc/` (e.g., `tc/add-auth-flow`).
 
 ## Never
 
