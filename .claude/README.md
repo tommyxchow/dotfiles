@@ -22,8 +22,8 @@ Codex-native portable settings live in the repo-level `codex/` directory:
 Run the dotfiles installer to create symlinks:
 
 - Claude Code: `CLAUDE.md`, `settings.json`, `notify.sh`, and skills go to `~/.claude/`.
-- Codex: the same `CLAUDE.md` is linked as `~/.codex/AGENTS.md`, and shared skills are linked into `~/.agents/skills/`.
-- OpenCode: uses its Claude Code compatibility fallback to read `~/.claude/CLAUDE.md` and `~/.claude/skills/`.
+- Codex: the same `CLAUDE.md` is linked as `~/.codex/AGENTS.md`. Shared skills are linked into `~/.agents/skills/` — Codex does **not** read `~/.codex/skills/`, only `~/.agents/skills/` per the [official skills docs](https://developers.openai.com/codex/skills).
+- OpenCode: natively scans `~/.claude/skills/` and `~/.agents/skills/` as first-class skill paths (not just fallbacks), so shared skills are picked up without a dedicated `~/.config/opencode/skills/` link. For instructions, OpenCode reads `~/.claude/CLAUDE.md` via its documented [Claude Code fallback](https://opencode.ai/docs/rules/), so no `~/.config/opencode/AGENTS.md` symlink is created — the installer cleans up any stale one.
 
 The dotfiles repo is the source of truth. With symlinks, edits from the tool homes flow back to the repo without duplicate instruction files.
 
