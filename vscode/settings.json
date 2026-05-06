@@ -57,7 +57,7 @@
     "editor.wordWrap": "on"
   },
 
-  "debug.console.fontFamily": "'JetBrainsMono Nerd Font', 'Symbols Nerd Font', monospace",
+  "debug.console.fontFamily": "'Maple Mono', 'Symbols Nerd Font', monospace",
   "debug.console.fontSize": 12,
 
   "terminal.integrated.scrollback": 10000,
