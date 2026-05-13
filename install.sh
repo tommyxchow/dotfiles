@@ -34,7 +34,7 @@ link() {
 
   if [ -e "$target" ] && [ ! -L "$target" ]; then
     mv "$target" "$target.bak"
-    printf "  BAK   %s -> %s.bak\n" "$target" "$target"
+    printf "  BAK   %s -> %s\n" "$target" "$target.bak"
   fi
 
   ln -sfn "$src" "$target"
@@ -60,43 +60,18 @@ link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.codex/AGENTS.md"
 link ".claude/notify.sh"       "$HOME/.claude/notify.sh"
 
-stale_opencode_agents="$HOME/.config/opencode/AGENTS.md"
-if [ -L "$stale_opencode_agents" ] && [ "$(readlink "$stale_opencode_agents")" = "$DOTFILES/.claude/CLAUDE.md" ]; then
-  rm -f "$stale_opencode_agents"
-  printf "  CLEAN %s (opencode uses ~/.claude fallback)\n" "$stale_opencode_agents"
-fi
-
-# Skills that depend on Claude Code-specific features (subagents, statusline
-# JSON schema, etc.) — linked only to ~/.claude/skills, never the shared
-# ~/.agents/skills picked up by codex/opencode.
-CLAUDE_ONLY_SKILLS=(statusline-install)
-
-for name in "${CLAUDE_ONLY_SKILLS[@]}"; do
-  stale_shared_skill="$HOME/.agents/skills/$name"
-  repo_skill="$DOTFILES/.claude/skills/$name"
-  if [ -L "$stale_shared_skill" ] && [ "$(readlink "$stale_shared_skill")" = "$repo_skill" ]; then
-    rm -f "$stale_shared_skill"
-    printf "  CLEAN %s (Claude-only skill)\n" "$stale_shared_skill"
-  fi
-done
-
-is_claude_only() {
-  local name="$1"
-  for s in "${CLAUDE_ONLY_SKILLS[@]}"; do
-    [ "$s" = "$name" ] && return 0
-  done
-  return 1
-}
-
 # Shared skills: symlink each skill dir individually so future untracked skills
 # at ~/.claude/skills/ or ~/.agents/skills/ aren't swept inside the repo.
+# statusline-install depends on Claude Code-specific features (subagents,
+# statusline JSON schema) — linked only to ~/.claude/skills, never the shared
+# ~/.agents/skills picked up by codex/opencode.
 if [ -d "$DOTFILES/.claude/skills" ]; then
   for skill in "$DOTFILES/.claude/skills"/*/; do
     [ -d "$skill" ] || continue
     name="${skill%/}"
     name="${name##*/}"
     link ".claude/skills/$name" "$HOME/.claude/skills/$name"
-    is_claude_only "$name" || link ".claude/skills/$name" "$HOME/.agents/skills/$name"
+    [ "$name" = "statusline-install" ] || link ".claude/skills/$name" "$HOME/.agents/skills/$name"
   done
 fi
 

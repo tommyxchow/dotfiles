@@ -16,26 +16,11 @@ $links = @(
     @{ Source = ".claude/notify.sh";                           Target = "$HOME/.claude/notify.sh" }
 )
 
-# Skills that depend on Claude Code-specific features (subagents, statusline
-# JSON schema, etc.) — linked only to ~/.claude/skills, never the shared
-# ~/.agents/skills picked up by codex/opencode.
-$claudeOnlySkills = @("statusline-install")
-
-foreach ($skillName in $claudeOnlySkills) {
-    $sharedSkillTarget = "$HOME/.agents/skills/$skillName"
-    $repoSkillSource = Join-Path $dotfiles ".claude/skills/$skillName"
-    $sharedSkillItem = Get-Item $sharedSkillTarget -ErrorAction SilentlyContinue
-    if ($sharedSkillItem -and
-        $sharedSkillItem.LinkType -eq "SymbolicLink" -and
-        (Test-Path $repoSkillSource) -and
-        $sharedSkillItem.Target -eq (Resolve-Path $repoSkillSource).Path) {
-        Remove-Item $sharedSkillTarget -Force
-        Write-Host "  CLEAN $sharedSkillTarget (Claude-only skill)" -ForegroundColor DarkGray
-    }
-}
-
 # Shared skills: symlink each skill dir individually so future untracked skills
 # at ~/.claude/skills/ or ~/.agents/skills/ aren't swept inside the repo.
+# statusline-install depends on Claude Code-specific features (subagents,
+# statusline JSON schema) — linked only to ~/.claude/skills, never the shared
+# ~/.agents/skills picked up by codex/opencode.
 $skillsDir = Join-Path $dotfiles ".claude/skills"
 if (Test-Path $skillsDir) {
     foreach ($skill in Get-ChildItem $skillsDir -Directory) {
@@ -44,7 +29,7 @@ if (Test-Path $skillsDir) {
             Source = $skillSource
             Target = "$HOME/.claude/skills/$($skill.Name)"
         }
-        if ($skill.Name -notin $claudeOnlySkills) {
+        if ($skill.Name -ne "statusline-install") {
             $links += @{
                 Source = $skillSource
                 Target = "$HOME/.agents/skills/$($skill.Name)"
@@ -128,19 +113,6 @@ if (Test-Path $codexConfigSource) {
     }
     Set-Content -LiteralPath $codexConfigTarget -Value $output -NoNewline
     Write-Host "  MERGE $codexConfigTarget <- codex/config.toml" -ForegroundColor Cyan
-}
-
-$staleOpenCodeAgents = "$HOME/.config/opencode/AGENTS.md"
-$sharedInstructionsSource = Join-Path $dotfiles ".claude/CLAUDE.md"
-if (Test-Path $sharedInstructionsSource) {
-    $sharedInstructions = (Resolve-Path $sharedInstructionsSource).Path
-    $staleOpenCodeItem = Get-Item $staleOpenCodeAgents -ErrorAction SilentlyContinue
-    if ($staleOpenCodeItem -and
-        $staleOpenCodeItem.LinkType -eq "SymbolicLink" -and
-        $staleOpenCodeItem.Target -eq $sharedInstructions) {
-        Remove-Item $staleOpenCodeAgents -Force
-        Write-Host "  CLEAN $staleOpenCodeAgents (opencode uses ~/.claude fallback)" -ForegroundColor DarkGray
-    }
 }
 
 foreach ($link in $links) {
