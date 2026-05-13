@@ -9,7 +9,6 @@ $links = @(
     @{ Source = "git/.gitconfig";                              Target = "$HOME/.gitconfig" }
     @{ Source = "vscode/settings.json";                        Target = "$env:APPDATA/Code/User/settings.json" }
     @{ Source = "vscode/keybindings.json";                     Target = "$env:APPDATA/Code/User/keybindings.json" }
-    @{ Source = "powershell/Microsoft.PowerShell_profile.ps1"; Target = "$HOME/Documents/PowerShell/Microsoft.PowerShell_profile.ps1" }
     @{ Source = ".claude/settings.json";                       Target = "$HOME/.claude/settings.json" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.claude/CLAUDE.md" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.codex/AGENTS.md" }
