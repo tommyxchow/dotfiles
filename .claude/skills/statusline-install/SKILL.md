@@ -1,7 +1,7 @@
 ---
 name: statusline-install
-description: Install/restore my personal Claude Code statusline — project:branch, model with context size + effort, context %, and 5h/7d usage remaining (with 5h time-to-reset) — to ~/.claude/statusline-command.sh and wire it into settings.json. Canonical cross-platform bash (macOS/Linux native, Windows via Git Bash). Use to set up my statusline on a new machine or after a reset.
-argument-hint: 'frosty:main | Opus 4.8 (1M, xhigh) 34% | 5h 76% (1h48m) · 7d 58%'
+description: Install/restore my personal Claude Code statusline — project:branch, model with context size + effort, context %, and 5h/7d usage remaining (each with time-to-reset) — to ~/.claude/statusline-command.sh and wire it into settings.json. Canonical cross-platform bash (macOS/Linux native, Windows via Git Bash). Use to set up my statusline on a new machine or after a reset.
+argument-hint: 'frosty:main | Opus 4.8 (1M, xhigh) 34% | 5h 76% (1h48m) · 7d 58% (4d6h)'
 model: haiku
 context: fork
 agent: statusline-setup
@@ -18,7 +18,7 @@ the script below verbatim and point `settings.json` at it.
 ## Output format
 
 ```
-frosty:main | Opus 4.8 (1M, xhigh) 34% | 5h 76% (1h48m) · 7d 58%
+frosty:main | Opus 4.8 (1M, xhigh) 34% | 5h 76% (1h48m) · 7d 58% (4d6h)
 ```
 
 - **`frosty:main`** — project (basename of the project/current dir) and the git
@@ -30,11 +30,11 @@ frosty:main | Opus 4.8 (1M, xhigh) 34% | 5h 76% (1h48m) · 7d 58%
   display name's built-in `(… context)` suffix is stripped so the parenthetical
   isn't doubled. The `%` color ramps green → yellow → orange → red toward the
   ~78% auto-compact trigger.
-- **`5h 76% (1h48m) · 7d 58%`** — 5-hour and 7-day rate-limit windows
+- **`5h 76% (1h48m) · 7d 58% (4d6h)`** — 5-hour and 7-day rate-limit windows
   **remaining** (100 − used). Color ramps the opposite way (green when plenty
-  left, red when nearly out). The 5h window also shows **time until it resets**
-  in dim parens (relative, e.g. `1h48m`; omitted if missing or already past).
-  Pro/Max only, and only after the first API response of a session.
+  left, red when nearly out). Each window also shows **time until it resets** in
+  dim parens (relative, e.g. `1h48m` / `4d6h`; omitted if missing or already
+  past). Pro/Max only, and only after the first API response of a session.
 
 ## Requirements (cross-platform)
 
@@ -44,7 +44,7 @@ Needs `bash`, `jq`, and `git` (plus `date`, always present):
   `apt install jq`. git is already present.
 - **Windows**: runs under **Git Bash**, which ships all of these — no PowerShell
   version is maintained, and `settings.json` invokes the script with `bash` on
-  every platform. The reset time uses `date +%s` arithmetic (portable) rather
+  every platform. The reset times use `date +%s` arithmetic (portable) rather
   than `date -d`/`date -r` formatting (which differs GNU vs BSD).
 
 ## Install steps
@@ -90,7 +90,7 @@ fi
 # seven_left are "remaining" (100 - used, floored); size is the context window
 # (1M / 200K); project is the dir basename.
 us=$'\037'
-IFS="$us" read -r model used_pct five_left seven_left effort size project cur_dir five_reset <<EOF
+IFS="$us" read -r model used_pct five_left seven_left effort size project cur_dir five_reset seven_reset <<EOF
 $(echo "$input" | jq -r --arg us "$us" '[
   (.model.display_name // "--"),
   (.context_window.used_percentage // ""),
@@ -100,7 +100,8 @@ $(echo "$input" | jq -r --arg us "$us" '[
   ((.context_window.context_window_size // null) | if . == null then "" elif . >= 1000000 then ((. / 1000000) | floor | tostring) + "M" elif . >= 1000 then ((. / 1000) | floor | tostring) + "K" else tostring end),
   (((.workspace.project_dir // .workspace.current_dir // "") | gsub("\\\\"; "/") | split("/") | map(select(length > 0)) | last) // ""),
   ((.workspace.current_dir // "") | gsub("\\\\"; "/")),
-  (.rate_limits.five_hour.resets_at // "")
+  (.rate_limits.five_hour.resets_at // ""),
+  (.rate_limits.seven_day.resets_at // "")
 ] | map(tostring) | join($us)')
 EOF
 
@@ -145,12 +146,14 @@ fmt_dur() {
   fi
 }
 
-# Time until the 5-hour window resets (relative; empty if missing or already past)
-five_in=""
+# Time until each window resets (relative; empty if missing or already past)
+now=$(date +%s)
+five_in=""; seven_in=""
 if [ -n "$five_reset" ]; then
-  now=$(date +%s)
-  delta=$((five_reset - now))
-  [ "$delta" -gt 0 ] && five_in=$(fmt_dur "$delta")
+  delta=$((five_reset - now)); [ "$delta" -gt 0 ] && five_in=$(fmt_dur "$delta")
+fi
+if [ -n "$seven_reset" ]; then
+  delta=$((seven_reset - now)); [ "$delta" -gt 0 ] && seven_in=$(fmt_dur "$delta")
 fi
 
 # Segment 1 — location: project[:branch]
@@ -186,6 +189,7 @@ fi
 if [ -n "$seven_left" ]; then
   [ -n "$usage" ] && usage="${usage} ${dot} "
   usage="${usage}${dim}7d${reset} $(color_left "$seven_left")${seven_left}%${reset}"
+  [ -n "$seven_in" ] && usage="${usage} ${dim}(${seven_in})${reset}"
 fi
 
 # Join non-empty segments with the divider
