@@ -8,7 +8,7 @@ This directory contains the global agent configuration, managed as dotfiles and 
 |------|---------|
 | `CLAUDE.md` | Single source of truth for global instructions |
 | `settings.json` | Claude Code permissions, sandbox, plugins, statusline |
-| `skills/` | Shared global skills (vet, understand, etc.) |
+| `skills/` | Shared global skills (vet, etc.) |
 
 Codex-native portable settings live in the repo-level `codex/` directory:
 

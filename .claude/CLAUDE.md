@@ -12,7 +12,7 @@
 
 ## Delegation
 
-- Auto-invoke loaded skills and MCPs proactively when their description matches the task (e.g., `vet` before commits or to verify recent claims, `chrome-devtools` for UI verification, `understand` for unfamiliar repos) — don't reinvent workflows that exist.
+- Auto-invoke loaded skills and MCPs proactively when their description matches the task (e.g., `vet` before commits or to verify recent claims, `chrome-devtools` for UI verification) — don't reinvent workflows that exist.
 
 ## Code
 
