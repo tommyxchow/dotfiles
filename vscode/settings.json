@@ -1,5 +1,5 @@
 {
-  "editor.fontFamily": "'Maple Mono', 'Symbols Nerd Font', monospace",
+  "editor.fontFamily": "'Lilex', 'Symbols Nerd Font', monospace",
   "editor.fontSize": 12,
   "editor.lineHeight": 1.2,
   "editor.fontLigatures": true,
@@ -57,7 +57,7 @@
     "editor.wordWrap": "on"
   },
 
-  "debug.console.fontFamily": "'Maple Mono', 'Symbols Nerd Font', monospace",
+  "debug.console.fontFamily": "'Lilex', 'Symbols Nerd Font', monospace",
   "debug.console.fontSize": 12,
 
   "terminal.integrated.scrollback": 10000,
