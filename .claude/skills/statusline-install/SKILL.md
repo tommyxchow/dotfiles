@@ -77,13 +77,10 @@ True-color codes: dim `#999999`, green `#37A660`, yellow `\033[33m`, orange
 ```bash
 #!/usr/bin/env bash
 # Claude Code Statusline
-# Format: project:branch | Model (size, effort) ctx% | 5h left% · 7d left%
+# Format: project:branch | Model (size, effort) ctx% | 5h left% (reset) · 7d left% (reset)
 
 input=$(cat)
-if [ -z "$(echo "$input" | tr -d '[:space:]')" ]; then
-  echo "--"
-  exit 0
-fi
+if [ -z "$(echo "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0; fi
 
 # Pull all fields in one jq pass, joined by the unit separator (0x1f, defined in
 # bash and passed via --arg) so empty fields are preserved on read. five_left and
@@ -91,7 +88,7 @@ fi
 # (1M / 200K); project is the dir basename.
 us=$'\037'
 IFS="$us" read -r model used_pct five_left seven_left effort size project cur_dir five_reset seven_reset <<EOF
-$(echo "$input" | jq -r --arg us "$us" '[
+$(jq -r --arg us "$us" '[
   (.model.display_name // "--"),
   (.context_window.used_percentage // ""),
   (if (.rate_limits.five_hour.used_percentage // null) != null then (100 - .rate_limits.five_hour.used_percentage | floor | tostring) else "" end),
@@ -102,7 +99,7 @@ $(echo "$input" | jq -r --arg us "$us" '[
   ((.workspace.current_dir // "") | gsub("\\\\"; "/")),
   (.rate_limits.five_hour.resets_at // ""),
   (.rate_limits.seven_day.resets_at // "")
-] | map(tostring) | join($us)')
+] | map(tostring) | join($us)' <<<"$input")
 EOF
 
 # display_name already carries a "(… context)" suffix on extended-context models;
@@ -111,9 +108,7 @@ model="${model% (*)}"
 
 # Current git branch for the session's directory (empty if not a repo)
 branch=""
-if [ -n "$cur_dir" ]; then
-  branch=$(git -C "$cur_dir" rev-parse --abbrev-ref HEAD 2>/dev/null)
-fi
+[ -n "$cur_dir" ] && branch=$(git -C "$cur_dir" rev-parse --abbrev-ref HEAD 2>/dev/null)
 
 reset=$'\033[0m'
 dim=$'\033[38;2;153;153;153m'
@@ -146,29 +141,32 @@ fmt_dur() {
   fi
 }
 
-# Time until each window resets (relative; empty if missing or already past)
+# Relative time until a reset epoch (empty if missing or already past)
+reset_in() {
+  local d
+  [ -n "$1" ] || return
+  d=$(( $1 - now ))
+  [ "$d" -gt 0 ] && fmt_dur "$d"
+}
+
+# Render one rate-limit window: "<label> <pct>% (<reset>)", colored by remaining; empty if no pct
+win_seg() {
+  [ -n "$2" ] || return
+  printf '%s%s%s %s%s%%%s' "$dim" "$1" "$reset" "$(color_left "$2")" "$2" "$reset"
+  [ -n "$3" ] && printf ' %s(%s)%s' "$dim" "$3" "$reset"
+}
+
 now=$(date +%s)
-five_in=""; seven_in=""
-if [ -n "$five_reset" ]; then
-  delta=$((five_reset - now)); [ "$delta" -gt 0 ] && five_in=$(fmt_dur "$delta")
-fi
-if [ -n "$seven_reset" ]; then
-  delta=$((seven_reset - now)); [ "$delta" -gt 0 ] && seven_in=$(fmt_dur "$delta")
-fi
+five_in=$(reset_in "$five_reset")
+seven_in=$(reset_in "$seven_reset")
 
 # Segment 1 — location: project[:branch]
 loc=""
-if [ -n "$project" ]; then
-  loc="${dim}${project}${reset}"
-  [ -n "$branch" ] && loc="${dim}${project}:${branch}${reset}"
-fi
+[ -n "$project" ] && loc="${dim}${project}${branch:+:$branch}${reset}"
 
 # Segment 2 — model (size, effort) ctx%; context grouped with the model, color ramps up toward the ~78% auto-compact trigger
-paren=""
-[ -n "$size" ] && paren="$size"
-if [ -n "$effort" ]; then
-  if [ -n "$paren" ]; then paren="$paren, $effort"; else paren="$effort"; fi
-fi
+paren="$size"
+[ -n "$effort" ] && paren="${paren:+$paren, }$effort"
 modelseg="${reset}${model}${reset}"
 [ -n "$paren" ] && modelseg="${modelseg} ${dim}(${paren})${reset}"
 if [ -n "$used_pct" ]; then
@@ -180,17 +178,12 @@ if [ -n "$used_pct" ]; then
   modelseg="${modelseg} ${ctx_color}${pct}%${reset}"
 fi
 
-# Segment 3 — rate-limit usage remaining: 5h · 7d (Pro/Max only, after first API response)
+# Segment 3 — rate-limit usage remaining: 5h · 7d (dot only between two present windows)
 usage=""
-if [ -n "$five_left" ]; then
-  usage="${dim}5h${reset} $(color_left "$five_left")${five_left}%${reset}"
-  [ -n "$five_in" ] && usage="${usage} ${dim}(${five_in})${reset}"
-fi
-if [ -n "$seven_left" ]; then
-  [ -n "$usage" ] && usage="${usage} ${dot} "
-  usage="${usage}${dim}7d${reset} $(color_left "$seven_left")${seven_left}%${reset}"
-  [ -n "$seven_in" ] && usage="${usage} ${dim}(${seven_in})${reset}"
-fi
+for w in "$(win_seg 5h "$five_left" "$five_in")" "$(win_seg 7d "$seven_left" "$seven_in")"; do
+  [ -n "$w" ] || continue
+  if [ -n "$usage" ]; then usage="${usage} ${dot} ${w}"; else usage="$w"; fi
+done
 
 # Join non-empty segments with the divider
 out=""
