@@ -1,7 +1,7 @@
 ---
 name: statusline-install
-description: Install/restore my personal Claude Code statusline — model name, context-window %, and 5h/7d usage remaining — to ~/.claude/statusline-command.sh and wire it into settings.json. Canonical cross-platform bash (macOS/Linux native, Windows via Git Bash). Use to set up my statusline on a new machine or after a reset.
-argument-hint: 'Opus 4.8 23% | 5h 76% · 7d 58%'
+description: Install/restore my personal Claude Code statusline — project:branch, model with context size + effort, context %, and 5h/7d usage remaining — to ~/.claude/statusline-command.sh and wire it into settings.json. Canonical cross-platform bash (macOS/Linux native, Windows via Git Bash). Use to set up my statusline on a new machine or after a reset.
+argument-hint: 'frosty:main | Opus 4.8 (1M, xhigh) 34% | 5h 76% · 7d 58%'
 model: haiku
 context: fork
 agent: statusline-setup
@@ -18,27 +18,31 @@ the script below verbatim and point `settings.json` at it.
 ## Output format
 
 ```
-Opus 4.8 23% | 5h 76% · 7d 58%
+frosty:main | Opus 4.8 (1M, xhigh) 34% | 5h 76% · 7d 58%
 ```
 
-- **`Opus 4.8 23%`** — model name + context-window % used, grouped together (no
-  divider, since they're related). Color ramps green → yellow → orange → red as
-  context fills toward the ~78% auto-compact trigger.
-- **`5h 76% · 7d 58%`** — percentage of the 5-hour and 7-day rate-limit windows
-  **remaining** (100 − used). Color ramps the opposite way: green when plenty is
-  left, red when nearly out. These appear only on Pro/Max accounts and only after
-  the first API response of a session — before that, just `Model ctx%` shows. If
-  only one window is present it renders alone with no stray separator.
+- **`frosty:main`** — project (basename of the project/current dir) and the git
+  branch for the session's directory. Shows the project alone if not in a repo;
+  whole segment is dropped if there's no dir.
+- **`Opus 4.8 (1M, xhigh) 34%`** — model name, then `(context-window size, effort)`
+  and the context-window % used, grouped together. Size comes from
+  `context_window_size` (`1M` / `200K`); effort from the live `/effort`. The
+  display name's built-in `(… context)` suffix is stripped so the parenthetical
+  isn't doubled. The `%` color ramps green → yellow → orange → red toward the
+  ~78% auto-compact trigger.
+- **`5h 76% · 7d 58%`** — 5-hour and 7-day rate-limit windows **remaining**
+  (100 − used). Color ramps the opposite way (green when plenty left, red when
+  nearly out). Pro/Max only, and only after the first API response of a session.
 
 ## Requirements (cross-platform)
 
-Needs `bash` and `jq`:
+Needs `bash`, `jq`, and `git`:
 
 - **macOS/Linux**: native bash (works on stock bash 3.2) + `brew install jq` /
-  `apt install jq`.
-- **Windows**: runs under **Git Bash**, which ships both — no PowerShell version
-  is maintained, and `settings.json` invokes the script with `bash` on every
-  platform.
+  `apt install jq`. git is already present.
+- **Windows**: runs under **Git Bash**, which ships all three — no PowerShell
+  version is maintained, and `settings.json` invokes the script with `bash` on
+  every platform.
 
 ## Install steps
 
@@ -70,7 +74,7 @@ True-color codes: dim `#999999`, green `#37A660`, yellow `\033[33m`, orange
 ```bash
 #!/usr/bin/env bash
 # Claude Code Statusline
-# Format: Model <ctx%> | 5h <left%> · 7d <left%>
+# Format: project:branch | Model (size, effort) ctx% | 5h left% · 7d left%
 
 input=$(cat)
 if [ -z "$(echo "$input" | tr -d '[:space:]')" ]; then
@@ -78,10 +82,33 @@ if [ -z "$(echo "$input" | tr -d '[:space:]')" ]; then
   exit 0
 fi
 
-model=$(echo "$input" | jq -r '.model.display_name // "--"')
-used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // ""')
-five_left=$(echo "$input" | jq -r 'if (.rate_limits.five_hour.used_percentage // null) != null then (100 - .rate_limits.five_hour.used_percentage | floor | tostring) else "" end')
-seven_left=$(echo "$input" | jq -r 'if (.rate_limits.seven_day.used_percentage // null) != null then (100 - .rate_limits.seven_day.used_percentage | floor | tostring) else "" end')
+# Pull all fields in one jq pass, joined by the unit separator (0x1f, defined in
+# bash and passed via --arg) so empty fields are preserved on read. five_left and
+# seven_left are "remaining" (100 - used, floored); size is the context window
+# (1M / 200K); project is the dir basename.
+us=$'\037'
+IFS="$us" read -r model used_pct five_left seven_left effort size project cur_dir <<EOF
+$(echo "$input" | jq -r --arg us "$us" '[
+  (.model.display_name // "--"),
+  (.context_window.used_percentage // ""),
+  (if (.rate_limits.five_hour.used_percentage // null) != null then (100 - .rate_limits.five_hour.used_percentage | floor | tostring) else "" end),
+  (if (.rate_limits.seven_day.used_percentage // null) != null then (100 - .rate_limits.seven_day.used_percentage | floor | tostring) else "" end),
+  (.effort.level // ""),
+  ((.context_window.context_window_size // null) | if . == null then "" elif . >= 1000000 then ((. / 1000000) | floor | tostring) + "M" elif . >= 1000 then ((. / 1000) | floor | tostring) + "K" else tostring end),
+  (((.workspace.project_dir // .workspace.current_dir // "") | gsub("\\\\"; "/") | split("/") | map(select(length > 0)) | last) // ""),
+  ((.workspace.current_dir // "") | gsub("\\\\"; "/"))
+] | map(tostring) | join($us)')
+EOF
+
+# display_name already carries a "(… context)" suffix on extended-context models;
+# strip it so our own "(size, effort)" parenthetical isn't doubled.
+model="${model% (*)}"
+
+# Current git branch for the session's directory (empty if not a repo)
+branch=""
+if [ -n "$cur_dir" ]; then
+  branch=$(git -C "$cur_dir" rev-parse --abbrev-ref HEAD 2>/dev/null)
+fi
 
 reset=$'\033[0m'
 dim=$'\033[38;2;153;153;153m'
@@ -101,30 +128,46 @@ color_left() {
   else printf '%s' "$red"; fi
 }
 
-out="${reset}${model}${reset}"
+# Segment 1 — location: project[:branch]
+loc=""
+if [ -n "$project" ]; then
+  loc="${dim}${project}${reset}"
+  [ -n "$branch" ] && loc="${dim}${project}:${branch}${reset}"
+fi
 
-# Context % used — grouped with the model (no divider); color ramps up toward the ~78% auto-compact trigger
+# Segment 2 — model (size, effort) ctx%; context grouped with the model, color ramps up toward the ~78% auto-compact trigger
+paren=""
+[ -n "$size" ] && paren="$size"
+if [ -n "$effort" ]; then
+  if [ -n "$paren" ]; then paren="$paren, $effort"; else paren="$effort"; fi
+fi
+modelseg="${reset}${model}${reset}"
+[ -n "$paren" ] && modelseg="${modelseg} ${dim}(${paren})${reset}"
 if [ -n "$used_pct" ]; then
   pct=$(printf "%.0f" "$used_pct")
   if [ "$pct" -lt 50 ]; then ctx_color="$green"
   elif [ "$pct" -lt 65 ]; then ctx_color="$yellow"
   elif [ "$pct" -lt 75 ]; then ctx_color="$orange"
   else ctx_color="$red"; fi
-  out="${out} ${ctx_color}${pct}%${reset}"
+  modelseg="${modelseg} ${ctx_color}${pct}%${reset}"
 fi
 
-# Rate-limit usage remaining: 5h and 7d (present only for Pro/Max, after the first API response)
+# Segment 3 — rate-limit usage remaining: 5h · 7d (Pro/Max only, after first API response)
 usage=""
 if [ -n "$five_left" ]; then
   usage="${dim}5h${reset} $(color_left "$five_left")${five_left}%${reset}"
 fi
 if [ -n "$seven_left" ]; then
-  if [ -n "$usage" ]; then usage="${usage} ${dot} "; fi
+  [ -n "$usage" ] && usage="${usage} ${dot} "
   usage="${usage}${dim}7d${reset} $(color_left "$seven_left")${seven_left}%${reset}"
 fi
-if [ -n "$usage" ]; then
-  out="${out} ${sep} ${usage}"
-fi
+
+# Join non-empty segments with the divider
+out=""
+for seg in "$loc" "$modelseg" "$usage"; do
+  [ -n "$seg" ] || continue
+  if [ -n "$out" ]; then out="${out} ${sep} ${seg}"; else out="${seg}"; fi
+done
 
 printf "%s\n" "$out"
 ```
