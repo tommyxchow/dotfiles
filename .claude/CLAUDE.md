@@ -29,4 +29,3 @@
 - Prefer the **github MCP** for writes and individual operations: creating PRs, submitting reviews, opening or updating issues, posting comments. Structured params handle multi-line bodies and special characters cleanly.
 - Prefer **`gh`** with `--json field1,field2 --jq '...'` for reads and bulk filtering: listing PRs (`gh pr list`), listing issues (`gh issue list`), watching CI (`gh run watch`, `gh run view <id> --log`), searching (`gh search code|repos|issues`). Tight output, fast, composable with shell pipelines.
 - Use `git` only for local repo operations (commit, branch, push, rebase). Never shell out to `git` for GitHub-specific actions like creating PRs.
-- Never use `gh api` — denied at the permission layer. For raw API calls use the github MCP's dedicated tools.

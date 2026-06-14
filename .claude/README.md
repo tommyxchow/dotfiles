@@ -7,8 +7,7 @@ This directory contains the global agent configuration, managed as dotfiles and 
 | File | Purpose |
 |------|---------|
 | `CLAUDE.md` | Single source of truth for global instructions |
-| `settings.json` | Claude Code permissions, hooks, sandbox, plugins, statusline |
-| `notify.sh` | Desktop notification script used by Claude Code hooks |
+| `settings.json` | Claude Code permissions, sandbox, plugins, statusline |
 | `skills/` | Shared global skills (vet, understand, etc.) |
 
 Codex-native portable settings live in the repo-level `codex/` directory:
@@ -21,7 +20,7 @@ Codex-native portable settings live in the repo-level `codex/` directory:
 
 Run the dotfiles installer to create symlinks:
 
-- Claude Code: `CLAUDE.md`, `settings.json`, `notify.sh`, and skills go to `~/.claude/`.
+- Claude Code: `CLAUDE.md`, `settings.json`, and skills go to `~/.claude/`.
 - Codex: the same `CLAUDE.md` is linked as `~/.codex/AGENTS.md`. Shared skills are linked into `~/.agents/skills/` — Codex does **not** read `~/.codex/skills/`, only `~/.agents/skills/` per the [official skills docs](https://developers.openai.com/codex/skills).
 - OpenCode: natively scans `~/.claude/skills/` and `~/.agents/skills/` as first-class skill paths (not just fallbacks), so shared skills are picked up without a dedicated `~/.config/opencode/skills/` link. For instructions, OpenCode reads `~/.claude/CLAUDE.md` via its documented [Claude Code fallback](https://opencode.ai/docs/rules/), so no `~/.config/opencode/AGENTS.md` symlink is created.
 
