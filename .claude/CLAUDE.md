@@ -1,6 +1,6 @@
 ## Environment
 
-- Use `pnpm` / `pnx`, not `npm` / `npx` / `yarn`.
+- Use `pnpm` / `pnpm dlx`, not `npm` / `npx` / `yarn`.
 - For semantic navigation, prefer precise code-aware lookups (language server / semantic search) over plain text grep when available — e.g. find references before a signature change, check inferred types, resolve definitions through re-exports.
 
 ## Behavior
