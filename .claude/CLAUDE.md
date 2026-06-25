@@ -1,7 +1,7 @@
 ## Environment
 
 - Use `pnpm` / `pnpx`, not `npm` / `npx` / `yarn`.
-- Prefer LSP over Grep for semantic navigation: `findReferences` for signature changes, `hover` for inferred types, `goToDefinition` through re-exports.
+- For semantic navigation, prefer precise code-aware lookups (language server / semantic search) over plain text grep when available — e.g. find references before a signature change, check inferred types, resolve definitions through re-exports.
 
 ## Behavior
 
@@ -22,6 +22,6 @@
 
 ## GitHub operations
 
-- Prefer the **github MCP** for writes and individual operations: creating PRs, submitting reviews, opening or updating issues, posting comments. Structured params handle multi-line bodies and special characters cleanly.
+- For GitHub writes (creating PRs, submitting reviews, opening/updating issues, posting comments), prefer the **github MCP** when available — its structured params handle multi-line bodies and special characters cleanly — otherwise use `gh`.
 - Prefer **`gh`** with `--json field1,field2 --jq '...'` for reads and bulk filtering: listing PRs (`gh pr list`), listing issues (`gh issue list`), watching CI (`gh run watch`, `gh run view <id> --log`), searching (`gh search code|repos|issues`). Tight output, fast, composable with shell pipelines.
 - Use `git` only for local repo operations (commit, branch, push, rebase). Never shell out to `git` for GitHub-specific actions like creating PRs.
