@@ -6,13 +6,13 @@
 ## Behavior
 
 - When asked to add items to a list (models, emotes, constants), read the source completely and add ALL relevant items, not just the first few.
-- Before using a framework/library API, check the installed version (package.json, pubspec.yaml) and web-search version-specific docs — don't rely on training data.
+- Before using a framework/library API, check the installed version (package.json, pubspec.yaml) and prefer version-specific docs when they exist — otherwise the changelog/release notes for that version or the vendored source. Don't rely on training data.
 - When web-searching, prefer official/primary sources (vendor docs, specs, changelogs, project GitHub incl. issues/discussions) over SEO/AI-generated/opinion blogs — use the latter only as a pointer to a primary source.
 - Clean up temp files and scripts created for iteration at the end of the task.
 
 ## Code
 
-- TypeScript: named exports only — no default exports except where Next.js requires them (page, layout, route).
+- TypeScript: prefer named exports — use a default export only where a framework/tool requires one (e.g. Next.js `page`/`layout` and other special files, config files, `React.lazy`/`dynamic` targets, Storybook `meta`).
 
 ## Workflow
 
