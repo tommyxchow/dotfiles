@@ -7,12 +7,8 @@
 
 - When asked to add items to a list (models, emotes, constants), read the source completely and add ALL relevant items, not just the first few.
 - Before using a framework/library API, check the installed version (package.json, pubspec.yaml) and web-search version-specific docs — don't rely on training data.
-- When asked to "verify" or "vet", use web search to check current docs and flag anything suspicious — including what's missing, not just what's wrong.
+- When web-searching, prefer official/primary sources (vendor docs, specs, changelogs, project GitHub incl. issues/discussions) over SEO/AI-generated/opinion blogs — use the latter only as a pointer to a primary source.
 - Clean up temp files and scripts created for iteration at the end of the task.
-
-## Delegation
-
-- Auto-invoke loaded skills and MCPs proactively when their description matches the task (e.g., `vet` before commits or to verify recent claims, `chrome-devtools` for UI verification) — don't reinvent workflows that exist.
 
 ## Code
 
