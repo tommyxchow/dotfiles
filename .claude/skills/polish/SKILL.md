@@ -17,11 +17,11 @@ Build the review pool from the **union** of two sources — sessions span repos 
 - **Source A — git changes** in the CWD repo. Pick by argument: `staged` → `git diff --cached`; `unstaged` → `git diff`; `branch`/`all` → `git diff @{upstream}...HEAD` (fall back to `git diff main...HEAD`) plus `git diff` if the tree is dirty; no keyword → `git diff HEAD` if anything is staged, else `git diff`. Enumerate untracked files with `git status --short` and read their contents (diff won't show new files).
 - **Source B — session-edited files.** Any file you edited earlier this conversation via Edit/Write/MultiEdit, in any repo. Scroll your tool history to enumerate them (concrete, not from memory) and read each from disk. These often live outside the CWD — pass them with **absolute paths** and do not `git diff` them.
 
-If both are empty, fall back to files the user named recently.
+If both are empty, fall back to files the user explicitly named in recent messages (read them from disk); if there are none, ask what to review rather than guessing.
 
 **Recon (cheap, high-leverage):** read the repo's `AGENTS.md` / `CLAUDE.md` (esp. a "Gotchas" / conventions section) so findings weight to house style instead of generic best practice. This is where **stack-specific** rules live — keep them in the project, not hardcoded in this skill — and where you learn what the framework, compiler, or runtime already handles (a compiler that memoizes, a framework that caches, typed routes) so a lens doesn't "fix" something the toolchain owns. Note the verification command (here: `pnpm check`, or the narrowest relevant `pnpm --filter <pkg> test <path>`).
 
-**Phase 0 exit — size gate.** Decide the path before launching anything: if the change is trivial (a line or two, one file), skip the fan-out and do one inline cleanup pass straight to Phase 3 — four parallel agents cost ~15× a normal turn and aren't worth it for a typo. Otherwise continue to the four lenses. For a very large diff, shard a lens across file groups (two reuse agents over different dirs) rather than making one agent read everything.
+**Phase 0 exit — size gate.** Decide the path before launching anything: if the change is trivial (a line or two, one file), skip the fan-out and run the lenses inline — walk the four lens checklists in `references/checklists.md` against the diff yourself, then apply anything worth fixing with the Phase 3 guards and run the verify gate. Four parallel agents cost ~15× a normal turn and aren't worth it for a typo. Otherwise continue to the four lenses. For a very large diff, shard a lens across file groups (two reuse agents over different dirs) rather than making one agent read everything.
 
 ## Phase 1 — Four review lenses (parallel, read-only)
 
@@ -30,7 +30,7 @@ Launch **four read-only review subagents** in a single message so they run concu
 Subagents do **not** inherit this skill's context. Give each one:
 
 - the **scope** (the diff plus Source-B absolute paths),
-- the **absolute path** to `references/checklists.md` and which sections to read: **its own lens section** plus the shared **"## Finding format"** and **"## Restraint"** sections (paste those two inline if the path might not resolve in the subagent),
+- the **absolute path** to `references/checklists.md` and which sections to read: **its own lens section** plus the shared **"## Finding format"** and **"## Restraint"** sections (if the path might not resolve in the subagent, paste all three inline — the lens section too, not just the shared pair; the lens table below is a summary, not a substitute for the section),
 - the **recon facts** (languages, frameworks, the repo conventions to honor) and any **free-text focus** from the argument,
 - an explicit **owned scope and out-of-scope** line (each lens defers overlaps to its sibling — see the checklist), and
 - the instruction to **return findings only, in the schema, no fixes, no narration**, capped at the highest-value ~8.
@@ -65,17 +65,17 @@ Apply each surviving finding with the **smallest correct edit**, preserving exis
 After applying:
 
 - **Fresh-eyes verify.** Have a fresh-context subagent (or a clean read) review the *resulting* diff against the original intent — does anything outside the intended scope change? Report and revert scope creep.
-- **Run the gate.** Run the narrowest relevant check (`pnpm --filter <pkg> test <path>`, or `pnpm check` for broad changes) to confirm behavior is preserved. Behavior preservation is proven by the gate, not asserted.
+- **Run the gate.** Run the verification command from recon at the narrowest relevant scope (e.g. `pnpm --filter <pkg> test <path>`, or the repo's full check for broad changes) to confirm behavior is preserved. Behavior preservation is proven by the gate, not asserted. **If the gate fails, revert the offending edit** — cleanups are independent, so one bad fix shouldn't sink the rest — and move it to the skipped list. If the repo has no usable gate, say so and flag the applied cleanups for manual review.
 
 Finish with a brief summary: what was applied, what was skipped and why (or confirm the code was already clean).
 
 ## Argument routing
 
-`$ARGUMENTS` is empty on a bare invocation.
+The argument is `$ARGUMENTS` (empty on a bare `/polish`). Parse it:
 
-- **Scope keyword** (`staged`/`unstaged`/`branch`/`all`) → selects the Phase 0 diff.
-- **Any other free text** → an **Additional Focus**; pass it verbatim to all four lenses so they weight findings toward it.
-- **Empty** → default flow, no focus weighting.
+- **A leading scope keyword** (`staged`/`unstaged`/`branch`/`all`) selects the Phase 0 diff.
+- **Any remaining words** — or the whole argument when it isn't a scope keyword — are an **Additional Focus**; pass them verbatim to every lens so findings weight toward that area (so `branch auth` means scope `branch`, focus "auth").
+- **Empty** → default scope, no focus weighting.
 
 ## Note on posted text
 
