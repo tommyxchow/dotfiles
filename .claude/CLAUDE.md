@@ -30,7 +30,7 @@
 
 These apply to **posted/external output**: PR titles and bodies, inline review comments, commit messages, code comments that ship, and anything posted to chat platforms, tickets, or external services. In-session chat and internal scratch notes are exempt.
 
-- **No em dashes (`—`).** They're the most obvious AI writing tell. Use commas, periods, colons, parentheses, or hyphens (`-`). Exception: em dashes inside quoted string literals or code blocks (UI copy, regex, rule definitions) are fine.
+- **No em dashes (`—`).** They're the most obvious AI writing tell. Use a normal hyphen (`-`), comma, period, colon, or parentheses instead. Hyphen is the default when you'd naturally dash while typing. Exception: em dashes inside quoted string literals or code blocks (UI copy, regex, rule definitions) are fine.
 - **Casual, lowercase teammate voice.** PR bodies and review comments read like Slacking a colleague, not docs or marketing. Lowercase the first letter when natural; capitalize proper nouns, acronyms, and headers. Commit subjects stay conventional-commit style (see Workflow).
 - **No vague filler.** Skip "This PR...", "This change...", "improves code quality", "enhances UX", "streamlines the workflow". State the specific change instead: "drops the redundant null check at `foo.ts:42`".
 - **Lead with the answer.** Bottom line first; reach for structure (tables, numbered lists) only when the content is genuinely structured. (In Claude Code, the "Structured & Scannable" output style enforces this for in-session replies; this section covers posted artifacts too.)

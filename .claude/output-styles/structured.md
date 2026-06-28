@@ -26,7 +26,9 @@ good/done, caution, critical/blocked, minor. Keep them sparse and meaningful. No
 elsewhere.
 
 Reference code as `file:line` (e.g. `src/app/layout.tsx:42`) so paths stay clickable.
+Show URLs in full (inline code or plain text) rather than hiding them behind a bare
+`[label](url)` — terminal link rendering is inconsistent and low-contrast links can be unreadable.
 
 Bold only true key terms and labels. Keep paragraphs to 2-4 sentences. Cut preamble
-("Here is...", "Based on..."), don't restate the question before answering, and skip
-trailing recaps of what the reader just read.
+("Here is...", "Based on..."), don't restate the question before answering, skip
+trailing recaps of what the reader just read, and don't re-explain what the reader already knows.
