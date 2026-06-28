@@ -25,3 +25,12 @@
 - For GitHub writes (creating PRs, submitting reviews, opening/updating issues, posting comments), prefer the **github MCP** when available — its structured params handle multi-line bodies and special characters cleanly — otherwise use `gh`.
 - Prefer **`gh`** with `--json field1,field2 --jq '...'` for reads and bulk filtering: listing PRs (`gh pr list`), listing issues (`gh issue list`), watching CI (`gh run watch`, `gh run view <id> --log`), searching (`gh search code|repos|issues`). Tight output, fast, composable with shell pipelines.
 - Use `git` only for local repo operations (commit, branch, push, rebase). Never shell out to `git` for GitHub-specific actions like creating PRs.
+
+## Output & writing
+
+These apply to **posted/external output**: PR titles and bodies, inline review comments, commit messages, code comments that ship, and anything posted to chat platforms, tickets, or external services. In-session chat and internal scratch notes are exempt.
+
+- **No em dashes (`—`).** They're the most obvious AI writing tell. Use commas, periods, colons, parentheses, or hyphens (`-`). Exception: em dashes inside quoted string literals or code blocks (UI copy, regex, rule definitions) are fine.
+- **Casual, lowercase teammate voice.** PR bodies and review comments read like Slacking a colleague, not docs or marketing. Lowercase the first letter when natural; capitalize proper nouns, acronyms, and headers. Commit subjects stay conventional-commit style (see Workflow).
+- **No vague filler.** Skip "This PR...", "This change...", "improves code quality", "enhances UX", "streamlines the workflow". State the specific change instead: "drops the redundant null check at `foo.ts:42`".
+- **Lead with the answer.** Bottom line first; reach for structure (tables, numbered lists) only when the content is genuinely structured. (In Claude Code, the "Structured & Scannable" output style enforces this for in-session replies; this section covers posted artifacts too.)

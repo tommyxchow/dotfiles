@@ -1,7 +1,6 @@
 ---
 name: statusline-install
 description: Install/restore my personal Claude Code statusline — project:branch, model with context size + effort, context %, and 5h/7d usage remaining (each with time-to-reset) — to ~/.claude/statusline-command.sh and wire it into settings.json. Canonical cross-platform bash (macOS/Linux native, Windows via Git Bash). Use to set up my statusline on a new machine or after a reset.
-argument-hint: 'frosty:main | Opus 4.8 (1M, xhigh) 34% | 5h 76% (1h48m) · 7d 58% (4d6h)'
 model: haiku
 context: fork
 agent: statusline-setup

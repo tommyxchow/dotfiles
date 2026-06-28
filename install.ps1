@@ -13,6 +13,7 @@ $links = @(
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.claude/CLAUDE.md" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.codex/AGENTS.md" }
     @{ Source = ".claude/notify.sh";                           Target = "$HOME/.claude/notify.sh" }
+    @{ Source = ".claude/output-styles/structured.md";         Target = "$HOME/.claude/output-styles/structured.md" }
 )
 
 # Shared skills: symlink each skill dir individually so future untracked skills

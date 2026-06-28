@@ -59,6 +59,7 @@ link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.codex/AGENTS.md"
 link ".claude/notify.sh"       "$HOME/.claude/notify.sh"
+link ".claude/output-styles/structured.md" "$HOME/.claude/output-styles/structured.md"
 
 # Shared skills: symlink each skill dir individually so future untracked skills
 # at ~/.claude/skills/ or ~/.agents/skills/ aren't swept inside the repo.
