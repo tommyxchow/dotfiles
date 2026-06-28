@@ -4,6 +4,7 @@
 [core]
 	fsmonitor = true
 	untrackedCache = true
+	autocrlf = input
 [index]
 	skipHash = true
 [init]
