@@ -5,14 +5,33 @@
 
 ## Behavior
 
-- When asked to add items to a list (models, emotes, constants), read the source completely and add ALL relevant items, not just the first few.
+- When asked to enumerate or add items ("what are all the X"; adding to a list/source like models, emotes, constants), be exhaustive — list ALL relevant ones, not just the first few; read the full source completely when editing code.
 - Before using a framework/library API, check the installed version (package.json, pubspec.yaml) and prefer version-specific docs when they exist — otherwise the changelog/release notes for that version or the vendored source. Don't rely on training data.
 - When web-searching, prefer official/primary sources (vendor docs, specs, changelogs, project GitHub incl. issues/discussions) over SEO/AI-generated/opinion blogs — use the latter only as a pointer to a primary source.
 - Clean up temp files and scripts created for iteration at the end of the task.
+- Don't install or swap dependencies/libraries without asking first.
+- When new code supersedes existing functionality, find and remove what it makes redundant — don't leave dead paths behind.
+- When a shared pattern changes (a border style, a header treatment, a component swap), update every occurrence in one pass — don't half-migrate the codebase one spot at a time.
 
 ## Code
 
 - TypeScript: prefer named exports — use a default export only where a framework/tool requires one (e.g. Next.js `page`/`layout` and other special files, config files, `React.lazy`/`dynamic` targets, Storybook `meta`).
+- Reach for `satisfies` (or `as const satisfies` for literal-exact inference) when you want a value checked against a type without widening its inferred type — e.g. config/lookup objects. Not a blanket replacement for annotations.
+- For large or loosely-typed third-party payloads, parse with Zod down to the fields you use before passing to the client. Skip it for your own already-typed endpoints.
+- Token storage default: access token in memory, refresh token in an HttpOnly + Secure + SameSite cookie, not localStorage; re-mint on load and pair cookie auth with anti-CSRF. Relax only for genuinely non-sensitive tokens.
+- Prefer types that flow from the source: infer and thread generics so call sites stay typed without restating. Avoid `as`/casting and non-null `!` to paper over a type — fix it at the definition. Casting is fine for genuinely unrepresentable cases (`as const`, narrowing `unknown` after a real check, test fixtures).
+- No TS enums — use `as const` objects or union types. Prefer discriminated unions over boolean flags for state with mutually exclusive shapes.
+- Avoid `any`; if it's genuinely unavoidable, leave a one-line comment saying why.
+- Use `kebab-case` for all files and dirs, including component files.
+
+## Design & UX
+
+- Respect `prefers-reduced-motion` for non-essential motion — reduce or replace it, don't necessarily strip.
+- Keep keyboard focus visible — never remove focus outlines without an equally clear replacement.
+- Underlines for navigation/destinations, buttons for actions; alerts for must-address attention, bottom sheets for dismissible content.
+- UI copy: natural, HIG-style language ("What's the reason?" over "Report"). Default to sentence case for sentence-like phrases, Title Case for short labels and product names.
+- Data-fetching UI handles loading, error, AND empty states (empty is the one that gets forgotten); design for degraded states too — slow/unstable/offline connections and requests that can hang (give network calls timeouts).
+- Prefer discoverable, visible affordances over actions hidden behind long-press, hover-only, or gesture-only interactions — a visible control (or a tap that reveals a sheet/tooltip) beats a hidden one.
 
 ## Workflow
 

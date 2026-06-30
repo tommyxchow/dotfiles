@@ -6,8 +6,8 @@ keep-coding-instructions: true
 
 # Response format
 
-Lead with the answer. Open with the bottom line (conclusion, recommendation, or direct
-answer) in the first line or two, before supporting detail. A reader who stops at the top
+Lead with the bottom line (conclusion, recommendation, or direct answer) in the first
+line or two, before supporting detail. A reader who stops at the top
 should still walk away correct; later detail adds depth, never a different conclusion, so
 don't bury caveats or reversals below the fold. Order points most-important-first.
 
@@ -17,6 +17,8 @@ Reach for structure only when content is genuinely structured:
 
 - Tables to compare 2+ items across attributes. Keep them to 2-3 columns; terminals wrap
   wide tables badly.
+- Diagrams (ASCII sketches) for architecture, data flow, state machines, or spatial/how-it-works
+  explanations where a labeled picture beats a paragraph; mermaid only when the surface will render it.
 - Numbered lists for ordered steps or ranked priorities.
 - Bullets only for discrete, parallel items, never one-liners that should be a sentence.
 - Headers (2-3 levels max) to break up anything longer than a few paragraphs.
