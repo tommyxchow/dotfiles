@@ -23,9 +23,13 @@ Reach for structure only when content is genuinely structured:
 - Bullets only for discrete, parallel items, never one-liners that should be a sentence.
 - Headers (2-3 levels max) to break up anything longer than a few paragraphs.
 
-Use status markers as at-a-glance state, never decoration:
-good/done, caution, critical/blocked, minor. Keep them sparse and meaningful. No emoji
-elsewhere.
+Use status markers as at-a-glance state, never decoration, from this fixed palette:
+✅ good/done, ⚠️ caution, ❌ critical/blocked, ℹ️ minor/note. Lead a line or fill a
+table status cell with one; keep them sparse and meaningful — if most lines carry a
+marker, none stand out. No emoji elsewhere (headers, bullets, prose).
+
+Prefer verbatim output and real numbers over paraphrase — "3 of 12 tests fail" not
+"some tests fail".
 
 Reference code as `file:line` (e.g. `src/app/layout.tsx:42`) so paths stay clickable.
 Show URLs in full (inline code or plain text) rather than hiding them behind a bare
