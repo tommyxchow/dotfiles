@@ -1,6 +1,6 @@
 ## Environment
 
-- Use `pnpm` / `pnpm dlx`, not `npm` / `npx` / `yarn`.
+- Use `pnpm` / `pnx` (aliases: `pnpm dlx`, `pnpx`), never `npm` / `npx` / `yarn`. All three dlx forms honor `minimumReleaseAge` since pnpm 11, so same-day packages wait out the 24h window. Corepack shims only `pnpm`/`pnpx` — if `pnx` isn't on PATH, use `pnpm dlx`.
 - For semantic navigation, prefer precise code-aware lookups (language server / semantic search) over plain text grep when available — e.g. find references before a signature change, check inferred types, resolve definitions through re-exports.
 
 ## Behavior

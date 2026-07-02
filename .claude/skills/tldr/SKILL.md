@@ -31,81 +31,17 @@ This skill is for single-session and ad-hoc summaries, not week-scale rollups ac
 
 ## Output shape: pick by what you're summarizing
 
-The skeleton is flexible. **Drop any section that doesn't apply.**
+Drop any section that doesn't apply; trivial inputs get a one-line direct answer, no template.
 
-### Shape A: Recent exchange or session summary (default and `session` modes)
-
-```
-TL;DR
-<one or two sentences: what we've been doing and where we are right now>
-
-Decisions made
-- <decision>: <one-line why>
-- ...
-
-Open questions / next steps
-- <next action or unresolved question>
-- ...
-
-Files touched  (only if any were created/edited)
-- file_path: <what changed>
-```
-
-Anchor decisions and next steps in concrete artifacts (file paths, ticket IDs, branch names) when they exist.
-
-### Shape B: Recommendation / answer to a substantive question
-
-```
-TL;DR
-<the conclusion or recommendation>
-
-Why
-- Key reason
-- Key impact
-- Key tradeoff considered
-
-Tradeoffs / Risks  (only when they exist and matter)
-- Constraint
-- Edge case
-- Downside
-
-Details
-<deeper technical explanation, code references, examples, alternatives>
-```
-
-### Shape C: Document, article, or pasted text
-
-```
-TL;DR
-<one to three sentences capturing the thesis>
-
-Key points
-- <point 1>
-- <point 2>
-- <point 3>
-
-Details  (only when the source has nuance worth preserving)
-<sections, quotes, or technical specifics>
-```
-
-## Rules
-
-- **TL;DR carries the answer alone.** No surprises buried in Details.
-- **Each lower section adds depth, not new conclusions.**
-- **Bullets beat walls of text** for reasons, decisions, steps.
-- **Short paragraphs** (2 to 4 sentences) when prose is needed.
-- **Code references** use `file_path:line_number` so the user can click through.
-- **Explicit tradeoffs.** If recommending A over B, say what B is good for and why A wins here.
-- **No restating the question** before answering it.
-- **No trailing recap** of what the user just read.
-- **Cut filler.** No "It's worth noting that...", "As you may know...", "Here's the thing.", "I hope this helps.", or thought-leader hype.
-- **For trivial inputs** (single-fact questions, yes/no answers, typo-scale fixes), give a one-line direct answer. Skip the template.
+- **Recent exchange or session** (default and `session` modes): TL;DR of where things stand, then decisions made (with the one-line why), open questions / next steps, and files touched if any — anchored in concrete artifacts (file paths, branches, ticket IDs).
+- **Recommendation / substantive answer**: the conclusion first, then why, then tradeoffs/risks and deeper detail — if recommending A over B, say what B is good for and why A wins here.
+- **Document, article, or pasted text**: a one-to-three-sentence thesis, then key points, then details only when the source has nuance worth preserving.
 
 **Writing for posted output:** in-session TL;DRs can use em dashes freely. If a TL;DR is headed for posted output (PR body, commit, Teams/Jira comment), follow the global posted-output rules in `~/.claude/CLAUDE.md` (no em dashes, casual + lowercase voice).
 
 ## Default mode: the last few messages
 
-When `$ARGUMENTS` is empty, summarize the most recent exchange or two using **Shape A**. Don't roll up the whole session by default. Pull earlier context only when it's needed to make sense of what was just said.
+When `$ARGUMENTS` is empty, summarize the most recent exchange or two using the recent-exchange shape. Don't roll up the whole session by default. Pull earlier context only when it's needed to make sense of what was just said.
 
 Build the narrative from your conversation memory. Pull concrete artifacts (file paths, branch names, ticket IDs, tools invoked) from your tool-use history, not from recall.
 
@@ -134,5 +70,3 @@ Open questions / next steps
 Files touched
 - src/app/layout.tsx
 ```
-
-For substantive recommendations, use **Shape B** (Why / Tradeoffs / Details). For a file or article, use **Shape C** (Key points / Details).

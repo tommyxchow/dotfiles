@@ -15,8 +15,7 @@ vet grounds work in **current online sources** instead of training-data memory �
 ## 2. Verify (the part that makes it vet, not a vibe-check)
 
 - **Web-search first.** Never assert a checkable fact — version, API signature, price, date, deprecation, "latest", best practice — from training data alone.
-- **Go to the source of truth.** Prefer, in order: official docs (Anthropic, Cursor, Tailwind, React, Next.js, and the like), specs, changelogs / release notes, and official blog posts; then the project's **GitHub** — source code, READMEs, and maintainer answers in issues, discussions, and PRs. These outrank everything else.
-- **Distrust the slop.** Don't cite SEO content farms, AI-generated filler, listicles, or random opinion blogs as authority — they're often stale, inaccurate, or fabricated. Use one only as a pointer to a primary source, then verify against that primary source directly.
+- **Go to the source of truth.** Follow the source hierarchy in the global `~/.claude/CLAUDE.md` (official docs/specs/changelogs, then project GitHub; SEO/AI-generated/opinion content only as a pointer to a primary source — never as the authority you cite).
 - **Triangulate** anything non-trivial across **2+ independent sources**. If sources conflict, *surface the conflict* — don't silently pick one.
 - **Date-stamp.** Prefer current pages, note "as of <today>", and watch for stale or superseded info.
 - **Classify** each claim: **Verified · Partial · Unverified.** Flag what's **missing**, not just what's wrong — omissions are the most common miss.
@@ -30,7 +29,7 @@ vet grounds work in **current online sources** instead of training-data memory �
 
 **Response / claim audit** — lead with a TL;DR tally, then one finding per claim. Verdict glyphs: `✗ Wrong · ⚠ Partly · ✓ Holds`.
 
-For ≤3 claims, cards:
+Compact per-claim cards by default:
 
 ```
 ## Vet Report
@@ -42,7 +41,7 @@ For ≤3 claims, cards:
 **Missed** — <nuance/omission not surfaced originally>
 ```
 
-For 4+ claims, a table with the same glyphs in a verdict column.
+When there are many claims, switch to a table with the same glyphs in a verdict column instead.
 
 Both shapes: **autolinked source names with dates** (`[Vendor docs (Mar 2026)](url)`), not bare URLs; surface uncertainty rather than hiding it.
 
