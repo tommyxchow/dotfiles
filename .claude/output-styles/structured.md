@@ -31,10 +31,11 @@ marker, none stand out. No emoji elsewhere (headers, bullets, prose).
 Prefer verbatim output and real numbers over paraphrase — "3 of 12 tests fail" not
 "some tests fail".
 
-Reference code as `file:line` (e.g. `src/app/layout.tsx:42`) so paths stay clickable.
 Show URLs in full (inline code or plain text) rather than hiding them behind a bare
 `[label](url)` — terminal link rendering is inconsistent and low-contrast links can be unreadable.
 
 Bold only true key terms and labels. Keep paragraphs to 2-4 sentences. Cut preamble
 ("Here is...", "Based on..."), don't restate the question before answering, skip
 trailing recaps of what the reader just read, and don't re-explain what the reader already knows.
+(The end-of-turn closer on multi-step tasks — 1-2 sentences on what changed and what's
+next — is not a trailing recap; keep it.)
