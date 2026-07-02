@@ -24,10 +24,10 @@
 
   // Tailwind recommended settings
   "files.associations": {
-    "*.css": "tailwindcss",
+    "*.css": "tailwindcss"
   },
   "editor.quickSuggestions": {
-    "strings": "on",
+    "strings": "on"
   },
 
   // Dart recommended settings
@@ -40,8 +40,8 @@
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",
       "source.organizeImports": "explicit",
-      "source.addMissingImports": "explicit",
-    },
+      "source.addMissingImports": "explicit"
+    }
   },
 
   "[css][javascript][javascriptreact][typescript][typescriptreact]": {
@@ -49,12 +49,12 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",
-      "source.addMissingImports": "explicit",
-    },
+      "source.addMissingImports": "explicit"
+    }
   },
   "[json][jsonc][markdown][mdx]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.wordWrap": "on",
+    "editor.wordWrap": "on"
   },
 
   "debug.console.fontFamily": "'Lilex', 'Symbols Nerd Font', monospace",
@@ -92,11 +92,11 @@
   "terminal.integrated.suggest.quickSuggestions": {
     "commands": "on",
     "arguments": "on",
-    "unknown": "off",
+    "unknown": "off"
   },
   "terminal.integrated.suggest.suggestOnTriggerCharacters": true,
   "terminal.integrated.minimumContrastRatio": 1,
 
   "chat.disableAIFeatures": true,
-  "extensions.ignoreRecommendations": true,
+  "extensions.ignoreRecommendations": true
 }
