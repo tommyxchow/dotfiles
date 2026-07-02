@@ -32,6 +32,7 @@
 - UI copy: natural, HIG-style language ("What's the reason?" over "Report"). Default to sentence case for sentence-like phrases, Title Case for short labels and product names.
 - Data-fetching UI handles loading, error, AND empty states (empty is the one that gets forgotten); design for degraded states too — slow/unstable/offline connections and requests that can hang (give network calls timeouts).
 - Prefer discoverable, visible affordances over actions hidden behind long-press, hover-only, or gesture-only interactions — a visible control (or a tap that reveals a sheet/tooltip) beats a hidden one.
+- Nested rounded corners should be concentric: inner radius = outer radius − the padding between them (a card's child rounds less than the card). Don't reuse the parent's radius on a padded child — compute it (`calc()`, e.g. Tailwind `rounded-[calc(var(--radius)-4px)]`) or step down a size token.
 
 ## Workflow
 
