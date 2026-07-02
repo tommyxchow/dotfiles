@@ -16,14 +16,15 @@
 
 ## Code
 
-- TypeScript: prefer named exports — use a default export only where a framework/tool requires one (e.g. Next.js `page`/`layout` and other special files, config files, `React.lazy`/`dynamic` targets, Storybook `meta`).
-- Reach for `satisfies` (or `as const satisfies` for literal-exact inference) when you want a value checked against a type without widening its inferred type — e.g. config/lookup objects. Not a blanket replacement for annotations.
-- For large or loosely-typed third-party payloads, parse with Zod down to the fields you use before passing to the client. Skip it for your own already-typed endpoints.
+- Validate/parse large or loosely-typed third-party payloads down to the fields you use before passing them on (e.g. Zod in TS). Skip it for your own already-typed endpoints.
 - Token storage default: access token in memory, refresh token in an HttpOnly + Secure + SameSite cookie, not localStorage; re-mint on load and pair cookie auth with anti-CSRF. Relax only for genuinely non-sensitive tokens.
-- Prefer types that flow from the source: infer and thread generics so call sites stay typed without restating. Avoid `as`/casting and non-null `!` to paper over a type — fix it at the definition. Casting is fine for genuinely unrepresentable cases (`as const`, narrowing `unknown` after a real check, test fixtures).
-- No TS enums — use `as const` objects or union types. Prefer discriminated unions over boolean flags for state with mutually exclusive shapes.
-- Avoid `any`; if it's genuinely unavoidable, leave a one-line comment saying why.
 - Use `kebab-case` for all files and dirs, including component files, in new projects; in an existing repo, follow its established convention — intra-repo consistency wins.
+- TypeScript:
+  - Prefer named exports — use a default export only where a framework/tool requires one (e.g. Next.js `page`/`layout` and other special files, config files, `React.lazy`/`dynamic` targets, Storybook `meta`).
+  - Reach for `satisfies` (or `as const satisfies` for literal-exact inference) when you want a value checked against a type without widening its inferred type — e.g. config/lookup objects. Not a blanket replacement for annotations.
+  - Prefer types that flow from the source: infer and thread generics so call sites stay typed without restating. Avoid `as`/casting and non-null `!` to paper over a type — fix it at the definition. Casting is fine for genuinely unrepresentable cases (`as const`, narrowing `unknown` after a real check, test fixtures).
+  - No TS enums — use `as const` objects or union types. Prefer discriminated unions over boolean flags for state with mutually exclusive shapes.
+  - Avoid `any`; if it's genuinely unavoidable, leave a one-line comment saying why.
 
 ## Design & UX
 
