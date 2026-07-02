@@ -12,6 +12,7 @@
 - Don't install or swap dependencies/libraries without asking first.
 - When new code supersedes existing functionality, find and remove what it makes redundant — don't leave dead paths behind.
 - When a shared pattern changes (a border style, a header treatment, a component swap), update every occurrence in one pass — don't half-migrate the codebase one spot at a time.
+- Keep agent instruction files (AGENTS.md / CLAUDE.md) lean: repo files carry project facts, commands, and non-inferable gotchas — not code-style rules a linter already enforces or conventions inferable from the existing code.
 
 ## Code
 
