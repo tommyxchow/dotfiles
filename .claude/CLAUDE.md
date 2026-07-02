@@ -22,17 +22,25 @@
 - Prefer types that flow from the source: infer and thread generics so call sites stay typed without restating. Avoid `as`/casting and non-null `!` to paper over a type — fix it at the definition. Casting is fine for genuinely unrepresentable cases (`as const`, narrowing `unknown` after a real check, test fixtures).
 - No TS enums — use `as const` objects or union types. Prefer discriminated unions over boolean flags for state with mutually exclusive shapes.
 - Avoid `any`; if it's genuinely unavoidable, leave a one-line comment saying why.
-- Use `kebab-case` for all files and dirs, including component files.
+- Use `kebab-case` for all files and dirs, including component files, in new projects; in an existing repo, follow its established convention — intra-repo consistency wins.
 
 ## Design & UX
 
 - Respect `prefers-reduced-motion` for non-essential motion — reduce or replace it, don't necessarily strip.
 - Keep keyboard focus visible — never remove focus outlines without an equally clear replacement.
-- Underlines for navigation/destinations, buttons for actions; alerts for must-address attention, bottom sheets for dismissible content.
+- Underlines for navigation/destinations, buttons for actions.
+- Blocking interruptions (alerts/modals) only for must-address decisions; dismissible or supplementary content goes in non-blocking surfaces (sheets, popovers, inline).
 - UI copy: natural, HIG-style language ("What's the reason?" over "Report"). Default to sentence case for sentence-like phrases, Title Case for short labels and product names.
 - Data-fetching UI handles loading, error, AND empty states (empty is the one that gets forgotten); design for degraded states too — slow/unstable/offline connections and requests that can hang (give network calls timeouts).
 - Prefer discoverable, visible affordances over actions hidden behind long-press, hover-only, or gesture-only interactions — a visible control (or a tap that reveals a sheet/tooltip) beats a hidden one.
 - Nested rounded corners should be concentric: inner radius = outer radius − the padding between them (a card's child rounds less than the card). Don't reuse the parent's radius on a padded child — compute it (`calc()`, e.g. Tailwind `rounded-[calc(var(--radius)-4px)]`) or step down a size token.
+- Make tap targets comfortably big (~44px) — grow the hit area with padding or an expanded `::after`, not the visual.
+- Optical beats geometric: nudge visually lopsided glyphs (play triangles, chevrons) toward balance, center icons against the text's x-height, and trust the eye over the ruler for tight alignments.
+- Destructive actions: the button says the verb ("Delete photo", never "OK"/"Yes"), the destructive choice never gets default/primary emphasis, and undo beats a confirm dialog when feasible.
+- Don't convey state by color alone — pair it with an icon, label, or weight change — and keep text comfortably readable against its background (~WCAG AA).
+- Dark UIs: dark gray surfaces, not pure black, with slightly desaturated accents; convey elevation with lighter surfaces rather than shadows.
+- Form errors live inline next to their field, validated on blur — not per keystroke, not a toast; keep submit enabled and let the click surface what's wrong.
+- Body text: keep the measure ~45–75 characters per line (`max-w-prose`).
 
 ## Workflow
 
