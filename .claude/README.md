@@ -21,6 +21,7 @@ Codex-native portable settings live in the repo-level `codex/` directory:
 Run the dotfiles installer to create symlinks:
 
 - Claude Code: `CLAUDE.md`, `settings.json`, and skills go to `~/.claude/`.
+- Cursor: no links needed — it natively scans `~/.agents/skills/` and reads `~/.claude/skills/` as a [compatibility path](https://cursor.com/docs/skills), honoring `disable-model-invocation` (Claude-specific fields like `context`/`agent`/`allowed-tools` are ignored). Cursor does **not** read `~/.claude/CLAUDE.md` or any `CLAUDE.md` [for rules](https://cursor.com/docs/context/rules) — global instructions live in its GUI User Rules (or per-project `AGENTS.md`), so sync those manually when `CLAUDE.md` changes.
 - Codex: the same `CLAUDE.md` is linked as `~/.codex/AGENTS.md`. Shared skills are linked into `~/.agents/skills/` — Codex does **not** read `~/.codex/skills/`, only `~/.agents/skills/` per the [official skills docs](https://developers.openai.com/codex/skills).
 - OpenCode: natively scans `~/.claude/skills/` and `~/.agents/skills/` as first-class skill paths (not just fallbacks), so shared skills are picked up without a dedicated `~/.config/opencode/skills/` link. For instructions, OpenCode reads `~/.claude/CLAUDE.md` via its documented [Claude Code fallback](https://opencode.ai/docs/rules/), so no `~/.config/opencode/AGENTS.md` symlink is created.
 
@@ -55,7 +56,7 @@ Present a table: suggestion | source (insights/memory) | verdict (add/skip) | re
 ## Phase 3: Audit skills
 
 For each existing skill, assess:
-- Does the frontmatter use only valid fields per [official docs](https://code.claude.com/docs/en/skills#frontmatter-reference) (name, description, when_to_use, argument-hint, disable-model-invocation, user-invocable, allowed-tools, model, effort, context, agent, hooks, paths, shell)?
+- Does the frontmatter use only valid fields per [official docs](https://code.claude.com/docs/en/skills#frontmatter-reference) (name, description, when_to_use, argument-hint, arguments, disable-model-invocation, user-invocable, allowed-tools, disallowed-tools, model, effort, context, agent, hooks, paths, shell)?
 - Is the description optimized for triggering (specific trigger phrases, not vague)?
 - Is the skill body under 500 lines with clear structure?
 - Are there instructions that duplicate what's already in CLAUDE.md?
