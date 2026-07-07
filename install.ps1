@@ -12,7 +12,6 @@ $links = @(
     @{ Source = ".claude/settings.json";                       Target = "$HOME/.claude/settings.json" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.claude/CLAUDE.md" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.codex/AGENTS.md" }
-    @{ Source = ".claude/notify.sh";                           Target = "$HOME/.claude/notify.sh" }
     @{ Source = ".claude/output-styles/structured.md";         Target = "$HOME/.claude/output-styles/structured.md" }
 )
 
@@ -34,6 +33,19 @@ if (Test-Path $skillsDir) {
                 Source = $skillSource
                 Target = "$HOME/.agents/skills/$($skill.Name)"
             }
+        }
+    }
+}
+
+# Prune dangling skill links left behind when a skill is deleted from the repo.
+foreach ($skillHome in "$HOME/.claude/skills", "$HOME/.agents/skills") {
+    if (-not (Test-Path $skillHome)) { continue }
+    foreach ($link in Get-ChildItem $skillHome -Force) {
+        if ($link.LinkType -ne "SymbolicLink" -or -not $link.Target) { continue }
+        $linkTarget = $link.Target -replace '\\', '/'
+        if ($linkTarget -match '/\.claude/skills/' -and -not (Test-Path $link.Target)) {
+            Remove-Item $link.FullName -Force
+            Write-Host "  PRUNE $($link.FullName) (skill removed from repo)" -ForegroundColor Yellow
         }
     }
 }

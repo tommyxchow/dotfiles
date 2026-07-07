@@ -58,7 +58,6 @@ link "ghostty/config"          "$HOME/.config/ghostty/config"
 link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.codex/AGENTS.md"
-link ".claude/notify.sh"       "$HOME/.claude/notify.sh"
 link ".claude/output-styles/structured.md" "$HOME/.claude/output-styles/structured.md"
 
 # Shared skills: symlink each skill dir individually so future untracked skills
@@ -75,6 +74,19 @@ if [ -d "$DOTFILES/.claude/skills" ]; then
     [ "$name" = "statusline-install" ] || link ".claude/skills/$name" "$HOME/.agents/skills/$name"
   done
 fi
+
+# Prune dangling skill links left behind when a skill is deleted from the repo.
+for skill_home in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+  [ -d "$skill_home" ] || continue
+  for lnk in "$skill_home"/*; do
+    [ -L "$lnk" ] || continue
+    case "$(readlink "$lnk")" in
+      */.claude/skills/*)
+        [ -e "$lnk" ] || { rm "$lnk"; printf "  PRUNE %s (skill removed from repo)\n" "$lnk"; }
+        ;;
+    esac
+  done
+done
 
 upsert_codex_config() {
   local src="$DOTFILES/codex/config.toml"
