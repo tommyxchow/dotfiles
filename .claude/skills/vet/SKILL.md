@@ -2,6 +2,7 @@
 name: vet
 description: Cross-check claims against current online sources (web search of primary/official docs) and weave verified, cited findings into the work — flagging what's missing as well as what's wrong. Two uses — (1) audit a prior response or a specific claim, (2) bake online double-checking into a forward task so the answer is research-backed instead of asserted from memory. Triggers on "vet", "vet this", "cross-check", "double check", "verify", "verify your response", "research online", "check as of today", "is this still true", "final pass" — and use it even when those words are absent whenever a request hinges on checkable facts (versions, APIs, prices, dates, "latest", best practices). Distinct from /deep-research (heavy multi-source exploratory report) and /code-review (bugs in a code diff).
 argument-hint: "[response | <claim or topic to verify> | <task to research>]"
+allowed-tools: WebSearch WebFetch
 ---
 
 vet grounds work in **current online sources** instead of training-data memory — it verifies checkable claims, cites them, and surfaces what's uncertain or missing. Core rule: **research the claim, not the source** — confirm facts against independent, authoritative pages, never by trusting a single one.
@@ -15,7 +16,7 @@ vet grounds work in **current online sources** instead of training-data memory �
 ## 2. Verify (the part that makes it vet, not a vibe-check)
 
 - **Web-search first.** Never assert a checkable fact — version, API signature, price, date, deprecation, "latest", best practice — from training data alone.
-- **Go to the source of truth.** Follow the source hierarchy in the global `~/.claude/CLAUDE.md` (official docs/specs/changelogs, then project GitHub; SEO/AI-generated/opinion content only as a pointer to a primary source — never as the authority you cite).
+- **Go to the source of truth.** Source hierarchy: official docs/specs/changelogs, then project GitHub (incl. issues/discussions); SEO/AI-generated/opinion content only as a pointer to a primary source — never as the authority you cite.
 - **Triangulate** anything non-trivial across **2+ independent sources**. If sources conflict, *surface the conflict* — don't silently pick one.
 - **Date-stamp.** Prefer current pages, note "as of <today>", and watch for stale or superseded info.
 - **Classify** each claim: **Verified · Partial · Unverified.** Flag what's **missing**, not just what's wrong — omissions are the most common miss.
