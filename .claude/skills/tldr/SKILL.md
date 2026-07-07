@@ -1,7 +1,6 @@
 ---
 name: tldr
-description: TL;DR-first skimmable technical writing: lead with the answer, then reveal detail progressively. Use when the user asks for a "tldr"/"tl;dr", a summary, "where are we", or "catch me up". Bare invocation summarizes the last few messages; with an argument, summarizes a topic, file, URL, pasted text, or the whole session.
-when_to_use: Trigger when the user says "tldr", "tl;dr", "tldr this", "give me a tldr", "summarize this", "where are we", "catch me up", or asks for a skimmable summary. Bare = last few messages only; pass `session` for the full arc.
+description: 'TL;DR-first skimmable technical writing: lead with the answer, then reveal detail progressively. Use when the user says "tldr", "tl;dr", "tldr this", "give me a tldr", "summarize this", "where are we", "catch me up", or asks for a skimmable summary. Bare invocation summarizes the last few messages; with an argument, summarizes a topic, file, URL, pasted text, or the whole session (pass `session` for the full arc).'
 argument-hint: "[<topic>|<file path>|<url>|<text>|session]"
 allowed-tools:
   - "Read"
@@ -37,7 +36,7 @@ Drop any section that doesn't apply; trivial inputs get a one-line direct answer
 - **Recommendation / substantive answer**: the conclusion first, then why, then tradeoffs/risks and deeper detail — if recommending A over B, say what B is good for and why A wins here.
 - **Document, article, or pasted text**: a one-to-three-sentence thesis, then key points, then details only when the source has nuance worth preserving.
 
-**Writing for posted output:** in-session TL;DRs can use em dashes freely. If a TL;DR is headed for posted output (PR body, commit, Teams/Jira comment), follow the global posted-output rules in `~/.claude/CLAUDE.md` (no em dashes, casual + lowercase voice).
+**Writing for posted output:** in-session TL;DRs can use em dashes freely. If a TL;DR is headed for posted output (PR body, commit, Teams/Jira comment), follow the global posted-output rules (no em dashes, casual + lowercase voice).
 
 ## Default mode: the last few messages
 

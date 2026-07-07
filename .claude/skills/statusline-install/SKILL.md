@@ -3,7 +3,6 @@ name: statusline-install
 description: Install/restore my personal Claude Code statusline — project:branch, model with context size + effort, context %, and 5h/7d usage remaining (each with time-to-reset) — to ~/.claude/statusline-command.sh and wire it into settings.json. Canonical cross-platform bash (macOS/Linux native, Windows via Git Bash). Use to set up my statusline on a new machine or after a reset.
 model: haiku
 context: fork
-agent: statusline-setup
 disable-model-invocation: true
 ---
 
@@ -48,8 +47,9 @@ Needs `bash`, `jq`, and `git` (plus `date`, always present):
 
 ## Install steps
 
-1. Write the script below verbatim to `~/.claude/statusline-command.sh` and make
-   it executable: `chmod +x ~/.claude/statusline-command.sh`.
+1. Write the script below verbatim to `~/.claude/statusline-command.sh`. No
+   chmod needed — `settings.json` invokes it via `bash`, so the exec bit is
+   irrelevant on every platform.
 2. In `~/.claude/settings.json`, set:
 
    ```json
