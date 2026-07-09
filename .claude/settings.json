@@ -7,22 +7,29 @@
     "type": "command",
     "command": "bash \"$HOME/.claude/statusline-command.sh\""
   },
-  "extraKnownMarketplaces": {
-    "chow": {
-      "source": {
-        "source": "github",
-        "repo": "tommyxchow/dotfiles"
-      }
-    }
-  },
   "enabledPlugins": {
     "tc@chow": true,
+    "improve@improve": true,
     "pr-review-toolkit@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "session-report@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
     "github@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "chow": {
+      "source": {
+        "source": "github",
+        "repo": "tommyxchow/dotfiles"
+      }
+    },
+    "improve": {
+      "source": {
+        "source": "github",
+        "repo": "shadcn/improve"
+      }
+    }
   },
   "sandbox": {
     "enabled": true
