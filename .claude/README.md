@@ -1,33 +1,32 @@
 # Shared Agent Config
 
-This directory contains the global agent configuration, managed as dotfiles and symlinked into the tool-specific homes that need it.
+This directory holds global Claude Code instructions and settings. Skills and output styles ship as the `tc` plugin from the `chow` marketplace in this same repo.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Single source of truth for global instructions |
-| `settings.json` | Claude Code permissions, sandbox, plugins, statusline |
-| `skills/` | Shared global skills (vet, etc.) |
+| `CLAUDE.md` | Global instructions (installer-linked to `~/.claude/CLAUDE.md`) |
+| `settings.json` | Claude Code permissions, sandbox, plugins, statusline, marketplace |
 
-Codex-native portable settings live in the repo-level `codex/` directory:
+Plugin content lives outside this directory:
 
-| File | Purpose |
+| Path | Purpose |
 |------|---------|
-| `codex/config.toml` | Portable Codex preferences |
+| `.claude-plugin/marketplace.json` | Marketplace catalog (`chow`) |
+| `plugins/tc/` | Personal plugin: skills + `structured` output style |
 
 ## Setup
 
-Run the dotfiles installer to create symlinks:
+1. Run the dotfiles installer to symlink `CLAUDE.md` and `settings.json` into `~/.claude/`.
+2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` in settings declare `tc@chow` from `tommyxchow/dotfiles`. Install/enable when prompted, or run `/plugin` and install `tc@chow`.
+3. Skills are namespaced: `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:statusline-install`.
 
-- Claude Code: `CLAUDE.md`, `settings.json`, and skills go to `~/.claude/`.
-- Cursor: no links needed — it natively scans `~/.agents/skills/` and reads `~/.claude/skills/` as a [compatibility path](https://cursor.com/docs/skills), honoring `disable-model-invocation` (Claude-specific fields like `context`/`agent`/`allowed-tools` are ignored). Cursor does **not** read `~/.claude/CLAUDE.md` or any `CLAUDE.md` [for rules](https://cursor.com/docs/context/rules) — global instructions live in its GUI User Rules (or per-project `AGENTS.md`), so sync those manually when `CLAUDE.md` changes.
-- Codex: the same `CLAUDE.md` is linked as `~/.codex/AGENTS.md`. Shared skills are linked into `~/.agents/skills/` — Codex does **not** read `~/.codex/skills/`, only `~/.agents/skills/` per the [official skills docs](https://developers.openai.com/codex/skills).
-- OpenCode: natively scans `~/.claude/skills/` and `~/.agents/skills/` as first-class skill paths (not just fallbacks), so shared skills are picked up without a dedicated `~/.config/opencode/skills/` link. For instructions, OpenCode reads `~/.claude/CLAUDE.md` via its documented [Claude Code fallback](https://opencode.ai/docs/rules/), so no `~/.config/opencode/AGENTS.md` symlink is created.
+### Cursor
 
-The dotfiles repo is the source of truth. With symlinks, edits from the tool homes flow back to the repo without duplicate instruction files.
+Enable **Settings → Rules, Skills, Subagents → Include third-party Plugins, Skills, and other configs**. Cursor imports installed Claude plugins from `~/.claude/` after Claude Code has installed them. It does **not** run Claude's marketplace install itself.
 
-Do not symlink or copy `~/.codex/config.toml` wholesale into the repo. Codex writes machine-local state there, including cache paths, marketplace timestamps, trusted project paths, and UI state. The installer upserts only the stable top-level preferences from `codex/config.toml` into `~/.codex/config.toml`.
+Cursor does **not** read `~/.claude/CLAUDE.md` for rules. Sync global instructions into Cursor User Rules (or per-project `AGENTS.md`) manually when `CLAUDE.md` changes.
 
 ## Syncing Config Across Machines
 
@@ -41,7 +40,7 @@ Audit my global Claude Code config (CLAUDE.md + skills) using local usage data a
 1. Read ~/.claude/usage-data/report.html (the /insights report) and extract: friction patterns, suggested additions, recurring mistakes, and repeated workflows.
 2. Read all auto memory files across all projects: find every MEMORY.md under ~/.claude/projects/*/memory/ and read each referenced memory file. Focus on "feedback" type memories (corrections I've given Claude) that may apply globally.
 3. Read my current global CLAUDE.md at ~/.claude/CLAUDE.md.
-4. Read every SKILL.md under ~/.claude/skills/ (my global custom skills).
+4. Read every SKILL.md under the installed tc@chow plugin (and any remaining ~/.claude/skills/).
 5. Web search for the latest Claude Code CLAUDE.md and skill authoring best practices (official docs at code.claude.com).
 
 ## Phase 2: Audit CLAUDE.md
@@ -55,7 +54,7 @@ Present a table: suggestion | source (insights/memory) | verdict (add/skip) | re
 
 ## Phase 3: Audit skills
 
-For each existing skill, assess:
+For each existing skill in plugins/tc/skills/, assess:
 - Does the frontmatter use only valid fields per [official docs](https://code.claude.com/docs/en/skills#frontmatter-reference) (name, description, when_to_use, argument-hint, arguments, disable-model-invocation, user-invocable, allowed-tools, disallowed-tools, model, effort, context, agent, hooks, paths, shell)?
 - Is the description optimized for triggering (specific trigger phrases, not vague)?
 - Is the skill body under 500 lines with clear structure?
@@ -74,16 +73,15 @@ Present a table: skill | action (update/create/skip) | what changes | reasoning.
 
 ## Phase 4: Apply
 
-For changes I approve, apply them directly to ~/.claude/CLAUDE.md and ~/.claude/skills/.
+For changes I approve, apply them to ~/.claude/CLAUDE.md and to the tc plugin skills under the dotfiles repo (plugins/tc/skills/).
 
 Be conservative — only propose rules that correct real mistakes and skills that capture real workflows. Don't add noise.
 ```
 
-After the audit, if files are symlinked, changes are already in the dotfiles repo — just review and commit. If files were copied (not symlinked), sync them back first:
+After the audit, if `CLAUDE.md` is symlinked, changes are already in the dotfiles repo — just review and commit. Skill edits belong in `plugins/tc/skills/` in this repo. If files were copied (not symlinked), sync them back first:
 
 ```bash
 cp ~/.claude/CLAUDE.md <dotfiles-path>/.claude/CLAUDE.md
-cp -r ~/.claude/skills/ <dotfiles-path>/.claude/skills/
 cd <dotfiles-path> && git diff
 ```
 
@@ -94,3 +92,4 @@ cd <dotfiles-path> && git diff
 - **Emphasis**: Use `IMPORTANT` / `YOU MUST` on critical rules that must not be ignored.
 - **Don't duplicate**: Rules already enforced by `settings.json` deny rules or hooks don't need prose unless the "why" adds context.
 - Run `/insights` periodically to generate fresh usage data before syncing.
+- After changing plugin skills, push the repo and refresh in Claude Code (`/plugin marketplace update` / `/reload-plugins`) so the cache picks up the new commit.

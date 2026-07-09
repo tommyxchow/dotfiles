@@ -1,0 +1,11 @@
+{
+  "name": "chow",
+  "owner": { "name": "Tommy Chow" },
+  "plugins": [
+    {
+      "name": "tc",
+      "source": "./plugins/tc",
+      "description": "Personal agent skills: vet, tldr, polish, statusline-install"
+    }
+  ]
+}
