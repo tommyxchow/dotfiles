@@ -20,7 +20,7 @@ For dev questions inside a repo, check what's actually installed **before** sear
 ## 3. Verify (the part that makes it vet, not a vibe-check)
 
 - **Web-search first.** Never assert a checkable fact — version, API signature, price, date, deprecation, "latest", best practice — from training data alone.
-- **Go to the source of truth.** Source hierarchy: official docs/specs/changelogs, then project GitHub (incl. issues/discussions); SEO/AI-generated/opinion content only as a pointer to a primary source — never as the authority you cite.
+- **Go to the source of truth.** Source hierarchy: official docs/specs/changelogs, then project GitHub (source, README, issues/discussions); SEO/AI-generated/opinion content only as a pointer to a primary source — never as the authority you cite. Confirm you're on the project's canonical domain (the one linked from the repo or package registry), not a mirror, clone, or lookalike.
 - **Depth matches the claim.** A definitive fact (API signature, version number, price, date) needs one authoritative, version-matched source. Recommendations, disputed or ambiguous claims, and anything security-sensitive need **2+ independent sources**. If sources conflict, *surface the conflict* — don't silently pick one.
 - **Snippets aren't sources.** Search finds the page; fetch it and confirm the claim in context before citing.
 - **Best practices are recommendations, not facts.** Establish the current official recommendation, as of when, and what it superseded; present tradeoffs instead of crowning a winner.
