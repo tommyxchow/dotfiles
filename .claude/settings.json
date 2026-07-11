@@ -31,6 +31,7 @@
       }
     }
   },
+  "outputStyle": "tc:Structured & Scannable",
   "sandbox": {
     "enabled": true
   },
