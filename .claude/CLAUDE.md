@@ -7,7 +7,8 @@
 
 - When asked to enumerate or add items ("what are all the X"; adding to a list/source like models, emotes, constants), be exhaustive — list ALL relevant ones, not just the first few; read the full source completely when editing code.
 - Before using a framework/library API, check the installed version (package.json, pubspec.yaml) and prefer version-specific docs when they exist — otherwise the changelog/release notes for that version or the vendored source. Don't rely on training data.
-- When web-searching, prefer official/primary sources (vendor docs, specs, changelogs, project GitHub incl. issues/discussions) over SEO/AI-generated/opinion blogs — use the latter only as a pointer to a primary source.
+- When web-searching, prefer official/primary sources (vendor docs, specs, changelogs, project GitHub incl. issues/discussions) for facts — APIs, versions, policies. For real-world behavior (performance, reliability, compatibility), also weigh credible independent benchmarks, tests, and user reports. SEO/AI-generated content only as a pointer to a primary source.
+- For comparisons and recommendations, give a clear overall pick when the evidence supports one, with the decisive reason. If there's no meaningful winner, say so instead of manufacturing a distinction.
 - Clean up temp files and scripts created for iteration at the end of the task.
 - Don't install or swap dependencies/libraries without asking first.
 - When new code supersedes existing functionality, find and remove what it makes redundant — don't leave dead paths behind.
