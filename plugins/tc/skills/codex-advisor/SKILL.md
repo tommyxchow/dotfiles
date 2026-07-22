@@ -109,8 +109,12 @@ results, or edits. For each `codex-reply`:
 - Do not resend unchanged bulk context.
 
 Start a **new** `codex` session (do not reuse threadId) when: the user says
-"new consultation", the topic is unrelated, or they invoke `/tc:codex-advisor`
-again for a separate decision.
+"new consultation", the topic is unrelated, they invoke `/tc:codex-advisor`
+again for a separate decision, or `codex-reply` fails with session-not-found
+(MCP process restarted — threads are in-process, not disk-resumable like
+`codex exec resume`). On that failure, start fresh `codex` and bridge prior
+Codex conclusions + new host deltas into the prompt.
 
 Never shell out to `codex exec` / `codex exec resume` for this skill — MCP
-`codex` + `codex-reply` is the structured path.
+`codex` + `codex-reply` is the structured path. CLI extras (TUI, disk resume,
+`codex review`, etc.) are out of scope for the advisor workflow.
