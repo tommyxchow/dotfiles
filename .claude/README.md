@@ -20,7 +20,7 @@ Plugin content lives outside this directory:
 
 1. Run the dotfiles installer to symlink `CLAUDE.md` and `settings.json` into `~/.claude/`.
 2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` in settings declare `tc@chow` from `tommyxchow/dotfiles`. Install/enable when prompted, or run `/plugin` and install `tc@chow`.
-3. Skills are namespaced: `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:statusline-install`.
+3. Skills are namespaced: `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:statusline-install`, `/tc:codex-advisor`. Claude Code gets Codex MCP from the plugin `.mcp.json`; Cursor needs global Codex MCP (already in `~/.cursor/mcp.json`) plus third-party plugin import for the skill.
 
 ### Cursor
 

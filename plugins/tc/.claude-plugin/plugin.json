@@ -1,5 +1,5 @@
 {
   "name": "tc",
-  "description": "Personal agent skills and structured output style",
+  "description": "Personal agent skills (vet, tldr, polish, statusline-install, codex-advisor) and structured output style",
   "author": { "name": "Tommy Chow" }
 }

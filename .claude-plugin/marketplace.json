@@ -5,7 +5,7 @@
     {
       "name": "tc",
       "source": "./plugins/tc",
-      "description": "Personal agent skills: vet, tldr, polish, statusline-install"
+      "description": "Personal agent skills: vet, tldr, polish, statusline-install, codex-advisor"
     }
   ]
 }
