@@ -6,7 +6,8 @@
   "model": "opus",
   "statusLine": {
     "type": "command",
-    "command": "bash \"$HOME/.claude/statusline-command.sh\""
+    "command": "bash \"$HOME/.claude/statusline-command.sh\"",
+    "refreshInterval": 60
   },
   "enabledPlugins": {
     "tc@chow": true,
