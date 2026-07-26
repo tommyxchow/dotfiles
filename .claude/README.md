@@ -15,7 +15,7 @@ Plugin content for `chow` lives outside this directory:
 |------|---------|
 | `.claude-plugin/marketplace.json` | Marketplace catalog (`chow`) |
 | `plugins/tc/` | Personal plugin: skills + `structured` output style |
-| `emil-design-skills` (github source) | [emilkowalski/skills](https://github.com/emilkowalski/skills) - fetched at install time, not vendored here |
+| `emil-design-skills` (git url source) | [emilkowalski/skills](https://github.com/emilkowalski/skills) - fetched at install time, not vendored here |
 
 ## Declared plugins
 
@@ -24,9 +24,11 @@ Plugin content for `chow` lives outside this directory:
 | Plugin | Source | Skills |
 |--------|--------|--------|
 | `tc@chow` | `./plugins/tc` | `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:statusline-install` |
-| `emil-design-skills@chow` | `emilkowalski/skills` (github) | `emil-design-eng`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
+| `emil-design-skills@chow` | `emilkowalski/skills` (git url) | `emil-design-eng`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
 
-`emil-design-skills` uses a github plugin source with `strict: false` so Claude Code installs Emil's upstream `skills/` tree directly. Do not copy those files into this repo or install them via `skills.sh` / `npx skills`.
+`emil-design-skills` uses a `url` plugin source with `strict: false` so Claude Code installs Emil's upstream `skills/` tree directly. Do not copy those files into this repo or install them via `skills.sh` / `npx skills`.
+
+**Do not "simplify" this to a `github` source.** `/plugin install` builds an SSH clone URL (`git@github.com:owner/repo.git`) for `source: github` and has no HTTPS fallback, so it dies with `Permission denied (publickey)` on any machine without a GitHub SSH key ([#47088](https://github.com/anthropics/claude-code/issues/47088), among several dupes). `source: url` with an explicit `https://` URL clones anonymously and needs no keys. `/plugin marketplace add` *does* have the HTTPS fallback, which is why the `chow` and `improve` marketplaces resolve fine either way.
 
 Caveat: `strict: false` means the marketplace entry is the *entire* definition. The upstream repo has no `plugin.json` today; if Emil adds one that declares components, that's a conflict and the plugin fails to load. Switch the entry to `strict: true` (or drop the field) if that happens.
 
@@ -45,7 +47,16 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 ## Setup
 
 1. Run the dotfiles installer to symlink `CLAUDE.md` and `settings.json` into `~/.claude/`.
-2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` declare the plugins above, but `enabledPlugins` alone does **not** install them - run `/plugin` and install each (`tc@chow`, `emil-design-skills@chow`, `improve@improve`, `typescript-lsp@claude-plugins-official`), then `/reload-plugins`.
+2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` declare the plugins above, but `enabledPlugins` alone does **not** install them. Install each, then `/reload-plugins`:
+
+   ```bash
+   claude plugin install tc@chow --scope user
+   claude plugin install emil-design-skills@chow --scope user
+   claude plugin install improve@improve --scope user
+   claude plugin install typescript-lsp@claude-plugins-official --scope user
+   ```
+
+   Use the CLI over the interactive `/plugin` menu here: the menu installs to **project** scope, which pins the plugin to one repo, while `enabledPlugins` lives in user-scope `settings.json` and enables it everywhere. That mismatch shows up as "enabled but missing" in every other repo.
 3. Run `/tc:statusline-install`. `settings.json` points at `~/.claude/statusline-command.sh`, which is a **generated artifact** - the skill is its source of truth and the script isn't committed. Until you run it, the statusline is broken on a fresh machine.
 4. Check the `/plugin` **Errors** tab afterwards. `typescript-lsp` reports `Executable not found in $PATH` until `typescript-language-server` is installed.
 
@@ -112,6 +123,8 @@ cd <dotfiles-path> && git diff
 
 ## Maintenance
 
+- **Installing and enabling are separate**, and so are their files: `enabledPlugins` here declares what should load, while install records live in `~/.claude/plugins/installed_plugins.json` (runtime state, not committed). A plugin can be enabled and not installed, or installed and not enabled. `claude plugin list` shows the truth.
+- **`claude plugin uninstall --scope project` also deletes the key from user-scope `enabledPlugins`**, even though you only asked it to drop a project install. Re-add the line to `settings.json` afterwards or the plugin silently stops loading everywhere.
 - **Pruning test**: For each line in `CLAUDE.md`, ask: "Would removing this cause Claude to make mistakes?" If not, cut it.
 - **Target size**: Under 200 lines. Longer files reduce adherence.
 - **Emphasis**: Use `IMPORTANT` / `YOU MUST` on critical rules that must not be ignored.

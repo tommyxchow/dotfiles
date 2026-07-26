@@ -10,8 +10,8 @@
     {
       "name": "emil-design-skills",
       "source": {
-        "source": "github",
-        "repo": "emilkowalski/skills"
+        "source": "url",
+        "url": "https://github.com/emilkowalski/skills.git"
       },
       "strict": false,
       "description": "Emil Kowalski design-engineering skills from emilkowalski/skills (animation, motion, design systems)",
