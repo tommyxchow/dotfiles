@@ -8,7 +8,8 @@ argument-hint: "[claude-md | skills]"
 Audit the global Claude Code config using local usage data and propose improvements.
 Phases 1 to 3 are **read-only**. Phase 4 applies changes, and only after approval.
 
-With no argument, run all phases. `claude-md` runs phases 1, 2, 4; `skills` runs 1, 3, 4.
+Scope requested: `$ARGUMENTS`. Empty means run every phase. `claude-md` runs phases 1, 2,
+and 4; `skills` runs 1, 3, and 4.
 
 ## Phase 1: Gather data
 
