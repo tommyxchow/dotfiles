@@ -10,7 +10,7 @@
   },
   "enabledPlugins": {
     "tc@chow": true,
-    "emil@chow": true,
+    "ek@chow": true,
     "improve@improve": true,
     "typescript-lsp@claude-plugins-official": true
   },
