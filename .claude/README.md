@@ -1,32 +1,57 @@
 # Shared Agent Config
 
-This directory holds global Claude Code instructions and settings. Skills and output styles ship as the `tc` plugin from the `chow` marketplace in this same repo.
+This directory holds global Claude Code instructions and settings. Personal plugins ship from the `chow` marketplace in this same repo (`tommyxchow/dotfiles`). Third-party plugins are declared as separate marketplaces in `settings.json`.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
 | `CLAUDE.md` | Global instructions (installer-linked to `~/.claude/CLAUDE.md`) |
-| `settings.json` | Claude Code permissions, sandbox, plugins, statusline, marketplace |
+| `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
-Plugin content lives outside this directory:
+Plugin content for `chow` lives outside this directory:
 
 | Path | Purpose |
 |------|---------|
 | `.claude-plugin/marketplace.json` | Marketplace catalog (`chow`) |
 | `plugins/tc/` | Personal plugin: skills + `structured` output style |
+| `emil-design-skills` (github source) | [emilkowalski/skills](https://github.com/emilkowalski/skills) - fetched at install time, not vendored here |
+
+## Declared plugins
+
+### `chow` (this repo)
+
+| Plugin | Source | Skills |
+|--------|--------|--------|
+| `tc@chow` | `./plugins/tc` | `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:statusline-install` |
+| `emil-design-skills@chow` | `emilkowalski/skills` (github) | `emil-design-eng`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
+
+`emil-design-skills` uses a github plugin source with `strict: false` so Claude Code installs Emil's upstream `skills/` tree directly. Do not copy those files into this repo or install them via `skills.sh` / `npx skills`.
+
+Caveat: `strict: false` means the marketplace entry is the *entire* definition. The upstream repo has no `plugin.json` today; if Emil adds one that declares components, that's a conflict and the plugin fails to load. Switch the entry to `strict: true` (or drop the field) if that happens.
+
+### Other marketplaces (`extraKnownMarketplaces`)
+
+| Plugin | Marketplace repo | Notes |
+|--------|------------------|-------|
+| `improve@improve` | [shadcn/improve](https://github.com/shadcn/improve) | Codebase audit / planning skill |
+
+### Official marketplace (`claude-plugins-official`)
+
+| Plugin | Notes |
+|--------|-------|
+| `typescript-lsp` | Enables Claude Code's built-in LSP tool for TS/JS. Requires `typescript-language-server` + `typescript` on PATH. |
 
 ## Setup
 
 1. Run the dotfiles installer to symlink `CLAUDE.md` and `settings.json` into `~/.claude/`.
-2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` in settings declare `tc@chow` from `tommyxchow/dotfiles`. Install/enable when prompted, or run `/plugin` and install `tc@chow`.
-3. Skills are namespaced: `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:statusline-install`.
+2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` declare the plugins above, but `enabledPlugins` alone does **not** install them - run `/plugin` and install each (`tc@chow`, `emil-design-skills@chow`, `improve@improve`, `typescript-lsp@claude-plugins-official`), then `/reload-plugins`.
+3. Run `/tc:statusline-install`. `settings.json` points at `~/.claude/statusline-command.sh`, which is a **generated artifact** - the skill is its source of truth and the script isn't committed. Until you run it, the statusline is broken on a fresh machine.
+4. Check the `/plugin` **Errors** tab afterwards. `typescript-lsp` reports `Executable not found in $PATH` until `typescript-language-server` is installed.
 
 ### Cursor
 
-Enable **Settings → Rules, Skills, Subagents → Include third-party Plugins, Skills, and other configs**. Cursor imports installed Claude plugins from `~/.claude/` after Claude Code has installed them. It does **not** run Claude's marketplace install itself.
-
-Cursor does **not** read `~/.claude/CLAUDE.md` for rules. Sync global instructions into Cursor User Rules (or per-project `AGENTS.md`) manually when `CLAUDE.md` changes.
+Enable **Settings → Rules, Skills, Subagents → Include third-party Plugins, Skills, and other configs**. That picks up `~/.claude/CLAUDE.md`, installed Claude plugins/skills, and related configs. Cursor does **not** run Claude's marketplace install itself — install plugins in Claude Code first (or rely on github-sourced plugins after `chow` is updated).
 
 ## Syncing Config Across Machines
 
@@ -40,7 +65,7 @@ Audit my global Claude Code config (CLAUDE.md + skills) using local usage data a
 1. Read ~/.claude/usage-data/report.html (the /insights report) and extract: friction patterns, suggested additions, recurring mistakes, and repeated workflows.
 2. Read all auto memory files across all projects: find every MEMORY.md under ~/.claude/projects/*/memory/ and read each referenced memory file. Focus on "feedback" type memories (corrections I've given Claude) that may apply globally.
 3. Read my current global CLAUDE.md at ~/.claude/CLAUDE.md.
-4. Read every SKILL.md under the installed tc@chow plugin (and any remaining ~/.claude/skills/).
+4. Read every SKILL.md under the installed tc@chow plugin (and any remaining ~/.claude/skills/). Note emil-design-skills@chow is upstream-only — do not propose edits to those skill files in this repo.
 5. Web search for the latest Claude Code CLAUDE.md and skill authoring best practices (official docs at code.claude.com).
 
 ## Phase 2: Audit CLAUDE.md
@@ -73,7 +98,7 @@ Present a table: skill | action (update/create/skip) | what changes | reasoning.
 
 ## Phase 4: Apply
 
-For changes I approve, apply them to ~/.claude/CLAUDE.md and to the tc plugin skills under the dotfiles repo (plugins/tc/skills/).
+For changes I approve, apply them to ~/.claude/CLAUDE.md and to the tc plugin skills under the dotfiles repo (plugins/tc/skills/). Do not vendor or edit emil-design-skills content here — update that plugin via /plugin marketplace update chow after upstream changes.
 
 Be conservative — only propose rules that correct real mistakes and skills that capture real workflows. Don't add noise.
 ```
@@ -92,4 +117,12 @@ cd <dotfiles-path> && git diff
 - **Emphasis**: Use `IMPORTANT` / `YOU MUST` on critical rules that must not be ignored.
 - **Don't duplicate**: Rules already enforced by `settings.json` deny rules or hooks don't need prose unless the "why" adds context.
 - Run `/insights` periodically to generate fresh usage data before syncing.
-- After changing plugin skills, push the repo and refresh in Claude Code (`/plugin marketplace update` / `/reload-plugins`) so the cache picks up the new commit.
+- The `chow` marketplace resolves from GitHub, not from this working tree - **unpushed edits to `marketplace.json` or `plugins/tc/` have no effect locally**. After changing either: push, then `/plugin marketplace update chow` (refreshes the catalog), `/plugin update tc@chow` (pulls the new plugin commit), `/reload-plugins`.
+- `/plugin marketplace update` refreshes the catalog only; `/plugin update <plugin>@<marketplace>` is what updates an installed plugin. To refresh Emil's upstream skills: `/plugin update emil-design-skills@chow`.
+- No plugin here pins a `version`, so each resolves to its source's latest commit SHA - a push is enough to publish, no version bump needed.
+- `autoUpdate: true` is set on `chow` only, so pushes to this repo land on their own: Claude Code refreshes the marketplace and updates installed plugins shortly after startup (random delay up to 10 min), then prompts for `/reload-plugins`. The manual sequence above is still the way to pick up a change immediately.
+- `improve` deliberately has **no** `autoUpdate`. Third-party marketplaces default to off because a plugin executes arbitrary code with your user privileges - auto-updating a repo you don't control runs new code unreviewed. Update it by hand with `/plugin update improve@improve`.
+
+## Credits
+
+- [emilkowalski/skills](https://github.com/emilkowalski/skills) - © Emil Kowalski, MIT. Referenced by `emil-design-skills@chow`; not modified in this repo.

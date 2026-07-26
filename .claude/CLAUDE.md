@@ -53,9 +53,12 @@
 
 ## GitHub operations
 
-- For GitHub writes (creating PRs, submitting reviews, opening/updating issues, posting comments), prefer the **github MCP** when available — its structured params handle multi-line bodies and special characters cleanly — otherwise use `gh`.
-- Prefer **`gh`** with `--json field1,field2 --jq '...'` for reads and bulk filtering: listing PRs (`gh pr list`), listing issues (`gh issue list`), watching CI (`gh run watch`, `gh run view <id> --log`), searching (`gh search code|repos|issues`). Tight output, fast, composable with shell pipelines.
-- Use `git` only for local repo operations (commit, branch, push, rebase). Never shell out to `git` for GitHub-specific actions like creating PRs.
+Use what's available (`gh` and/or GitHub MCP); don't install either mid-task unless asked.
+
+- **Both:** `gh` for Actions (`gh run watch`, `gh run view <id> --log`), search, bulk `--json`/`--jq`, local-branch PRs (`git push` then `gh pr create` with `--body-file`/heredoc), and Copilot agent tasks (`gh agent-task create`). MCP for Discussions (no `gh discussion`), draft/pending PR reviews, Dependabot / code scanning / secret scanning. Overlap: one path per task. Escape hatch: `gh api`.
+- **`gh` only:** all platform work via `gh` (`pr`, `issue`, `run`, `search`, `project`, …); gaps via `gh api`.
+- **MCP only:** use connected tools. Defaults are `context`/`issues`/`pull_requests`/`repos`/`users` - other toolsets only if loaded.
+- **Always:** `git` is local only (status, commit, branch, push, rebase). Never for creating PRs or other GitHub API actions.
 
 ## Output & writing
 

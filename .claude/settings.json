@@ -3,26 +3,24 @@
   "permissions": {
     "defaultMode": "auto"
   },
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "bash \"$HOME/.claude/statusline-command.sh\""
   },
   "enabledPlugins": {
     "tc@chow": true,
+    "emil-design-skills@chow": true,
     "improve@improve": true,
-    "pr-review-toolkit@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "session-report@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "github@claude-plugins-official": true
+    "typescript-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "chow": {
       "source": {
         "source": "github",
         "repo": "tommyxchow/dotfiles"
-      }
+      },
+      "autoUpdate": true
     },
     "improve": {
       "source": {
@@ -35,6 +33,7 @@
   "sandbox": {
     "enabled": true
   },
+  "effortLevel": "high",
   "advisorModel": "opus",
   "tui": "fullscreen",
   "inputNeededNotifEnabled": true,
