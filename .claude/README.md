@@ -2,6 +2,8 @@
 
 This directory holds global Claude Code instructions and settings. Personal plugins ship from the `chow` marketplace in this same repo (`tommyxchow/dotfiles`). Third-party plugins are declared as separate marketplaces in `settings.json`.
 
+Repo-level gotchas for anyone (or any agent) editing this repo live in the root [`CLAUDE.md`](../CLAUDE.md). This file is the reference: what is declared, why, and how to change it.
+
 ## Files
 
 | File | Purpose |
@@ -23,10 +25,10 @@ Plugin content for `chow` lives outside this directory:
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:statusline-install` |
+| `tc@chow` | `./plugins/tc` | `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:sync-config`, `/tc:statusline-install` |
 | `ek@chow` | `emilkowalski/skills` (git url) | `emil-design-eng`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
 
-`ek` uses a `url` plugin source with `strict: false` so Claude Code installs Emil's upstream `skills/` tree directly. Plugin names here are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`. Upstream has no `plugin.json`, so this catalog entry is the only place the name lives. Do not copy those files into this repo or install them via `skills.sh` / `npx skills`.
+`ek` uses a `url` plugin source with `strict: false` so Claude Code installs Emil's upstream `skills/` tree directly. Upstream has no `plugin.json`, so this catalog entry is the only place the name lives. Do not copy those files into this repo or install them via `skills.sh` / `npx skills`.
 
 **Do not "simplify" this to a `github` source.** `/plugin install` builds an SSH clone URL (`git@github.com:owner/repo.git`) for `source: github` and has no HTTPS fallback, so it dies with `Permission denied (publickey)` on any machine without a GitHub SSH key ([#47088](https://github.com/anthropics/claude-code/issues/47088), among several dupes). `source: url` with an explicit `https://` URL clones anonymously and needs no keys. `/plugin marketplace add` *does* have the HTTPS fallback, which is why the `chow` and `improve` marketplaces resolve fine either way.
 
@@ -64,76 +66,23 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 
 Enable **Settings → Rules, Skills, Subagents → Include third-party Plugins, Skills, and other configs**. That picks up `~/.claude/CLAUDE.md`, installed Claude plugins/skills, and related configs. Cursor does **not** run Claude's marketplace install itself — install plugins in Claude Code first (or rely on github-sourced plugins after `chow` is updated).
 
-## Syncing Config Across Machines
+## Syncing config across machines
 
-After using Claude Code on a machine for a while, run `/insights` to generate fresh usage data, then run this prompt to audit the local config. The dotfiles should already be installed on the machine — this prompt updates `~/.claude/` in place, no git operations needed:
+Run `/insights` to refresh usage data, then `/tc:sync-config` to audit this machine's
+`CLAUDE.md` and `tc` skills against it. That skill is user-invocable only, so it never
+fires on its own.
 
-```
-Audit my global Claude Code config (CLAUDE.md + skills) using local usage data and propose improvements.
-
-## Phase 1: Gather data
-
-1. Read ~/.claude/usage-data/report.html (the /insights report) and extract: friction patterns, suggested additions, recurring mistakes, and repeated workflows.
-2. Read all auto memory files across all projects: find every MEMORY.md under ~/.claude/projects/*/memory/ and read each referenced memory file. Focus on "feedback" type memories (corrections I've given Claude) that may apply globally.
-3. Read my current global CLAUDE.md at ~/.claude/CLAUDE.md.
-4. Read every SKILL.md under the installed tc@chow plugin (and any remaining ~/.claude/skills/). Note ek@chow is upstream-only — do not propose edits to those skill files in this repo.
-5. Web search for the latest Claude Code CLAUDE.md and skill authoring best practices (official docs at code.claude.com).
-
-## Phase 2: Audit CLAUDE.md
-
-Cross-reference findings against the existing CLAUDE.md. For each potential addition, assess:
-- Is this a cross-project pattern (not specific to one repo)?
-- Would removing this cause Claude to make the same mistake again?
-- Is it already covered by an existing rule or default Claude Code behavior?
-
-Present a table: suggestion | source (insights/memory) | verdict (add/skip) | reasoning.
-
-## Phase 3: Audit skills
-
-For each existing skill in plugins/tc/skills/, assess:
-- Does the frontmatter use only valid fields per [official docs](https://code.claude.com/docs/en/skills#frontmatter-reference) (name, description, when_to_use, argument-hint, arguments, disable-model-invocation, user-invocable, allowed-tools, disallowed-tools, model, effort, context, agent, hooks, paths, shell)?
-- Is the description optimized for triggering (specific trigger phrases, not vague)?
-- Is the skill body under 500 lines with clear structure?
-- Are there instructions that duplicate what's already in CLAUDE.md?
-- Does disable-model-invocation make sense for this skill's use case?
-
-Then look for gaps — recurring workflows that no existing skill covers. Good candidates:
-- Patterns repeated 3+ times across projects in the insights data
-- Multi-step workflows captured in feedback memories
-- Friction patterns from insights where a structured skill would prevent the mistake
-- Workflows the user does manually that could be a `/slash-command`
-
-Create new skills when the pattern is clear. Use disable-model-invocation: true for manual quality gates, omit it for skills Claude should auto-invoke.
-
-Present a table: skill | action (update/create/skip) | what changes | reasoning.
-
-## Phase 4: Apply
-
-For changes I approve, apply them to ~/.claude/CLAUDE.md and to the tc plugin skills under the dotfiles repo (plugins/tc/skills/). Do not vendor or edit ek@chow content here — update that plugin via /plugin marketplace update chow after upstream changes.
-
-Be conservative — only propose rules that correct real mistakes and skills that capture real workflows. Don't add noise.
-```
-
-After the audit, if `CLAUDE.md` is symlinked, changes are already in the dotfiles repo — just review and commit. Skill edits belong in `plugins/tc/skills/` in this repo. If files were copied (not symlinked), sync them back first:
-
-```bash
-cp ~/.claude/CLAUDE.md <dotfiles-path>/.claude/CLAUDE.md
-cd <dotfiles-path> && git diff
-```
+`~/.claude/CLAUDE.md` is symlinked into this repo, so approved edits land in the working
+tree directly - review with `git diff` and commit. Skill edits under `plugins/tc/skills/`
+do not take effect until pushed; see the root [`CLAUDE.md`](../CLAUDE.md).
 
 ## Maintenance
 
 - **Installing and enabling are separate**, and so are their files: `enabledPlugins` here declares what should load, while install records live in `~/.claude/plugins/installed_plugins.json` (runtime state, not committed). A plugin can be enabled and not installed, or installed and not enabled. `claude plugin list` shows the truth.
-- **`claude plugin uninstall --scope project` also deletes the key from user-scope `enabledPlugins`**, even though you only asked it to drop a project install. Re-add the line to `settings.json` afterwards or the plugin silently stops loading everywhere.
-- **Pruning test**: For each line in `CLAUDE.md`, ask: "Would removing this cause Claude to make mistakes?" If not, cut it.
-- **Target size**: Under 200 lines. Longer files reduce adherence.
-- **Emphasis**: Use `IMPORTANT` / `YOU MUST` on critical rules that must not be ignored.
-- **Don't duplicate**: Rules already enforced by `settings.json` deny rules or hooks don't need prose unless the "why" adds context.
 - Run `/insights` periodically to generate fresh usage data before syncing.
-- The `chow` marketplace resolves from GitHub, not from this working tree - **unpushed edits to `marketplace.json` or `plugins/tc/` have no effect locally**. After changing either: push, then `/plugin marketplace update chow` (refreshes the catalog), `/plugin update tc@chow` (pulls the new plugin commit), `/reload-plugins`.
 - `/plugin marketplace update` refreshes the catalog only; `/plugin update <plugin>@<marketplace>` is what updates an installed plugin. To refresh Emil's upstream skills: `/plugin update ek@chow`.
 - No plugin here pins a `version`, so each resolves to its source's latest commit SHA - a push is enough to publish, no version bump needed.
-- `autoUpdate: true` is set on `chow` only, so pushes to this repo land on their own: Claude Code refreshes the marketplace and updates installed plugins shortly after startup (random delay up to 10 min), then prompts for `/reload-plugins`. The manual sequence above is still the way to pick up a change immediately.
+- `autoUpdate: true` is set on `chow` only, so pushes to this repo land on their own: Claude Code refreshes the marketplace and updates installed plugins shortly after startup (random delay up to 10 min), then prompts for `/reload-plugins`. The manual sequence in the root [`CLAUDE.md`](../CLAUDE.md) is still the way to pick up a change immediately.
 - `improve` deliberately has **no** `autoUpdate`. Third-party marketplaces default to off because a plugin executes arbitrary code with your user privileges - auto-updating a repo you don't control runs new code unreviewed. Update it by hand with `/plugin update improve@improve`.
 
 ## Credits
