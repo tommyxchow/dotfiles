@@ -125,7 +125,7 @@ cd <dotfiles-path> && git diff
 
 - **Installing and enabling are separate**, and so are their files: `enabledPlugins` here declares what should load, while install records live in `~/.claude/plugins/installed_plugins.json` (runtime state, not committed). A plugin can be enabled and not installed, or installed and not enabled. `claude plugin list` shows the truth.
 - **`claude plugin uninstall --scope project` also deletes the key from user-scope `enabledPlugins`**, even though you only asked it to drop a project install. Re-add the line to `settings.json` afterwards or the plugin silently stops loading everywhere.
-- **Renaming a plugin resets its usage counter.** `pluginUsage` in `~/.claude.json` is keyed `<plugin>@<marketplace>`, so the old key is orphaned and the new one starts at zero. `emil@chow` was renamed from `emil-design-skills@chow` on 2026-07-25 - a `/doctor` audit before roughly mid-August will read it as unused when it isn't.
+- **Renaming a plugin resets its usage counter.** `pluginUsage` in `~/.claude.json` is keyed `<plugin>@<marketplace>`, so a rename orphans the old key and the new one starts at zero. `emil@chow` was renamed from `emil-design-skills@chow` on 2026-07-25, and the plugin was first installed the same day - so a low count there is thin data, not evidence either way.
 - **Pruning test**: For each line in `CLAUDE.md`, ask: "Would removing this cause Claude to make mistakes?" If not, cut it.
 - **Target size**: Under 200 lines. Longer files reduce adherence.
 - **Emphasis**: Use `IMPORTANT` / `YOU MUST` on critical rules that must not be ignored.
