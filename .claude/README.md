@@ -25,8 +25,10 @@ Plugin content for `chow` lives outside this directory:
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:sync-config`, `/tc:statusline-install` |
+| `tc@chow` | `./plugins/tc` | `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:statusline-install` |
 | `ek@chow` | `emilkowalski/skills` (git url) | `emil-design-eng`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
+
+Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.
 
 `ek` uses a `url` plugin source with `strict: false` so Claude Code installs Emil's upstream `skills/` tree directly. Upstream has no `plugin.json`, so this catalog entry is the only place the name lives. Do not copy those files into this repo or install them via `skills.sh` / `npx skills`.
 
@@ -64,24 +66,29 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 
 ### Cursor
 
-Enable **Settings → Rules, Skills, Subagents → Include third-party Plugins, Skills, and other configs**. That picks up `~/.claude/CLAUDE.md`, installed Claude plugins/skills, and related configs. Cursor does **not** run Claude's marketplace install itself — install plugins in Claude Code first (or rely on github-sourced plugins after `chow` is updated).
+Enable **Settings → Rules, Skills, Subagents → Include third-party Plugins, Skills, and other configs**. That picks up `~/.claude/CLAUDE.md`, installed Claude plugins/skills, and related configs. Cursor does **not** run Claude's marketplace install itself: install plugins in Claude Code first.
 
-## Syncing config across machines
+## Auditing config
 
-Run `/insights` to refresh usage data, then `/tc:sync-config` to audit this machine's
-`CLAUDE.md` and `tc` skills against it. That skill is user-invocable only, so it never
-fires on its own.
+Worth doing when a notably better model ships, or on a new machine:
 
-`~/.claude/CLAUDE.md` is symlinked into this repo, so approved edits land in the working
-tree directly - review with `git diff` and commit. Skill edits under `plugins/tc/skills/`
-do not take effect until pushed; see the root [`CLAUDE.md`](../CLAUDE.md).
+1. `/insights` to generate fresh usage data.
+2. `/doctor` for the removal side: unused skills and plugins, `CLAUDE.md` lines a session
+   could derive on its own, duplicate memory files, install health.
+3. Ask Claude for the addition side, which `/doctor` does not cover: read the `/insights`
+   report and the `feedback` memories under `~/.claude/projects/*/memory/`, and propose
+   `CLAUDE.md` rules or new skills for mistakes and workflows that keep recurring.
+
+Approved edits land in this working tree directly, so review with `git diff` and commit.
+Skill edits under `plugins/tc/skills/` also need a push before they take effect. Both
+mechanics are in the root [`CLAUDE.md`](../CLAUDE.md).
 
 ## Maintenance
 
 - **Installing and enabling are separate**, and so are their files: `enabledPlugins` here declares what should load, while install records live in `~/.claude/plugins/installed_plugins.json` (runtime state, not committed). A plugin can be enabled and not installed, or installed and not enabled. `claude plugin list` shows the truth.
 - Run `/insights` periodically to generate fresh usage data before syncing.
 - `/plugin marketplace update` refreshes the catalog only; `/plugin update <plugin>@<marketplace>` is what updates an installed plugin. To refresh Emil's upstream skills: `/plugin update ek@chow`.
-- No plugin here pins a `version`, so each resolves to its source's latest commit SHA - a push is enough to publish, no version bump needed.
+- No plugin here pins a `version`, so each resolves to its source's latest commit SHA. Pushing is what publishes; no version bump needed.
 - `autoUpdate: true` is set on `chow` only, so pushes to this repo land on their own: Claude Code refreshes the marketplace and updates installed plugins shortly after startup (random delay up to 10 min), then prompts for `/reload-plugins`. The manual sequence in the root [`CLAUDE.md`](../CLAUDE.md) is still the way to pick up a change immediately.
 - `improve` deliberately has **no** `autoUpdate`. Third-party marketplaces default to off because a plugin executes arbitrary code with your user privileges - auto-updating a repo you don't control runs new code unreviewed. Update it by hand with `/plugin update improve@improve`.
 

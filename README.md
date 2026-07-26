@@ -37,8 +37,11 @@ Ghostty is macOS/Linux only, so `install.ps1` skips it.
 ## What does not get linked
 
 `plugins/tc/` and `.claude-plugin/marketplace.json` ship through the `chow` plugin
-marketplace instead, which resolves from GitHub rather than from this working tree. A
-push publishes them; nothing local reads them directly.
+marketplace instead of through symlinks. Nothing local reads them directly.
 
-See [`.claude/README.md`](.claude/README.md) for the Claude Code setup: declared plugins,
-marketplace mechanics, and the config-sync workflow.
+## Claude Code needs a second pass
+
+The installer is not enough on its own. Plugins still have to be installed, and the
+statusline script is generated rather than committed, so it stays broken until you run
+`/tc:statusline-install`. See [`.claude/README.md`](.claude/README.md) for those steps,
+the declared plugins, and the config-sync workflow.

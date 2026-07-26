@@ -5,24 +5,27 @@ locations. See `README.md` for the full mapping.
 
 ## Gotchas
 
-- **`.claude/settings.json` and `.claude/CLAUDE.md` are symlinks to `~/.claude/`.**
-  Editing them changes the live machine config immediately, in every project, with no
-  apply step. `.claude/CLAUDE.md` in particular is the global instruction file, so
-  anything specific to this repo belongs in this file instead.
+- **`~/.claude/settings.json` and `~/.claude/CLAUDE.md` are symlinks to the copies in
+  this repo.** The repo files are the real ones. Editing them changes the live machine
+  config immediately, in every project, with no apply step. `.claude/CLAUDE.md` in
+  particular is the global instruction file, so anything specific to this repo belongs
+  in this file instead.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
-  tree.** Unpushed edits to `.claude-plugin/marketplace.json` or `plugins/tc/` have no
-  local effect at all. After changing either: push, then `/plugin marketplace update
-  chow`, `/plugin update tc@chow`, `/reload-plugins`.
+  tree.** Unpushed edits
+  to `.claude-plugin/marketplace.json` or `plugins/tc/` have no local effect at all.
+  After changing either: push, then `/plugin marketplace update chow`,
+  `/plugin update tc@chow`, `/reload-plugins`.
 
 - **Catalog entries for plugins in other repos need `source: url` with an `https://`
-  URL.** `/plugin install` builds an SSH clone URL for `source: github` and has no HTTPS
-  fallback, so it fails with `Permission denied (publickey)` without a GitHub SSH key.
-  This does not apply to `extraKnownMarketplaces`, where `source: github` is correct.
+  URL, never `source: github`.** This does not apply to `extraKnownMarketplaces`, where
+  `source: github` is correct and must stay. See `.claude/README.md` for why.
 
-- **`claude plugin uninstall --scope project` also deletes the key from user-scope
-  `enabledPlugins`.** Check `git diff .claude/settings.json` after any uninstall and
-  restore the line, or the plugin silently stops loading everywhere.
+- **`ek@chow` is upstream-only.** Never vendor, copy, or edit its skill files here.
+  Refresh it with `/plugin update ek@chow`.
 
-- **Plugin names are owner initials** (`tc`, `ek`) because the name prefixes every skill
-  at the call site: `/ek:improve-animations`.
+- **Install and uninstall plugins with `--scope user`.** `claude plugin uninstall
+  --scope project` also deletes the key from user-scope `enabledPlugins`, and the
+  interactive `/plugin` menu installs to project scope. Either way, check
+  `git diff .claude/settings.json` afterwards and restore any key that disappeared, or
+  the plugin silently stops loading everywhere.
