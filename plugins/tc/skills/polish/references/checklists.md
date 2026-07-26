@@ -51,7 +51,7 @@ You are tuned to find cleanups; these cap eagerness so the orchestrator isn't ha
 
 ## Quality
 
-**Owns:** unnecessary complexity the diff adds within a single unit of code.
+**Owns:** unnecessary complexity and readability debt the diff adds within a single unit of code.
 **Out of scope (defer to sibling):** reusing an existing helper → Reuse; wrong-layer / bandaid placement → Altitude; wasted runtime work → Efficiency.
 
 1. **Redundant state** — state mirroring other state, a cached value you could derive, an effect/observer that could be a direct call.
@@ -59,12 +59,14 @@ You are tuned to find cleanups; these cap eagerness so the orchestrator isn't ha
 3. **Copy-paste with slight variation** — near-identical blocks differing by one value → unify behind one parameterized helper.
 4. **Leaky abstraction** — exposing internals a caller shouldn't see, or reaching past a module's public surface.
 5. **Stringly-typed / magic values** — raw string literals or magic numbers where a string-union, enum, or named constant already exists or should.
-6. **Unnecessary JSX nesting** — wrapper `div`/`Box` adding no layout value because the child already takes `className`/style/`flexShrink` props.
-7. **Nested conditionals** — ternary chains or if/else/switch nested 3+ deep → flatten with early returns, guard clauses, or a lookup table.
-8. **Unnecessary comments** — comments narrating *what* the code does or referencing the task ("now loop over users"). Keep only non-obvious *why* (constraints, workarounds, invariants).
-9. **Dead code** — unreachable branches, unused imports/vars/params/functions, commented-out blocks the change orphaned.
-10. **Type escapes (typed languages)** — `any`, unsafe `as` casts, or `!` non-null assertions added where a real type, narrowing, or guard would do. (Deep type *design* is `/code-review`'s; flag only the casual escape hatch.)
-11. **Convention drift** — new code that ignores the repo's established patterns from recon (naming, error-handling shape, file layout, import style). Name the existing exemplar to match.
+6. **Pointless wrapper** — a container that adds nothing because the child already accepts what the wrapper provides (e.g. a JSX `div`/`Box` around a child that already takes `className`/style props). Stack-specific variants of this come from recon, not from this list.
+7. **Nested conditionals / unclear control flow** — ternary chains or if/else/switch nested 3+ deep → flatten with early returns, guard clauses, or a lookup table. Prefer the shape already used in adjacent code.
+8. **Naming / readability** — vague or misleading names introduced in the diff (`data`, `temp`, `handleStuff`, inverted booleans). Rename to match nearby vocabulary; don't invent a new metaphor for one call site.
+9. **Narrating / AI comments** — comments that restate the next line, narrate *what* the code does, or reference the task ("now loop over users", "import the module"). When added in the diff, rate **med severity + high confidence** (not low nits) so the orchestrator gate applies the delete. Keep only non-obvious *why* (constraints, workarounds, invariants, subtle correctness).
+10. **Dead code** — unreachable branches, unused imports/vars/params/functions, commented-out blocks the change orphaned.
+11. **Type escapes (typed languages)** — `any`, unsafe `as` casts, or `!` non-null assertions added where a real type, narrowing, or guard would do. (Deep type *design* is `/code-review`'s; flag only the casual escape hatch.)
+12. **Over-abstraction / gold-plating** — new helpers, wrappers, or config layers that only serve one call site in the diff with no clear second use. Inline or delete; don't keep ceremony "for later."
+13. **Convention drift** — new code that ignores what recon established: the repo's implicit patterns (naming, error-handling shape, file layout, import style) *and* the cleanup-shaped rules `CLAUDE.md` / `AGENTS.md` state outright (named exports, no enums, no `any`, kebab-case new files, remove superseded paths, finish shared-pattern migrations in one pass). Name the exemplar or the stated rule. Flag only **new** violations in the diff, and don't invent rules that aren't in recon.
 
 > Note: correctness-shaped checks (asymmetric guard application, bash-in-CI working-directory contracts) deliberately live in `/code-review`, not here — they find bugs, not cleanups.
 
