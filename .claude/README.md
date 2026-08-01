@@ -1,6 +1,9 @@
 # Shared Agent Config
 
-This directory holds global Claude Code instructions and settings. Personal plugins ship from the `chow` marketplace in this same repo (`tommyxchow/dotfiles`). Third-party plugins are declared as separate marketplaces in `settings.json`.
+This directory holds the shared global instructions and Claude Code settings.
+Personal plugins ship from the `chow` marketplace in this same repo
+(`tommyxchow/dotfiles`). Third-party plugins are declared as separate marketplaces in
+`settings.json`.
 
 Repo-level gotchas for anyone (or any agent) editing this repo live in the root [`CLAUDE.md`](../CLAUDE.md). This file is the reference: what is declared, why, and how to change it.
 
@@ -8,7 +11,7 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Global instructions (installer-linked to `~/.claude/CLAUDE.md`) |
+| `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by Cursor and Grok Build) |
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
 Plugin content for `chow` lives outside this directory:
@@ -16,7 +19,7 @@ Plugin content for `chow` lives outside this directory:
 | Path | Purpose |
 |------|---------|
 | `.claude-plugin/marketplace.json` | Marketplace catalog (`chow`) |
-| `plugins/tc/` | Personal plugin: skills + `structured` output style |
+| `plugins/tc/` | Personal plugin skills |
 | `ek` (git url source) | [emilkowalski/skills](https://github.com/emilkowalski/skills) - fetched at install time, not vendored here |
 
 ## Declared plugins
@@ -47,10 +50,12 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 | Plugin | Notes |
 |--------|-------|
 | `typescript-lsp` | Enables Claude Code's built-in LSP tool for TS/JS. Requires `typescript-language-server` + `typescript` on PATH. |
+| `frontend-design` | Distinctive frontend design guidance for new or substantially redesigned UI. |
 
 ## Setup
 
-1. Run the dotfiles installer to symlink `CLAUDE.md` and `settings.json` into `~/.claude/`.
+1. Run the dotfiles installer to link the shared instructions into `~/.claude/` and
+   `~/.codex/`, plus `settings.json` into `~/.claude/`.
 2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` declare the plugins above, but `enabledPlugins` alone does **not** install them. Install each, then `/reload-plugins`:
 
    ```bash
@@ -58,6 +63,7 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
    claude plugin install ek@chow --scope user
    claude plugin install improve@improve --scope user
    claude plugin install typescript-lsp@claude-plugins-official --scope user
+   claude plugin install frontend-design@claude-plugins-official --scope user
    ```
 
    Use the CLI over the interactive `/plugin` menu here: the menu installs to **project** scope, which pins the plugin to one repo, while `enabledPlugins` lives in user-scope `settings.json` and enables it everywhere. That mismatch shows up as "enabled but missing" in every other repo.
@@ -67,6 +73,13 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 ### Cursor
 
 Enable **Settings → Rules, Skills, Subagents → Include third-party Plugins, Skills, and other configs**. That picks up `~/.claude/CLAUDE.md`, installed Claude plugins/skills, and related configs. Cursor does **not** run Claude's marketplace install itself: install plugins in Claude Code first.
+
+### Grok Build
+
+Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatibility,
+so the installer does not create a separate Grok instructions link. Confirm effective
+discovery with the inspector inside an active Grok session; the standalone
+`grok inspect` command may report a different instruction list.
 
 ## Auditing config
 

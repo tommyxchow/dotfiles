@@ -11,6 +11,7 @@ $links = @(
     @{ Source = "vscode/keybindings.json";                     Target = "$env:APPDATA/Code/User/keybindings.json" }
     @{ Source = ".claude/settings.json";                       Target = "$HOME/.claude/settings.json" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.claude/CLAUDE.md" }
+    @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.codex/AGENTS.md" }
 )
 
 foreach ($link in $links) {

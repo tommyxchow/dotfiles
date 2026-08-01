@@ -1,8 +1,8 @@
 # dotfiles
 
-Personal config for git, VS Code, Ghostty, and Claude Code. The installer symlinks files
-from this repo into their real locations, so editing a file here changes the live config
-immediately, with no copy step.
+Personal config for git, VS Code, Ghostty, Claude Code, Codex, and Grok Build. The
+installer symlinks files from this repo into their real locations, so editing a file
+here changes the live config immediately, with no copy step.
 
 ## Install
 
@@ -30,9 +30,17 @@ copy. `*.bak` is gitignored.
 | `vscode/keybindings.json` | VS Code user keybindings |
 | `ghostty/config` | `~/.config/ghostty/config` |
 | `.claude/settings.json` | `~/.claude/settings.json` |
-| `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
+| `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` |
 
 Ghostty is macOS/Linux only, so `install.ps1` skips it.
+
+Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatibility,
+so it does not need a separate instructions link.
+
+Codex is configured with `project_doc_fallback_filenames = ["CLAUDE.md"]` in
+`~/.codex/config.toml` so it also recognizes repo-level `CLAUDE.md` files. The
+installer does not manage that existing config file, so add the setting once on a new
+machine.
 
 ## What does not get linked
 

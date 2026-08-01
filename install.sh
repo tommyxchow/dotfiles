@@ -57,6 +57,7 @@ link "vscode/keybindings.json" "$VSCODE_USER/keybindings.json"
 link "ghostty/config"          "$HOME/.config/ghostty/config"
 link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
+link ".claude/CLAUDE.md"       "$HOME/.codex/AGENTS.md"
 
 echo
 echo "Done."

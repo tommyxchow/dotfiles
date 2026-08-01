@@ -5,11 +5,13 @@ locations. See `README.md` for the full mapping.
 
 ## Gotchas
 
-- **`~/.claude/settings.json` and `~/.claude/CLAUDE.md` are symlinks to the copies in
-  this repo.** The repo files are the real ones. Editing them changes the live machine
-  config immediately, in every project, with no apply step. `.claude/CLAUDE.md` in
-  particular is the global instruction file, so anything specific to this repo belongs
-  in this file instead.
+- **`~/.claude/settings.json` points to `.claude/settings.json`;
+  `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, and `~/.grok/AGENTS.md` all point to
+  `.claude/CLAUDE.md`.** The repo files are canonical: editing them updates the live
+  machine config immediately, in every project, with no apply step. Cursor imports the
+  Claude file when third-party config is enabled.
+  `.claude/CLAUDE.md` contains global instructions, so anything specific to this repo
+  belongs in this file instead.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** Unpushed edits
