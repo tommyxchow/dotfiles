@@ -6,10 +6,11 @@ locations. See `README.md` for the full mapping.
 ## Gotchas
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
-  `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, and `~/.grok/AGENTS.md` all point to
-  `.claude/CLAUDE.md`.** The repo files are canonical: editing them updates the live
-  machine config immediately, in every project, with no apply step. Cursor imports the
-  Claude file when third-party config is enabled.
+  `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` both point to `.claude/CLAUDE.md`.**
+  The repo files are canonical: editing them updates the live machine config
+  immediately, in every project, with no apply step. Cursor imports the Claude file
+  when third-party config is enabled. Grok Build reads `~/.claude/CLAUDE.md` through
+  Claude Code compatibility, so there is no separate Grok instructions link.
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this repo
   belongs in this file instead.
 
