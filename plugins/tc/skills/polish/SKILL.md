@@ -1,6 +1,6 @@
 ---
 name: polish
-description: End-of-slice cleanup for React/TS apps — Prettier + ESLint autofix on touched files first (when present), then four judgment lenses (reuse, quality, efficiency, altitude), then high-confidence cleanups behind a verify gate. Heavier than /simplify. Use for "polish", "dry clean", "make this less hacky", "reduce duplication", or cleanup before commit. Shape only — not /code-review. Default scope is dirty/recent work; pass "all" for the full branch slice. Never installs tools.
+description: End-of-slice cleanup for React/TS apps — Prettier + ESLint autofix on touched files first (when present), then four judgment lenses (reuse, quality, efficiency, altitude), then high-confidence cleanups behind a verify gate. Heavier than /simplify. Use for "polish", "dry clean", "make this less hacky", "reduce duplication", or cleanup before commit. Shape only — not /code-review. Default scope is dirty work plus files edited this session (still in scope after commit); pass "all" for the full branch slice. Never installs tools.
 argument-hint: "[staged | unstaged | branch | all | <focus>]"
 ---
 
@@ -33,6 +33,8 @@ Build the review pool:
 
 If both sources are empty after applying the table, fall back to files the user named; if none, ask.
 
+**Post-commit / clean tree:** If Source A is empty (everything committed, clean working tree) but Source B is non-empty, the pool is still those session-edited files on disk. That is intentional — bare `/polish` means “what we worked on this session,” not “only uncommitted hunks.” Read those files from disk for Phase 0.5 and Phase 1; do not stop with “nothing to polish” / “already clean” just because `git status` is clean.
+
 If the pool clearly mixes unrelated work from another task, prefer Source B (when included) or ask **once** — don't block every run.
 
 **Recon (cheap):**
@@ -56,7 +58,7 @@ If the pool clearly mixes unrelated work from another task, prefer Source B (whe
 - Behavior-identical only; correctness → `/code-review`.
 - **No Prettier and no ESLint:** formatting/import-order/class-order stay **out of scope**. At most one summary note to consider adopting them. Do not hand-fix style.
 
-**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types.
+**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. **Empty git diff does not make the run trivial** when Source B still has files — size the gate from the pool file set, not from `git diff` alone.
 
 ## Phase 0.5 — Prettier + ESLint prep
 
@@ -69,8 +71,10 @@ If the pool clearly mixes unrelated work from another task, prefer Source B (whe
    - Script can't be scoped → **skip** that step; note in tally. **Never** whole-repo format/lint.
 3. Unfixable ESLint must not abort polish. Consume logs yourself; don't dump them at the user.
 4. **Refresh pool:** post-autofix diff; re-read touched untracked (when in scope); **re-read Source-B paths** autofix may have changed (when Source B is in scope).
-5. Drop from lens scope files whose remaining diff is purely mechanical.
+5. Drop from lens scope only files that **had a dirty diff** which became purely mechanical (format/import-order/class-order only). **Do not drop** Source-B (or other pool) files that have no remaining git diff — e.g. just committed — those stay in scope for judgment; lenses review current file contents.
 6. Leftover ESLint: safe behavior-identical → maybe Phase 3; correctness → `/code-review`; pure style → ignore.
+
+**Autofix no-op ≠ done.** If Prettier/ESLint made no changes, still continue to Phase 1 whenever the judgment pool is non-empty. “Already clean” is only for after lenses find nothing worth applying (or a truly trivial pool under the size gate).
 
 Tally later: "Autofixed N files; K issues remain → fixed/skipped/routed."
 
