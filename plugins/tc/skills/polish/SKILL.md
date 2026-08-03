@@ -1,84 +1,119 @@
 ---
 name: polish
-description: Cleanup review of changed code - reuse, quality, efficiency, altitude - via parallel read-only lens agents, then apply high-confidence cleanups behind severity/confidence + verify gates. Use for polish, simplify, clean this up, dry clean, freshen, dedupe, reduce duplication, make this less hacky, clean up comments, improve readability, or a final pass before commit/push. Quality/shape only - not bug hunting (/code-review). Reviews git changes plus files edited this session, across repos.
+description: End-of-slice cleanup for React/TS apps — Prettier + ESLint autofix on touched files first (when present), then four judgment lenses (reuse, quality, efficiency, altitude), then high-confidence cleanups behind a verify gate. Heavier than /simplify. Use for "polish", "dry clean", "make this less hacky", "reduce duplication", or cleanup before commit. Shape only — not /code-review. Default scope is dirty/recent work; pass "all" for the full branch slice. Never installs tools.
 argument-hint: "[staged | unstaged | branch | all | <focus>]"
 ---
 
-# Polish — parallel cleanup review
+# Polish — autofix then judgment cleanup
 
-Review the changed code for **reuse, quality, efficiency, and altitude**, then apply the cleanups that are clearly worth it. You are improving the *shape* of working code, not finding bugs — correctness is `/code-review`'s job, and a "cleanup" that would change behavior is out of scope here.
+Improve the **shape** of working code. Not bugs (`/code-review`). Not a full rewrite.
 
-This is the default cleanup pass (including asks to "simplify" or "clean this up"). Typical use: review (or `/code-review`) → `/polish` → commit. For a multi-commit branch about to push, prefer `/polish branch`.
+Flow: **scope → Prettier/ESLint prep → four lenses → reconcile → apply → verify.** Optimize for **precision, not recall**.
 
-The flow is a breadth-first fan-out (four independent read-only lenses over one shared diff) followed by a single reconcile-and-apply pass you run yourself. Optimize for **precision, not recall**: a short list of cleanups a senior would actually accept beats a long list of nitpicks. A noisy cleanup pass gets ignored. Tiny diffs still get the full checklist — just run the lenses inline (size gate below) instead of spawning four agents.
+Tuned for React + TypeScript (Next.js, Expo, Vite, etc.) with **Prettier + ESLint**. Portable: missing tools → skip autofix, don't invent formatting findings. **Never install** packages or use `npx`/`pnpm dlx`/`npm exec` to fetch tools for polish — only already-installed local binaries (e.g. `pnpm exec prettier` / `node_modules/.bin`).
+
+Harness format-on-save is unreliable across Cursor / Claude Code / OpenCode. Batch autofix first, then spend lens budget on judgment.
 
 ## Phase 0 — Scope and recon
 
-Build the review pool from the **union** of two sources — sessions span repos and commit mid-flow, so include both every time:
+**Scope keywords:** only the **first** argument token may be a scope keyword (`staged` / `unstaged` / `branch` / `all`). Everything after that is Additional Focus — so focus text like “all buttons” does not change scope.
 
-- **Source A — git changes** in the CWD repo. Pick by argument: `staged` → `git diff --cached`; `unstaged` → `git diff`; `branch`/`all` → `git diff @{upstream}...HEAD` (fall back to `git diff main...HEAD` / `master...HEAD`) plus `git diff` if the tree is dirty; no keyword → `git diff HEAD` if anything is staged, else `git diff`. Enumerate untracked files with `git status --short` and read their contents (diff won't show new files). After a series of commits, default unstaged scope is often empty — use `branch` (or `all`) so the whole pre-push delta is reviewed.
-- **Source B — session-edited files.** Any file you edited earlier this conversation via Edit/Write, in any repo. Scroll your tool history to enumerate them (concrete, not from memory) and read each from disk. These often live outside the CWD — pass them with **absolute paths** and do not `git diff` them.
+Build the review pool:
 
-If both are empty, fall back to files the user explicitly named in recent messages (read them from disk); if there are none, ask what to review rather than guessing.
+- **Source A — git changes** in the CWD repo (see Argument routing).
+- **Source B — session-edited files** (Edit/Write this conversation, any repo), **except when scope is `branch`** (see below). Absolute paths; don't `git diff` them.
 
-**Recon (cheap, high-leverage):** read the repo's `AGENTS.md` / `CLAUDE.md` (esp. a "Gotchas" / conventions section) so findings weight to house style instead of generic best practice. This is where **stack-specific** rules live — keep them in the project, not hardcoded in this skill — and where you learn what the framework, compiler, or runtime already handles (a compiler that memoizes, a framework that caches, typed routes) so a lens doesn't "fix" something the toolchain owns. Note the verification command (e.g. `pnpm check`, or the narrowest relevant `pnpm --filter <pkg> test <path>`).
+| Scope | Source A | Source B | Untracked |
+|---|---|---|---|
+| *(default)* | dirty vs HEAD (`git diff HEAD` if staged exists, else `git diff`) | include | include via `git status` |
+| `unstaged` | `git diff` | include | include |
+| `staged` | `git diff --cached` | include | no |
+| `branch` | committed range only: `@{upstream}...HEAD` (fallback `origin/HEAD...HEAD`, then `main...HEAD` / `master...HEAD`) | **exclude** | **exclude** |
+| `all` | same range as `branch` **+** dirty vs HEAD (`git diff HEAD` so staged+unstaged are included) | include | include |
 
-**Phase 0 exit — size gate.** Decide the path before launching anything: if the change is trivial (a line or two, one file), skip the fan-out and run the lenses inline — walk the four lens checklists in `references/checklists.md` against the diff yourself, then apply with the Phase 3 guards (same conditional fresh-eyes / gate rules). Four parallel agents cost ~15× a normal turn and aren't worth it for a typo. Otherwise continue to the four lenses. For a very large diff, shard a lens across file groups (two reuse agents over different dirs) rather than making one agent read everything.
+If both sources are empty after applying the table, fall back to files the user named; if none, ask.
 
-## Phase 1 — Four review lenses (parallel, read-only)
+If the pool clearly mixes unrelated work from another task, prefer Source B (when included) or ask **once** — don't block every run.
 
-Launch **four read-only review subagents** in a single message so they run concurrently — Claude Code: **Explore** agents; elsewhere: whatever read-only subagent the host offers (they propose, you apply). Optionally run them in the background so the user can keep working; resume to Phase 2 once all four return.
+**Recon (cheap):**
 
-Subagents do **not** inherit this skill's context. Give each one:
+1. Read `AGENTS.md` / `CLAUDE.md`. House style wins over baseline taste.
+2. Note framework/compiler ownership (React Compiler memoization, typed routes, caches).
+3. Detect **Prettier + ESLint** (config and/or package.json deps). Also note `format` / `lint` / `check` scripts.
+4. Confirm **runnable local binaries** (e.g. `pnpm exec prettier --version`, `pnpm exec eslint --version`, or `node_modules/.bin/*`). Config without a binary → treat that tool as absent (skip it). Never install to enable autofix.
+5. Prefer verify gate: `pnpm check` / `npm run check`; else lint + tests; else say so.
+6. Note CLI-/generated-owned paths (e.g. prettierignored `ui/`). Skip unless the diff intentionally owns them.
+7. Multi-repo pool → repeat detection + Phase 0.5 **per repo**. No tools in a repo → skip autofix there.
 
-- the **scope** (the diff plus Source-B absolute paths),
-- the **absolute path** to `references/checklists.md` and which sections to read: **its own lens section** plus the shared **"## Finding format"** and **"## Restraint"** sections (if the path might not resolve in the subagent, paste all three inline — the lens section too, not just the shared pair; the lens table below is a summary, not a substitute for the section),
-- the **recon facts** (languages, frameworks, the repo conventions to honor) and any **free-text focus** from the argument,
-- an explicit **owned scope and out-of-scope** line (each lens defers overlaps to its sibling — see the checklist), and
-- the instruction to **return findings only, in the schema, no fixes, no narration**, capped at the highest-value ~8.
+**Baseline taste** (when docs are thin; **AGENTS.md + real ESLint/Prettier always override**):
 
-The four lenses (details and per-lens boundaries in `references/checklists.md`):
+- Prettier owns whitespace/quotes/semis/import order/class sorting — lenses must not re-propose that.
+- Prefer `import type` / inline type imports; real types over casual `any` / `as` / `!`.
+- Prefer string unions or `as const` objects over `enum`.
+- Prefer derived state / event handlers over effect+setState when equivalent.
+- Don't default to `useMemo` / `useCallback` / `memo` when React Compiler is on.
+- Prefer semantic tokens and `cn`-style helpers when the repo has them.
+- Behavior-identical only; correctness → `/code-review`.
+- **No Prettier and no ESLint:** formatting/import-order/class-order stay **out of scope**. At most one summary note to consider adopting them. Do not hand-fix style.
+
+**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types.
+
+## Phase 0.5 — Prettier + ESLint prep
+
+**Goal:** strip mechanical noise before lenses.
+
+1. Neither tool runnable in this repo → skip to Phase 1 (no-toolchain rule applies).
+2. Autofix **only pool paths for this repo**:
+   - Prefer local CLIs on the file list: `pnpm exec prettier --write <files>`, then `pnpm exec eslint --fix <files>` (or `node_modules/.bin/...`).
+   - Project scripts (`pnpm format`, etc.) **only** if they accept the same path list.
+   - Script can't be scoped → **skip** that step; note in tally. **Never** whole-repo format/lint.
+3. Unfixable ESLint must not abort polish. Consume logs yourself; don't dump them at the user.
+4. **Refresh pool:** post-autofix diff; re-read touched untracked (when in scope); **re-read Source-B paths** autofix may have changed (when Source B is in scope).
+5. Drop from lens scope files whose remaining diff is purely mechanical.
+6. Leftover ESLint: safe behavior-identical → maybe Phase 3; correctness → `/code-review`; pure style → ignore.
+
+Tally later: "Autofixed N files; K issues remain → fixed/skipped/routed."
+
+## Phase 1 — Four lenses (parallel, read-only)
+
+Exactly four read-only lenses in one message. No extra lens types (Tailwind/imports/types/format).
+
+Each subagent gets: post-0.5 scope; the **absolute path** to this skill's `references/checklists.md` and which sections to read (**its lens** + Finding format + Restraint) — paste those three sections inline if the path may not resolve in the subagent; recon + focus; owned/out-of-scope; **skip list** (Phase 0.5 + Prettier/ESLint-owned nits); findings only, schema, ~8 cap; never "find ALL".
 
 | Lens | Owns |
 |---|---|
-| **Reuse** | new code that re-implements an existing helper/util |
-| **Quality** | readability, naming, narrating comments, redundant state, copy-paste, dead code, over-abstraction, type escapes |
+| **Reuse** | re-implements an existing helper/util |
+| **Quality** | redundant state, copy-paste, dead code, nesting, type escapes, convention drift |
 | **Efficiency** | wasted work, missed concurrency, hot-path bloat, no-op updates, leaks |
-| **Altitude** | bandaid fixes — special-cases on shared infra, symptom-not-cause, wrong layer |
+| **Altitude** | bandaids, symptom-vs-cause, wrong layer |
 
-Write the prompts plainly — **do not** say "find ALL issues" or "be thorough"; that language measurably adds noise. Ask for what's clearly worth acting on, and let the Restraint section cap eagerness.
+## Phase 2 — Reconcile
 
-## Phase 2 — Reconcile and gate
-
-Once all four return, **before touching code**:
-
-1. **Dedup on span.** The lenses overlap (reuse vs. altitude especially). Collapse findings that point at the same `file:line`/mechanism into one.
-2. **Resolve conflicts.** If two lenses propose different edits for the same location, pick one — never hand yourself two conflicting edits for one span. Priority when they clash: behavior-preservation > reuse > quality > efficiency > altitude.
-3. **Severity + confidence gate.** Each finding carries `severity` and `confidence` (see schema). Apply only **high/med severity at high confidence**. Demote the rest to a "noted, skipped" list with the reason. **Defer to the toolchain:** anything ESLint/Prettier already handles is not a finding.
+1. Dedup same span across lenses.
+2. One edit per span: behavior-preservation > reuse > quality > efficiency > altitude.
+3. Apply only **high/med severity at high confidence**.
+4. Drop remaining Prettier/ESLint-shaped findings.
 
 ## Phase 3 — Apply and verify
 
-Apply each surviving finding with the **smallest correct edit**, preserving existing style. Guards (this is where you exercise restraint — the agents are tuned to *find*, you decide what's worth it):
+Smallest correct edit. Chesterton's Fence; don't strip named concepts/test seams; behavior-identical (test must change ⇒ not a cleanup).
 
-1. **Chesterton's Fence** — before deleting/inlining/merging, work out why it exists (perf, platform, ordering, a past bug); `git blame` when intent is unclear. Can't explain it → skip.
-2. **Don't over-simplify** — don't inline a helper that names a useful concept, merge unrelated functions, or strip an abstraction that exists for testability. Fewer lines isn't the goal; easier comprehension is.
-3. **Behavior must stay identical** — if a cleanup would require editing a test to stay green, it changed behavior, not shape. Skip it (or hand it to `/code-review`).
+**Undo rules:** revert only **polish-owned** patches from this run (the cleanups you applied). Never `git restore` / checkout that wipes user-authored hunks or unrelated dirty work.
 
-After applying:
+**Gate:**
 
-- **Fresh-eyes verify** when you applied **3+** findings or any high-severity edit — fresh-context subagent (or a clean read) of the *resulting* diff vs original intent; revert scope creep. Below that bar, skip it (this skill runs often; don't tax every pass).
-- **Run the gate** when the repo has a cheap targeted check (e.g. `pnpm --filter <pkg> test <path>`, typecheck on touched packages). Skip full-suite runs. Behavior preservation is proven by the gate, not asserted. **If the gate fails, revert the offending edit** — cleanups are independent, so one bad fix shouldn't sink the rest — and move it to skipped. If there is no usable gate, say so and flag applied cleanups for manual review.
+1. If useful, note whether the gate was already failing before your cleanups (quick baseline: run once before apply, or record known failure). Don't blame pre-existing failures on polish.
+2. After apply: fresh-eyes on the resulting diff; revert polish-owned scope creep.
+3. Run recon's gate (`pnpm check` preferred). New failure caused by a polish cleanup → revert **that** cleanup; continue others. No gate → say so.
 
-Finish with a brief summary: what was applied, what was skipped and why (or confirm the code was already clean).
+**Summary (brief):** autofix tally; applied; skipped + why; `/code-review` leftovers if any. Or "already clean."
 
 ## Argument routing
 
-The argument is `$ARGUMENTS` (empty on a bare `/polish`). Parse it:
+First token → scope (table above). Remaining tokens → Additional Focus for every lens. No scope keyword → default row.
 
-- **A leading scope keyword** (`staged`/`unstaged`/`branch`/`all`) selects the Phase 0 diff.
-- **Any remaining words** — or the whole argument when it isn't a scope keyword — are an **Additional Focus**; pass them verbatim to every lens so findings weight toward that area (so `branch auth` means scope `branch`, focus "auth").
-- **Empty** → default scope, no focus weighting.
+Examples: `/polish` · `/polish all` · `/polish branch` · `/polish all auth forms`
 
 ## Note on posted text
 
-Fix descriptions, the summary, and agent prompts are in-session output. Only text destined for a **posted artifact** (commit message, PR body) follows the global writing rules in `CLAUDE.md` (no em dashes, lowercase teammate voice, lead with the specific change).
+In-session prose is fine. Commit/PR text follows repo / user commit rules when requested.

@@ -1,10 +1,10 @@
 # Polish review checklists
 
-One section per review lens, plus the shared **Finding format** and **Restraint** rules every lens obeys. A review subagent reads its own lens section plus those two shared sections.
+One section per review lens, plus shared **Finding format** and **Restraint**. A review subagent reads its own lens section plus those two shared sections.
 
 ## Contents
-- [Finding format](#finding-format) — the output schema (all lenses)
-- [Restraint](#restraint) — eagerness cap (all lenses)
+- [Finding format](#finding-format)
+- [Restraint](#restraint)
 - [Reuse](#reuse)
 - [Quality](#quality)
 - [Efficiency](#efficiency)
@@ -14,83 +14,89 @@ One section per review lens, plus the shared **Finding format** and **Restraint*
 
 ## Finding format
 
-Return findings only — no fixes, no prose narration. One row per finding, highest-value first, capped at ~8. Use this exact schema:
+Return findings only — no fixes, no prose narration. One row per finding, highest-value first, capped at ~8:
 
 ```
 severity | confidence | file:line | finding | cost | proposed fix
 ```
 
-- **severity** — `high` (real duplication, measurable waste, or a maintenance hazard) · `med` (clear improvement, low stakes) · `low` (stylistic nit). Be honest; inflating severity defeats the gate.
-- **confidence** — `high` (sure it's worth doing and behavior-preserving) · `med` (likely, would want a glance) · `low` (a guess / might be load-bearing). The orchestrator only auto-applies high/med severity at high confidence.
-- **file:line** — concrete location. No vibes-only findings.
-- **cost** — the concrete reason it matters: what is duplicated, wasted, or harder to maintain. Not "this could be cleaner."
-- **proposed fix** — the smaller form that does the same job, named specifically (the existing helper to call, the derived value to use, the guard to add).
+- **severity** — `high` (real duplication, measurable waste, maintenance hazard) · `med` (clear improvement, low stakes) · `low` (stylistic nit). Don't inflate.
+- **confidence** — `high` (worth doing, behavior-preserving) · `med` (likely) · `low` (guess / might be load-bearing). Orchestrator auto-applies only high/med severity at **high** confidence.
+- **file:line** — concrete. No vibes-only findings.
+- **cost** — what is duplicated, wasted, or harder to maintain — not "could be cleaner."
+- **proposed fix** — the smaller equivalent, named specifically.
 
-If a lens finds nothing worth surfacing, say so. A clean result is a valid result — do not manufacture findings to fill the table.
+Clean result is valid — don't manufacture findings to fill the table.
 
 ## Restraint
 
-You are tuned to find cleanups; these cap eagerness so the orchestrator isn't handed noise:
+Caps eagerness:
 
-- **Quality only — not bugs.** If you spot a correctness defect (a real null deref, a race, a wrong result), note it in one line as `out-of-scope: route to /code-review` and move on. Do not propose a behavior-changing "fix" as a cleanup.
-- **Preserve behavior.** Every finding must be behavior-identical: same inputs → same outputs, side effects, ordering, and error paths. If a fix would require editing a test to stay green, it is not a cleanup.
-- **Defer to the toolchain.** Anything the linter/formatter already handles (spacing, import order, quote style) is not a finding.
-- **No speculative abstraction.** Don't demand a generalization for a genuine one-off (YAGNI). Don't add layers, defensive code, or tests for cases that can't happen.
-- **Respect Chesterton's Fence.** If code looks odd but you can't explain why it's there (perf, platform, ordering, a past bug), flag it `low` confidence rather than asserting it's removable.
+- **Quality only — not bugs.** Correctness defect → one line `out-of-scope: route to /code-review`. Don't launder behavior changes as cleanup.
+- **Preserve behavior.** Same inputs → same outputs, side effects, ordering, errors. If a test must change, it's not a cleanup.
+- **Defer to the toolchain.** Not a finding if Prettier/ESLint already handle it or Phase 0.5 just fixed it: spacing/quotes/semis, import order/style, class sort/wrap/whitespace/shorthand nits, unused imports ESLint fixes, mechanical `import type` ESLint fixes. Prefer judgment (reuse, altitude, design-shaped duplication) over re-litigating the linter/formatter. If neither tool is runnable in the repo, formatting/import-order stay out of scope entirely (don't hand-fix style).
+- **No speculative abstraction.** No YAGNI generalizations, no defensive layers for impossible cases.
+- **Chesterton's Fence.** Unexplained oddity → `low` confidence, don't assert removable.
+- **Skip CLI-/generated-owned surfaces** called out in recon (e.g. copy-in `ui/` Prettier ignores) unless the diff intentionally owns them.
+- **Baseline taste is subordinate to the repo.** Portable React/TS defaults yield to `AGENTS.md` and real ESLint/Prettier config.
 
 ---
 
 ## Reuse
 
 **Owns:** new code that re-implements something the codebase already has.
-**Out of scope (defer to sibling):** internal complexity of new code with no existing equivalent → Quality. Performance of a duplicate → still report here as reuse; let Efficiency own genuinely novel hot paths.
+**Out of scope:** internal complexity with no existing equivalent → Quality. Novel hot paths → Efficiency (still report pure duplicates here).
 
-1. **Existing utility/helper** — Grep shared/util modules and files adjacent to the change for a function that already does this. Name the helper to call instead.
-2. **Duplicate function** — a new function that does what an existing one does → call the existing one.
-3. **Inline logic with a utility** — hand-rolled string slicing, manual path joining, custom `process.env` checks, ad-hoc type guards, bespoke deep-clone/merge → replace with the established helper.
+1. **Existing utility/helper** — shared/util or adjacent modules already do this → call that.
+2. **Duplicate function** — new function ≡ existing → call existing.
+3. **Inline logic with a utility** — hand-rolled path/env/clone/merge/guard → established helper.
+
+---
 
 ## Quality
 
-**Owns:** unnecessary complexity and readability debt the diff adds within a single unit of code.
-**Out of scope (defer to sibling):** reusing an existing helper → Reuse; wrong-layer / bandaid placement → Altitude; wasted runtime work → Efficiency.
+**Owns:** unnecessary complexity inside a single unit.
+**Out of scope:** existing helper → Reuse; wrong layer → Altitude; runtime waste → Efficiency.
 
-1. **Redundant state** — state mirroring other state, a cached value you could derive, an effect/observer that could be a direct call.
-2. **Parameter sprawl & flag args** — bolting another arg onto a function instead of restructuring or grouping; opaque boolean/positional flags at the call site (`fn(x, true, false)`) that would read better split or as an options object.
-3. **Copy-paste with slight variation** — near-identical blocks differing by one value → unify behind one parameterized helper.
-4. **Leaky abstraction** — exposing internals a caller shouldn't see, or reaching past a module's public surface.
-5. **Stringly-typed / magic values** — raw string literals or magic numbers where a string-union, enum, or named constant already exists or should.
-6. **Pointless wrapper** — a container that adds nothing because the child already accepts what the wrapper provides (e.g. a JSX `div`/`Box` around a child that already takes `className`/style props). Stack-specific variants of this come from recon, not from this list.
-7. **Nested conditionals / unclear control flow** — ternary chains or if/else/switch nested 3+ deep → flatten with early returns, guard clauses, or a lookup table. Prefer the shape already used in adjacent code.
-8. **Naming / readability** — vague or misleading names introduced in the diff (`data`, `temp`, `handleStuff`, inverted booleans). Rename to match nearby vocabulary; don't invent a new metaphor for one call site.
-9. **Narrating / AI comments** — comments that restate the next line, narrate *what* the code does, or reference the task ("now loop over users", "import the module"). When added in the diff, rate **med severity + high confidence** (not low nits) so the orchestrator gate applies the delete. Keep only non-obvious *why* (constraints, workarounds, invariants, subtle correctness).
-10. **Dead code** — unreachable branches, unused imports/vars/params/functions, commented-out blocks the change orphaned.
-11. **Type escapes (typed languages)** — `any`, unsafe `as` casts, or `!` non-null assertions added where a real type, narrowing, or guard would do. (Deep type *design* is `/code-review`'s; flag only the casual escape hatch.)
-12. **Over-abstraction / gold-plating** — new helpers, wrappers, or config layers that only serve one call site in the diff with no clear second use. Inline or delete; don't keep ceremony "for later."
-13. **Convention drift** — new code that ignores what recon established: the repo's implicit patterns (naming, error-handling shape, file layout, import style) *and* the cleanup-shaped rules `CLAUDE.md` / `AGENTS.md` state outright (named exports, no enums, no `any`, kebab-case new files, remove superseded paths, finish shared-pattern migrations in one pass). Name the exemplar or the stated rule. Flag only **new** violations in the diff, and don't invent rules that aren't in recon.
+1. **Redundant state** — mirrored state, cached derivable value, effect that should be a calculation or event handler.
+2. **Parameter sprawl & flag args** — another boolean/positional flag → split or options object.
+3. **Copy-paste with slight variation** — near-identical blocks → one parameterized helper.
+4. **Leaky abstraction** — exposing internals or reaching past a module's public surface.
+5. **Stringly-typed / magic values** — raw strings/numbers where a string union, `as const` object, or named constant fits. Prefer house style; many repos ban `enum` — don't propose `enum` when recon/lint forbids it.
+6. **Unnecessary JSX nesting** — wrapper adds no layout/accessibility value.
+7. **Nested conditionals** — 3+ deep → guards, early returns, or lookup table.
+8. **Unnecessary comments** — narrates *what* / task crumbs. Keep non-obvious *why*.
+9. **Dead code** — unreachable, unused, commented-out orphans from this change. (Skip unused imports if the linter already fixes them.)
+10. **Type escapes** — casual `any` / `as` / `!` where a real type or narrow works. Deep type design → `/code-review`.
+11. **Convention drift** — ignores recon patterns (naming, errors, layout). Name the exemplar.
 
-> Note: correctness-shaped checks (asymmetric guard application, bash-in-CI working-directory contracts) deliberately live in `/code-review`, not here — they find bugs, not cleanups.
+Correctness-shaped checks stay in `/code-review`.
+
+---
 
 ## Efficiency
 
 **Owns:** wasted runtime work the diff introduces.
-**Out of scope (defer to sibling):** duplicated *source* → Reuse; structural complexity with no runtime cost → Quality.
-**Respect the framework (from recon):** don't optimize what the framework, compiler, or runtime already handles — manual memoization where a compiler does it, hand-rolled caching where the framework caches, polyfills the runtime ships. Recon says what's owned. (React Compiler memoization is one example, not the only one.)
+**Out of scope:** duplicated source → Reuse; complexity with no runtime cost → Quality.
+**Respect the framework (recon):** don't manually memoize when a compiler does; don't hand-roll caches the framework owns.
 
-1. **Unnecessary work** — redundant computation, re-reading a file, duplicate API calls, N+1 patterns.
-2. **Missed concurrency** — independent async ops `await`ed serially when they could `Promise.all`.
-3. **Hot-path bloat** — new blocking work added to startup or a per-request/per-render path.
-4. **Recurring no-op updates** — store/state writes inside a poll loop or handler that fire even when nothing changed → add a change-detection guard. If a wrapper takes an updater callback, verify it honors same-reference "no change" returns, or callers' early-return no-ops are silently defeated.
-5. **Unnecessary existence checks** — `if (exists(x)) read(x)` (TOCTOU) → operate directly and handle the error.
-6. **Memory** — unbounded structures, missing cleanup, leaked listeners. Also long-lived objects built from closures that pin the whole enclosing scope alive → prefer a struct copying only the fields it needs.
-7. **Overly broad operations** — reading a whole file for one section, loading all rows to filter for one.
-8. **Import / bundle cost** — pulling a whole library for one function (`import _ from 'lodash'` → a named import or a few local lines), or barrel-file imports that defeat tree-shaking. Matters most for client/edge bundles.
+1. **Unnecessary work** — redundant compute, re-reads, duplicate calls, N+1.
+2. **Missed concurrency** — independent async awaited serially → `Promise.all` (or house equivalent).
+3. **Hot-path bloat** — new blocking work on startup / per-request / per-render.
+4. **Recurring no-op updates** — writes when nothing changed; verify updater callbacks honor same-reference no-ops.
+5. **Unnecessary existence checks** — TOCTOU `exists` then `read` → operate and handle errors.
+6. **Memory** — unbounded structures, missing cleanup, leaked listeners; closures pinning huge scopes.
+7. **Overly broad operations** — full file/table when one slice suffices.
+8. **Import / bundle cost** — whole library for one function; barrels that hurt client/edge bundles.
+
+---
 
 ## Altitude
 
-**Owns:** whether each change is at the right depth, or patched as a fragile bandaid / misplaced special case.
-**Out of scope (defer to sibling):** local duplication → Reuse/Quality. Only flag where generalizing is clearly worth it near the diff (YAGNI — don't demand abstraction for a real one-off).
+**Owns:** right depth vs bandaid / misplaced special case.
+**Out of scope:** local duplication → Reuse/Quality. Don't demand abstraction for a real one-off (YAGNI).
 
-1. **Special-case on shared infra** — a narrow `if (x === specificCase)` carve-out bolted onto a general mechanism (base class, shared util, render pipeline). If that input class will keep needing carve-outs, name the general form (a parameter, a strategy/lookup, an honester abstraction) the carve-out stands in for.
-2. **Symptom vs. root cause** — a fix applied *downstream* of the real problem (clamping, re-normalizing, re-sorting, defensive re-checks) instead of fixing the source. Flag when the same defect could recur at every other consumer, and point at the upstream site that should own it.
-3. **Wrong layer** — business logic in a presentation component, formatting in the data layer, environment/platform branches scattered across call sites instead of behind one boundary. Name the layer that should own it.
-4. **Repeated local workaround** — the Nth copy of the same compensating pattern (try/catch-and-ignore, retry, manual cache-bust) at yet another call site. The recurrence is the signal the underlying mechanism is missing → propose lifting it into the shared layer once.
+1. **Special-case on shared infra** — narrow carve-out on a general mechanism → name the general form (param, strategy, lookup).
+2. **Symptom vs root cause** — downstream clamp/re-sort/re-check instead of fixing the source; note other consumers at risk.
+3. **Wrong layer** — business logic in UI, formatting in data layer, scattered env/platform branches → name the owning layer.
+4. **Repeated local workaround** — Nth try/catch-ignore, retry, or cache-bust → lift into shared mechanism once.
