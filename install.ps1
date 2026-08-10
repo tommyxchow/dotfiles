@@ -23,6 +23,9 @@ $links = @(
     @{ Source = "plugins/tc/skills/vet";                       Target = "$HOME/.config/opencode/skills/vet" }
     @{ Source = "plugins/tc/skills/tldr";                      Target = "$HOME/.config/opencode/skills/tldr" }
     @{ Source = "plugins/tc/skills/polish";                    Target = "$HOME/.config/opencode/skills/polish" }
+    @{ Source = "opencode/commands/vet.md";                    Target = "$HOME/.config/opencode/commands/vet.md" }
+    @{ Source = "opencode/commands/tldr.md";                   Target = "$HOME/.config/opencode/commands/tldr.md" }
+    @{ Source = "opencode/commands/polish.md";                 Target = "$HOME/.config/opencode/commands/polish.md" }
 )
 
 foreach ($link in $links) {

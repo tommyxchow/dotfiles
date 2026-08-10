@@ -18,6 +18,7 @@ locations. See `README.md` for the full mapping.
 
 - **OpenCode links the compatible `vet`, `tldr`, and `polish` skills from
   `plugins/tc/skills` into `~/.config/opencode/skills`.**
+  `opencode/commands` provides their `/vet`, `/tldr`, and `/polish` wrappers.
   `statusline-install` remains Claude Code-only because OpenCode has no custom
   statusline support. Keep shared skills portable Agent Skills (`name` and
   `description` frontmatter). Do not mirror Claude marketplace plugin caches:

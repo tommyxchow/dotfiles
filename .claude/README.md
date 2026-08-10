@@ -18,9 +18,11 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 
 OpenCode natively loads the compatible first-party `vet`, `tldr`, and `polish`
 skills from `plugins/tc/skills`, linked to `~/.config/opencode/skills` by the
-installer. `statusline-install` remains Claude Code-only because OpenCode has
-no custom statusline support. OpenCode does not load Claude marketplace plugins,
-so `ek` remains Claude Code-only and upstream-managed.
+installer. `opencode/commands` adds `/vet`, `/tldr`, and `/polish` wrappers
+without duplicating the skill instructions. `statusline-install` remains Claude
+Code-only because OpenCode has no custom statusline support. OpenCode does not
+load Claude marketplace plugins, so `ek` remains Claude Code-only and
+upstream-managed.
 
 Plugin content for `chow` lives outside this directory:
 

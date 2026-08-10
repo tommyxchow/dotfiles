@@ -32,6 +32,7 @@ copy. `*.bak` is gitignored.
 | `.claude/settings.json` | `~/.claude/settings.json` |
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` |
 | `plugins/tc/skills/{vet,tldr,polish}` | `~/.config/opencode/skills/{vet,tldr,polish}` |
+| `opencode/commands/{vet,tldr,polish}.md` | `~/.config/opencode/commands/{vet,tldr,polish}.md` |
 
 Ghostty is macOS/Linux only, so `install.ps1` skips it.
 
@@ -49,6 +50,9 @@ files and external Claude skills. The compatible first-party `vet`, `tldr`, and
 `polish` skills are also linked into OpenCode's native global skill directory.
 `statusline-install` remains Claude Code-only. Claude Code marketplace plugins
 are not mirrored from Claude's plugin cache.
+
+OpenCode command wrappers expose these skills through `/vet`, `/tldr`, and
+`/polish` autocomplete without duplicating their instructions.
 
 ## What does not get linked
 

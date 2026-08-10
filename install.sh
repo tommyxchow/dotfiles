@@ -67,6 +67,9 @@ link ".claude/CLAUDE.md"       "$HOME/.codex/AGENTS.md"
 link "plugins/tc/skills/vet"   "$HOME/.config/opencode/skills/vet"
 link "plugins/tc/skills/tldr"  "$HOME/.config/opencode/skills/tldr"
 link "plugins/tc/skills/polish" "$HOME/.config/opencode/skills/polish"
+link "opencode/commands/vet.md" "$HOME/.config/opencode/commands/vet.md"
+link "opencode/commands/tldr.md" "$HOME/.config/opencode/commands/tldr.md"
+link "opencode/commands/polish.md" "$HOME/.config/opencode/commands/polish.md"
 
 echo
 echo "Done."
