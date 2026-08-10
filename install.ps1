@@ -4,6 +4,14 @@
 
 $ErrorActionPreference = "Stop"
 $dotfiles = $PSScriptRoot
+$legacyOpenCodeSkills = "$HOME/.config/opencode/skills"
+$legacyOpenCodeSkillsSource = Join-Path $dotfiles "plugins/tc/skills"
+$legacyOpenCodeSkillsItem = Get-Item -LiteralPath $legacyOpenCodeSkills -Force -ErrorAction SilentlyContinue
+
+# Migration from the pre-OpenCode compatibility setup, which linked every tc skill.
+if ($legacyOpenCodeSkillsItem -and $legacyOpenCodeSkillsItem.LinkType -eq "SymbolicLink" -and $legacyOpenCodeSkillsItem.Target -eq (Resolve-Path $legacyOpenCodeSkillsSource).Path) {
+    Remove-Item -LiteralPath $legacyOpenCodeSkills -Force
+}
 
 $links = @(
     @{ Source = "git/.gitconfig";                              Target = "$HOME/.gitconfig" }
@@ -12,6 +20,9 @@ $links = @(
     @{ Source = ".claude/settings.json";                       Target = "$HOME/.claude/settings.json" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.claude/CLAUDE.md" }
     @{ Source = ".claude/CLAUDE.md";                           Target = "$HOME/.codex/AGENTS.md" }
+    @{ Source = "plugins/tc/skills/vet";                       Target = "$HOME/.config/opencode/skills/vet" }
+    @{ Source = "plugins/tc/skills/tldr";                      Target = "$HOME/.config/opencode/skills/tldr" }
+    @{ Source = "plugins/tc/skills/polish";                    Target = "$HOME/.config/opencode/skills/polish" }
 )
 
 foreach ($link in $links) {

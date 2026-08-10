@@ -5,6 +5,12 @@
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")" && pwd -P)"
+LEGACY_OPENCODE_SKILLS="$HOME/.config/opencode/skills"
+
+# Migration from the pre-OpenCode compatibility setup, which linked every tc skill.
+if [ -L "$LEGACY_OPENCODE_SKILLS" ] && [ "$(readlink "$LEGACY_OPENCODE_SKILLS")" = "$DOTFILES/plugins/tc/skills" ]; then
+  rm "$LEGACY_OPENCODE_SKILLS"
+fi
 
 case "$(uname -s)" in
   Darwin) VSCODE_USER="$HOME/Library/Application Support/Code/User" ;;
@@ -58,6 +64,9 @@ link "ghostty/config"          "$HOME/.config/ghostty/config"
 link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.codex/AGENTS.md"
+link "plugins/tc/skills/vet"   "$HOME/.config/opencode/skills/vet"
+link "plugins/tc/skills/tldr"  "$HOME/.config/opencode/skills/tldr"
+link "plugins/tc/skills/polish" "$HOME/.config/opencode/skills/polish"
 
 echo
 echo "Done."

@@ -1,6 +1,8 @@
 # Shared Agent Config
 
 This directory holds the shared global instructions and Claude Code settings.
+The shared instructions also link into Codex and are read by OpenCode's Claude
+Code compatibility fallback.
 Personal plugins ship from the `chow` marketplace in this same repo
 (`tommyxchow/dotfiles`). Third-party plugins are declared as separate marketplaces in
 `settings.json`.
@@ -11,8 +13,14 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by Cursor and Grok Build) |
+| `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by OpenCode, Cursor, and Grok Build) |
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
+
+OpenCode natively loads the compatible first-party `vet`, `tldr`, and `polish`
+skills from `plugins/tc/skills`, linked to `~/.config/opencode/skills` by the
+installer. `statusline-install` remains Claude Code-only because OpenCode has
+no custom statusline support. OpenCode does not load Claude marketplace plugins,
+so `ek` remains Claude Code-only and upstream-managed.
 
 Plugin content for `chow` lives outside this directory:
 
@@ -54,8 +62,8 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 
 ## Setup
 
-1. Run the dotfiles installer to link the shared instructions into `~/.claude/` and
-   `~/.codex/`, plus `settings.json` into `~/.claude/`.
+1. Run the dotfiles installer to link the shared instructions into `~/.claude/`
+   and `~/.codex/`, plus `settings.json` into `~/.claude/`.
 2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` declare the plugins above, but `enabledPlugins` alone does **not** install them. Install each, then `/reload-plugins`:
 
    ```bash

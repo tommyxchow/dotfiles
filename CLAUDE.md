@@ -11,8 +11,17 @@ locations. See `README.md` for the full mapping.
   immediately, in every project, with no apply step. Cursor imports the Claude file
   when third-party config is enabled. Grok Build reads `~/.claude/CLAUDE.md` through
   Claude Code compatibility, so there is no separate Grok instructions link.
-  `.claude/CLAUDE.md` contains global instructions, so anything specific to this repo
-  belongs in this file instead.
+  OpenCode reads the same Claude file through its compatibility fallback, so it
+  has no separate instructions link either.
+  `.claude/CLAUDE.md` contains global instructions, so anything specific to this
+  repo belongs in this file instead.
+
+- **OpenCode links the compatible `vet`, `tldr`, and `polish` skills from
+  `plugins/tc/skills` into `~/.config/opencode/skills`.**
+  `statusline-install` remains Claude Code-only because OpenCode has no custom
+  statusline support. Keep shared skills portable Agent Skills (`name` and
+  `description` frontmatter). Do not mirror Claude marketplace plugin caches:
+  OpenCode has no compatible marketplace loader.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** Unpushed edits

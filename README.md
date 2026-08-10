@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal config for git, VS Code, Ghostty, Claude Code, Codex, and Grok Build. The
+Personal config for git, VS Code, Ghostty, Claude Code, Codex, OpenCode, and Grok Build. The
 installer symlinks files from this repo into their real locations, so editing a file
 here changes the live config immediately, with no copy step.
 
@@ -31,6 +31,7 @@ copy. `*.bak` is gitignored.
 | `ghostty/config` | `~/.config/ghostty/config` |
 | `.claude/settings.json` | `~/.claude/settings.json` |
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` |
+| `plugins/tc/skills/{vet,tldr,polish}` | `~/.config/opencode/skills/{vet,tldr,polish}` |
 
 Ghostty is macOS/Linux only, so `install.ps1` skips it.
 
@@ -41,6 +42,13 @@ Codex is configured with `project_doc_fallback_filenames = ["CLAUDE.md"]` in
 `~/.codex/config.toml` so it also recognizes repo-level `CLAUDE.md` files. The
 installer does not manage that existing config file, so add the setting once on a new
 machine.
+
+OpenCode uses its Claude Code compatibility fallback to read the shared
+`~/.claude/CLAUDE.md` instructions, plus project `AGENTS.md` or `CLAUDE.md`
+files and external Claude skills. The compatible first-party `vet`, `tldr`, and
+`polish` skills are also linked into OpenCode's native global skill directory.
+`statusline-install` remains Claude Code-only. Claude Code marketplace plugins
+are not mirrored from Claude's plugin cache.
 
 ## What does not get linked
 
