@@ -13,7 +13,7 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by OpenCode, Cursor, and Grok Build) |
+| `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by OpenCode and Grok Build; copied manually into Cursor User Rules) |
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
 OpenCode natively loads the compatible first-party `vet`, `tldr`, and `polish`
@@ -82,7 +82,16 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 
 ### Cursor
 
-Enable **Settings → Rules, Skills, Subagents → Include third-party Plugins, Skills, and other configs**. That picks up `~/.claude/CLAUDE.md`, installed Claude plugins/skills, and related configs. Cursor does **not** run Claude's marketplace install itself: install plugins in Claude Code first.
+1. In **Customize → Rules**, add the contents of `CLAUDE.md` as a User Rule named
+   `Global engineering preferences`. User Rules are Cursor-managed and do not sync
+   from this repo or transfer across machines, so repeat this once per Cursor
+   installation and update the rule manually whenever `CLAUDE.md` changes.
+2. Enable **Rules, Skills, Subagents → Include third-party Plugins, Skills, and
+   other configs** to load installed Claude plugins, skills, and related configs.
+   Cursor does **not** run Claude's marketplace install itself, so install plugins
+   in Claude Code first.
+
+The dotfiles installers do not manage Cursor editor settings or `~/.cursor/mcp.json`.
 
 ### Grok Build
 

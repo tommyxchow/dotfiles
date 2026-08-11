@@ -54,10 +54,20 @@ are not mirrored from Claude's plugin cache.
 OpenCode command wrappers expose these skills through `/vet`, `/tldr`, and
 `/polish` autocomplete without duplicating their instructions.
 
+## Cursor needs a one-time rule copy
+
+Cursor loads repo-level `CLAUDE.md` files and installed Claude plugins and skills
+when third-party config support is enabled, but it does not use the global
+`~/.claude/CLAUDE.md` as a User Rule. Copy `.claude/CLAUDE.md` into
+**Customize → Rules → User Rules** once per Cursor installation and update that
+rule manually whenever the source changes. User Rules do not sync from this repo
+or transfer across machines.
+
 ## What does not get linked
 
 `plugins/tc/` and `.claude-plugin/marketplace.json` ship through the `chow` plugin
 marketplace instead of through symlinks. Nothing local reads them directly.
+Cursor editor settings and `~/.cursor/mcp.json` are also outside the installer.
 
 ## Claude Code needs a second pass
 

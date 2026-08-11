@@ -8,9 +8,12 @@ locations. See `README.md` for the full mapping.
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
   `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` both point to `.claude/CLAUDE.md`.**
   The repo files are canonical: editing them updates the live machine config
-  immediately, in every project, with no apply step. Cursor imports the Claude file
-  when third-party config is enabled. Grok Build reads `~/.claude/CLAUDE.md` through
-  Claude Code compatibility, so there is no separate Grok instructions link.
+  immediately, in every project, with no apply step. Cursor does not use the global
+  file as a User Rule: copy it into **Customize → Rules → User Rules** once per
+  machine and update that rule manually whenever this file changes. Cursor's
+  third-party config setting still imports installed Claude plugins and skills.
+  Grok Build reads `~/.claude/CLAUDE.md` through Claude Code compatibility, so
+  there is no separate Grok instructions link.
   OpenCode reads the same Claude file through its compatibility fallback, so it
   has no separate instructions link either.
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this
