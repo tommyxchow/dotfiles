@@ -7,31 +7,31 @@ locations. See `README.md` for the full mapping.
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
   `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` both point to `.claude/CLAUDE.md`.**
-  The repo files are canonical: editing them updates the live machine config
-  immediately, in every project, with no apply step. Cursor does not use the global
-  file as a User Rule: copy it into **Customize → Rules → User Rules** once per
-  machine and update that rule manually whenever this file changes. Cursor's
-  third-party config setting still imports installed Claude plugins and skills.
-  Grok Build reads `~/.claude/CLAUDE.md` through Claude Code compatibility, so
-  there is no separate Grok instructions link.
-  OpenCode reads the same Claude file through its compatibility fallback, so it
-  has no separate instructions link either.
+  The repo files are canonical: editing them updates Claude, Codex, OpenCode, and
+  Grok immediately. Cursor cannot symlink a local plugin at this repo, so the
+  installer copies `.claude/CLAUDE.md` into
+  `~/.cursor/plugins/local/tc/rules/global.mdc`. Re-run `./install.sh` (or
+  `install.ps1`) after editing that file, then **Developer: Reload Window**. Do
+  not also keep a User Rule with the same text. Cursor's third-party config
+  setting still imports installed Claude plugins and skills.
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this
   repo belongs in this file instead.
 
-- **OpenCode links the compatible `vet`, `tldr`, and `polish` skills from
+- **OpenCode links the compatible `vet`, `tldr`, `polish`, and `resync` skills from
   `plugins/tc/skills` into `~/.config/opencode/skills`.**
-  `opencode/commands` provides their `/vet`, `/tldr`, and `/polish` wrappers.
-  `statusline-install` remains Claude Code-only because OpenCode has no custom
-  statusline support. Keep shared skills portable Agent Skills (`name` and
-  `description` frontmatter). Do not mirror Claude marketplace plugin caches:
-  OpenCode has no compatible marketplace loader.
+  The installer also links those skills, plus `statusline-install`, into
+  `~/.claude/skills` so Claude, Cursor, and Grok read this working tree.
+  `opencode/commands` provides `/vet`, `/tldr`, `/polish`, and `/resync` wrappers.
+  Keep shared skills portable Agent Skills (`name` and `description` frontmatter).
+  Do not enable `tc@chow` on a machine that ran the installer: that plugin is
+  the same files via the marketplace cache, so both would load.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
-  tree.** Unpushed edits
-  to `.claude-plugin/marketplace.json` or `plugins/tc/` have no local effect at all.
-  After changing either: push, then `/plugin marketplace update chow`,
-  `/plugin update tc@chow`, `/reload-plugins`.
+  tree.** That matters for `ek@chow` and for machines that install `tc@chow`
+  instead of running the installer. After changing `.claude-plugin/marketplace.json`
+  or `plugins/tc/`: push, then `/plugin marketplace update chow`,
+  `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish` /
+  `resync` edits are live through `~/.claude/skills` with no push.
 
 - **Catalog entries for plugins in other repos need `source: url` with an `https://`
   URL, never `source: github`.** This does not apply to `extraKnownMarketplaces`, where

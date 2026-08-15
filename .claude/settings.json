@@ -10,7 +10,6 @@
     "refreshInterval": 60
   },
   "enabledPlugins": {
-    "tc@chow": true,
     "ek@chow": true,
     "improve@improve": true,
     "typescript-lsp@claude-plugins-official": true,

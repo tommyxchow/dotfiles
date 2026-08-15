@@ -13,16 +13,17 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by OpenCode and Grok Build; copied manually into Cursor User Rules) |
+| `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by OpenCode and Grok Build; copied by the installer into Cursor's local `tc` plugin) |
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
-OpenCode natively loads the compatible first-party `vet`, `tldr`, and `polish`
-skills from `plugins/tc/skills`, linked to `~/.config/opencode/skills` by the
-installer. `opencode/commands` adds `/vet`, `/tldr`, and `/polish` wrappers
-without duplicating the skill instructions. `statusline-install` remains Claude
-Code-only because OpenCode has no custom statusline support. OpenCode does not
-load Claude marketplace plugins, so `ek` remains Claude Code-only and
-upstream-managed.
+OpenCode natively loads the compatible first-party `vet`, `tldr`, `polish`, and
+`resync` skills from `plugins/tc/skills`, linked to `~/.config/opencode/skills` by the
+installer. The same four, plus `statusline-install`, are linked into
+`~/.claude/skills` so Claude, Cursor, and Grok read this working tree.
+`opencode/commands` adds `/vet`, `/tldr`, `/polish`, and `/resync` wrappers without
+duplicating the skill instructions. Do not enable `tc@chow` alongside those
+links. OpenCode does not load Claude marketplace plugins, so `ek` remains Claude
+Code-only and upstream-managed.
 
 Plugin content for `chow` lives outside this directory:
 
@@ -38,7 +39,7 @@ Plugin content for `chow` lives outside this directory:
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | `/tc:vet`, `/tc:tldr`, `/tc:polish`, `/tc:statusline-install` |
+| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `resync`, `statusline-install` files. Marketplace packaging only — do not enable on a machine that ran the installer. |
 | `ek@chow` | `emilkowalski/skills` (git url) | `emil-design-eng`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
 
 Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.
@@ -64,12 +65,14 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 
 ## Setup
 
-1. Run the dotfiles installer to link the shared instructions into `~/.claude/`
-   and `~/.codex/`, plus `settings.json` into `~/.claude/`.
-2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` declare the plugins above, but `enabledPlugins` alone does **not** install them. Install each, then `/reload-plugins`:
+1. Run the dotfiles installer to link instructions and first-party skills into
+   `~/.claude/`, write the statusline, and copy Cursor's local plugin.
+2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` declare the
+   marketplace plugins below, but `enabledPlugins` alone does **not** install
+   them. Install each, then `/reload-plugins`. Skip `tc@chow` here — the
+   installer already linked those skills:
 
    ```bash
-   claude plugin install tc@chow --scope user
    claude plugin install ek@chow --scope user
    claude plugin install improve@improve --scope user
    claude plugin install typescript-lsp@claude-plugins-official --scope user
@@ -77,21 +80,20 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
    ```
 
    Use the CLI over the interactive `/plugin` menu here: the menu installs to **project** scope, which pins the plugin to one repo, while `enabledPlugins` lives in user-scope `settings.json` and enables it everywhere. That mismatch shows up as "enabled but missing" in every other repo.
-3. Run `/tc:statusline-install`. `settings.json` points at `~/.claude/statusline-command.sh`, which is a **generated artifact** - the skill is its source of truth and the script isn't committed. Until you run it, the statusline is broken on a fresh machine.
-4. Check the `/plugin` **Errors** tab afterwards. `typescript-lsp` reports `Executable not found in $PATH` until `typescript-language-server` is installed.
+3. Check the `/plugin` **Errors** tab afterwards. `typescript-lsp` reports `Executable not found in $PATH` until `typescript-language-server` is installed.
 
 ### Cursor
 
-1. In **Customize → Rules**, add the contents of `CLAUDE.md` as a User Rule named
-   `Global engineering preferences`. User Rules are Cursor-managed and do not sync
-   from this repo or transfer across machines, so repeat this once per Cursor
-   installation and update the rule manually whenever `CLAUDE.md` changes.
+1. Run the installer. It links editor settings and writes
+   `~/.cursor/plugins/local/tc` from `CLAUDE.md`. After editing `CLAUDE.md`,
+   re-run the installer and **Developer: Reload Window**. Do not paste the same
+   text into User Rules.
 2. Enable **Rules, Skills, Subagents → Include third-party Plugins, Skills, and
-   other configs** to load installed Claude plugins, skills, and related configs.
-   Cursor does **not** run Claude's marketplace install itself, so install plugins
-   in Claude Code first.
+   other configs** to load installed Claude plugins and skills. Cursor does
+   **not** run Claude's marketplace install itself, so install plugins in Claude
+   Code first.
 
-The dotfiles installers do not manage Cursor editor settings or `~/.cursor/mcp.json`.
+`~/.cursor/mcp.json` stays outside the installer.
 
 ### Grok Build
 
@@ -112,8 +114,10 @@ Worth doing when a notably better model ships, or on a new machine:
    `CLAUDE.md` rules or new skills for mistakes and workflows that keep recurring.
 
 Approved edits land in this working tree directly, so review with `git diff` and commit.
-Skill edits under `plugins/tc/skills/` also need a push before they take effect. Both
-mechanics are in the root [`CLAUDE.md`](../CLAUDE.md).
+First-party skill edits under `plugins/tc/skills/` are live through `~/.claude/skills`
+on a machine that ran the installer. `/resync` pulls, re-runs the installer, and
+prunes leftover copies. Push still publishes `tc@chow` for machines that install
+the plugin instead.
 
 ## Maintenance
 
@@ -121,7 +125,9 @@ mechanics are in the root [`CLAUDE.md`](../CLAUDE.md).
 - Run `/insights` periodically to generate fresh usage data before syncing.
 - `/plugin marketplace update` refreshes the catalog only; `/plugin update <plugin>@<marketplace>` is what updates an installed plugin. To refresh Emil's upstream skills: `/plugin update ek@chow`.
 - No plugin here pins a `version`, so each resolves to its source's latest commit SHA. Pushing is what publishes; no version bump needed.
-- `autoUpdate: true` is set on `chow` only, so pushes to this repo land on their own: Claude Code refreshes the marketplace and updates installed plugins shortly after startup (random delay up to 10 min), then prompts for `/reload-plugins`. The manual sequence in the root [`CLAUDE.md`](../CLAUDE.md) is still the way to pick up a change immediately.
+- `autoUpdate: true` is set on `chow` only, so `ek@chow` refreshes after a push
+  (random delay up to 10 min), then Claude prompts for `/reload-plugins`. First-party
+  skills on this machine do not wait on that: they are installer links.
 - `improve` deliberately has **no** `autoUpdate`. Third-party marketplaces default to off because a plugin executes arbitrary code with your user privileges - auto-updating a repo you don't control runs new code unreviewed. Update it by hand with `/plugin update improve@improve`.
 
 ## Credits

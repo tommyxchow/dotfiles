@@ -2,11 +2,15 @@
 
 Personal config for git, VS Code, Ghostty, Claude Code, Codex, OpenCode, and Grok Build. The
 installer symlinks files from this repo into their real locations, so editing a file
-here changes the live config immediately, with no copy step.
+here changes the live config immediately. Cursor global instructions are the exception:
+the installer copies `.claude/CLAUDE.md` into a local plugin (Cursor rejects a symlink
+to this repo).
 
 ## Install
 
 ```bash
+git clone https://github.com/tommyxchow/dotfiles.git ~/dev/dotfiles
+cd ~/dev/dotfiles
 ./install.sh          # macOS / Linux
 ```
 
@@ -17,6 +21,10 @@ pwsh -File install.ps1    # Windows
 Windows needs **Developer Mode** on (Settings > System > For developers) or symlink
 creation fails.
 
+On a fresh machine you can also clone, open this repo in Cursor / Grok / OpenCode,
+and say **resync**. `.claude/skills/resync` is in the clone, so the skill runs before
+the installer has linked `~/.claude/skills`. After that, `/resync` is global.
+
 The installer is idempotent. An existing real file at a target gets moved to `.bak`
 first, and the backup is deleted again if it turns out to be byte-identical to the repo
 copy. `*.bak` is gitignored.
@@ -26,13 +34,21 @@ copy. `*.bak` is gitignored.
 | Repo path | Target |
 |-----------|--------|
 | `git/.gitconfig` | `~/.gitconfig` |
-| `vscode/settings.json` | VS Code user settings |
-| `vscode/keybindings.json` | VS Code user keybindings |
+| `vscode/settings.json` | VS Code and Cursor user settings |
+| `vscode/keybindings.json` | VS Code and Cursor user keybindings |
 | `ghostty/config` | `~/.config/ghostty/config` |
 | `.claude/settings.json` | `~/.claude/settings.json` |
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` |
-| `plugins/tc/skills/{vet,tldr,polish}` | `~/.config/opencode/skills/{vet,tldr,polish}` |
-| `opencode/commands/{vet,tldr,polish}.md` | `~/.config/opencode/commands/{vet,tldr,polish}.md` |
+| `plugins/tc/skills/{vet,tldr,polish,resync,statusline-install}` | `~/.claude/skills/{…}` |
+| `plugins/tc/skills/{vet,tldr,polish,resync}` | `~/.config/opencode/skills/{…}` |
+| `opencode/commands/{vet,tldr,polish,resync}.md` | `~/.config/opencode/commands/{…}.md` |
+
+Cursor cannot symlink a local plugin at this repo (the loader rejects targets
+outside `~/.cursor/plugins/local`). The installer writes a real plugin at
+`~/.cursor/plugins/local/tc` whose `rules/global.mdc` is a copy of
+`.claude/CLAUDE.md` with `alwaysApply: true`. Re-run the installer after editing
+that file, then **Developer: Reload Window**. Do not also paste it into User
+Rules or the same text is injected twice.
 
 Ghostty is macOS/Linux only, so `install.ps1` skips it.
 
@@ -47,31 +63,37 @@ machine.
 OpenCode uses its Claude Code compatibility fallback to read the shared
 `~/.claude/CLAUDE.md` instructions, plus project `AGENTS.md` or `CLAUDE.md`
 files and external Claude skills. The compatible first-party `vet`, `tldr`, and
-`polish` skills are also linked into OpenCode's native global skill directory.
-`statusline-install` remains Claude Code-only. Claude Code marketplace plugins
-are not mirrored from Claude's plugin cache.
+`polish` skills are also linked into OpenCode's native global skill directory,
+along with `resync`. `statusline-install` remains Claude Code-only.
 
-OpenCode command wrappers expose these skills through `/vet`, `/tldr`, and
-`/polish` autocomplete without duplicating their instructions.
+The installer also writes `~/.claude/statusline-command.sh` from
+`plugins/tc/skills/statusline-install`, so a new machine does not need
+`/tc:statusline-install`. Re-run the installer after editing that skill.
 
-## Cursor needs a one-time rule copy
+First-party skills are live links into `~/.claude/skills`. Do not also enable
+`tc@chow` on a machine that ran the installer, or Claude and Cursor load the
+same skills twice. Keep `tc@chow` in the marketplace catalog for machines that
+only install the plugin. `ek`, `improve`, `typescript-lsp`, and `frontend-design`
+stay marketplace plugins.
 
-Cursor loads repo-level `CLAUDE.md` files and installed Claude plugins and skills
-when third-party config support is enabled, but it does not use the global
-`~/.claude/CLAUDE.md` as a User Rule. Copy `.claude/CLAUDE.md` into
-**Customize → Rules → User Rules** once per Cursor installation and update that
-rule manually whenever the source changes. User Rules do not sync from this repo
-or transfer across machines.
+## Cursor
+
+The installer links editor settings and writes the local `tc` plugin above.
+Enable **Rules, Skills, Subagents → Include third-party Plugins, Skills, and
+other configs** so Cursor also loads installed Claude plugins and skills. Cursor
+does not run Claude's marketplace install, so install those plugins in Claude
+Code first. `~/.cursor/mcp.json` stays outside the installer.
 
 ## What does not get linked
 
-`plugins/tc/` and `.claude-plugin/marketplace.json` ship through the `chow` plugin
-marketplace instead of through symlinks. Nothing local reads them directly.
-Cursor editor settings and `~/.cursor/mcp.json` are also outside the installer.
+`.claude-plugin/marketplace.json` is catalog-only. `plugins/tc/` is the source
+for the skill links above and for `tc@chow` on machines that only install the
+plugin. Nothing else reads the marketplace file locally.
 
 ## Claude Code needs a second pass
 
-The installer is not enough on its own. Plugins still have to be installed, and the
-statusline script is generated rather than committed, so it stays broken until you run
-`/tc:statusline-install`. See [`.claude/README.md`](.claude/README.md) for those steps,
-the declared plugins, and the config-sync workflow.
+The installer links skills and writes the statusline. Marketplace plugins (`ek`,
+`improve`, `typescript-lsp`, `frontend-design`) still need `claude plugin install`
+when Claude Code is on the machine. Cursor, Grok, and OpenCode get first-party
+skills from the installer alone. `/resync` does both. See
+[`.claude/README.md`](.claude/README.md) for the declared plugins.
