@@ -48,6 +48,10 @@ function Prune-Stale([string]$path) {
 Prune-Stale "$HOME/.claude/notify.sh"
 Prune-Stale "$HOME/.claude/skills/understand"
 Prune-Stale "$HOME/.agents/skills/understand"
+Prune-Stale "$HOME/.claude/skills/resync"
+Prune-Stale "$HOME/.agents/skills/resync"
+Prune-Stale "$HOME/.config/opencode/skills/resync"
+Prune-Stale "$HOME/.config/opencode/commands/resync.md"
 
 $links = @(
     @{ Source = "git/.gitconfig";           Target = "$HOME/.gitconfig" }

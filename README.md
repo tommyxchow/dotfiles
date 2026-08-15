@@ -22,8 +22,8 @@ Windows needs **Developer Mode** on (Settings > System > For developers) or syml
 creation fails.
 
 On a fresh machine you can also clone, open this repo in Cursor / Grok / OpenCode,
-and say **resync**. `.claude/skills/resync` is in the clone, so the skill runs before
-the installer has linked `~/.claude/skills`. After that, `/resync` is global.
+and say **resync**. The repo `CLAUDE.md` points at `docs/resync.md`. That playbook
+is repo-local, not a global skill.
 
 The installer is idempotent. An existing real file at a target gets moved to `.bak`
 first, and the backup is deleted again if it turns out to be byte-identical to the repo
@@ -39,9 +39,9 @@ copy. `*.bak` is gitignored.
 | `ghostty/config` | `~/.config/ghostty/config` |
 | `.claude/settings.json` | `~/.claude/settings.json` |
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` |
-| `plugins/tc/skills/{vet,tldr,polish,resync,statusline-install}` | `~/.claude/skills/{…}` |
-| `plugins/tc/skills/{vet,tldr,polish,resync}` | `~/.config/opencode/skills/{…}` |
-| `opencode/commands/{vet,tldr,polish,resync}.md` | `~/.config/opencode/commands/{…}.md` |
+| `plugins/tc/skills/{vet,tldr,polish,statusline-install}` | `~/.claude/skills/{…}` |
+| `plugins/tc/skills/{vet,tldr,polish}` | `~/.config/opencode/skills/{…}` |
+| `opencode/commands/{vet,tldr,polish}.md` | `~/.config/opencode/commands/{…}.md` |
 
 Cursor cannot symlink a local plugin at this repo (the loader rejects targets
 outside `~/.cursor/plugins/local`). The installer writes a real plugin at
@@ -63,8 +63,9 @@ machine.
 OpenCode uses its Claude Code compatibility fallback to read the shared
 `~/.claude/CLAUDE.md` instructions, plus project `AGENTS.md` or `CLAUDE.md`
 files and external Claude skills. The compatible first-party `vet`, `tldr`, and
-`polish` skills are also linked into OpenCode's native global skill directory,
-along with `resync`. `statusline-install` remains Claude Code-only.
+`polish` skills are also linked into OpenCode's native global skill directory.
+`statusline-install` remains Claude Code-only. Resync is a repo playbook
+(`docs/resync.md`), not a linked skill.
 
 The installer also writes `~/.claude/statusline-command.sh` from
 `plugins/tc/skills/statusline-install`, so a new machine does not need
@@ -95,5 +96,5 @@ plugin. Nothing else reads the marketplace file locally.
 The installer links skills and writes the statusline. Marketplace plugins (`ek`,
 `improve`, `typescript-lsp`, `frontend-design`) still need `claude plugin install`
 when Claude Code is on the machine. Cursor, Grok, and OpenCode get first-party
-skills from the installer alone. `/resync` does both. See
+skills from the installer alone. Saying **resync** in this repo does both. See
 [`.claude/README.md`](.claude/README.md) for the declared plugins.

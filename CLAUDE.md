@@ -3,6 +3,11 @@
 Config repo. `install.sh` / `install.ps1` symlink files from here into their real
 locations. See `README.md` for the full mapping.
 
+## Resync
+
+When I say resync, update, sync this machine, or catch this machine up: read
+`docs/resync.md` and follow it. That playbook is repo-local, not a global skill.
+
 ## Gotchas
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
@@ -17,11 +22,11 @@ locations. See `README.md` for the full mapping.
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this
   repo belongs in this file instead.
 
-- **OpenCode links the compatible `vet`, `tldr`, `polish`, and `resync` skills from
+- **OpenCode links the compatible `vet`, `tldr`, and `polish` skills from
   `plugins/tc/skills` into `~/.config/opencode/skills`.**
   The installer also links those skills, plus `statusline-install`, into
   `~/.claude/skills` so Claude, Cursor, and Grok read this working tree.
-  `opencode/commands` provides `/vet`, `/tldr`, `/polish`, and `/resync` wrappers.
+  `opencode/commands` provides `/vet`, `/tldr`, and `/polish` wrappers.
   Keep shared skills portable Agent Skills (`name` and `description` frontmatter).
   Do not enable `tc@chow` on a machine that ran the installer: that plugin is
   the same files via the marketplace cache, so both would load.
@@ -30,8 +35,8 @@ locations. See `README.md` for the full mapping.
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`
   instead of running the installer. After changing `.claude-plugin/marketplace.json`
   or `plugins/tc/`: push, then `/plugin marketplace update chow`,
-  `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish` /
-  `resync` edits are live through `~/.claude/skills` with no push.
+  `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish`
+  edits are live through `~/.claude/skills` with no push.
 
 - **Catalog entries for plugins in other repos need `source: url` with an `https://`
   URL, never `source: github`.** This does not apply to `extraKnownMarketplaces`, where

@@ -16,14 +16,14 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 | `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by OpenCode and Grok Build; copied by the installer into Cursor's local `tc` plugin) |
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
-OpenCode natively loads the compatible first-party `vet`, `tldr`, `polish`, and
-`resync` skills from `plugins/tc/skills`, linked to `~/.config/opencode/skills` by the
-installer. The same four, plus `statusline-install`, are linked into
+OpenCode natively loads the compatible first-party `vet`, `tldr`, and `polish`
+skills from `plugins/tc/skills`, linked to `~/.config/opencode/skills` by the
+installer. The same three, plus `statusline-install`, are linked into
 `~/.claude/skills` so Claude, Cursor, and Grok read this working tree.
-`opencode/commands` adds `/vet`, `/tldr`, `/polish`, and `/resync` wrappers without
+`opencode/commands` adds `/vet`, `/tldr`, and `/polish` wrappers without
 duplicating the skill instructions. Do not enable `tc@chow` alongside those
 links. OpenCode does not load Claude marketplace plugins, so `ek` remains Claude
-Code-only and upstream-managed.
+Code-only and upstream-managed. Resync is a repo playbook (`docs/resync.md`).
 
 Plugin content for `chow` lives outside this directory:
 
@@ -39,7 +39,7 @@ Plugin content for `chow` lives outside this directory:
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `resync`, `statusline-install` files. Marketplace packaging only — do not enable on a machine that ran the installer. |
+| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `statusline-install` files. Marketplace packaging only — do not enable on a machine that ran the installer. |
 | `ek@chow` | `emilkowalski/skills` (git url) | `emil-design-eng`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
 
 Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.
@@ -115,9 +115,9 @@ Worth doing when a notably better model ships, or on a new machine:
 
 Approved edits land in this working tree directly, so review with `git diff` and commit.
 First-party skill edits under `plugins/tc/skills/` are live through `~/.claude/skills`
-on a machine that ran the installer. `/resync` pulls, re-runs the installer, and
-prunes leftover copies. Push still publishes `tc@chow` for machines that install
-the plugin instead.
+on a machine that ran the installer. Saying **resync** in this repo pulls, re-runs
+the installer, and prunes leftover copies. Push still publishes `tc@chow` for
+machines that install the plugin instead.
 
 ## Maintenance
 

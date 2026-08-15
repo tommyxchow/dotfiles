@@ -89,6 +89,10 @@ prune_stale() {
 prune_stale "$HOME/.claude/notify.sh"
 prune_stale "$HOME/.claude/skills/understand"
 prune_stale "$HOME/.agents/skills/understand"
+prune_stale "$HOME/.claude/skills/resync"
+prune_stale "$HOME/.agents/skills/resync"
+prune_stale "$HOME/.config/opencode/skills/resync"
+prune_stale "$HOME/.config/opencode/commands/resync.md"
 
 link "git/.gitconfig"          "$HOME/.gitconfig"
 link "vscode/settings.json"    "$VSCODE_USER/settings.json"
