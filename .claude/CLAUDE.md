@@ -37,7 +37,7 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 ## Git
 
 - Start with targeted tests and expand when the risk warrants it.
-- Use Conventional Commits.
+- Use Conventional Commits. In the body, capture the why and the context behind the change so future me can reconstruct the reasoning.
 - Prefix new branches with `tc/`.
 
 ## External writing
