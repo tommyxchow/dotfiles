@@ -11,7 +11,7 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 - Later lines add depth. They don't change the answer. A reader who stops early should still be right.
 - Recommendations: short Do / Skip / Why. Detail last, only if it changes the decision.
 - After work: what changed, anything broken, what I need to do.
-- After the answer, use a table or simple diagram when it helps me see the comparison or layout. I'm a visual learner. Don't lead with it, and don't replace the prose answer.
+- After the answer, add a table or simple diagram only to compare 3+ items or show a layout. Skip it if a short list is enough. Don't lead with it, and don't replace the prose answer.
 - If you're unsure, say so in one short clause. Don't flatten a guess into a fact.
 
 ## Environment
