@@ -36,6 +36,9 @@ Caps eagerness:
 - **Preserve behavior.** Same inputs → same outputs, side effects, ordering, errors. If a test must change, it's not a cleanup.
 - **Defer to the toolchain.** Not a finding if Prettier/ESLint already handle it or Phase 0.5 just fixed it: spacing/quotes/semis, import order/style, class sort/wrap/whitespace/shorthand nits, unused imports ESLint fixes, mechanical `import type` ESLint fixes. Prefer judgment (reuse, altitude, design-shaped duplication) over re-litigating the linter/formatter. If neither tool is runnable in the repo, formatting/import-order stay out of scope entirely (don't hand-fix style).
 - **No speculative abstraction.** No YAGNI generalizations, no defensive layers for impossible cases.
+- **Deletion beats restructuring.** Removing code (dead code, unused params, redundant state) is the safest, highest-value cleanup class. Method-level restructuring is where cleanups most often make code worse — hold extract/move/split findings to a higher bar than removals.
+- **Rule of three for dedupe.** Unify copies only when they encode the same knowledge and the helper has an obvious name. Two similar-looking blocks that could diverge stay duplicated — duplication is cheaper than the wrong abstraction. A helper that needs boolean flags to serve its callers is the wrong abstraction.
+- **Never split for length alone.** Long but linear code reads fine. Extract only at a real seam: a nameable concept with a second caller, or a genuine test/ownership boundary.
 - **Chesterton's Fence.** Unexplained oddity → `low` confidence, don't assert removable.
 - **Skip CLI-/generated-owned surfaces** called out in recon (e.g. copy-in `ui/` Prettier ignores) unless the diff intentionally owns them.
 - **Baseline taste is subordinate to the repo.** Portable React/TS defaults yield to `AGENTS.md` and real ESLint/Prettier config.
@@ -60,7 +63,7 @@ Caps eagerness:
 
 1. **Redundant state** — mirrored state, cached derivable value, effect that should be a calculation or event handler.
 2. **Parameter sprawl & flag args** — another boolean/positional flag → split or options object.
-3. **Copy-paste with slight variation** — near-identical blocks → one parameterized helper.
+3. **Copy-paste with slight variation** — near-identical blocks → one parameterized helper. Gate: 3+ occurrences, or 2 that are truly identical and stable (see Restraint — rule of three).
 4. **Leaky abstraction** — exposing internals or reaching past a module's public surface.
 5. **Stringly-typed / magic values** — raw strings/numbers where a string union, `as const` object, or named constant fits. Prefer house style; many repos ban `enum` — don't propose `enum` when recon/lint forbids it.
 6. **Unnecessary JSX nesting** — wrapper adds no layout/accessibility value.

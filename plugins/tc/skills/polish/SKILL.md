@@ -58,7 +58,7 @@ If the pool clearly mixes unrelated work from another task, prefer Source B (whe
 - Behavior-identical only; correctness → code review.
 - **No Prettier and no ESLint:** formatting/import-order/class-order stay **out of scope**. At most one summary note to consider adopting them. Do not hand-fix style.
 
-**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. **Empty git diff does not make the run trivial** when Source B still has files — size the gate from the pool file set, not from `git diff` alone.
+**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Small (≈2-5 files): one combined inline pass covering all four checklist sections — don't spend four subagents on a pool one read can hold. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. **Empty git diff does not make the run trivial** when Source B still has files — size the gate from the pool file set, not from `git diff` alone.
 
 ## Phase 0.5 — Prettier + ESLint prep
 
@@ -96,7 +96,8 @@ Each subagent gets: post-0.5 scope; the **absolute path** to this skill's `refer
 1. Dedup same span across lenses.
 2. One edit per span: behavior-preservation > reuse > quality > efficiency > altitude.
 3. Apply only **high/med severity at high confidence**.
-4. Drop remaining Prettier/ESLint-shaped findings.
+4. Shape hierarchy: removal-shaped cleanups (dead code, unused params, redundant state) are the safest and go first; extract/move/split-shaped findings need a clearly named seam and payoff now — when in doubt, drop the restructuring, keep the deletion.
+5. Drop remaining Prettier/ESLint-shaped findings.
 
 ## Phase 3 — Apply and verify
 
