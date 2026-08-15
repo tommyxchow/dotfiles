@@ -11,6 +11,8 @@ allowed-tools:
 
 Produce TL;DR-first, skimmable technical writing. Lead with the answer, then progressively reveal detail. A reader who stops at the TL;DR walks away correct; a reader who continues learns more, not different.
 
+Voice matches global Communication. Stay human. One idea per sentence. Prefer under 25 words. Same word for the same thing. Gloss a term on first use. Don't flatten a guess into a fact. Don't lead with a table; one after the thesis is fine when it helps me see a comparison. Don't recap at the end.
+
 The invocation argument is `$ARGUMENTS` (empty on bare `/tldr`).
 
 ## Argument routing
