@@ -32,7 +32,7 @@ Clean result is valid — don't manufacture findings to fill the table.
 
 Caps eagerness:
 
-- **Quality only — not bugs.** Correctness defect → one line `out-of-scope: route to /code-review`. Don't launder behavior changes as cleanup.
+- **Quality only — not bugs.** Correctness defect → one line `out-of-scope: route to code review`. Don't launder behavior changes as cleanup.
 - **Preserve behavior.** Same inputs → same outputs, side effects, ordering, errors. If a test must change, it's not a cleanup.
 - **Defer to the toolchain.** Not a finding if Prettier/ESLint already handle it or Phase 0.5 just fixed it: spacing/quotes/semis, import order/style, class sort/wrap/whitespace/shorthand nits, unused imports ESLint fixes, mechanical `import type` ESLint fixes. Prefer judgment (reuse, altitude, design-shaped duplication) over re-litigating the linter/formatter. If neither tool is runnable in the repo, formatting/import-order stay out of scope entirely (don't hand-fix style).
 - **No speculative abstraction.** No YAGNI generalizations, no defensive layers for impossible cases.
@@ -67,10 +67,10 @@ Caps eagerness:
 7. **Nested conditionals** — 3+ deep → guards, early returns, or lookup table.
 8. **Unnecessary comments** — narrates *what* / task crumbs. Keep non-obvious *why*.
 9. **Dead code** — unreachable, unused, commented-out orphans from this change. (Skip unused imports if the linter already fixes them.)
-10. **Type escapes** — casual `any` / `as` / `!` where a real type or narrow works. Deep type design → `/code-review`.
+10. **Type escapes** — casual `any` / `as` / `!` where a real type or narrow works. Deep type design → code review.
 11. **Convention drift** — ignores recon patterns (naming, errors, layout). Name the exemplar.
 
-Correctness-shaped checks stay in `/code-review`.
+Correctness-shaped checks stay in code review.
 
 ---
 

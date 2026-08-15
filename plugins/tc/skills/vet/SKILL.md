@@ -1,6 +1,6 @@
 ---
 name: vet
-description: Cross-check claims against current online sources (web search of primary/official docs) and weave verified, cited findings into the work — flagging what's missing as well as what's wrong. Two uses — (1) audit a prior response or a specific claim, (2) bake online double-checking into a forward task so the answer is research-backed instead of asserted from memory. Triggers on "vet", "vet this", "cross-check", "double check", "verify", "verify your response", "research online", "check as of today", "is this still true" — and use it even when those words are absent whenever a request hinges on checkable facts (versions, APIs, prices, dates, "latest", best practices). Distinct from /deep-research (heavy multi-source exploratory report), /code-review (bugs in a code diff), and /verify (exercising a code change locally).
+description: Cross-check claims against current online sources (web search of primary/official docs) and weave verified, cited findings into the work — flagging what's missing as well as what's wrong. Two uses — (1) audit a prior response or a specific claim, (2) bake online double-checking into a forward task so the answer is research-backed instead of asserted from memory. Triggers on "vet", "vet this", "cross-check", "double check", "verify", "verify your response", "research online", "check as of today", "is this still true" — and use it even when those words are absent whenever a request hinges on checkable facts (versions, APIs, prices, dates, "latest", best practices). Distinct from a heavy multi-source research report, from code review (bugs in a code diff), and from running a change locally to confirm it works.
 argument-hint: "[response | <claim or topic to verify> | <task to research>]"
 allowed-tools: WebSearch WebFetch
 ---
@@ -40,4 +40,4 @@ Cite as autolinked source names (`[Vendor docs](url)`, add the date when it's re
 ## 5. Boundaries
 
 - vet **reports/answers — it doesn't apply changes.** After an audit, wait for approval before editing.
-- Bigger than a cross-check? Open-ended exploratory research → **/deep-research**. Bugs in a code diff → **/code-review**. Confirming a code change works by running it → **/verify**.
+- Bigger than a cross-check? Open-ended exploratory research → a standalone deep-research pass. Bugs in a code diff → the harness's code reviewer (Bugbot in Cursor, `/review` in Claude Code). Confirming a code change works → run it locally.
