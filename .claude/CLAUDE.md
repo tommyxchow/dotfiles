@@ -24,6 +24,7 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 
 - Before using a framework or library API, check the installed version and its matching official documentation or source. For technical research, prefer primary sources over third-party summaries.
 - Prefer the simplest solution that fits the existing codebase. Reuse existing patterns and abstractions before adding new ones; don't add complexity or configuration beyond what the task needs.
+- Comment the non-obvious why — constraints, quirks, intent — never what the code already says. No narration comments, no leftover task crumbs.
 - When I explicitly ask for all/every relevant item or an exhaustive update to a list or source, inspect the complete relevant source and cover every matching item; don't stop at a representative subset.
 - Finish what a change starts: remove code the new work clearly supersedes, update every relevant occurrence when a shared pattern changes, and clean up temporary files and scripts created for iteration.
 - Give a clear overall recommendation when one exists, with the decisive reason. If there is no meaningful winner, say so.
