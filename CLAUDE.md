@@ -22,21 +22,24 @@ When I say resync, update, sync this machine, or catch this machine up: read
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this
   repo belongs in this file instead.
 
-- **OpenCode links the compatible `vet`, `tldr`, and `polish` skills from
-  `plugins/tc/skills` into `~/.config/opencode/skills`.**
+- **OpenCode links the compatible `vet`, `tldr`, `polish`, `grill-me`, and
+  `grilling` skills from `plugins/tc/skills` into `~/.config/opencode/skills`.**
   The installer also links those skills, plus `statusline-install`, into
   `~/.claude/skills` so Claude, Cursor, and Grok read this working tree.
-  `opencode/commands` provides `/vet`, `/tldr`, and `/polish` wrappers.
+  `opencode/commands` provides `/vet`, `/tldr`, `/polish`, and `/grill-me`
+  wrappers.
   Keep shared skills portable Agent Skills (`name` and `description` frontmatter).
   Do not enable `tc@chow` on a machine that ran the installer: that plugin is
-  the same files via the marketplace cache, so both would load.
+  the same files via the marketplace cache, so both would load. Do not install
+  `mattpocock-skills` from the official marketplace either: `grill-me` and
+  `grilling` already live in `plugins/tc/skills`.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`
   instead of running the installer. After changing `.claude-plugin/marketplace.json`
   or `plugins/tc/`: push, then `/plugin marketplace update chow`,
-  `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish`
-  edits are live through `~/.claude/skills` with no push.
+  `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish` /
+  `grill-me` edits are live through `~/.claude/skills` with no push.
 
 - **Catalog entries for plugins in other repos need `source: url` with an `https://`
   URL, never `source: github`.** This does not apply to `extraKnownMarketplaces`, where

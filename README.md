@@ -39,9 +39,9 @@ copy. `*.bak` is gitignored.
 | `ghostty/config` | `~/.config/ghostty/config` |
 | `.claude/settings.json` | `~/.claude/settings.json` |
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` |
-| `plugins/tc/skills/{vet,tldr,polish,statusline-install}` | `~/.claude/skills/{…}` |
-| `plugins/tc/skills/{vet,tldr,polish}` | `~/.config/opencode/skills/{…}` |
-| `opencode/commands/{vet,tldr,polish}.md` | `~/.config/opencode/commands/{…}.md` |
+| `plugins/tc/skills/{vet,tldr,polish,grill-me,grilling,statusline-install}` | `~/.claude/skills/{…}` |
+| `plugins/tc/skills/{vet,tldr,polish,grill-me,grilling}` | `~/.config/opencode/skills/{…}` |
+| `opencode/commands/{vet,tldr,polish,grill-me}.md` | `~/.config/opencode/commands/{…}.md` |
 
 Cursor cannot symlink a local plugin at this repo (the loader rejects targets
 outside `~/.cursor/plugins/local`). The installer writes a real plugin at
@@ -62,8 +62,8 @@ machine.
 
 OpenCode uses its Claude Code compatibility fallback to read the shared
 `~/.claude/CLAUDE.md` instructions, plus project `AGENTS.md` or `CLAUDE.md`
-files and external Claude skills. The compatible first-party `vet`, `tldr`, and
-`polish` skills are also linked into OpenCode's native global skill directory.
+files and external Claude skills. The compatible first-party `vet`, `tldr`, `polish`, `grill-me`, and
+`grilling` skills are also linked into OpenCode's native global skill directory.
 `statusline-install` remains Claude Code-only. Resync is a repo playbook
 (`docs/resync.md`), not a linked skill.
 
@@ -74,8 +74,9 @@ The installer also writes `~/.claude/statusline-command.sh` from
 First-party skills are live links into `~/.claude/skills`. Do not also enable
 `tc@chow` on a machine that ran the installer, or Claude and Cursor load the
 same skills twice. Keep `tc@chow` in the marketplace catalog for machines that
-only install the plugin. `ek`, `improve`, `typescript-lsp`, and `frontend-design`
-stay marketplace plugins.
+only install the plugin. Do not also install `mattpocock-skills` from the official
+marketplace, or `grill-me` / `grilling` load twice. `ek`, `improve`,
+`typescript-lsp`, and `frontend-design` stay marketplace plugins.
 
 ## Cursor
 
