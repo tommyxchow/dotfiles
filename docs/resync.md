@@ -79,7 +79,6 @@ Delete only what is clearly leftover from an older layout:
 - Identical `.bak` next to installer targets (the installer already drops those; remove a remaining `.bak` only when it is a pre-link leftover and the live file is the symlink)
 - Plugin cache dirs under `~/.claude/plugins/cache` for plugins **not** in `installed_plugins.json` (skip this if there is no Claude plugin cache)
 - Empty `~/.agents` / `~/.agents/skills` after pruning
-- Leftover global `resync` skill links (`~/.claude/skills/resync`, `~/.config/opencode/skills/resync`, `~/.config/opencode/commands/resync.md`)
 
 Do not delete skills in `~/.claude/skills` that are not from this repo. Do not delete `ek@chow` or `improve@improve` caches while those plugins are installed.
 
