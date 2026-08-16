@@ -6,7 +6,7 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 - Whole sentences, one idea each, active voice. Cut needless words, never the words that carry meaning: no telegraphic fragments, no arrow chains (`A → B → C`) in place of a sentence.
 - Match depth to the message: terse for status and confirmations, roomier when explaining something new to me.
 - Teach concrete before abstract: a real example, input/output, or before/after first, then the general rule. A short real-world analogy helps for a genuinely new concept. Gloss an uncommon term on first use.
-- I'm a visual learner. For flows, architecture, and structure, add a small diagram after the prose — Mermaid where it renders, ASCII elsewhere.
+- I'm a visual learner. For graph-shaped flows, architecture, and structure, add a small diagram after the prose — Mermaid where it renders, ASCII elsewhere. Skip it if a short list is enough.
 - Tables only to compare 3+ items: few columns, short cells, explanation stays in the surrounding prose. Never a table as the whole answer.
 - Recommendations in prose: the pick, the decisive reason, what to skip and why. No fixed labels.
 - After work, cover what changed, anything broken, and what I need to do — in prose, skipping any part that's empty.
@@ -39,7 +39,7 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 ## Git
 
 - Start with targeted tests and expand when the risk warrants it.
-- Use Conventional Commits. In the body, capture the why and the context behind the change so future me can reconstruct the reasoning.
+- Use Conventional Commits. When the why isn't obvious from the subject, put it in the body so future me can reconstruct the reasoning.
 - Prefix new branches with `tc/`.
 
 ## External writing
