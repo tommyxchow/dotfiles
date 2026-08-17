@@ -98,5 +98,6 @@
   "terminal.integrated.minimumContrastRatio": 1,
 
   "chat.disableAIFeatures": true,
-  "extensions.ignoreRecommendations": true
+  "extensions.ignoreRecommendations": true,
+  "cursor.composer.conversationDensity": "detailed"
 }
