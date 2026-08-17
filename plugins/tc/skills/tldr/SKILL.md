@@ -44,7 +44,7 @@ Drop any section that doesn't apply; trivial inputs get a one-line direct answer
 - **Document, article, or pasted text**: a one-to-three-sentence thesis, then key points, then details only when the source has nuance worth preserving.
 - **Changes or a PR** (`changes` / `pr` modes): what it changes and why in 1-3 sentences, then risk areas worst-first, what to review first, and anything broken or unverified. Mention tests only if they exist in the diff — never invent coverage. Read the diff before summarizing; don't summarize a diff from its description.
 
-**Writing for posted output:** in-session TL;DRs can use em dashes freely. If a TL;DR is headed for posted output (PR body, commit, Teams/Jira comment), follow the global posted-output rules (no em dashes, casual + lowercase voice).
+**Writing for posted output:** in-session TL;DRs can use em dashes freely. If a TL;DR is headed for posted output (PR body, commit, Teams/Jira comment), follow the global External writing rules (concise casual teammate voice, no em dashes, no filler).
 
 ## Default mode: the last few messages
 
