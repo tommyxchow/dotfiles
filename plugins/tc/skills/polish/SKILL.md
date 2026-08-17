@@ -121,4 +121,4 @@ Examples: `/polish` · `/polish all` · `/polish branch` · `/polish all auth fo
 
 ## Note on posted text
 
-In-session prose is fine. Commit/PR text follows repo / user commit rules when requested.
+In-session prose can use em dashes. Commit/PR text follows the global External writing rules (concise casual teammate voice, no em dashes, no filler).

@@ -18,16 +18,16 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 ## Environment
 
 - Use `pnpm` / `pnx` (`pnpm dlx` / `pnpx`), never `npm` / `npx` / `yarn`.
-- Don't install or swap dependencies without asking first. Same for adding linters, formatters, CI gates, or coverage/quality tools the repo doesn't already use.
+- Don't add a new dependency, linter, formatter, CI gate, or coverage tool without asking first.
 
 ## Working preferences
 
-- Before using a framework or library API, check the installed version and its matching official documentation or source. For technical research, prefer primary sources over third-party summaries. For real-world behavior (performance, reliability, compatibility), also weigh credible independent benchmarks, tests, and user reports.
+- Before using a framework or library API, check the installed version and its matching official documentation or source. Prefer primary sources: vendor docs, changelogs, GitHub releases, issues, and discussions. If a newer release already fixes the problem, prefer that bump over a workaround, still following the bump rules below. For real-world behavior (performance, reliability, compatibility, current sentiment), also weigh independent benchmarks, tests, user reports, and X posts when X search is available. Don't treat X as the source of truth for APIs or versions.
 - Prefer the simplest solution that fits the existing codebase. Reuse existing patterns and abstractions before adding new ones; don't add complexity or configuration beyond what the task needs. A fancy reactive collection is usually worse than a normal array you replace (`[...old, next]`).
-- Default to doing the recommended thing, plus cheap follow-through already in the blast radius of the task. Still ask before a major bump, a new dependency, or anything likely to break. Don't wander into a second task.
+- Default to doing the recommended thing, plus cheap follow-through already in scope. Ask first when the change is large, hard to undo, or a decision I can't infer from the task. Don't start a second task.
 - Inline until a pattern appears three times, then extract. Two similar blocks that could diverge stay duplicated.
-- Don't switch a layout or structure strategy (flex vs grid, Column vs Stack) as a side effect of an unrelated task. Changing it is fine when it's the task, it's actually broken, or you flag it first.
-- Patch and minor bumps to fix something are fine. For a major bump, a pinned or patched dependency, or anything similarly likely to break things, tell me first with the options and your recommendation; the reason for a pin is usually in the commit or AGENTS.md. Don't treat every exception as fatal: timeouts, offline, 401s, and cancellations are normal.
+- Don't switch a layout or structure strategy (flex vs grid, Column vs Stack) as a side effect of an unrelated task. Changing it is fine when it's the task or it's actually broken.
+- Patch and minor bumps to fix something are fine. For a major bump, a new dependency, a pinned or patched package, or anything similarly hard to undo, tell me first with the options and your recommendation; the reason for a pin is usually in the commit or AGENTS.md. Don't treat every exception as fatal: timeouts, offline, 401s, and cancellations are normal.
 - Don't paper over types with `as`, non-null `!`, or `any`. Fix them at the definition. A genuine exception gets a one-line why, same as an eslint-disable. Mutually exclusive states are a union (Dart: sealed), not a pile of boolean flags.
 - Named exports by default; a default export only where the framework requires one (`page`/`layout`, configs, `React.lazy`). Use `satisfies` for config and lookup objects that should stay literal.
 - Parse loosely-typed third-party payloads down to the fields you use (Zod in TS). Skip extra validation on your own already-typed endpoints.
@@ -36,7 +36,7 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 - When I explicitly ask for all/every relevant item or an exhaustive update to a list or source, inspect the complete relevant source and cover every matching item; don't stop at a representative subset.
 - Finish what a change starts: remove code the new work clearly supersedes, update every relevant occurrence when a shared pattern changes, and clean up temporary files and scripts created for iteration.
 - Never claim something works on faith: run or check it when feasible, and say plainly what's verified versus untested. Prefer the repo's full check (`pnpm check`, `flutter analyze` + `flutter test`) over a single linter pass. Tests assert what the user sees, not which library is imported.
-- New behavior gets tests: the happy path plus the edge cases likely to break (empty, error, boundary). Most coverage at the integration level, unit tests for pure logic, e2e only for critical journeys. A bug fix starts with a regression test that reproduces it.
+- New behavior gets tests: the happy path plus the edge cases likely to break (empty, error, boundary). For UI work, most coverage at the integration level, unit tests for pure logic, e2e only for critical journeys. Follow the repo if it already splits tests differently. A bug fix starts with a regression test that reproduces it.
 - Logs are structured and tell a story: event, key context, outcome. Never log secrets, tokens, or PII — redact them.
 - If I paste another agent's plan, diff, or answer, check it. Don't agree by default. Say what holds, what's weak, and what you'd change.
 
@@ -55,6 +55,7 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 - Start with targeted tests and expand when the risk warrants it.
 - Use Conventional Commits: `type(scope): subject` in lowercase, no trailing period, tightly scoped. Append `!` before `:` for breaking changes. When the why isn't obvious from the subject, put it in the body so future me can reconstruct the reasoning.
 - Prefix new branches with `tc/`.
+- On personal GitHub repos, commit to `main` unless it's a long-running arc; then use a PR. Keep related work on the current PR. Split or stack only when the change is genuinely different and a split would make review easier.
 
 ## External writing
 
