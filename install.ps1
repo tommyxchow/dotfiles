@@ -131,7 +131,9 @@ if (Test-Path $claudeMd) {
     $desiredManifest = '{"name":"tc","description":"Personal global instructions from dotfiles"}'
     $currentManifest = if (Test-Path $manifest) { (Get-Content -Raw $manifest).Trim() } else { "" }
     if ($currentManifest -ne $desiredManifest) {
-        Set-Content -Path $manifest -Value $desiredManifest -Encoding utf8NoBOM
+        # WriteAllText writes BOM-less UTF-8 on both PS 5.1 and 7; Set-Content's
+        # utf8NoBOM encoding name only exists in PowerShell 7.
+        [System.IO.File]::WriteAllText($manifest, $desiredManifest + [Environment]::NewLine)
     }
     $desired = @"
 ---
@@ -146,7 +148,7 @@ $((Get-Content -Raw $claudeMd).TrimEnd())
         Write-Host "  OK    $rule" -ForegroundColor Green
     }
     else {
-        Set-Content -Path $rule -Value $desired -Encoding utf8NoBOM -NoNewline
+        [System.IO.File]::WriteAllText($rule, $desired)
         Write-Host "  WRITE $rule" -ForegroundColor Cyan
     }
 }
