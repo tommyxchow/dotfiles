@@ -68,6 +68,20 @@ files and external Claude skills. The compatible first-party `vet`, `tldr`, `pol
 (`docs/resync.md`), not a linked skill. Product-repo package upgrades are the `refresh` skill.
 End-of-slice closer is the `pass` skill.
 
+Slash from any repo after the installer has run. Details live in the skill
+files.
+
+| Slash | When |
+|-------|------|
+| `/vet` | A claim, version, or "is this still true". Reports, then waits. |
+| `/polish` | Shape of code you already wrote. |
+| `/pass` | Slice is done: vet, leftovers, polish if JS/TS, ship-ready. Not a commit. |
+| `/refresh` | Occasional package/framework catch-up in a **product** repo. |
+| `/grill-me` | Stress-test a plan. |
+| **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
+
+`/tldr` summarizes. `statusline-install` is Claude-only setup.
+
 The installer also writes `~/.claude/statusline-command.sh` from
 `plugins/tc/skills/statusline-install`, so a new machine does not need
 `/tc:statusline-install`. Re-run the installer after editing that skill.
