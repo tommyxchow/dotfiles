@@ -1,6 +1,6 @@
 ---
 name: polish
-description: End-of-slice cleanup for React/TS apps — Prettier + ESLint autofix on touched files first (when present), then four judgment lenses (reuse, quality, efficiency, altitude), then high-confidence cleanups behind a verify gate. Heavier than a quick tidy-up. Use for "polish", "dry clean", "make this less hacky", "reduce duplication", or cleanup before commit. Shape only — not a bug hunt; not the pass skill ("we good", "anything outstanding", "final review"). Default scope is dirty work plus files edited this session (still in scope after commit); `/polish all` for the full branch slice. Never installs tools.
+description: End-of-slice cleanup for React/TS apps — Prettier + ESLint autofix on touched files first (when present), then four judgment lenses (reuse, quality, efficiency, altitude), then high-confidence cleanups behind a verify gate. Heavier than a quick tidy-up. Use for "polish", "dry clean", "make this less hacky", or "reduce duplication". Shape only — not a bug hunt; not the pass skill ("we good", "anything outstanding", "final review", "final double check", cleanup-before-commit). Default scope is dirty work plus files edited this session (still in scope after commit); `/polish all` for the full branch slice. Never installs tools.
 argument-hint: "[staged | unstaged | branch | all | <focus>]"
 ---
 
@@ -58,7 +58,7 @@ If the pool clearly mixes unrelated work from another task, prefer Source B (whe
 - Behavior-identical only; correctness → code review.
 - **No Prettier and no ESLint:** formatting/import-order/class-order stay **out of scope**. At most one summary note to consider adopting them. Do not hand-fix style.
 
-**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Small (≈2-5 files): one combined inline pass covering all four checklist sections — don't spend four subagents on a pool one read can hold. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. **Empty git diff does not make the run trivial** when Source B still has files — size the gate from the pool file set, not from `git diff` alone.
+**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Small (≈2-5 files): one combined inline review covering all four checklist sections — don't spend four subagents on a pool one read can hold. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. **Empty git diff does not make the run trivial** when Source B still has files — size the gate from the pool file set, not from `git diff` alone.
 
 ## Phase 0.5 — Prettier + ESLint prep
 

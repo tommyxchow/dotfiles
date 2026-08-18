@@ -35,7 +35,7 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 - Comment the non-obvious why — constraints, quirks, intent — never what the code already says. No narration comments, no leftover task crumbs.
 - When I explicitly ask for all/every relevant item or an exhaustive update to a list or source, inspect the complete relevant source and cover every matching item; don't stop at a representative subset.
 - Finish what a change starts: remove code the new work clearly supersedes, update every relevant occurrence when a shared pattern changes, and clean up temporary files and scripts created for iteration.
-- When I say we good, anything outstanding, final pass, or close this out: follow the `pass` skill. That is not polish and not permission to commit.
+- When I say we good, anything outstanding, final pass, final review, final double check, or close this out: follow the `pass` skill. That is not polish and not permission to commit.
 - Never claim something works on faith: run or check it when feasible, and say plainly what's verified versus untested. Prefer the repo's full check (`pnpm check`, `flutter analyze` + `flutter test`) over a single linter pass. Tests assert what the user sees, not which library is imported.
 - New behavior gets tests: the happy path plus the edge cases likely to break (empty, error, boundary). For UI work, most coverage at the integration level, unit tests for pure logic, e2e only for critical journeys. Follow the repo if it already splits tests differently. A bug fix starts with a regression test that reproduces it.
 - Logs are structured and tell a story: event, key context, outcome. Never log secrets, tokens, or PII — redact them.

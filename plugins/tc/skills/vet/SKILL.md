@@ -1,6 +1,6 @@
 ---
 name: vet
-description: Cross-checks claims against current official docs and primary sources. Use when the user says vet, search online, look this up, cross-check, double check, verify, is this still true, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("we good", "anything outstanding", "final review").
+description: Cross-checks claims against current official docs and primary sources. Use when the user says vet, search online, look this up, cross-check, double check, verify, is this still true, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("we good", "anything outstanding", "final review", "final double check").
 argument-hint: "[response | <claim or topic to verify> | <task to research>]"
 allowed-tools: WebSearch WebFetch
 ---
@@ -40,5 +40,5 @@ Cite as autolinked source names (`[Vendor docs](url)`, add the date when it's re
 
 ## 5. Boundaries
 
-- vet **reports/answers — it doesn't apply changes.** After an audit, wait for approval before editing. End-of-slice "we good" / "anything outstanding" / "final review" is `pass`, which vets then patches.
-- Bigger than a cross-check? Open-ended exploratory research → a standalone deep-research pass. Bugs in a code diff → the harness's code reviewer (Bugbot in Cursor, `/review` in Claude Code). Confirming a code change works → run it locally.
+- vet **reports/answers — it doesn't apply changes.** After an audit, wait for approval before editing. End-of-slice "we good" / "anything outstanding" / "final review" / "final double check" is `pass`, which vets then patches.
+- Bigger than a cross-check? Open-ended exploratory research → a standalone deep-research round. Bugs in a code diff → the harness's code reviewer (Bugbot in Cursor, `/review` in Claude Code). Confirming a code change works → run it locally.

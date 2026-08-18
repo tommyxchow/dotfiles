@@ -93,7 +93,7 @@ Code first. `~/.cursor/mcp.json` stays outside the installer.
 for the skill links above and for `tc@chow` on machines that only install the
 plugin. Nothing else reads the marketplace file locally.
 
-## Claude Code needs a second pass
+## Claude Code still needs the marketplace step
 
 The installer links skills and writes the statusline. Marketplace plugins (`ek`,
 `improve`, `typescript-lsp`, `frontend-design`) still need `claude plugin install`
