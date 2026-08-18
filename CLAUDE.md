@@ -26,12 +26,12 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
   repo belongs in this file instead.
 
 - **OpenCode links the compatible `vet`, `tldr`, `polish`, `grill-me`,
-  `grilling`, and `refresh` skills from `plugins/tc/skills` into
+  `grilling`, `refresh`, and `pass` skills from `plugins/tc/skills` into
   `~/.config/opencode/skills`.**
   The installer also links those skills, plus `statusline-install`, into
   `~/.claude/skills` so Claude, Cursor, and Grok read this working tree.
-  `opencode/commands` provides `/vet`, `/tldr`, `/polish`, `/grill-me`, and
-  `/refresh` wrappers.
+  `opencode/commands` provides `/vet`, `/tldr`, `/polish`, `/grill-me`,
+  `/refresh`, and `/pass` wrappers.
   Keep shared skills portable Agent Skills (`name` and `description` frontmatter).
   Do not enable `tc@chow` on a machine that ran the installer: that plugin is
   the same files via the marketplace cache, so both would load. Do not install
@@ -43,7 +43,7 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
   instead of running the installer. After changing `.claude-plugin/marketplace.json`
   or `plugins/tc/`: push, then `/plugin marketplace update chow`,
   `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish` /
-  `grill-me` / `refresh` edits are live through `~/.claude/skills` with no push.
+  `grill-me` / `refresh` / `pass` edits are live through `~/.claude/skills` with no push.
 
 - **Catalog entries for plugins in other repos need `source: url` with an `https://`
   URL, never `source: github`.** This does not apply to `extraKnownMarketplaces`, where

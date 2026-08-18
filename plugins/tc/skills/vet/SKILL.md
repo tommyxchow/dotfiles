@@ -1,6 +1,6 @@
 ---
 name: vet
-description: Cross-check claims against current online sources (web search of primary/official docs) and weave verified, cited findings into the work — flagging what's missing as well as what's wrong. Two uses — (1) audit a prior response or a specific claim, (2) bake online double-checking into a forward task so the answer is research-backed instead of asserted from memory. Triggers on "vet", "vet this", "search online", "look this up", "look up", "research", "research online", "cross-check", "double check", "verify", "verify your response", "check as of today", "is this still true" — and use it even when those words are absent whenever a request hinges on checkable facts (versions, APIs, prices, dates, "latest", best practices). Not for searching the local codebase. Distinct from summarizing existing context (that's tldr), from a heavy multi-source research report, from code review (bugs in a code diff), and from running a change locally to confirm it works.
+description: Cross-checks claims against current official docs and primary sources. Use when the user says vet, search online, look this up, cross-check, double check, verify, is this still true, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("we good", "anything outstanding", "final review").
 argument-hint: "[response | <claim or topic to verify> | <task to research>]"
 allowed-tools: WebSearch WebFetch
 ---
@@ -10,6 +10,7 @@ vet grounds work in **current online sources** instead of training-data memory �
 ## 1. Pick the mode (don't stall asking "what to review")
 
 - **Auditing a prior response or a claim** the user points at → claim audit.
+- **Pasted plan from another model** ("chatgpt said", "wdyt", "what do you think") → claim audit of that paste.
 - **"vet" attached to a forward task** ("build X and vet it", "what's the best Y") → do the task *research-backed*: search current sources for every checkable fact before asserting, and cite inline as you go.
 - **Ambiguous** → default to verifying the most recent checkable claims in the conversation. Only ask if there is genuinely nothing to act on.
 
@@ -39,5 +40,5 @@ Cite as autolinked source names (`[Vendor docs](url)`, add the date when it's re
 
 ## 5. Boundaries
 
-- vet **reports/answers — it doesn't apply changes.** After an audit, wait for approval before editing.
+- vet **reports/answers — it doesn't apply changes.** After an audit, wait for approval before editing. End-of-slice "we good" / "anything outstanding" / "final review" is `pass`, which vets then patches.
 - Bigger than a cross-check? Open-ended exploratory research → a standalone deep-research pass. Bugs in a code diff → the harness's code reviewer (Bugbot in Cursor, `/review` in Claude Code). Confirming a code change works → run it locally.

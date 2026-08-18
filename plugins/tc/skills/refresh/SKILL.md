@@ -1,6 +1,6 @@
 ---
 name: refresh
-description: Occasional repo catch-up — bump to the latest versions this stack can honestly take, apply migrations, flag must-upgrades and security advisories, and vet AGENTS.md against current vendor docs. Use when the user says "refresh", "reaudit", "resync" (this product repo), "upgrade everything", "catch this repo up", "outdated packages", "security audit", "dependabot", or asks to migrate to the latest stack. Distinct from the dotfiles machine playbook (docs/resync.md), polish (shape of working code), and vet (claim checking).
+description: Occasional repo catch-up — bump to the latest versions this stack can honestly take, apply migrations, flag must-upgrades and security advisories, and vet AGENTS.md against current vendor docs. Use when the user says "refresh", "reaudit", "resync" (this product repo), "upgrade everything", "any packages we can upgrade", "catch this repo up", "outdated packages", "gonna do another release", "security audit", "dependabot", or asks to migrate to the latest stack. Distinct from the dotfiles machine playbook (docs/resync.md), polish (shape of working code), vet (claim checking), and pass (end-of-slice closer).
 argument-hint: "[optimal | full | minimal | audit | packages | docs] [custom instructions]"
 ---
 
@@ -115,4 +115,5 @@ Gate (and extra CI jobs) green. Already red before the bump → say so, don't bl
 | Dotfiles `docs/resync.md` | Machine: pull, installer, plugins |
 | `polish` | Shape of code you already wrote |
 | `vet` | Check a claim; refresh uses it for versions and advisories |
+| `pass` | End-of-slice closer; does not bump packages |
 | `improve` | Advisor plans, does not bump |
