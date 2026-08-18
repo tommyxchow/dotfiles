@@ -5,7 +5,7 @@
     {
       "name": "tc",
       "source": "./plugins/tc",
-      "description": "Personal agent skills: vet, tldr, polish, grill-me, grilling, statusline-install"
+      "description": "Personal agent skills: vet, tldr, polish, grill-me, grilling, refresh, statusline-install"
     },
     {
       "name": "ek",

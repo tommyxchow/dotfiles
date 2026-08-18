@@ -8,6 +8,9 @@ locations. See `README.md` for the full mapping.
 When I say resync, update, sync this machine, or catch this machine up: read
 `docs/resync.md` and follow it. That playbook is repo-local, not a global skill.
 
+Refreshing a **product** repo (packages, framework migrations, shadcn) is the
+`refresh` skill, including when I say resync in that repo.
+
 ## Gotchas
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
@@ -22,12 +25,13 @@ When I say resync, update, sync this machine, or catch this machine up: read
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this
   repo belongs in this file instead.
 
-- **OpenCode links the compatible `vet`, `tldr`, `polish`, `grill-me`, and
-  `grilling` skills from `plugins/tc/skills` into `~/.config/opencode/skills`.**
+- **OpenCode links the compatible `vet`, `tldr`, `polish`, `grill-me`,
+  `grilling`, and `refresh` skills from `plugins/tc/skills` into
+  `~/.config/opencode/skills`.**
   The installer also links those skills, plus `statusline-install`, into
   `~/.claude/skills` so Claude, Cursor, and Grok read this working tree.
-  `opencode/commands` provides `/vet`, `/tldr`, `/polish`, and `/grill-me`
-  wrappers.
+  `opencode/commands` provides `/vet`, `/tldr`, `/polish`, `/grill-me`, and
+  `/refresh` wrappers.
   Keep shared skills portable Agent Skills (`name` and `description` frontmatter).
   Do not enable `tc@chow` on a machine that ran the installer: that plugin is
   the same files via the marketplace cache, so both would load. Do not install
@@ -39,7 +43,7 @@ When I say resync, update, sync this machine, or catch this machine up: read
   instead of running the installer. After changing `.claude-plugin/marketplace.json`
   or `plugins/tc/`: push, then `/plugin marketplace update chow`,
   `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish` /
-  `grill-me` edits are live through `~/.claude/skills` with no push.
+  `grill-me` / `refresh` edits are live through `~/.claude/skills` with no push.
 
 - **Catalog entries for plugins in other repos need `source: url` with an `https://`
   URL, never `source: github`.** This does not apply to `extraKnownMarketplaces`, where

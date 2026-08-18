@@ -17,13 +17,14 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
 OpenCode natively loads the compatible first-party `vet`, `tldr`, `polish`,
-`grill-me`, and `grilling` skills from `plugins/tc/skills`, linked to
+`grill-me`, `grilling`, and `refresh` skills from `plugins/tc/skills`, linked to
 `~/.config/opencode/skills` by the installer. The same set, plus
 `statusline-install`, is linked into `~/.claude/skills` so Claude, Cursor, and
 Grok read this working tree. `opencode/commands` adds `/vet`, `/tldr`,
-`/polish`, and `/grill-me` wrappers without duplicating the skill instructions. Do not enable `tc@chow` alongside those
+`/polish`, `/grill-me`, and `/refresh` wrappers without duplicating the skill instructions. Do not enable `tc@chow` alongside those
 links. OpenCode does not load Claude marketplace plugins, so `ek` remains Claude
-Code-only and upstream-managed. Resync is a repo playbook (`docs/resync.md`).
+Code-only and upstream-managed. Machine catch-up is a repo playbook (`docs/resync.md`).
+Product-repo upgrades are the `refresh` skill.
 
 Plugin content for `chow` lives outside this directory:
 
@@ -39,7 +40,7 @@ Plugin content for `chow` lives outside this directory:
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `grill-me`, `grilling`, `statusline-install` files. Marketplace packaging only — do not enable on a machine that ran the installer. |
+| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `grill-me`, `grilling`, `refresh`, `statusline-install` files. Marketplace packaging only — do not enable on a machine that ran the installer. |
 | `ek@chow` | `emilkowalski/skills` (git url) | `emil-design-eng`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
 
 Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.

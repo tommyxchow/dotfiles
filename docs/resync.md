@@ -4,6 +4,8 @@ Make **this machine** match the canonical layout in the dotfiles repo. Not a doc
 
 This playbook lives in the repo and loads only when you open this workspace and ask to resync. It is not a global skill.
 
+Refreshing packages and framework versions in a **product** repo is the `refresh` skill. Do not run that here.
+
 Primary harnesses: **Cursor**, **Grok Build**, **OpenCode**. Claude Code and Codex when they exist. The installer is enough for instructions and first-party skills on all of those. Marketplace plugins (`ek`, `improve`, `frontend-design`, `typescript-lsp`) need the `claude` CLI; skip that section if it is not installed.
 
 Flow: **find repo → pull or clone → installer → marketplace plugins (if `claude`) → dedupe → leftover sweep → report.**
@@ -25,7 +27,7 @@ From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new c
 
 macOS/Linux: `./install.sh`. Windows: `pwsh -File install.ps1`.
 
-It links configs and first-party skills, prunes known stale paths, writes `~/.claude/statusline-command.sh`, and copies Cursor's local `tc` plugin. Re-running is safe. This is the step that makes Cursor / Grok / OpenCode / Codex pick up instructions and `vet` / `tldr` / `polish` / `grill-me` on a new machine.
+It links configs and first-party skills, prunes known stale paths, writes `~/.claude/statusline-command.sh`, and copies Cursor's local `tc` plugin. Re-running is safe. This is the step that makes Cursor / Grok / OpenCode / Codex pick up instructions and `vet` / `tldr` / `polish` / `grill-me` / `refresh` on a new machine.
 
 ## Marketplace plugins
 
