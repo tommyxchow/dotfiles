@@ -16,14 +16,13 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 | `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by OpenCode and Grok Build; copied by the installer into Cursor's local `tc` plugin) |
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
-OpenCode natively loads the compatible first-party `vet`, `tldr`, `polish`,
-`grill-me`, `grilling`, `refresh`, and `pass` skills from `plugins/tc/skills`, linked to
-`~/.config/opencode/skills` by the installer. The same set, plus
-`statusline-install`, is linked into `~/.claude/skills` so Claude, Cursor, and
-Grok read this working tree. `opencode/commands` adds `/vet`, `/tldr`,
-`/polish`, `/grill-me`, `/refresh`, and `/pass` wrappers without duplicating the skill instructions. Do not enable `tc@chow` alongside those
-links. OpenCode does not load Claude marketplace plugins, so `ek` remains Claude
-Code-only and upstream-managed. Machine catch-up is a repo playbook (`docs/resync.md`).
+The installer links first-party skills into `~/.claude/skills`. Claude, Cursor,
+Grok, and OpenCode all read that path. `opencode/commands` adds `/vet`, `/tldr`,
+`/polish`, `/grill-me`, `/refresh`, and `/pass` wrappers without duplicating the
+skill instructions. Do not enable `tc@chow` alongside those links, and do not
+also copy those skills into `~/.config/opencode/skills`. OpenCode does not load
+Claude marketplace plugins, so `ek` remains Claude Code-only and
+upstream-managed. Machine catch-up is a repo playbook (`docs/resync.md`).
 Product-repo upgrades are the `refresh` skill. End-of-slice closer is the `pass` skill.
 
 Plugin content for `chow` lives outside this directory:
@@ -41,7 +40,7 @@ Plugin content for `chow` lives outside this directory:
 | Plugin | Source | Skills |
 |--------|--------|--------|
 | `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `grill-me`, `grilling`, `refresh`, `pass`, `statusline-install` files. Marketplace packaging only — do not enable on a machine that ran the installer. |
-| `ek@chow` | `emilkowalski/skills` (git url) | `emil-design-eng`, `review-animations`, `improve-animations`, `find-animation-opportunities`, `animation-vocabulary`, `apple-design`, `pick-ui-library` |
+| `ek@chow` | `emilkowalski/skills` (git url) | Whatever is in upstream `skills/` (not vendored here) |
 
 Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.
 

@@ -65,7 +65,7 @@ If `claude` is missing, say so in the report and continue.
 
 **Grok:** no extra links. It reads `~/.claude/CLAUDE.md` and `~/.claude/skills` through Claude compatibility.
 
-**OpenCode:** native links in `~/.config/opencode/skills` are the same files as `~/.claude/skills`. Leave both. Do not also link `~/.agents/skills`.
+**OpenCode:** it already reads `~/.claude/skills`. Do not also link first-party skills into `~/.config/opencode/skills`. Slash-command stubs in `~/.config/opencode/commands` stay. Do not also link `~/.agents/skills`.
 
 **Codex:** installer already points `~/.codex/AGENTS.md` at `.claude/CLAUDE.md`. Do not recreate `~/.agents/skills`.
 

@@ -108,10 +108,8 @@ for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   [ -d "$skill_dir" ] || continue
   name="$(basename "$skill_dir")"
   prune_stale "$HOME/.agents/skills/$name"
+  prune_stale "$HOME/.config/opencode/skills/$name"
   link "plugins/tc/skills/$name" "$HOME/.claude/skills/$name"
-  if [ "$name" != "statusline-install" ]; then
-    link "plugins/tc/skills/$name" "$HOME/.config/opencode/skills/$name"
-  fi
 done
 for cmd in "$DOTFILES"/opencode/commands/*.md; do
   [ -f "$cmd" ] || continue

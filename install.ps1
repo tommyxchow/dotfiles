@@ -67,10 +67,8 @@ $links = @(
 Get-ChildItem (Join-Path $dotfiles "plugins/tc/skills") -Directory -ErrorAction SilentlyContinue | ForEach-Object {
     $name = $_.Name
     Prune-Stale "$HOME/.agents/skills/$name"
+    Prune-Stale "$HOME/.config/opencode/skills/$name"
     $links += @{ Source = "plugins/tc/skills/$name"; Target = "$HOME/.claude/skills/$name" }
-    if ($name -ne "statusline-install") {
-        $links += @{ Source = "plugins/tc/skills/$name"; Target = "$HOME/.config/opencode/skills/$name" }
-    }
 }
 Get-ChildItem (Join-Path $dotfiles "opencode/commands") -Filter "*.md" -File -ErrorAction SilentlyContinue | ForEach-Object {
     $links += @{ Source = "opencode/commands/$($_.Name)"; Target = "$HOME/.config/opencode/commands/$($_.Name)" }

@@ -25,13 +25,10 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this
   repo belongs in this file instead.
 
-- **OpenCode links the compatible `vet`, `tldr`, `polish`, `grill-me`,
-  `grilling`, `refresh`, and `pass` skills from `plugins/tc/skills` into
-  `~/.config/opencode/skills`.**
-  The installer also links those skills, plus `statusline-install`, into
-  `~/.claude/skills` so Claude, Cursor, and Grok read this working tree.
-  `opencode/commands` provides `/vet`, `/tldr`, `/polish`, `/grill-me`,
-  `/refresh`, and `/pass` wrappers.
+- **The installer links first-party skills into `~/.claude/skills`.** Claude,
+  Cursor, Grok, and OpenCode all read that path. `opencode/commands` provides
+  `/vet`, `/tldr`, `/polish`, `/grill-me`, `/refresh`, and `/pass` wrappers.
+  Do not also copy those skills into `~/.config/opencode/skills`.
   Keep shared skills portable Agent Skills (`name` and `description` frontmatter).
   Do not enable `tc@chow` on a machine that ran the installer: that plugin is
   the same files via the marketplace cache, so both would load. Do not install

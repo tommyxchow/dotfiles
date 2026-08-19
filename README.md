@@ -39,8 +39,7 @@ copy. `*.bak` is gitignored.
 | `ghostty/config` | `~/.config/ghostty/config` |
 | `.claude/settings.json` | `~/.claude/settings.json` |
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` |
-| `plugins/tc/skills/{vet,tldr,polish,pass,grill-me,grilling,refresh,statusline-install}` | `~/.claude/skills/{…}` |
-| `plugins/tc/skills/{vet,tldr,polish,pass,grill-me,grilling,refresh}` | `~/.config/opencode/skills/{…}` |
+| `plugins/tc/skills/{vet,tldr,polish,pass,grill-me,grilling,refresh,statusline-install}` | `~/.claude/skills/{…}` (OpenCode reads this path too) |
 | `opencode/commands/{vet,tldr,polish,pass,grill-me,refresh}.md` | `~/.config/opencode/commands/{…}.md` |
 
 Cursor cannot symlink a local plugin at this repo (the loader rejects targets
@@ -62,11 +61,11 @@ machine.
 
 OpenCode uses its Claude Code compatibility fallback to read the shared
 `~/.claude/CLAUDE.md` instructions, plus project `AGENTS.md` or `CLAUDE.md`
-files and external Claude skills. The compatible first-party `vet`, `tldr`, `polish`, `grill-me`,
-`grilling`, `refresh`, and `pass` skills are also linked into OpenCode's native global skill directory.
-`statusline-install` remains Claude Code-only. Machine catch-up is a repo playbook
-(`docs/resync.md`), not a linked skill. Product-repo package upgrades are the `refresh` skill.
-End-of-slice closer is the `pass` skill.
+files and `~/.claude/skills`. Do not also copy first-party skills into
+`~/.config/opencode/skills`. `statusline-install` remains Claude Code-only.
+Machine catch-up is a repo playbook (`docs/resync.md`), not a linked skill.
+Product-repo package upgrades are the `refresh` skill. End-of-slice closer is
+the `pass` skill.
 
 Slash from any repo after the installer has run. Details live in the skill
 files.
