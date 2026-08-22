@@ -43,7 +43,7 @@ If the pool clearly mixes unrelated work from another task, prefer Source B (whe
 2. Note framework/compiler ownership (React Compiler memoization, typed routes, caches).
 3. Detect **Prettier + ESLint** (config and/or package.json deps). Also note `format` / `lint` / `check` scripts.
 4. Confirm **runnable local binaries** (e.g. `pnpm exec prettier --version`, `pnpm exec eslint --version`, or `node_modules/.bin/*`). Config without a binary → treat that tool as absent (skip it). Never install to enable autofix.
-5. Prefer verify gate: `pnpm check` / `npm run check`; else lint + tests; else say so.
+5. Prefer the repo's own full check; else lint + tests; else say so. Don't invent a gate.
 6. Note CLI-/generated-owned paths (e.g. prettierignored `ui/`). Skip unless the diff intentionally owns them.
 7. Multi-repo pool → repeat detection + Phase 0.5 **per repo**. No tools in a repo → skip autofix there.
 
@@ -109,7 +109,7 @@ Smallest correct edit. Chesterton's Fence; don't strip named concepts/test seams
 
 1. If useful, note whether the gate was already failing before your cleanups (quick baseline: run once before apply, or record known failure). Don't blame pre-existing failures on polish.
 2. After apply: fresh-eyes on the resulting diff; revert polish-owned scope creep.
-3. Run recon's gate (`pnpm check` preferred). New failure caused by a polish cleanup → revert **that** cleanup; continue others. No gate → say so.
+3. Run recon's gate. New failure caused by a polish cleanup → revert **that** cleanup; continue others. No gate → say so.
 
 **Summary (brief):** autofix tally; applied; skipped + why; correctness leftovers for code review if any. Or "already clean."
 
