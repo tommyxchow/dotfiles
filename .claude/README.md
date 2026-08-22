@@ -17,11 +17,18 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
 Harness response-style defaults conflict, so `CLAUDE.md` has to override them rather
-than assume them. Claude Code's system prompt asks for "fewer than 4 lines" and "one
-word answers are best"; Grok Build asks for an "excellent technical blog post" in
-complete sentences; Cursor ranks readable above concise. The `IMPORTANT — readable
-beats brief` line in Communication exists for the first case. Don't prune it just
-because the harness you happen to be testing in already reads fine.
+than assume them. Claude Code leans terse ("a concise response is generally less than
+4 lines", softened in 2.0 from the harder 1.x "you MUST" / "one word answers are best");
+Grok Build asks for an "excellent technical blog post" in complete sentences; Cursor
+ranks readable above concise. The `IMPORTANT — readable beats brief` line in
+Communication exists for the terse end of that range. Don't prune it just because the
+harness you happen to be testing in already reads fine.
+
+Unexplored lever for Claude Code specifically: [output styles](https://code.claude.com/docs/en/output-styles)
+modify the system prompt and re-remind mid-conversation, while `CLAUDE.md` lands as a
+user message after it. A custom style with `keep-coding-instructions: true` would be a
+better home for the Communication rules there. `outputStyle` is unset in `settings.json`
+today, and plugins can ship styles in an `output-styles/` directory.
 
 The installer links first-party skills into `~/.claude/skills`. Claude, Cursor,
 Grok, and OpenCode all read that path. `opencode/commands` adds `/vet`, `/tldr`,
