@@ -36,18 +36,18 @@ For dev questions inside a repo, check what's actually installed **before** sear
 
 ## 4. Present the result
 
-One-line verdict, then only what was wrong. A clean result is a few sentences and the sources — not a row per fact, not ✓/✗/⚠. Cite like a careful teammate, not a paper: no footnotes, no bibliography, no "according to."
+One-line verdict, then only what was wrong. A clean result is a few sentences and the sources — not a row per fact, not a scoreboard. Cite like a careful teammate, not a paper: no footnotes, no bibliography, no "according to."
 
-- **Verdict first:** `Yes.` / `No.` / `Yes, except …` Then the one or two things that are wrong, still uncertain, or missing.
+- **Verdict first:** `✅ Yes.` / `❌ No.` / `⚠️ Yes, except …` One emoji on that line so it pops when I scroll back; don't mark every claim. Then the one or two things that are wrong, still uncertain, or missing.
 - **Cite the page** as an autolinked name (`[Next.js docs](url)`, date only when the page shows one). Quote a short phrase when the exact wording is the proof (an API name, a version). Don't blockquote a page.
 - **Forward task** → the normal answer with citations woven in. No separate report.
 - **Explicit audit of a long list or pasted plan** → same verdict line. List only the misses, worst first. Don't list claims that were fine. A table only if the misses themselves are many and a table is easier than prose.
 - If everything was fine, say so plainly and stop. Don't manufacture doubt.
 
 ```
-Yes. The method is `includes`, not `contains` ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)): "`includes(searchElement)`".
+✅ Yes. The method is `includes`, not `contains` ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)): "`includes(searchElement)`".
 
-Yes, except the name: `Map` uses `has`, not `contains` ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/has)).
+⚠️ Yes, except the name: `Map` uses `has`, not `contains` ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/has)).
 ```
 
 ## 5. Boundaries

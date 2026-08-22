@@ -40,7 +40,7 @@ This skill is for single-session and ad-hoc summaries, not week-scale rollups ac
 Drop any section that doesn't apply; trivial inputs get a one-line direct answer, no template.
 
 - **Recent exchange or session** (default and `session` modes): TL;DR of where things stand in app terms, then decisions made (with the one-line why), open questions / next steps, and files touched if any.
-- **Recommendation / substantive answer**: the conclusion first, then why, then tradeoffs/risks and deeper detail — if recommending A over B, say what B is good for and why A wins here.
+- **Recommendation / substantive answer**: the pick first, then why it wins, then what to skip / tradeoffs — if recommending A over B, say what B is good for and why A wins here.
 - **Document, article, or pasted text**: a one-to-three-sentence thesis, then key points, then details only when the source has nuance worth preserving.
 - **Changes or a PR** (`changes` / `pr` modes): what it changes and why in 1-3 sentences, in app terms rather than file names, then risk areas worst-first, what to review first, and anything broken or unverified. Mention tests only if they exist in the diff — never invent coverage. Read the diff before summarizing; don't summarize a diff from its description.
 
