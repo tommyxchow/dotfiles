@@ -16,6 +16,20 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 | `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by OpenCode and Grok Build; copied by the installer into Cursor's local `tc` plugin) |
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
+Harness response-style defaults conflict, so `CLAUDE.md` has to override them rather
+than assume them. Claude Code's Default is not the short style; Concise is opt-in
+and other harnesses still push brevity. Grok Build asks for complete sentences and
+plain language rather than identifiers. The `IMPORTANT — readable beats brief` line
+exists so a terse default does not win. Don't prune it just because the harness you
+happen to be testing in already reads fine.
+
+Claude Code [output styles](https://code.claude.com/docs/en/output-styles) modify the
+system prompt and re-remind mid-conversation, while `CLAUDE.md` lands as a user
+message after it. They are Claude Code only. Do not move the shared Communication
+rules out of `CLAUDE.md` into a style: Cursor and Grok Build would lose them, and
+`keep-coding-instructions` defaults to false so a style that forgets the flag
+strips coding instructions. `outputStyle` is unset in `settings.json`.
+
 The installer links first-party skills into `~/.claude/skills`. Claude, Cursor,
 Grok, and OpenCode all read that path. `opencode/commands` adds `/vet`, `/tldr`,
 `/polish`, `/grill-me`, `/refresh`, and `/pass` wrappers without duplicating the
