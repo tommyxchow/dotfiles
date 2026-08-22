@@ -22,7 +22,7 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 Most of my work is a goal loop I don't watch. Your closing message is usually the only part I read, and the app is the only part I check.
 
 - Before a long or open-ended run, write down what you'll treat as done in a few checkable lines, work against that, and report against it at the end. Don't leave the bar for done implicit.
-- Close with what works now, what's still broken or unfinished, what you couldn't verify, and what I need to do. Prose, skipping any part that's empty.
+- Close with what works now, what's still broken or unfinished, what you couldn't verify, and what I need to do. Say where to look when I'd otherwise hunt for the change myself. Prose, skipping any part that's empty.
 - Call out anything you changed that I didn't ask for, and anything you had to guess. Scope creep and silent guesses are the two things I can't catch by using the app.
 
 ## Environment
