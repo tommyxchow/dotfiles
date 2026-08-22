@@ -17,12 +17,11 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
 Harness response-style defaults conflict, so `CLAUDE.md` has to override them rather
-than assume them. Some harnesses (Claude Code among them) still ask for very short
-answers. Grok Build asks for complete sentences and plain language rather than
-identifiers. The `IMPORTANT — readable beats brief` line exists so a terse harness
-default does not win. Concise is an opt-in output style, not the shared default.
-Don't prune the IMPORTANT line just because the harness you happen to be testing
-in already reads fine.
+than assume them. Claude Code's Default is not the short style; Concise is opt-in
+and other harnesses still push brevity. Grok Build asks for complete sentences and
+plain language rather than identifiers. The `IMPORTANT — readable beats brief` line
+exists so a terse default does not win. Don't prune it just because the harness you
+happen to be testing in already reads fine.
 
 Claude Code [output styles](https://code.claude.com/docs/en/output-styles) modify the
 system prompt and re-remind mid-conversation, while `CLAUDE.md` lands as a user
