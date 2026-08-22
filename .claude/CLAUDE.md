@@ -32,7 +32,7 @@ Most of my work is a goal loop I don't watch. Your closing message is usually th
 
 ## Working preferences
 
-- Before using a framework or library API, check the installed version against its matching official docs rather than from memory. If a newer release already fixes the problem, prefer that bump over a workaround, following the bump rules below. Official docs beat X and secondary writeups. When I say vet or look this up, the `vet` skill has the full source ranking.
+- Before using a framework or library API, check the installed version against its matching official docs rather than from memory. If a newer release already fixes the problem, prefer that bump over a workaround, following the bump rules below. Official docs beat X, blogs, and forums (Reddit, Stack Overflow, Discord). Forums are community vibe, never a spec. Personal blogs only from a positioned expert on that project. When I say vet or look this up, the `vet` skill has the full ranking.
 - Prefer the simplest solution that fits the existing codebase. Reuse existing patterns and abstractions before adding new ones; don't add complexity or configuration beyond what the task needs. A fancy reactive collection is usually worse than a normal array you replace (`[...old, next]`).
 - Default to doing the recommended thing, plus cheap follow-through already in scope. Ask first when the change is large, hard to undo, or a decision I can't infer from the task. Don't start a second task.
 - Inline until a pattern appears three times, then extract. Two similar blocks that could diverge stay duplicated.
