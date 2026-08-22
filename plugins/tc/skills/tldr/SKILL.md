@@ -1,6 +1,6 @@
 ---
 name: tldr
-description: 'TL;DR-first skimmable technical writing: lead with the answer, then reveal detail progressively. Use when the user says "tldr", "tl;dr", "tldr this", "give me a tldr", "summarize this", "where are we", "catch me up", or asks for a skimmable summary. Also fires on the phrasings the routing table already handles without the word tldr: "what changed", "what did you change", "the diff", "what we did to the code", "walk me through the changes", and any ask to summarize or recap a PR. Bare invocation summarizes the last few messages; with an argument, summarizes a topic, file, URL, pasted text, the actual code changes (`changes`), a PR (`pr <number|url>`), or the whole session (`session` for the full arc).'
+description: 'TL;DR-first skimmable technical writing: lead with the answer, then reveal detail progressively. Use when the user says "tldr", "tl;dr", "tldr this", "give me a tldr", "summarize this", "where are we", "catch me up", or asks for a skimmable summary. Bare invocation summarizes the last few messages; with an argument, summarizes a topic, file, URL, pasted text, the actual code changes (`changes`), a PR (`pr <number|url>`), or the whole session (`session` for the full arc). Do not use for explaining work you just finished (that is Communication / Unattended), a walkthrough, or "what changed" about a library or version (that is vet).'
 argument-hint: "[<topic>|<file path>|<url>|<text>|changes|pr <number|url>|session]"
 allowed-tools:
   - "Read"
@@ -42,7 +42,7 @@ Drop any section that doesn't apply; trivial inputs get a one-line direct answer
 - **Recent exchange or session** (default and `session` modes): TL;DR of where things stand, then decisions made (with the one-line why), open questions / next steps, and files touched if any — anchored in concrete artifacts (file paths, branches, ticket IDs).
 - **Recommendation / substantive answer**: the conclusion first, then why, then tradeoffs/risks and deeper detail — if recommending A over B, say what B is good for and why A wins here.
 - **Document, article, or pasted text**: a one-to-three-sentence thesis, then key points, then details only when the source has nuance worth preserving.
-- **Changes or a PR** (`changes` / `pr` modes): what it changes and why in 1-3 sentences, then risk areas worst-first, what to review first, and anything broken or unverified. Mention tests only if they exist in the diff — never invent coverage. Read the diff before summarizing; don't summarize a diff from its description.
+- **Changes or a PR** (`changes` / `pr` modes): what it changes and why in 1-3 sentences, in app terms rather than file names, then risk areas worst-first, what to review first, and anything broken or unverified. Mention tests only if they exist in the diff — never invent coverage. Read the diff before summarizing; don't summarize a diff from its description.
 
 **Writing for posted output:** in-session TL;DRs can use em dashes freely. If a TL;DR is headed for posted output (PR body, commit, Teams/Jira comment), follow the global External writing rules (concise casual teammate voice, no em dashes, no filler).
 
@@ -62,9 +62,9 @@ User: `/tldr` after a few exchanges debugging an SSR hydration mismatch on `tc/d
 
 ```
 TL;DR
-Hydration mismatch on `tc/dark-mode` traced to <html> class diverging
-on first paint. Settled on suppressHydrationWarning over blocking
-paint until theme resolves.
+Dark mode no longer flashes light on first paint. The html class
+differed between server and client; suppressHydrationWarning was
+cheaper than blocking paint.
 
 Decisions made
 - suppressHydrationWarning on <html>: simplest fix; the DOM truly
