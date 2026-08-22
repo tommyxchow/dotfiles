@@ -45,9 +45,9 @@ One-line verdict, then only what was wrong. A clean result is a few sentences an
 - If everything was fine, say so plainly and stop. Don't manufacture doubt.
 
 ```
-Yes. The recovery prop is `retry`, not `reset` ([error.js](https://nextjs.org/docs/app/api-reference/file-conventions/error)): "`retry: () => void`".
+Yes. The method is `includes`, not `contains` ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)): "`includes(searchElement)`".
 
-Yes, except the pin: pnpm 12 is still an RC ([pnpm 12](https://pnpm.io/blog/whats-different-in-pnpm-12)).
+Yes, except the name: `Map` uses `has`, not `contains` ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/has)).
 ```
 
 ## 5. Boundaries

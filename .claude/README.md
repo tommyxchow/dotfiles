@@ -17,13 +17,12 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
 Harness response-style defaults conflict, so `CLAUDE.md` has to override them rather
-than assume them. Claude Code 2.0 still says "a concise response is generally less than
-4 lines" (softened from the 1.x "you MUST" / "one word answers are best"). 2.1 also
-ships an outcome-first prompt that already prefers readable over brief, and Concise
-is an opt-in output style. Grok Build asks for complete sentences and plain language
-rather than identifiers. The `IMPORTANT — readable beats brief` line exists so a
-terse harness default does not win. Don't prune it just because the harness you
-happen to be testing in already reads fine.
+than assume them. Some harnesses (Claude Code among them) still ask for very short
+answers. Grok Build asks for complete sentences and plain language rather than
+identifiers. The `IMPORTANT — readable beats brief` line exists so a terse harness
+default does not win. Concise is an opt-in output style, not the shared default.
+Don't prune the IMPORTANT line just because the harness you happen to be testing
+in already reads fine.
 
 Claude Code [output styles](https://code.claude.com/docs/en/output-styles) modify the
 system prompt and re-remind mid-conversation, while `CLAUDE.md` lands as a user

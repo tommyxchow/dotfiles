@@ -57,7 +57,7 @@ Most of my work is a goal loop I don't watch. Your closing message is usually th
 - Don't paint success until the work succeeded. Loading uses a layout-accurate skeleton, not a spinner on a blank page. Chips and toggles that imply connected or on stay dimmed or hidden while the request is in flight.
 - Style from the project's theme roles and CSS tokens. Don't double-mute a role that's already secondary (`onSurfaceVariant` then `alpha: 0.6`, `text-muted-foreground/60`). Prefer deleting decorative borders over restyling them.
 - Underlines for destinations, buttons for actions. Destructive controls say the verb ("Delete photo", not "OK") and never get default emphasis.
-- Don't spend server resources or API quota on content the user may never see (eager refetch, SSR for offscreen rows, uncapped revalidation). Pause loops that are not Effects (canvas, rAF, Dart timers) when a view is offscreen or backgrounded; React's Activity already unmounts Effects while hidden.
+- Don't spend server resources or API quota on content the user may never see (eager refetch, SSR for offscreen rows, uncapped revalidation). Pause loops that are not Effects (canvas, rAF, Dart timers) when a view is offscreen or backgrounded. If the repo uses React Activity, that already unmounts Effects while hidden.
 - Persist deliberate settings only: values, defaults, resets. Ephemeral UI state — in-progress text, scroll position, whatever the last screen happened to be — stays in memory, not on disk.
 - For UI changes, when browser or preview tools are available, inspect the rendered result and relevant interactions when practical.
 
@@ -77,5 +77,8 @@ This file rides along to every harness (Claude Code, Codex, Cursor, OpenCode, Gr
 
 - Lean and non-inferable only: project facts, commands, and gotchas. Never style a linter already enforces or conventions readable from the code itself.
 - Written for the weakest model, cheap for the strongest: constrain outcomes, not step-by-step process. One idea per bullet, a short example where it helps, nothing as vague as "write clean code".
-- Add a rule only after the same mistake happens twice; prune lines that went stale whenever the file is touched.
+- Examples teach shape, not today's versions. Don't freeze an API name, RC, or date in a global file; look it up. `refresh/stacks.md` may hold stack gotchas and still gets pruned when touched.
+- Add a rule only after the same mistake happens twice; if it then over-fires, add a skip rather than more style. Prune lines that went stale whenever the file is touched.
 - Multi-step playbooks that only run in one repo live as `docs/` in that repo, not as global skills. Don't re-add `.vscode/` or per-repo agent permissions that already live in this file.
+
+First-party skills under `plugins/tc/skills` follow the example and prune rules above, and they may keep step-by-step playbooks. Communication and Unattended live here; skills point at them, they don't copy or restyle them.
