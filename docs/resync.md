@@ -1,6 +1,6 @@
 # Resync — pull, install, then clean leftovers
 
-Make **this machine** match the canonical layout in the dotfiles repo. Not a docs rewrite. Not a plugin redesign.
+Make **this machine** match the canonical layout in the dotfiles repo. Also check whether copied skills have drifted from upstream; do not apply that here. Not a docs rewrite. Not a plugin redesign.
 
 This playbook lives in the repo and loads only when you open this workspace and ask to resync. It is not a global skill.
 
@@ -8,7 +8,7 @@ Refreshing packages and framework versions in a **product** repo is the `refresh
 
 Primary harnesses: **Cursor**, **Grok Build**, **OpenCode**. Claude Code and Codex when they exist. The installer is enough for instructions and first-party skills on all of those. Marketplace plugins (`ek`, `improve`, `frontend-design`, `typescript-lsp`) need the `claude` CLI; skip that section if it is not installed.
 
-Flow: **find repo → pull or clone → installer → marketplace plugins (if `claude`) → dedupe → leftover sweep → report.**
+Flow: **find repo → pull or clone → installer → marketplace plugins (if `claude`) → dedupe → leftover sweep → vendored skills → report.**
 
 The installer is the mechanical source of truth (`install.sh` / `install.ps1`). Do not reimplement its links. This file is the judgment pass around it.
 
@@ -67,7 +67,7 @@ If `claude` is missing, say so in the report and continue.
 
 **OpenCode:** it already reads `~/.claude/skills`. Do not also link first-party skills into `~/.config/opencode/skills`. Slash-command stubs in `~/.config/opencode/commands` stay. Do not also link `~/.agents/skills`.
 
-**Codex:** installer already points `~/.codex/AGENTS.md` at `.claude/CLAUDE.md`. Do not recreate `~/.agents/skills`.
+**Codex:** installer already points `~/.codex/AGENTS.md` at `.claude/CLAUDE.md`. Do not recreate `~/.agents/skills`. If `~/.codex/config.toml` exists, it must list `CLAUDE.md` in `project_doc_fallback_filenames`. Add only that name; don't rewrite the rest. Skip if Codex isn't on the machine.
 
 **Project-scope leftovers:** only if `claude` exists. `claude plugin list` plus `~/.claude/plugins/installed_plugins.json`. Uninstall `--scope project` any plugin that is not a user-scope install of an enabled plugin. Run the uninstall from that `projectPath`. Snapshot and restore user `enabledPlugins` after, same as above.
 
@@ -80,13 +80,27 @@ Delete only what is clearly leftover from an older layout:
 - Dangling symlinks under `~/.claude`, `~/.agents`, `~/.config/opencode` that pointed at this repo
 - Identical `.bak` next to installer targets (the installer already drops those; remove a remaining `.bak` only when it is a pre-link leftover and the live file is the symlink)
 - Plugin cache dirs under `~/.claude/plugins/cache` for plugins **not** in `installed_plugins.json` (skip this if there is no Claude plugin cache)
-- Empty `~/.agents` / `~/.agents/skills` after pruning
+- Empty `~/.agents` / `~/.agents/skills` / `~/.config/opencode/skills` after pruning
 
 Do not delete skills in `~/.claude/skills` that are not from this repo. Do not delete `ek@chow` or `improve@improve` caches while those plugins are installed.
 
+## Vendored skills
+
+`ek@chow` is not this. Marketplace update already ran. Never copy Emil's files into this repo.
+
+The copies are `plugins/tc/skills/grill-me` and `plugins/tc/skills/grilling`, from [mattpocock/skills](https://github.com/mattpocock/skills) `skills/productivity/<name>/SKILL.md` on `main`. Credits live in `.claude/README.md`.
+
+For each, fetch current upstream `SKILL.md` and diff against the repo file.
+
+- Match: say so.
+- Drift: say whether to take it (behavior vs example/format) and wait. Do not apply. Do not commit.
+- 404: find the new path from that repo's README. Do not invent a third skill to copy.
+
+Do not install `mattpocock-skills` from the marketplace. That loads a second copy.
+
 ## Report
 
-What changed, anything still broken, what the user must do.
+What changed, anything still broken, what the user must do, and whether a vendored skill drifted.
 
 - Cursor: **Developer: Reload Window** after the local plugin rewrite.
 - Grok / OpenCode: new `~/.claude` links are live; no extra reload if the session already sees them.
