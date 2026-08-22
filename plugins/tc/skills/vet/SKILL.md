@@ -9,10 +9,10 @@ vet grounds work in **current online sources** instead of training-data memory �
 
 ## 1. Pick the mode (don't stall asking "what to review")
 
-- **Auditing a prior response or a claim** the user points at → claim audit.
-- **Pasted plan from another model** ("chatgpt said", "wdyt", "what do you think") → claim audit of that paste.
+- **Bare `vet` / search / look this up / double check / cross-check** → look up the last response or the named topic. Short search answer (section 4). Not a scoreboard.
+- **Pasted plan from another model** ("chatgpt said", "wdyt", "what do you think") → claim audit of that paste. Scoreboard only if there are many independent claims.
 - **"vet" attached to a forward task** ("build X and vet it", "what's the best Y") → do the task *research-backed*: search current sources for every checkable fact before asserting, and cite inline as you go.
-- **Ambiguous** → default to verifying the most recent checkable claims in the conversation. Only ask if there is genuinely nothing to act on.
+- **Ambiguous** → last checkable claims, same short answer. Only ask if there is genuinely nothing to act on.
 
 ## 2. Anchor to the project
 
@@ -26,14 +26,16 @@ For dev questions inside a repo, check what's actually installed **before** sear
 - **Snippets aren't sources.** Search finds the page; fetch it and confirm the claim in context before citing.
 - **Best practices are recommendations, not facts.** Establish the current official recommendation, as of when, and what it superseded; give a clear pick when the evidence supports one, and present the tradeoffs when it doesn't.
 - **Date what's time-sensitive.** Note "as of <today>" when recency materially matters; cite a page date only when the page actually shows one — never guess a date.
-- **Classify** each claim: **Verified · Partial · Unverified.** Flag what's **missing**, not just what's wrong — omissions are the most common miss.
+- **Know the status** of each claim (Verified / Partial / Unverified) so the answer is honest. Don't print those labels, or a tally, unless you're in the multi-claim audit shape. Flag what's **missing**, not just what's wrong — omissions are the most common miss.
 - **Fallback** when web is blocked: read the vendored source (node_modules, lockfiles, installed docs) directly and say so. If neither is possible, mark **Unverified** — don't assert.
 
 ## 4. Present the result (shape follows size)
 
+Default is a short search answer. The glyph scoreboard is the exception.
+
 - **Forward task** → the normal answer with citations woven in. No separate report.
-- **Bare `vet <topic>` or a focused check (1–2 claims)** → verdict first in a sentence, then the few sources that matter, then conflicts or gaps. No scaffolding, no tally, not a literature review.
-- **Explicit multi-claim audit** → lead with a one-line tally, then compact findings — one per claim, worst first, glyphs `✗ Wrong · ⚠ Partly · ✓ Holds`; switch to a table with a verdict column when there are many.
+- **Bare `vet`, a topic, or a focused check** → verdict or summary first, then the few sources that matter, then conflicts or gaps. No scaffolding, no tally, no ✓/✗/⚠, not a literature review. One or two things that are wrong or still uncertain beat a row per fact that held.
+- **Explicit multi-claim audit** (they asked to audit a list, or a long pasted plan with many independent claims) → lead with a one-line tally, then compact findings — one per claim, worst first, glyphs `✗ Wrong · ⚠ Partly · ✓ Holds`; switch to a table with a verdict column when there are many.
 - **Unverified footer only when earned** — if something stayed Unverified/Partial, close with one line naming it and why. If everything checks out, say so plainly — a clean result is valid; don't manufacture doubt.
 
 Cite as autolinked source names (`[Vendor docs](url)`, add the date when it's real and relevant), not bare URLs.
