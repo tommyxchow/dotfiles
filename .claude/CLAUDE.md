@@ -73,7 +73,7 @@ Most of my work is a goal loop I don't watch. Your closing message is usually th
 
 ## Instruction files
 
-This file rides along to every harness (Claude Code, Cursor, opencode, Grok CLI) and every model, strong or weak. These rules apply to this file itself and to repo AGENTS.md / CLAUDE.md:
+This file rides along to every harness (Claude Code, Codex, Cursor, OpenCode, Grok Build) and every model, strong or weak. These rules apply to this file itself and to repo AGENTS.md / CLAUDE.md:
 
 - Lean and non-inferable only: project facts, commands, and gotchas. Never style a linter already enforces or conventions readable from the code itself.
 - Written for the weakest model, cheap for the strongest: constrain outcomes, not step-by-step process. One idea per bullet, a short example where it helps, nothing as vague as "write clean code".
