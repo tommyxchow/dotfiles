@@ -17,18 +17,20 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
 Harness response-style defaults conflict, so `CLAUDE.md` has to override them rather
-than assume them. Claude Code leans terse ("a concise response is generally less than
-4 lines", softened in 2.0 from the harder 1.x "you MUST" / "one word answers are best");
-Grok Build asks for an "excellent technical blog post" in complete sentences; Cursor
-ranks readable above concise. The `IMPORTANT — readable beats brief` line in
-Communication exists for the terse end of that range. Don't prune it just because the
-harness you happen to be testing in already reads fine.
+than assume them. Claude Code 2.0 still says "a concise response is generally less than
+4 lines" (softened from the 1.x "you MUST" / "one word answers are best"). 2.1 also
+ships an outcome-first prompt that already prefers readable over brief, and Concise
+is an opt-in output style. Grok Build asks for complete sentences and plain language
+rather than identifiers. The `IMPORTANT — readable beats brief` line exists so a
+terse harness default does not win. Don't prune it just because the harness you
+happen to be testing in already reads fine.
 
-Unexplored lever for Claude Code specifically: [output styles](https://code.claude.com/docs/en/output-styles)
-modify the system prompt and re-remind mid-conversation, while `CLAUDE.md` lands as a
-user message after it. A custom style with `keep-coding-instructions: true` would be a
-better home for the Communication rules there. `outputStyle` is unset in `settings.json`
-today, and plugins can ship styles in an `output-styles/` directory.
+Claude Code [output styles](https://code.claude.com/docs/en/output-styles) modify the
+system prompt and re-remind mid-conversation, while `CLAUDE.md` lands as a user
+message after it. They are Claude Code only. Do not move the shared Communication
+rules out of `CLAUDE.md` into a style: Cursor and Grok Build would lose them, and
+`keep-coding-instructions` defaults to false so a style that forgets the flag
+strips coding instructions. `outputStyle` is unset in `settings.json`.
 
 The installer links first-party skills into `~/.claude/skills`. Claude, Cursor,
 Grok, and OpenCode all read that path. `opencode/commands` adds `/vet`, `/tldr`,
