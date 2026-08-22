@@ -9,7 +9,7 @@ $legacyOpenCodeSkillsSource = Join-Path $dotfiles "plugins/tc/skills"
 $legacyOpenCodeSkillsItem = Get-Item -LiteralPath $legacyOpenCodeSkills -Force -ErrorAction SilentlyContinue
 
 # Migration from the pre-OpenCode compatibility setup, which linked every tc skill.
-if ($legacyOpenCodeSkillsItem -and $legacyOpenCodeSkillsItem.LinkType -eq "SymbolicLink" -and $legacyOpenCodeSkillsItem.Target -eq (Resolve-Path $legacyOpenCodeSkillsSource).Path) {
+if ($legacyOpenCodeSkillsItem -and $legacyOpenCodeSkillsItem.LinkType -eq "SymbolicLink" -and $legacyOpenCodeSkillsItem.Target -eq (Resolve-Path $legacyOpenCodeSkillsSource -ErrorAction SilentlyContinue).Path) {
     Remove-Item -LiteralPath $legacyOpenCodeSkills -Force
 }
 
