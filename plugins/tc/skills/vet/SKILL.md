@@ -45,9 +45,9 @@ One-line verdict, then only what was wrong. A clean result is a few sentences an
 - If everything was fine, say so plainly and stop. Don't manufacture doubt.
 
 ```
-Yes. The recovery prop is `retry`, not `reset` ([Next.js docs](https://nextjs.org/docs)).
+Yes. The recovery prop is `retry`, not `reset` ([error.js](https://nextjs.org/docs/app/api-reference/file-conventions/error)): "`retry: () => void`".
 
-No. The signature is still `reset()` ([error.js](https://nextjs.org/docs)): "`reset: () => void`".
+Yes, except the pin: pnpm 12 is still an RC ([pnpm 12](https://pnpm.io/blog/whats-different-in-pnpm-12)).
 ```
 
 ## 5. Boundaries
