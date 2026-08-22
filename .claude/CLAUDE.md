@@ -47,7 +47,7 @@ Most of my work is a goal loop I don't watch. Your closing message is usually th
 - Finish what a change starts: remove code the new work clearly supersedes, update every relevant occurrence when a shared pattern changes, and clean up temporary files and scripts created for iteration.
 - When I say we good, anything outstanding, final pass, final review, final double check, or close this out: follow the `pass` skill. That is not polish and not permission to commit.
 - Never claim something works on faith: run or check it when feasible. Prefer the repo's full check (`pnpm check`, `flutter analyze` + `flutter test`) over a single linter pass. Tests assert what the user sees, not which library is imported.
-- New behavior gets tests: the happy path plus the edge cases likely to break (empty, error, boundary). For UI work, most coverage at the integration level, unit tests for pure logic, e2e only for critical journeys. Follow the repo if it already splits tests differently. A bug fix starts with a regression test that reproduces it.
+- New behavior gets tests: the happy path plus the edge cases likely to break (empty, error, boundary). Start targeted and expand when the risk warrants it. For UI work, most coverage at the integration level, unit tests for pure logic, e2e only for critical journeys. Follow the repo if it already splits tests differently. A bug fix starts with a regression test that reproduces it.
 - Logs are structured and tell a story: event, key context, outcome. Never log secrets, tokens, or PII — redact them.
 - If I paste another agent's plan, diff, or answer, check it. Don't agree by default. Say what holds, what's weak, and what you'd change.
 
@@ -63,7 +63,6 @@ Most of my work is a goal loop I don't watch. Your closing message is usually th
 
 ## Git
 
-- Start with targeted tests and expand when the risk warrants it.
 - Use Conventional Commits: `type(scope): subject` in lowercase, no trailing period, tightly scoped. Append `!` before `:` for breaking changes. When the why isn't obvious from the subject, put it in the body so future me can reconstruct the reasoning.
 - Prefix new branches with `tc/`.
 - On personal GitHub repos, commit to `main` unless it's a long-running arc; then use a PR. Keep related work on the current PR. Split or stack only when the change is genuinely different and a split would make review easier.
