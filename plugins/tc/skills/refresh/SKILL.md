@@ -51,14 +51,14 @@ A passed mode or custom instruction is the answer. Don't also prompt.
 - **Vet** Must, the framework line, and each Apply package (installed first, then vendor changelog / [GHSA](https://github.com/advisories) / registry). Don't changelog Skip rows or load the vet skill unless a claim is disputed. Don't assert "latest" or "safe" from memory. No canary / RC / dist-tag except `latest` unless they asked (Next canary, pnpm 12 RC).
 - Don't rewrite AGENTS/README to a CLI the pin doesn't ship (`pnx` needs pnpm 11). Match `packageManager` / the SDK pin.
 - Don't add `allowBuilds` entries (new postinstall) unless they agreed ([pnpm supply chain](https://pnpm.io/supply-chain-security)).
-- Verify with the repo gate (`pnpm check`, `flutter analyze` + `flutter test`) plus extra jobs in the default CI workflow (e.g. `build:worker`). If the gate is already red, say so before bumping.
+- Verify with the repo's own full check (see stacks.md for this stack) plus extra jobs in the default CI workflow. Don't invent a gate the repo doesn't have. If the gate is already red, say so before bumping.
 - Don't add `audit.ignore` / `ignored_advisories` without them reading the GHSA. Don't use `pnpm audit --ignore-unfixable`. Don't break a hold to quiet audit. Outdated ≠ vulnerable.
 
 ## Flow
 
 recon → audit → classify → apply (unless `audit`/`plan`) → verify → report.
 
-After detecting the stack, read only that section of [stacks.md](stacks.md).
+After detecting the stack, read only that section of [stacks.md](stacks.md). If none match, stop and say so.
 
 ### 1. Recon
 
@@ -102,11 +102,11 @@ Finish what a bump starts: remove APIs, config keys, and docs it superseded. Don
 
 ### 5. Verify
 
-Gate (and extra CI jobs) green. Already red before the bump → say so, don't blame the bump. New failure → fix or revert **that** bump. Re-run `pnpm audit` (not a second outdated). Remaining high/critical stay in the report.
+Gate (and extra CI jobs) green. Already red before the bump → say so, don't blame the bump. New failure → fix or revert **that** bump. Re-run the stack's security audit (not a second outdated). Remaining high/critical stay in the report.
 
 ### 6. Report
 
-**Must** first, then what landed, then skipped holds/majors, then moderate-and-below as a count unless one is reachable. No recap.
+**Must** first, then what landed, then skipped holds/majors, then moderate-and-below as a count unless one is reachable. If a bump changes what the app does, say that in the first sentence. No recap.
 
 ## Distinct from
 

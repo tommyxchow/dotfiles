@@ -27,7 +27,7 @@ Read and follow sibling [../vet/SKILL.md](../vet/SKILL.md) for step 1. Read and 
 1. **Vet.** Follow `vet` on checkable claims in the diff (installed versions first). If the last few messages pasted another model's plan ("chatgpt said", "wdyt"), audit that too. Then **patch** Wrong/Partly (and cheap in-scope Missing). Don't wait for approval — that's the seam.
 2. **Leftovers.** Same pattern this slice introduced, in-scope siblings only. Delete APIs/config/docs the change made dead. Stop.
 3. **Polish.** If the slice is code-shaped and they didn't pass `skip polish`: follow `polish` when Prettier or ESLint is in the repo, or they asked to polish. Otherwise skip.
-4. **Ship-ready.** Outstanding items or none. Repo gate if the slice is code and they didn't pass `skip check`: `pnpm check`, else `flutter analyze` + tests, else say so. Skip the gate if polish just ran it. End with ship-ready yes/no. Don't commit.
+4. **Ship-ready.** Outstanding items or none. If the slice is code and they didn't pass `skip check`: run the repo's own full check; don't invent a gate the repo doesn't have. Skip the gate if polish just ran it. No check → say so. End with ship-ready yes/no. Don't commit.
 
 ## Distinct from
 
@@ -40,4 +40,4 @@ Read and follow sibling [../vet/SKILL.md](../vet/SKILL.md) for step 1. Read and 
 
 ## Report
 
-Brief. Worst first. No recap.
+App terms first, then outstanding worst-first, unverified, and what I need to do — skip empty parts. No recap. No under-the-hood unless they asked.
