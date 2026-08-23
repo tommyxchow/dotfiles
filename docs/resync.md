@@ -29,6 +29,8 @@ macOS/Linux: `./install.sh`. Windows: `pwsh -File install.ps1`.
 
 It links configs and first-party skills, prunes known stale paths, writes `~/.claude/statusline-command.sh`, and copies Cursor's local `tc` plugin. Re-running is safe. This is the step that makes Cursor / Grok / OpenCode / Codex pick up instructions and `vet` / `tldr` / `polish` / `grill-me` / `refresh` / `pass` on a new machine.
 
+On Windows, symlink creation needs Developer Mode (or an elevated shell). If a link comes out dead, fix the mode and re-run the installer rather than replacing links with copies.
+
 ## Marketplace plugins
 
 Only if `claude` is on PATH. Cursor and Grok import these from Claude's plugin cache; OpenCode does not. A Cursor-only or OpenCode-only machine still gets first-party skills from the installer.
@@ -71,13 +73,14 @@ If `claude` is missing, say so in the report and continue.
 
 **Project-scope leftovers:** only if `claude` exists. `claude plugin list` plus `~/.claude/plugins/installed_plugins.json`. Uninstall `--scope project` any plugin that is not a user-scope install of an enabled plugin. Run the uninstall from that `projectPath`. Snapshot and restore user `enabledPlugins` after, same as above.
 
-Other repos may still **enable** uninstalled plugins in their own `.claude/settings.json`. Remove those leftover `enabledPlugins` keys (or the whole object if it is only leftovers). Leave hooks, permissions, and MCP config. `settings.local.json` Skill() allows for gone plugins can go too. Do not commit those repos unless asked.
+Candidate repos are the sibling project folders of wherever this repo was found on this machine (the same resolution as "Find the repo" above — e.g. everything next to `~/dev/dotfiles`). Other repos may still **enable** uninstalled plugins in their own `.claude/settings.json`. Remove those leftover `enabledPlugins` keys (or the whole object if it is only leftovers). Leave hooks, permissions, and MCP config. `settings.local.json` Skill() allows for gone plugins can go too. Do not commit those repos unless asked.
 
 ## Leftover sweep
 
 Delete only what is clearly leftover from an older layout:
 
 - Dangling symlinks under `~/.claude`, `~/.agents`, `~/.config/opencode` that pointed at this repo
+- Any installer target that is a link whose target no longer exists — check every path the installer prints, not only the roots above (Windows can produce dead links when Developer Mode is off)
 - Identical `.bak` next to installer targets (the installer already drops those; remove a remaining `.bak` only when it is a pre-link leftover and the live file is the symlink)
 - Plugin cache dirs under `~/.claude/plugins/cache` for plugins **not** in `installed_plugins.json` (skip this if there is no Claude plugin cache)
 - Empty `~/.agents` / `~/.agents/skills` / `~/.config/opencode/skills` after pruning
