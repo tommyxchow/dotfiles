@@ -258,6 +258,7 @@ write_grok_config() {
   local changed=0
   grok_toml_set "$dest" memory enabled true && changed=1
   grok_toml_set "$dest" features lsp_tools true && changed=1
+  grok_toml_set "$dest" features two_pass_compaction true && changed=1
   grok_toml_set "$dest" ui theme '"oscura-midnight"' && changed=1
   if [ "$changed" = 1 ]; then
     printf "  PATCH %s\n" "$dest"
@@ -266,6 +267,32 @@ write_grok_config() {
   fi
 }
 write_grok_config
+
+write_grok_lsp() {
+  local seed="$DOTFILES/grok/lsp.json"
+  local dest="$HOME/.grok/lsp.json"
+
+  if [ ! -f "$seed" ]; then
+    printf "  SKIP  grok/lsp.json (not in repo)\n"
+    return
+  fi
+  if [ ! -d "$HOME/.grok" ]; then
+    printf "  SKIP  %s (no ~/.grok)\n" "$dest"
+    return
+  fi
+  if [ ! -f "$dest" ]; then
+    cp "$seed" "$dest"
+    printf "  SEED  %s\n" "$dest"
+  else
+    printf "  OK    %s\n" "$dest"
+  fi
+  if command -v typescript-language-server >/dev/null 2>&1; then
+    printf "  OK    typescript-language-server on PATH\n"
+  else
+    printf "  WARN  typescript-language-server not on PATH — pnpm add -g typescript-language-server typescript\n"
+  fi
+}
+write_grok_lsp
 
 write_statusline
 

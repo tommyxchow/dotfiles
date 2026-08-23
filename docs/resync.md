@@ -27,7 +27,7 @@ From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new c
 
 macOS/Linux: `./install.sh`. Windows: `pwsh -File install.ps1`.
 
-It links configs and first-party skills, prunes known stale paths, writes `~/.claude/statusline-command.sh`, and copies Cursor's local `tc` plugin. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Re-running is safe. This is the step that makes Cursor / Grok / OpenCode / Codex pick up instructions and `vet` / `tldr` / `polish` / `grill-me` / `refresh` / `pass` on a new machine.
+It links configs and first-party skills, prunes known stale paths, writes `~/.claude/statusline-command.sh`, and copies Cursor's local `tc` plugin. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Cursor / Grok / OpenCode / Codex pick up instructions and `vet` / `tldr` / `polish` / `grill-me` / `refresh` / `pass` on a new machine.
 
 On Windows, symlink creation needs Developer Mode (or an elevated shell). If a link comes out dead, fix the mode and re-run the installer rather than replacing links with copies.
 
@@ -65,7 +65,7 @@ If `claude` is missing, say so in the report and continue.
 
 **Cursor:** `~/.cursor/plugins/local/tc/rules/global.mdc` must match `.claude/CLAUDE.md` plus `alwaysApply: true` and no `description`. Delete `~/.cursor/plugins/cache/chow/tc` if it exists. Do not paste `CLAUDE.md` into User Rules. Third-party import should stay on so Cursor reads `~/.claude/skills`.
 
-**Grok:** `~/.grok/config.toml` must carry the three keys from `grok/config.toml` (`memory.enabled`, `features.lsp_tools`, `ui.theme`) — the installer patches them; re-run it if drifted. Everything else in that file is Grok-owned runtime state; do not manage it. No extra links: Grok reads `~/.claude/CLAUDE.md` and `~/.claude/skills` through Claude compatibility.
+**Grok:** `~/.grok/config.toml` must carry the non-default keys from `grok/config.toml` — the installer patches them; re-run it if drifted. Everything else in that file is Grok-owned runtime state; do not manage it. `~/.grok/lsp.json` should exist (installer seeds from `grok/lsp.json`); warn if `typescript-language-server` is missing from PATH. No extra links: Grok reads `~/.claude/CLAUDE.md` and `~/.claude/skills` through Claude compatibility.
 
 **OpenCode:** it already reads `~/.claude/skills`. Do not also link first-party skills into `~/.config/opencode/skills`. Slash-command stubs in `~/.config/opencode/commands` stay. Do not also link `~/.agents/skills`.
 

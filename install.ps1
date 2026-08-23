@@ -199,9 +199,10 @@ else {
     $text = Get-Content -Raw $grokConfig
     $changed = $false
     foreach ($k in @(
-        @{ Section = "memory";   Key = "enabled";   Value = "true" }
-        @{ Section = "features"; Key = "lsp_tools"; Value = "true" }
-        @{ Section = "ui";       Key = "theme";     Value = '"oscura-midnight"' }
+        @{ Section = "memory";   Key = "enabled";              Value = "true" }
+        @{ Section = "features"; Key = "lsp_tools";            Value = "true" }
+        @{ Section = "features"; Key = "two_pass_compaction";  Value = "true" }
+        @{ Section = "ui";       Key = "theme";                Value = '"oscura-midnight"' }
     )) {
         $r = Set-TomlKey $text $k.Section $k.Key $k.Value
         $text = $r.Text
@@ -213,6 +214,35 @@ else {
     }
     else {
         Write-Host "  OK    $grokConfig" -ForegroundColor Green
+    }
+}
+
+# Seed user-scoped LSP definitions. The repo file names the bare binary
+# (macOS/Linux); Windows npm-style installs expose a .cmd shim, so rewrite
+# that one field on seed. Existing files are left alone.
+$grokLspSeed = Join-Path $dotfiles "grok/lsp.json"
+$grokLsp = Join-Path $HOME ".grok/lsp.json"
+if (-not (Test-Path $grokLspSeed)) {
+    Write-Host "  SKIP  grok/lsp.json (not in repo)" -ForegroundColor DarkGray
+}
+elseif (-not (Test-Path "$HOME/.grok")) {
+    Write-Host "  SKIP  $grokLsp (no ~/.grok)" -ForegroundColor DarkGray
+}
+elseif (-not (Test-Path $grokLsp)) {
+    $lspText = Get-Content -Raw $grokLspSeed
+    $lspText = $lspText.Replace('"typescript-language-server"', '"typescript-language-server.cmd"')
+    [System.IO.File]::WriteAllText($grokLsp, $lspText)
+    Write-Host "  SEED  $grokLsp" -ForegroundColor Cyan
+}
+else {
+    Write-Host "  OK    $grokLsp" -ForegroundColor Green
+}
+if (Test-Path "$HOME/.grok") {
+    if (Get-Command typescript-language-server -ErrorAction SilentlyContinue) {
+        Write-Host "  OK    typescript-language-server on PATH" -ForegroundColor Green
+    }
+    else {
+        Write-Host "  WARN  typescript-language-server not on PATH — pnpm add -g typescript-language-server typescript" -ForegroundColor Yellow
     }
 }
 

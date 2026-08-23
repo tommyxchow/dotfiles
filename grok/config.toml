@@ -9,6 +9,7 @@ enabled = true # default: false
 
 [features]
 lsp_tools = true # default: false
+two_pass_compaction = true # default: false, opt-in prefire compaction
 
 [ui]
 theme = "oscura-midnight" # default: GrokNight
