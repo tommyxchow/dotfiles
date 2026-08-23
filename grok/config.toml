@@ -1,0 +1,14 @@
+# Grok Build — settings that differ from built-in defaults only.
+# Grok writes runtime state (marketplace bookkeeping, pinned sessions, banner
+# acks) back into ~/.grok/config.toml, so the installer seeds that file from
+# here on new machines and patches just these keys afterwards. It is never
+# symlinked. Defaults are documented in ~/.grok/docs/user-guide/05-configuration.md.
+
+[memory]
+enabled = true # default: false
+
+[features]
+lsp_tools = true # default: false
+
+[ui]
+theme = "oscura-midnight" # default: GrokNight

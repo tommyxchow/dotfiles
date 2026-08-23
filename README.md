@@ -52,7 +52,10 @@ Rules or the same text is injected twice.
 Ghostty is macOS/Linux only, so `install.ps1` skips it.
 
 Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatibility,
-so it does not need a separate instructions link.
+so it does not need a separate instructions link. Its own settings live in
+`grok/config.toml` here — non-default keys only. Because Grok writes runtime state
+back into `~/.grok/config.toml`, that file is never symlinked: the installer seeds it
+from the repo copy on new machines and patches just those keys afterwards.
 
 Codex is configured with `project_doc_fallback_filenames = ["CLAUDE.md"]` in
 `~/.codex/config.toml` so it also recognizes repo-level `CLAUDE.md` files. The

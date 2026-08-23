@@ -189,6 +189,84 @@ write_statusline() {
 }
 
 write_cursor_plugin
+
+# Grok Build reads ~/.grok/config.toml and writes runtime state back into it
+# (marketplace bookkeeping, pinned sessions), so it is never symlinked. Seed a
+# missing config from grok/config.toml; otherwise patch only our non-default
+# keys in place, leaving everything Grok wrote untouched.
+grok_toml_set() { # file section key value
+  local file="$1" sec="$2" key="$3" val="$4"
+  local tmp
+  tmp="$(mktemp)"
+  awk -v want="[$sec]" -v key="$key" -v val="$val" \
+      -v pat="^[[:space:]]*${key}[[:space:]]*=" '
+    BEGIN { insec = 0; seen = 0; done = 0; last = "x" }
+    function emit(s) { print s; last = s }
+    insec && /^\[/ && !done { emit(key " = " val); done = 1 }
+    {
+      if (!seen && $0 == want) { seen = 1; insec = 1; emit($0); next }
+      if (insec && !done && $0 ~ pat) {
+        cur = $0
+        sub(/^[^=]*=[[:space:]]*/, "", cur)
+        gsub(/[[:space:]]/, "", cur)
+        wnt = val
+        gsub(/[[:space:]]/, "", wnt)
+        if (cur == wnt) emit($0)
+        else emit(key " = " val)
+        done = 1
+        next
+      }
+      emit($0)
+    }
+    END {
+      if (!seen) {
+        if (last != "") print ""
+        print want
+        print key " = " val
+      } else if (!done) {
+        print key " = " val
+      }
+    }
+  ' "$file" > "$tmp"
+  if cmp -s "$tmp" "$file"; then
+    rm -f "$tmp"
+    return 1
+  fi
+  mv "$tmp" "$file"
+  return 0
+}
+
+write_grok_config() {
+  local seed="$DOTFILES/grok/config.toml"
+  local dest="$HOME/.grok/config.toml"
+
+  if [ ! -f "$seed" ]; then
+    printf "  SKIP  grok/config.toml (not in repo)\n"
+    return
+  fi
+  if [ ! -d "$HOME/.grok" ]; then
+    printf "  SKIP  %s (no ~/.grok)\n" "$dest"
+    return
+  fi
+  mkdir -p "$HOME/.grok"
+  if [ ! -f "$dest" ]; then
+    cp "$seed" "$dest"
+    printf "  SEED  %s\n" "$dest"
+    return
+  fi
+
+  local changed=0
+  grok_toml_set "$dest" memory enabled true && changed=1
+  grok_toml_set "$dest" features lsp_tools true && changed=1
+  grok_toml_set "$dest" ui theme '"oscura-midnight"' && changed=1
+  if [ "$changed" = 1 ]; then
+    printf "  PATCH %s\n" "$dest"
+  else
+    printf "  OK    %s\n" "$dest"
+  fi
+}
+write_grok_config
+
 write_statusline
 
 echo

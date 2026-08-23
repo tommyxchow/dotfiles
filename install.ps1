@@ -154,6 +154,68 @@ else {
     Write-Host "  SKIP  .claude/CLAUDE.md (not in repo)" -ForegroundColor DarkGray
 }
 
+# Grok Build reads ~/.grok/config.toml and writes runtime state back into it
+# (marketplace bookkeeping, pinned sessions), so it is never symlinked. Seed a
+# missing config from grok/config.toml; otherwise patch only our non-default
+# keys in place, leaving everything Grok wrote untouched.
+function Set-TomlKey([string]$text, [string]$section, [string]$key, [string]$value) {
+    $lines = [System.Collections.Generic.List[string]]($text -split "`r?`n")
+    $secRe = "^\[" + [regex]::Escape($section) + "\]\s*$"
+    $secIdx = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match $secRe) { $secIdx = $i; break }
+    }
+    if ($secIdx -eq -1) {
+        if ($lines.Count -gt 0 -and $lines[$lines.Count - 1].Trim() -ne "") { $lines.Add("") }
+        $lines.Add("[$section]")
+        $lines.Add("$key = $value")
+        return @{ Text = ($lines -join "`n"); Changed = $true }
+    }
+    $keyRe = "^\s*" + [regex]::Escape($key) + "\s*=\s*(.*)$"
+    for ($j = $secIdx + 1; $j -lt $lines.Count -and $lines[$j] -notmatch "^\s*\["; $j++) {
+        if ($lines[$j] -match $keyRe) {
+            if ($Matches[1].Trim() -eq $value) { return @{ Text = $text; Changed = $false } }
+            $lines[$j] = "$key = $value"
+            return @{ Text = ($lines -join "`n"); Changed = $true }
+        }
+    }
+    $lines.Insert($secIdx + 1, "$key = $value")
+    return @{ Text = ($lines -join "`n"); Changed = $true }
+}
+
+$grokSeed = Join-Path $dotfiles "grok/config.toml"
+$grokConfig = Join-Path $HOME ".grok/config.toml"
+if (-not (Test-Path $grokSeed)) {
+    Write-Host "  SKIP  grok/config.toml (not in repo)" -ForegroundColor DarkGray
+}
+elseif (-not (Test-Path "$HOME/.grok")) {
+    Write-Host "  SKIP  $grokConfig (no ~/.grok)" -ForegroundColor DarkGray
+}
+elseif (-not (Test-Path $grokConfig)) {
+    Copy-Item $grokSeed $grokConfig
+    Write-Host "  SEED  $grokConfig" -ForegroundColor Cyan
+}
+else {
+    $text = Get-Content -Raw $grokConfig
+    $changed = $false
+    foreach ($k in @(
+        @{ Section = "memory";   Key = "enabled";   Value = "true" }
+        @{ Section = "features"; Key = "lsp_tools"; Value = "true" }
+        @{ Section = "ui";       Key = "theme";     Value = '"oscura-midnight"' }
+    )) {
+        $r = Set-TomlKey $text $k.Section $k.Key $k.Value
+        $text = $r.Text
+        if ($r.Changed) { $changed = $true }
+    }
+    if ($changed) {
+        [System.IO.File]::WriteAllText($grokConfig, $text)
+        Write-Host "  PATCH $grokConfig" -ForegroundColor Cyan
+    }
+    else {
+        Write-Host "  OK    $grokConfig" -ForegroundColor Green
+    }
+}
+
 $skillMd = Join-Path $dotfiles "plugins/tc/skills/statusline-install/SKILL.md"
 $statusline = Join-Path $HOME ".claude/statusline-command.sh"
 if (Test-Path $skillMd) {
