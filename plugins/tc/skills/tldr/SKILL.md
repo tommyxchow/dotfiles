@@ -2,10 +2,7 @@
 name: tldr
 description: 'TL;DR-first skimmable technical writing: lead with the answer, then reveal detail progressively. Use when the user says "tldr", "tl;dr", "tldr this", "give me a tldr", "summarize this", "where are we", "catch me up", or asks for a skimmable summary. Bare invocation summarizes the last few messages; with an argument, summarizes a topic, file, URL, pasted text, the actual code changes (`changes`), a PR (`pr <number|url>`), or the whole session (`session` for the full arc). Do not use for explaining work you just finished (that is Communication / Unattended), a walkthrough, or "what changed" about a library or version (that is vet).'
 argument-hint: "[<topic>|<file path>|<url>|<text>|changes|pr <number|url>|session]"
-allowed-tools:
-  - "Read"
-  - "WebFetch"
-  - "Bash"
+allowed-tools: Read WebFetch Bash
 ---
 
 # TL;DR

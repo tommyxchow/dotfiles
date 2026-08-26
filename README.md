@@ -75,9 +75,9 @@ files.
 
 | Slash | When |
 |-------|------|
-| `/vet` | A claim, version, or "is this still true". Reports, then waits. |
+| `/vet` | A claim, version, known issue, or "is this still true". Not "is this code correct". Reports, then waits. |
 | `/polish` | Shape of code you already wrote. |
-| `/pass` | Slice is done: vet, leftovers, polish if JS/TS, ship-ready. Not a commit. |
+| `/pass` | Slice is done: vet, leftovers, polish if code-shaped, ship-ready. Not a commit. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |

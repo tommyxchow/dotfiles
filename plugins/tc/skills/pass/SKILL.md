@@ -1,6 +1,6 @@
 ---
 name: pass
-description: End-of-slice closer — recency-check stale-sensitive vendor surfaces, patch leftovers, polish if JS/TS-shaped, then a ship-ready report. Structure and cleanliness of pending changes, not a code review. Use when the user says "pass", "quick pass", "do a pass", "final pass", "final review", "final double check", "close this out", "plug the gaps", "we good", "anything outstanding", or "anything else to clean up". Do not use for bare "double check", "verify", or "look this up" (that's vet), polish/dry-clean, Bugbot / code review, or package catch-up (that's refresh). Does not commit.
+description: End-of-slice closer — recency-check stale-sensitive vendor surfaces, patch leftovers, polish if code-shaped, then a ship-ready report. Structure and cleanliness of pending changes, not a code review. Use when the user says "pass", "quick pass", "do a pass", "final pass", "final review", "final double check", "close this out", "plug the gaps", "we good", "anything outstanding", or "anything else to clean up". Do not use for look this up / search online / known issue (that's vet), whether the code is correct (that's Bugbot / code review), polish/dry-clean, or package catch-up (that's refresh). Does not commit.
 argument-hint: "[skip polish | skip check | <focus>]"
 ---
 
@@ -16,9 +16,10 @@ Decide first, then load. Read [../vet/SKILL.md](../vet/SKILL.md) only when step 
 
 ## Don't
 
-- Don't fire on bare "double check" / "verify" / "look this up" / "search online" — that's `vet`.
+- Don't fire on "look this up" / "search online" / "is this still true" / "is anyone else hitting this" / known issue / workaround — that's `vet`.
 - Don't fire on "polish" / "dry clean" / "make this less hacky" — that's `polish`.
-- Not a code review. Don't hunt bugs, design, or the meaning of the code unless it blocks a pass step (stale API, leftover, polish finding, gate). That's Bugbot / `/review`.
+- Bare "double check" / "verify" that the code is correct is Bugbot / `/review`, not this skill and not `vet`.
+- Not a code review. Don't hunt bugs, design, or the meaning of the code unless it blocks a pass step (stale API, leftover, polish finding, gate).
 - Don't add tests to prove the slice is correct. Don't open a browser to re-prove UI.
 - Don't commit or push as part of the closer. If they also said commit or push, do that **after** the ship-ready report, using the git rules. "We good?" is not permission.
 - Don't watch CI. Don't write AGENTS.md. Don't start a second task.
@@ -31,10 +32,10 @@ Decide first, then load. Read [../vet/SKILL.md](../vet/SKILL.md) only when step 
 
 1. **Vet.** Decide first, then load.
 Skip (don't read `vet`) when nothing could have gone stale: local logic, copy, rename, in-repo helpers, same pattern as next door. One clause: `Vet: skipped (no stale-sensitive surface)`.
-If this session already vetted the same surface, don't re-vet; cite it.
+If this session already vetted the same surface, don't re-vet; cite it. A new vendor surface since that vet still runs.
 Else read and follow `vet` on those surfaces only — new/changed third-party APIs, version pins, "current" / "latest" / best-practice choices, pasted other-model plans. Installed versions first. A 1-file API change still vets; a 20-file rename does not. Then **patch** what was wrong (and cheap in-scope misses). Don't wait for approval — that's the seam.
 2. **Leftovers.** Same pattern this slice introduced, in-scope siblings only. Delete APIs/config/docs the change made dead, and docs that are now wrong. Delete scratch this slice added (`console.log`, `debugger`, focused-only tests). If the diff looks like it contains a secret, strip or flag — don't install a scanner. If `git status` mixes a second task, outstanding; don't expand. Stop.
-3. **Polish.** If the slice is code-shaped and they didn't pass `skip polish`: follow `polish` when Prettier or ESLint is in the repo, or they asked to polish. Otherwise skip (not code-shaped, or polish already ran this session on those files). Do not skip polish on small TS. Do not retune polish's size gate.
+3. **Polish.** If the slice is code-shaped and they didn't pass `skip polish`: follow `polish`. Missing Prettier/ESLint is not a skip — polish skips autofix itself and still runs judgment. Skip only when not code-shaped, or polish already ran this session on those files. Do not skip polish on small TS or Dart. Do not retune polish's size gate.
 4. **Ship-ready.** Outstanding items or none. If the slice is code and they didn't pass `skip check`: run the repo's own full check; don't invent a gate the repo doesn't have. Skip the gate if polish just ran it, **or** this exact tree already passed the same gate you'd run now this session (cite the prior result). A typecheck is not the full check. If steps 1–3 edited files after that result, re-run. No check → say so. End with `✅ Ship-ready.` or `❌ Not yet.` Don't commit.
 
 ## Distinct from

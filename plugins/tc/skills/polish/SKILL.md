@@ -57,8 +57,9 @@ If the pool clearly mixes unrelated work from another task, prefer Source B (whe
 - Prefer semantic tokens and `cn`-style helpers when the repo has them.
 - Behavior-identical only; correctness → code review.
 - **No Prettier and no ESLint:** formatting/import-order/class-order stay **out of scope**. At most one summary note to consider adopting them. Do not hand-fix style.
+- **Outside React/TS** (Dart/Flutter, etc.): skip React-specific taste (Compiler, `useMemo`, JSX nesting, `import type`). Still run reuse / dead-code / altitude. Don't invent dartfmt.
 
-**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Small (≈2-5 files): one combined inline review covering all four checklist sections — don't spend four subagents on a pool one read can hold. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. **Empty git diff does not make the run trivial** when Source B still has files — size the gate from the pool file set, not from `git diff` alone.
+**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Small (≈2-5 files): one combined inline review covering all four checklist sections — don't spend four subagents on a pool one read can hold. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. **Empty git diff does not make the run trivial** when Source B still has files — size the gate from the pool file set, not from `git diff` alone. The lens `~8` is a **report cap**, not a read cap: keep looking at the pool; don't stop reviewing because you already have 8 rows; don't manufacture findings to fill 8.
 
 ## Phase 0.5 — Prettier + ESLint prep
 
@@ -82,7 +83,7 @@ Tally later: "Autofixed N files; K issues remain → fixed/skipped/routed."
 
 Exactly four read-only lenses in one message. No extra lens types (Tailwind/imports/types/format).
 
-Each subagent gets: post-0.5 scope; the **absolute path** to this skill's `references/checklists.md` and which sections to read (**its lens** + Finding format + Restraint) — paste those three sections inline if the path may not resolve in the subagent; recon + focus; owned/out-of-scope; **skip list** (Phase 0.5 + Prettier/ESLint-owned nits); findings only, schema, ~8 cap; never "find ALL".
+Each subagent gets: post-0.5 scope; the **absolute path** to this skill's `references/checklists.md` and which sections to read (**its lens** + Finding format + Restraint) — paste those three sections inline if the path may not resolve in the subagent; recon + focus; owned/out-of-scope; **skip list** (Phase 0.5 + Prettier/ESLint-owned nits); findings only, schema, ~8 report cap (not a read cap); never "find ALL".
 
 | Lens | Owns |
 |---|---|

@@ -55,7 +55,8 @@ something wants attention, so it's findable without reading the line.
 - **`Opus 4.8 1M xhigh`** — model name, then context-window size and effort in
   gray. Both are static session config, so they get their own segment
   away from the numbers that move. Size comes from `context_window_size` (`1M` /
-  `200K`); effort from the live `/effort`. The display name's built-in
+  `200K`); effort from the live `/effort` (`low` / `medium` / `high` / `xhigh` /
+  `max`; Ultracode reports as `xhigh`). The display name's built-in
   `(… context)` suffix is stripped so the size isn't stated twice.
 - **`ctx 34%`** — context window used, labeled so it can't be confused with a
   rate-limit percentage. Uncolored below 65, orange at 65, red at 75 as it
@@ -68,12 +69,12 @@ something wants attention, so it's findable without reading the line.
   own labels are already durations, so a permanent countdown gives you four
   duration-shaped tokens to scan past. Omitted if missing or already past.
 - A **spent window reads `5h out 1h48m`** in red rather than a percentage.
-  `used_percentage` is documented as 0–100 but actually runs past it once the
-  subscription window is gone and usage bills to credits (109 observed). The
-  script clamps at 100 and switches to the `out` word, so `100%` still means
-  "rounded up to full, not yet over" and `out` means "past the limit". Nothing in
-  the payload exposes credit balance or whether extra usage is even enabled, so
-  the statusline can't say more than this.
+  Official docs still say `used_percentage` is 0–100
+  ([statusline](https://code.claude.com/docs/en/statusline)). The script clamps
+  display at 100 and treats **over** 100 as `out`, so `100%` means full and
+  `out` means past the documented range (a payload over 100 has been seen).
+  Nothing in the payload exposes credit balance or whether extra usage is even
+  enabled, so the statusline can't say more than this.
 - **Names are clipped with `…`** — 20 chars for the project and worktree, 24 for
   the branch. A `tc/`-prefixed branch is easily long enough to wrap the line, and
   wrapping is far worse than losing the tail of a name you already know.
@@ -185,11 +186,10 @@ if [ -z "$(echo "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0; fi
 us=$'\037'
 IFS="$us" read -r model used_pct five_used five_over seven_used seven_over effort size project cur_dir five_reset seven_reset cost repo wt <<EOF
 $(jq -r --arg us "$us" '
-# used_percentage can exceed 100 once the subscription window is spent and usage
-# is billed to credits (seen: 109). Clamp at 100 and flag the overage separately,
-# since past the limit the exact number stops meaning anything.
+# used_percentage is documented 0–100. Clamp display at 100; flag only values
+# over 100 as spent (`out`), so 100% still means full.
 def used: if . == null then "" else (floor | if . > 100 then 100 else . end | tostring) end;
-def over: if . == null then "" elif . >= 100 then "1" else "" end;
+def over: if . == null then "" elif . > 100 then "1" else "" end;
 [
   (.model.display_name // "--"),
   (.context_window.used_percentage // ""),

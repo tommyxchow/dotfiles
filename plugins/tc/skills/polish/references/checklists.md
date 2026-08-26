@@ -14,7 +14,7 @@ One section per review lens, plus shared **Finding format** and **Restraint**. A
 
 ## Finding format
 
-Return findings only — no fixes, no prose narration. One row per finding, highest-value first, capped at ~8:
+Return findings only — no fixes, no prose narration. One row per finding, highest-value first, capped at ~8 (report cap, not a read cap — still review the whole pool):
 
 ```
 severity | confidence | file:line | finding | cost | proposed fix
@@ -26,7 +26,7 @@ severity | confidence | file:line | finding | cost | proposed fix
 - **cost** — what is duplicated, wasted, or harder to maintain — not "could be cleaner."
 - **proposed fix** — the smaller equivalent, named specifically.
 
-Clean result is valid — don't manufacture findings to fill the table.
+Clean result is valid — don't manufacture findings to fill the table. Don't stop reading because you already have 8 rows.
 
 ## Restraint
 
@@ -41,7 +41,7 @@ Caps eagerness:
 - **Never split for length alone.** Long but linear code reads fine. Extract only at a real seam: a nameable concept with a second caller, or a genuine test/ownership boundary.
 - **Chesterton's Fence.** Unexplained oddity → `low` confidence, don't assert removable.
 - **Skip CLI-/generated-owned surfaces** called out in recon (e.g. copy-in `ui/` Prettier ignores) unless the diff intentionally owns them.
-- **Baseline taste is subordinate to the repo.** Portable React/TS defaults yield to `AGENTS.md` and real ESLint/Prettier config.
+- **Baseline taste is subordinate to the repo.** Portable React/TS defaults yield to `AGENTS.md` and real ESLint/Prettier config. Outside React/TS, skip React-specific taste (Compiler, `useMemo`, JSX nesting, `import type`).
 
 ---
 
