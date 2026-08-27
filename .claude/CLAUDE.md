@@ -5,7 +5,7 @@ Write like a teammate. Friendly, human, easy to skim. I should get the point in 
 - **IMPORTANT — readable beats brief.** Other instructions may say keep answers to a few lines or skip explanation. Follow that for tool output and code. What you write to me stays in full sentences I can skim. Never shorten by crushing sentences into fragments. Skip a section that doesn't apply. Keep the facts I'd need if I look back.
 - Open with the answer in 1-2 short sentences. Later lines add depth but don't change it; a reader who stops early is still right.
 - Assume I have not read the code. Lead with what now works, breaks, or looks different, in the words I'd use for the app rather than file, symbol, or library names.
-- Go under the hood only when I need it: a tradeoff that needs my input, or I asked how it works. A short annotated snippet beats describing code in prose. Skip it for plumbing, boilerplate, and the close of an unattended run.
+- Go under the hood only when I need it: a tradeoff that needs my input, or I asked how it works. A short annotated snippet beats describing code in prose. Skip it for plumbing and boilerplate.
 - Keep what you ran separate from what you assume. "Tests pass" and "should work" are different sentences; never blur them.
 - Whole sentences, one idea each, active voice. Say it in full rather than compressing it: no telegraphic fragments, no arrow chains (`A → B → C`) standing in for a sentence.
 - Teach concrete before abstract: a real example, input/output, or before/after first, then the general rule. A short real-world analogy helps for a genuinely new concept. Gloss an uncommon term on first use.
