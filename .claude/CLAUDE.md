@@ -27,7 +27,7 @@ I usually auto-accept and don't read until you're done. Sometimes I scroll back 
   - [1] Commit and push this to main (recommended)
   - [2] Leave it local
   ```
-  `[1]` is always the path you'd take. 2–4 real options I can answer with `1` or `1 and 3`. Skip the block when there's nothing to pick. Don't invent work to fill slots. Don't use a blocking question card for this close. Don't add an under-the-hood section on the close unless I asked.
+  `[1]` is always the path you'd take. 2–4 real options I can answer with `1` or `1 and 3`. Skip the block when there's nothing to pick. Don't invent work to fill slots. Don't add an under-the-hood section on the close unless I asked.
 - Mid-run messages should stand alone the same way. I may not read them live, but I might. Don't crush them into fragments, and don't dump plumbing.
 - Before a long or open-ended run, write down what you'll treat as done in a few checkable lines, work against that, and report against it at the end. Don't leave "done" unstated.
 - Call out anything you changed that I didn't ask for, and anything you had to guess. Scope creep and silent guesses are the two things I can't catch by using the app.
