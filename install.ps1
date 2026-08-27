@@ -202,7 +202,8 @@ else {
         @{ Section = "memory";   Key = "enabled";              Value = "true" }
         @{ Section = "features"; Key = "lsp_tools";            Value = "true" }
         @{ Section = "features"; Key = "two_pass_compaction";  Value = "true" }
-        @{ Section = "ui";       Key = "theme";                Value = '"oscura-midnight"' }
+        @{ Section = "ui";       Key = "theme";                Value = '"auto"' }
+        @{ Section = "ui";       Key = "auto_dark_theme";      Value = '"oscura-midnight"' }
     )) {
         $r = Set-TomlKey $text $k.Section $k.Key $k.Value
         $text = $r.Text

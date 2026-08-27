@@ -12,4 +12,5 @@ lsp_tools = true # default: false
 two_pass_compaction = true # default: false, opt-in prefire compaction
 
 [ui]
-theme = "oscura-midnight" # default: GrokNight
+theme = "auto" # default: GrokNight
+auto_dark_theme = "oscura-midnight" # default: GrokNight
