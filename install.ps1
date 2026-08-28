@@ -1,4 +1,4 @@
-# Dotfiles installer — creates symlinks from this repo to config locations.
+# Dotfiles installer - creates symlinks from this repo to config locations.
 # Requires Developer Mode (Settings > System > For developers) for symlinks.
 # Usage: pwsh -File install.ps1
 
@@ -243,7 +243,7 @@ if (Test-Path "$HOME/.grok") {
         Write-Host "  OK    typescript-language-server on PATH" -ForegroundColor Green
     }
     else {
-        Write-Host "  WARN  typescript-language-server not on PATH — pnpm add -g typescript-language-server typescript" -ForegroundColor Yellow
+        Write-Host "  WARN  typescript-language-server not on PATH - pnpm add -g typescript-language-server typescript" -ForegroundColor Yellow
     }
 }
 
