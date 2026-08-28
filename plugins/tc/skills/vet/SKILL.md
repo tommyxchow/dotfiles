@@ -2,7 +2,6 @@
 name: vet
 description: Cross-checks claims against current official docs and primary sources. Search and fetch until settled (cite floor 1–2, hard cap 8 searches / 16 fetches). Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("we good", "final double check"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; whether the code is correct is code review / Bugbot.
 argument-hint: "[<claim or topic to verify> | <task to research>]"
-allowed-tools: WebSearch WebFetch
 ---
 
 vet grounds work in **current online sources** instead of training-data memory — it verifies checkable claims, cites them, and surfaces what's uncertain or missing. Core rule: **research the claim, not the source** — confirm facts against authoritative pages, never from memory or a search snippet.

@@ -1,6 +1,6 @@
 ---
 name: pass
-description: End-of-slice closer — recency-check stale-sensitive vendor surfaces, patch leftovers, polish if code-shaped, then a ship-ready report. Structure and cleanliness of pending changes, not a code review. Use when the user says "pass", "quick pass", "do a pass", "final pass", "final review", "final double check", "close this out", "plug the gaps", "we good", "anything outstanding", or "anything else to clean up". Do not use for look this up / search online / known issue (that's vet), whether the code is correct (that's Bugbot / code review), polish/dry-clean, or package catch-up (that's refresh). Does not commit.
+description: End-of-slice closer — recency-check stale-sensitive vendor surfaces, patch leftovers, polish if code-shaped, then a ship-ready report. Structure and cleanliness of pending changes, not a code review. Use when the user says "quick pass", "do a pass", "final pass", "final review", "final double check", "close this out", "plug the gaps", "we good", "anything outstanding", "anything else to clean up", or "pass" on its own — never the word mid-sentence (tests pass, pass a prop). Do not use for look this up / search online / known issue (that's vet), whether the code is correct (that's Bugbot / code review), polish/dry-clean, or package catch-up (that's refresh). Does not commit.
 argument-hint: "[skip polish | skip check | <focus>]"
 ---
 
