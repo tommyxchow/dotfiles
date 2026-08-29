@@ -6,7 +6,7 @@ This playbook lives in the repo and loads only when you open this workspace and 
 
 Refreshing packages and framework versions in a **product** repo is the `refresh` skill. Do not run that here.
 
-Primary harnesses: **Cursor**, **Grok Build**, **OpenCode**. Claude Code and Codex when they exist. The installer is enough for instructions and first-party skills on all of those. Marketplace plugins (`ek`, `improve`, `frontend-design`, `typescript-lsp`) need the `claude` CLI; skip that section if it is not installed.
+Primary harnesses: **Claude Code**, **Cursor**, **Grok Build**, **OpenCode**. The installer is enough for instructions and first-party skills on all of those. Marketplace plugins (`ek`, `improve`, `frontend-design`, `typescript-lsp`) need the `claude` CLI; skip that section if it is not installed.
 
 Flow: **find repo → pull or clone → installer → marketplace plugins (if `claude`) → dedupe → leftover sweep → vendored skills → report.**
 
@@ -27,7 +27,7 @@ From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new c
 
 macOS/Linux: `./install.sh`. Windows: `pwsh -File install.ps1`.
 
-It links configs and first-party skills, prunes known stale paths, writes `~/.claude/statusline-command.sh`, and copies Cursor's local `tc` plugin. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Cursor / Grok / OpenCode / Codex pick up instructions and `vet` / `tldr` / `polish` / `grill-me` / `refresh` / `pass` on a new machine.
+It links configs and first-party skills, prunes known stale paths, writes `~/.claude/statusline-command.sh`, and copies Cursor's local `tc` plugin. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode pick up instructions and `vet` / `tldr` / `polish` / `grill-me` / `refresh` / `pass` on a new machine.
 
 On Windows, symlink creation needs Developer Mode (or an elevated shell). If a link comes out dead, fix the mode and re-run the installer rather than replacing links with copies.
 
@@ -69,8 +69,6 @@ If `claude` is missing, say so in the report and continue.
 
 **OpenCode:** it already reads `~/.claude/skills`. Do not also link first-party skills into `~/.config/opencode/skills`. Slash-command stubs in `~/.config/opencode/commands` stay. Do not also link `~/.agents/skills`.
 
-**Codex:** installer already points `~/.codex/AGENTS.md` at `.claude/CLAUDE.md`. Do not recreate `~/.agents/skills`. If `~/.codex/config.toml` exists, it must list `CLAUDE.md` in `project_doc_fallback_filenames`. Add only that name; don't rewrite the rest. Skip if Codex isn't on the machine.
-
 **Project-scope leftovers:** only if `claude` exists. `claude plugin list` plus `~/.claude/plugins/installed_plugins.json`. Uninstall `--scope project` any plugin that is not a user-scope install of an enabled plugin. Run the uninstall from that `projectPath`. Snapshot and restore user `enabledPlugins` after, same as above.
 
 Candidate repos are the sibling project folders of wherever this repo was found on this machine (the same resolution as "Find the repo" above — e.g. everything next to `~/dev/dotfiles`). Other repos may still **enable** uninstalled plugins in their own `.claude/settings.json`. Remove those leftover `enabledPlugins` keys (or the whole object if it is only leftovers). Leave hooks, permissions, and MCP config. `settings.local.json` Skill() allows for gone plugins can go too. Do not commit those repos unless asked.
@@ -80,6 +78,7 @@ Candidate repos are the sibling project folders of wherever this repo was found 
 Delete only what is clearly leftover from an older layout:
 
 - Dangling symlinks under `~/.claude`, `~/.agents`, `~/.config/opencode` that pointed at this repo
+- The leftover `~/.codex/AGENTS.md` symlink (we no longer manage Codex; leave the rest of `~/.codex` alone)
 - Any installer target that is a link whose target no longer exists — check every path the installer prints, not only the roots above (Windows can produce dead links when Developer Mode is off)
 - Identical `.bak` next to installer targets (the installer already drops those; remove a remaining `.bak` only when it is a pre-link leftover and the live file is the symlink)
 - Plugin cache dirs under `~/.claude/plugins/cache` for plugins **not** in `installed_plugins.json` (skip this if there is no Claude plugin cache)

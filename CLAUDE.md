@@ -14,8 +14,8 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
 ## Gotchas
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
-  `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` both point to `.claude/CLAUDE.md`.**
-  The repo files are canonical: editing them updates Claude, Codex, OpenCode, and
+  `~/.claude/CLAUDE.md` points to `.claude/CLAUDE.md`.**
+  The repo files are canonical: editing them updates Claude, OpenCode, and
   Grok immediately. Cursor cannot symlink a local plugin at this repo, so the
   installer copies `.claude/CLAUDE.md` into
   `~/.cursor/plugins/local/tc/rules/global.mdc`. Re-run `./install.sh` (or
@@ -29,7 +29,9 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
   Cursor, Grok, and OpenCode all read that path. `opencode/commands` provides
   `/vet`, `/tldr`, `/polish`, `/grill-me`, `/refresh`, and `/pass` wrappers.
   Do not also copy those skills into `~/.config/opencode/skills`.
-  Keep shared skills portable Agent Skills (`name` and `description` frontmatter).
+  Keep shared skills portable Agent Skills (`name` and `description` required).
+  Claude-only `context` / `agent` / `background` are fine on a skill that should
+  fork; other harnesses ignore them. Don't put `allowed-tools` on a shared skill.
   Do not enable `tc@chow` on a machine that ran the installer: that plugin is
   the same files via the marketplace cache, so both would load. Do not install
   `mattpocock-skills` from the official marketplace either: `grill-me` and

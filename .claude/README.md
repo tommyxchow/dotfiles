@@ -1,8 +1,8 @@
 # Shared Agent Config
 
 This directory holds the shared global instructions and Claude Code settings.
-The shared instructions also link into Codex and are read by OpenCode's Claude
-Code compatibility fallback.
+The shared instructions also land in OpenCode and Grok Build via Claude Code
+compatibility.
 Personal plugins ship from the `chow` marketplace in this same repo
 (`tommyxchow/dotfiles`). Third-party plugins are declared as separate marketplaces in
 `settings.json`.
@@ -13,7 +13,7 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Shared global instructions (linked into Claude Code and Codex; read by OpenCode and Grok Build; copied by the installer into Cursor's local `tc` plugin) |
+| `CLAUDE.md` | Shared global instructions (linked into Claude Code; read by OpenCode and Grok Build; copied by the installer into Cursor's local `tc` plugin) |
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
 Harness response-style defaults conflict, so `CLAUDE.md` has to override them rather

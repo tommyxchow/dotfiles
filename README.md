@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal config for git, VS Code, Ghostty, Claude Code, Codex, OpenCode, and Grok Build. The
+Personal config for git, VS Code, Ghostty, Claude Code, OpenCode, Cursor, and Grok Build. The
 installer symlinks files from this repo into their real locations, so editing a file
 here changes the live config immediately. Cursor global instructions are the exception:
 the installer copies `.claude/CLAUDE.md` into a local plugin (Cursor rejects a symlink
@@ -38,7 +38,7 @@ copy. `*.bak` is gitignored.
 | `vscode/keybindings.json` | VS Code and Cursor user keybindings |
 | `ghostty/config` | `~/.config/ghostty/config` |
 | `.claude/settings.json` | `~/.claude/settings.json` |
-| `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` |
+| `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
 | `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode reads this path too) |
 | `opencode/commands/*.md` | `~/.config/opencode/commands/{name}` |
 
@@ -59,11 +59,6 @@ from the repo copy on new machines and patches just those keys afterwards.
 The installer also seeds `~/.grok/lsp.json` from `grok/lsp.json` when missing (rewriting
 the Windows `.cmd` shim on that platform) and warns if `typescript-language-server`
 is not on PATH.
-
-Codex is configured with `project_doc_fallback_filenames = ["CLAUDE.md"]` in
-`~/.codex/config.toml` so it also recognizes repo-level `CLAUDE.md` files. The
-installer does not manage that existing config file, so add the setting once on a new
-machine.
 
 OpenCode uses its Claude Code compatibility fallback to read the shared
 `~/.claude/CLAUDE.md` instructions, plus project `AGENTS.md` or `CLAUDE.md`

@@ -52,6 +52,7 @@ Prune-Stale "$HOME/.claude/skills/resync"
 Prune-Stale "$HOME/.agents/skills/resync"
 Prune-Stale "$HOME/.config/opencode/skills/resync"
 Prune-Stale "$HOME/.config/opencode/commands/resync.md"
+Prune-Stale "$HOME/.codex/AGENTS.md"
 
 $links = @(
     @{ Source = "git/.gitconfig";           Target = "$HOME/.gitconfig" }
@@ -61,7 +62,6 @@ $links = @(
     @{ Source = "vscode/keybindings.json";  Target = "$env:APPDATA/Cursor/User/keybindings.json" }
     @{ Source = ".claude/settings.json";    Target = "$HOME/.claude/settings.json" }
     @{ Source = ".claude/CLAUDE.md";        Target = "$HOME/.claude/CLAUDE.md" }
-    @{ Source = ".claude/CLAUDE.md";        Target = "$HOME/.codex/AGENTS.md" }
 )
 
 Get-ChildItem (Join-Path $dotfiles "plugins/tc/skills") -Directory -ErrorAction SilentlyContinue | ForEach-Object {

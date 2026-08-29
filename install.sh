@@ -93,6 +93,7 @@ prune_stale "$HOME/.claude/skills/resync"
 prune_stale "$HOME/.agents/skills/resync"
 prune_stale "$HOME/.config/opencode/skills/resync"
 prune_stale "$HOME/.config/opencode/commands/resync.md"
+prune_stale "$HOME/.codex/AGENTS.md"
 
 link "git/.gitconfig"          "$HOME/.gitconfig"
 link "vscode/settings.json"    "$VSCODE_USER/settings.json"
@@ -102,7 +103,6 @@ link "vscode/keybindings.json" "$CURSOR_USER/keybindings.json"
 link "ghostty/config"          "$HOME/.config/ghostty/config"
 link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
-link ".claude/CLAUDE.md"       "$HOME/.codex/AGENTS.md"
 
 for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   [ -d "$skill_dir" ] || continue
