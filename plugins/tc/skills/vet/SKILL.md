@@ -1,12 +1,22 @@
 ---
 name: vet
-description: Cross-checks claims against current official docs and primary sources. Search and fetch until settled (cite floor 1–2, hard cap 8 searches / 16 fetches). Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("we good", "final double check"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; whether the code is correct is code review / Bugbot.
+description: Cross-checks claims against current official docs and primary sources. Search and fetch until settled (cite floor 1–2, hard cap 8 searches / 16 fetches). Runs in a subagent so page fetches stay out of the parent window. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("we good", "final double check"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; whether the code is correct is code review / Bugbot.
 argument-hint: "[<claim or topic to verify> | <task to research>]"
+context: fork
+agent: general-purpose
+background: false
 ---
 
 vet grounds work in **current online sources** instead of training-data memory — it verifies checkable claims, cites them, and surfaces what's uncertain or missing. Core rule: **research the claim, not the source** — confirm facts against authoritative pages, never from memory or a search snippet.
 
 Bare `vet` and `vet/research` are the same. `$ARGUMENTS` is the claim, topic, or forward task.
+
+## Isolate
+
+Page fetches stay in a child window. The parent keeps only the section 4 answer.
+
+- **Already a subagent** (forked or spawned for this vet): do the work here. Don't spawn. `$ARGUMENTS` plus your prompt is the claim; if both are empty, ask — don't guess. Then section 1.
+- **Parent**: don't search or fetch here. Spawn one general-purpose subagent, wait (not background), present its answer as yours. Not Explore. Pack the claim quoted (`$ARGUMENTS` or last checkable claims / named topic / pasted plan), this file's path + "you are the worker", and repo cwd. A forward task also needs any decision from this chat it depends on. Don't spawn an empty worker.
 
 ## 1. Pick the mode (don't stall asking "what to review")
 
