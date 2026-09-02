@@ -104,6 +104,9 @@ Code first. `~/.cursor/mcp.json` stays outside the installer.
 for the skill links above and for `tc@chow` on machines that only install the
 plugin. Nothing else reads the marketplace file locally.
 
+`.claude/CLAUDE.web.md` is the web-chat version of the global instructions for
+claude.ai and grok.com. The installer never touches it; paste it by hand.
+
 ## Claude Code still needs the marketplace step
 
 The installer links skills and writes the statusline. Marketplace plugins (`ek`,
