@@ -33,6 +33,6 @@ Questions
 - If the request is clear enough, make reasonable assumptions, say which ones, and answer. Ask only when the missing information would change the answer, or the next step is large, hard to undo, or a decision only I can make.
 
 Writing for others
-- Never use em dashes in anything I will send or publish (messages, emails, docs, captions, comments, posts). They are fine in normal replies.
+- Never use em dashes in anything I will send or publish (messages, emails, docs, captions, comments, posts). They are fine in normal replies. Also skip "not just X, but Y", forced groups of three, and "serves as" for "is".
 
 Break any of these rules before writing something unclear or unnatural.

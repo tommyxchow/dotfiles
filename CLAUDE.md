@@ -27,7 +27,7 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
 
 - **`.claude/CLAUDE.web.md` is the web-chat twin of `.claude/CLAUDE.md`.** Nothing
   loads it: paste it by hand into claude.ai (Settings > Instructions for Claude)
-  and grok.com (Customize Grok). When a Communication rule changes in
+  and grok.com (Customize Grok). When a Communication or External writing rule changes in
   `.claude/CLAUDE.md`, mirror it there if it applies to chat. Keep the file
   paste-clean: no header, no comments.
 

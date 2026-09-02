@@ -68,10 +68,13 @@ Caps eagerness:
 5. **Stringly-typed / magic values** — raw strings/numbers where a string union, `as const` object, or named constant fits. Prefer house style; many repos ban `enum` — don't propose `enum` when recon/lint forbids it.
 6. **Unnecessary JSX nesting** — wrapper adds no layout/accessibility value.
 7. **Nested conditionals** — 3+ deep → guards, early returns, or lookup table.
-8. **Unnecessary comments** — narrates *what* / task crumbs. Keep non-obvious *why*.
-9. **Dead code** — unreachable, unused, commented-out orphans from this change. (Skip unused imports if the linter already fixes them.)
+8. **Unnecessary comments** — narrates *what*, a docblock that repeats the signature, section dividers, task crumbs. Keep non-obvious *why*.
+9. **Dead code** — unreachable, unused, commented-out orphans from this change; an old path left beside its replacement; compatibility re-exports for callers in this repo. (Skip unused imports if the linter already fixes them.)
 10. **Type escapes** — casual `any` / `as` / `!` where a real type or narrow works. Deep type design → code review.
 11. **Convention drift** — ignores recon patterns (naming, errors, layout). Name the exemplar.
+12. **Guards for impossible cases** — null checks on non-nullable values, try/catch that only rethrows or swallows, "just in case" fallbacks → delete and trust the types.
+13. **Pass-through wrapper** — a function whose body is one call to another with the same arguments → call the callee directly.
+14. **Placeholder names** — `data`, `result`, `temp`, `item2`, `processData`, a new `utils`/`helpers` file → name it for what it is, or move it beside its one caller.
 
 Correctness-shaped checks stay in code review.
 
@@ -103,3 +106,4 @@ Correctness-shaped checks stay in code review.
 2. **Symptom vs root cause** — downstream clamp/re-sort/re-check instead of fixing the source; note other consumers at risk.
 3. **Wrong layer** — business logic in UI, formatting in data layer, scattered env/platform branches → name the owning layer.
 4. **Repeated local workaround** — Nth try/catch-ignore, retry, or cache-bust → lift into shared mechanism once.
+5. **Grab-bag file** — a file grown to hold a second, separable concern (a component plus unrelated helpers, several unrelated endpoints, data access beside UI) → split at the named seam. Length alone is not a finding (see Restraint).

@@ -14,7 +14,7 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 | File | Purpose |
 |------|---------|
 | `CLAUDE.md` | Shared global instructions (linked into Claude Code; read by OpenCode and Grok Build; copied by the installer into Cursor's local `tc` plugin) |
-| `CLAUDE.web.md` | Web-chat twin of `CLAUDE.md` for claude.ai and grok.com. Nothing loads it; paste it by hand. Mirror Communication changes here when they apply to chat |
+| `CLAUDE.web.md` | Web-chat twin of `CLAUDE.md` for claude.ai and grok.com. Nothing loads it; paste it by hand. Mirror Communication and External writing changes here when they apply to chat |
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
 Harness response-style defaults conflict, so `CLAUDE.md` has to override them rather

@@ -1,4 +1,4 @@
-Everything in this file is a strong default, not a law. If following a rule would make the result worse, do the better thing and say in one sentence which rule you bent and why. Two kinds don't bend: anything marked "ask first", and anything about secrets, verification claims, or the package manager.
+Everything in this file is a strong default, not a law. Where it says nothing, do what you would normally do. If following a rule would make the result worse, do the better thing and say in one sentence which rule you bent and why. Two kinds don't bend: anything marked "ask first", and anything about secrets, verification claims, or the package manager.
 
 ## Communication
 
@@ -60,11 +60,11 @@ These route to a skill, not to a fresh attempt at the task.
 
 - Before using a framework or library API, check the installed version against its matching official docs rather than memory. If a newer release already fixes the problem, prefer that bump over a workaround, following the bump rules below.
 - Official docs beat X, blogs, and forums (Reddit, Stack Overflow, Discord, GitHub issues and Discussions). Forums show what people are hitting, never what the API is. A personal blog counts only when the author is a known expert on that project.
-- Default to doing the recommended thing, plus cheap follow-through already in scope. Ask first when the change is large, hard to undo, or a decision I can't infer from the task. Don't start a second task. Offering Next options isn't a second task.
+- Default to doing the recommended thing, plus cheap follow-through already in scope. Ask first when the change is large, hard to undo, or a decision I can't infer from the task. Don't start a second task, and don't add a README, docs page, or summary file the task didn't ask for. Offering Next options isn't a second task.
 - Patch and minor bumps to fix something are fine. Ask first, with the options and your recommendation, before a major bump, a new dependency, a pinned or patched package, a new linter, formatter, CI gate, or coverage tool, or anything similarly hard to undo. The reason for a pin is usually in the commit or AGENTS.md.
 - Don't treat every exception as fatal. Timeouts, offline, 401s, and cancellations are normal. A transient failure means retry or move on, not a pin or a workaround.
 - When I explicitly ask for all or every relevant item, or an exhaustive update to a list or source, inspect the complete source and cover every match. Don't stop at a representative subset.
-- Finish what a change starts: remove code the new work clearly supersedes, update every relevant occurrence when a shared pattern changes, and clean up temporary files and scripts created for iteration.
+- Finish what a change starts. When new code replaces old, delete the old path in the same change, including re-exports and compatibility shims for callers you can update yourself, commented-out blocks, and debug logging. Update every relevant occurrence when a shared pattern changes, and clean up temporary files and scripts created for iteration.
 - Never claim something works on faith. Run or check it when feasible. Prefer the repo's own full check over a single linter pass, and don't invent a gate the repo doesn't have.
 - New behavior gets tests: the happy path plus the edge cases likely to break (empty, error, boundary). Start targeted and expand when the risk warrants it. A bug fix starts with a regression test that reproduces it.
 - For UI work, put most coverage at the integration level, unit tests on pure logic, and e2e only on critical journeys. Follow the repo if it already splits tests differently. Tests assert what the user sees, not which library is imported.
@@ -72,16 +72,21 @@ These route to a skill, not to a fresh attempt at the task.
 
 ## Code
 
+Working is the floor, not the bar. Code should read as if a careful senior engineer on this repo wrote it in one sitting: only what the task needs, in the repo's own patterns, with nothing left over.
+
 - In JS/TS repos, use `pnpm` / `pnx` (`pnpm dlx` / `pnpx`), never `npm` / `npx` / `yarn`.
-- Prefer the simplest solution that fits the existing codebase. Reuse existing patterns and helpers before adding new ones; don't add complexity or configuration beyond what the task needs. A fancy reactive collection is usually worse than a plain array you replace (`[...old, next]`).
+- Prefer the simplest solution that fits the existing codebase, in the fewest lines that still read plainly. Reuse existing patterns and helpers before adding new ones. Don't add an option, parameter, layer, or config for a case the task doesn't have. A fancy reactive collection is usually worse than a plain array you replace (`[...old, next]`).
+- Flat and direct. Early returns and lookup tables beat deep nesting, and a plain function beats a class, factory, or registry with one use. A wrapper that only forwards to one call is noise; call the thing.
 - Inline until a pattern appears three times, then extract. Two similar blocks that could diverge stay duplicated.
 - Don't switch a layout or structure strategy (flex vs grid, Column vs Stack) as a side effect of an unrelated task. Changing it is fine when it is the task or it is actually broken.
 - Don't paper over types with `as`, non-null `!`, or `any`. Fix them at the definition. A genuine exception gets a one-line why, same as an eslint-disable. Mutually exclusive states are a union (Dart: sealed), not a pile of boolean flags.
 - Named exports by default; a default export only where the framework requires one (`page`/`layout`, configs, `React.lazy`). Use `satisfies` for config and lookup objects that should stay literal.
-- Parse loosely-typed third-party payloads down to the fields you use (Zod in TS). Skip extra validation on your own already-typed endpoints.
+- Validate at the boundary, then trust the types. Parse loosely-typed third-party payloads down to the fields you use (Zod in TS). Inside, no extra validation on your own already-typed endpoints, no null checks on values the types say can't be null, no try/catch that only rethrows or swallows, and no "just in case" fallbacks.
 - New JS/TS files and directories use kebab-case, including components (`theme-toggle.tsx`). Follow the repo if it already differs.
+- Names say what a thing is in this domain. `data`, `result`, `temp`, `item2`, and `processData` are placeholders, and so is a new `utils` or `helpers` file. Name the file for what it does, or put the function beside its caller.
 - Put a new file where the repo already keeps that kind of file. With no convention to follow, put it next to what it belongs to, like a variant beside its original. Don't create a directory for a single file unless the framework needs one, and don't leave scratch files at the repo root.
-- Comment the non-obvious why (constraints, quirks, intent), never what the code already says. No narration comments, no leftover task crumbs.
+- One file holds one thing, at the size the repo already uses. When a file starts to hold a second thing, split it at that seam. Don't pile every related piece into one file, and don't split a long but linear file just for length.
+- Comment the non-obvious why (a constraint, a quirk, an intent), never what the code already says, and most functions need no comment at all. `// loop over users`, a docblock that repeats the signature, and section dividers are noise. `// Stripe sends amounts in cents` earns its line. No leftover task crumbs.
 - Logs are structured and tell a story: event, key context, outcome. Never log secrets, tokens, or PII. Redact them.
 
 ## UI baseline
@@ -102,7 +107,8 @@ These route to a skill, not to a fresh attempt at the task.
 
 ## External writing
 
-- For text posted outside the session (PR bodies, review comments, tickets), use a concise, casual teammate voice. No em dashes (use other punctuation), except inside quoted code or UI copy. Skip "This PR…" and "improves UX" filler; state the specific change.
+- For text posted outside the session (PR bodies, review comments, tickets) and prose that ships in the repo (README, docs, changelog, UI copy, error messages), use a concise, casual teammate voice. No em dashes (use other punctuation), except inside quoted code or UI copy. Skip "This PR…" and "improves UX" filler; state the specific change.
+- Cut the usual AI tells: "not just X, but Y", a forced group of three, "serves as" or "boasts" where "is" or "has" works, and any sentence that could sit unchanged in another project's docs.
 
 ## Instruction files
 
