@@ -33,12 +33,12 @@ strips coding instructions. `outputStyle` is unset in `settings.json`.
 
 The installer links first-party skills into `~/.claude/skills`. Claude, Cursor,
 Grok, and OpenCode all read that path. `opencode/commands` adds `/vet`, `/tldr`,
-`/polish`, `/grill-me`, `/refresh`, and `/pass` wrappers without duplicating the
+`/polish`, `/review`, `/grill-me`, `/refresh`, and `/pass` wrappers without duplicating the
 skill instructions. Do not enable `tc@chow` alongside those links, and do not
 also copy those skills into `~/.config/opencode/skills`. OpenCode does not load
 Claude marketplace plugins, so `ek` remains Claude Code-only and
 upstream-managed. Machine catch-up is a repo playbook (`docs/resync.md`).
-Product-repo upgrades are the `refresh` skill. End-of-slice closer is the `pass` skill.
+Product-repo upgrades are the `refresh` skill. Correctness review is the `review` skill. End-of-slice closer is the `pass` skill.
 
 Plugin content for `chow` lives outside this directory:
 
@@ -54,7 +54,7 @@ Plugin content for `chow` lives outside this directory:
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `grill-me`, `grilling`, `refresh`, `pass`, `statusline-install` files. Marketplace packaging only — do not enable on a machine that ran the installer. |
+| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `review`, `grill-me`, `grilling`, `refresh`, `pass`, `statusline-install` files. Marketplace packaging only — do not enable on a machine that ran the installer. |
 | `ek@chow` | `emilkowalski/skills` (git url) | Whatever is in upstream `skills/` (not vendored here) |
 
 Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.

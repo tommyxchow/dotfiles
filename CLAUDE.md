@@ -33,7 +33,7 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
 
 - **The installer links first-party skills into `~/.claude/skills`.** Claude,
   Cursor, Grok, and OpenCode all read that path. `opencode/commands` provides
-  `/vet`, `/tldr`, `/polish`, `/grill-me`, `/refresh`, and `/pass` wrappers.
+  `/vet`, `/tldr`, `/polish`, `/review`, `/grill-me`, `/refresh`, and `/pass` wrappers.
   Do not also copy those skills into `~/.config/opencode/skills`.
   Keep shared skills portable Agent Skills (`name` and `description` required).
   Claude-only `context` / `agent` / `background` are fine on a skill that should

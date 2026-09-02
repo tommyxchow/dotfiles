@@ -1,12 +1,12 @@
 ---
 name: polish
-description: End-of-slice cleanup for React/TS apps — Prettier + ESLint autofix on touched files first (when present), then four judgment lenses (reuse, quality, efficiency, altitude), then high-confidence cleanups behind a verify gate. Heavier than a quick tidy-up. Use for "polish", "dry clean", "make this less hacky", or "reduce duplication". Shape only — not a bug hunt; not the pass skill ("we good", "anything outstanding", "final review", "final double check", cleanup-before-commit). Default scope is dirty work plus files edited this session (still in scope after commit); `/polish all` for the full branch slice. Never installs tools.
+description: End-of-slice cleanup for React/TS apps — Prettier + ESLint autofix on touched files first (when present), then four judgment lenses (reuse, quality, efficiency, altitude), then high-confidence cleanups behind a verify gate. Heavier than a quick tidy-up. Use for "polish", "dry clean", "make this less hacky", or "reduce duplication". Shape only — not a bug hunt; not the pass skill ("final review", "final double check", "close this out", cleanup-before-commit). Default scope is dirty work plus files edited this session (still in scope after commit); `/polish all` for the full branch slice. Never installs tools.
 argument-hint: "[staged | unstaged | branch | all | <focus>]"
 ---
 
 # Polish — autofix then judgment cleanup
 
-Improve the **shape** of working code. Not bugs (route those to the harness's code reviewer — Bugbot in Cursor, `/review` in Claude Code). Not a full rewrite. Not `pass` (vet + leftovers + ship-ready).
+Improve the **shape** of working code. Not bugs (route those to the `review` skill). Not a full rewrite. Not `pass` (vet + leftovers + ship-ready).
 
 The flow is scope, then Prettier and ESLint prep, then four review lenses, then reconcile, apply, and verify. Report fewer, surer findings rather than many uncertain ones.
 

@@ -72,6 +72,7 @@ files.
 |-------|------|
 | `/vet` | A claim, version, known issue, or "is this still true". Not "is this code correct". Reports, then waits. |
 | `/polish` | Shape of code you already wrote. |
+| `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. |
 | `/pass` | Slice is done: vet, leftovers, polish if code-shaped, ship-ready. Not a commit. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan. |

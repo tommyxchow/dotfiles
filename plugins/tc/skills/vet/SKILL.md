@@ -1,6 +1,6 @@
 ---
 name: vet
-description: Cross-checks claims against current official docs and primary sources. Search and fetch until settled (cite floor 1–2, hard cap 8 searches / 16 fetches). Runs in a subagent so page fetches stay out of the parent window. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("we good", "final double check"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; whether the code is correct is code review / Bugbot.
+description: Cross-checks claims against current official docs and primary sources. Search and fetch until settled (cite floor 1–2, hard cap 8 searches / 16 fetches). Runs in a subagent so page fetches stay out of the parent window. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("final review", "final double check"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; whether the code is correct is the review skill.
 argument-hint: "[<claim or topic to verify> | <task to research>]"
 context: fork
 agent: general-purpose
@@ -22,7 +22,7 @@ Page fetches stay in a child window. The parent keeps only the section 4 answer.
 
 - **Bare `vet` / `research` / search / look this up / cross-check / is this still true** → look up the last response or the named topic. Thorough (section 3). Short answer (section 4), not a short search.
 - **"is anyone else hitting this" / known issue / workaround** → section 3 known-bug path (that project's issues/Discussions, then changelog/releases). Thorough, short answer.
-- **"double check" / "verify"** → route by object. A claim, version, API, "latest", or current docs → this skill. Whether the code is correct, the diff, or this function → code review (Bugbot / `/review`). A finished slice ("final double check", we good) → `pass`. Don't search just because they said double check.
+- **"double check" / "verify"** → route by object. A claim, version, API, "latest", or current docs → this skill. Whether the code is correct, the diff, or this function → the `review` skill. A finished slice ("final double check", "close this out") → `pass`. Don't search just because they said double check.
 - **Pasted plan from another model** ("chatgpt said", "wdyt", "what do you think") → claim audit of that paste. Same short answer unless several claims are actually wrong or uncertain.
 - **"vet" attached to a forward task** ("build X and vet it", "what's the best Y") → do the task *research-backed*: search current sources for every checkable fact before asserting, and cite inline as you go.
 - **Ambiguous** → last checkable claims if the last turn asserted a fact; last code change if they mean correctness. Only ask if there is genuinely nothing to act on.
@@ -70,5 +70,5 @@ One-line verdict, then only what was wrong, in the global Communication voice: f
 
 ## 5. Boundaries
 
-- vet **reports/answers — it doesn't apply changes.** After an audit, wait for approval before editing. End-of-slice "we good" / "anything outstanding" / "final review" / "final double check" is `pass`, which vets then patches.
+- vet **reports/answers — it doesn't apply changes.** After an audit, wait for approval before editing. End-of-slice "final review" / "final double check" / "close this out" is `pass`, which vets then patches.
 - Bigger than a cross-check? Open-ended exploratory research gets a standalone deep-research round. Confirming a code change works means running it locally; don't web-search a local correctness check.
