@@ -8,9 +8,9 @@ argument-hint: "[staged | unstaged | branch | all | <focus>]"
 
 Improve the **shape** of working code. Not bugs (route those to the harness's code reviewer — Bugbot in Cursor, `/review` in Claude Code). Not a full rewrite. Not `pass` (vet + leftovers + ship-ready).
 
-Flow: **scope → Prettier/ESLint prep → four lenses → reconcile → apply → verify.** Optimize for **precision, not recall**.
+The flow is scope, then Prettier and ESLint prep, then four review lenses, then reconcile, apply, and verify. Report fewer, surer findings rather than many uncertain ones.
 
-Tuned for React + TypeScript (Next.js, Expo, Vite, etc.) with **Prettier + ESLint**. Portable: missing tools → skip autofix, don't invent formatting findings. **Never install** packages or use `npx`/`pnpm dlx`/`npm exec` to fetch tools for polish — only already-installed local binaries (e.g. `pnpm exec prettier` / `node_modules/.bin`).
+Tuned for React + TypeScript (Next.js, Expo, Vite, etc.) with **Prettier + ESLint**. Portable: when the tools are missing, skip autofix and don't invent formatting findings. **Never install** packages or use `npx`/`pnpm dlx`/`npm exec` to fetch tools for polish — only already-installed local binaries (e.g. `pnpm exec prettier` / `node_modules/.bin`).
 
 Harness format-on-save is unreliable across Cursor / Claude Code / OpenCode. Batch autofix first, then spend lens budget on judgment.
 
@@ -42,10 +42,10 @@ If the pool clearly mixes unrelated work from another task, prefer Source B (whe
 1. Read `AGENTS.md` / `CLAUDE.md`. House style wins over baseline taste.
 2. Note framework/compiler ownership (React Compiler memoization, typed routes, caches).
 3. Detect **Prettier + ESLint** (config and/or package.json deps). Also note `format` / `lint` / `check` scripts.
-4. Confirm **runnable local binaries** (e.g. `pnpm exec prettier --version`, `pnpm exec eslint --version`, or `node_modules/.bin/*`). Config without a binary → treat that tool as absent (skip it). Never install to enable autofix.
+4. Confirm **runnable local binaries** (e.g. `pnpm exec prettier --version`, `pnpm exec eslint --version`, or `node_modules/.bin/*`). Config without a binary means that tool is absent; skip it. Never install to enable autofix.
 5. Prefer the repo's own full check; else lint + tests; else say so. Don't invent a gate.
 6. Note CLI-/generated-owned paths (e.g. prettierignored `ui/`). Skip unless the diff intentionally owns them.
-7. Multi-repo pool → repeat detection + Phase 0.5 **per repo**. No tools in a repo → skip autofix there.
+7. If the pool spans several repos, repeat detection and Phase 0.5 **per repo**. A repo with no tools skips autofix.
 
 **Baseline taste** (when docs are thin; **AGENTS.md + real ESLint/Prettier always override**):
 
@@ -55,7 +55,7 @@ If the pool clearly mixes unrelated work from another task, prefer Source B (whe
 - Prefer derived state / event handlers over effect+setState when equivalent.
 - Don't default to `useMemo` / `useCallback` / `memo` when React Compiler is on.
 - Prefer semantic tokens and `cn`-style helpers when the repo has them.
-- Behavior-identical only; correctness → code review.
+- Behavior-identical only; correctness problems go to code review.
 - **No Prettier and no ESLint:** formatting/import-order/class-order stay **out of scope**. At most one summary note to consider adopting them. Do not hand-fix style.
 - **Outside React/TS** (Dart/Flutter, etc.): skip React-specific taste (Compiler, `useMemo`, JSX nesting, `import type`). Still run reuse / dead-code / altitude. Don't invent dartfmt.
 
@@ -65,19 +65,19 @@ If the pool clearly mixes unrelated work from another task, prefer Source B (whe
 
 **Goal:** strip mechanical noise before lenses.
 
-1. Neither tool runnable in this repo → skip to Phase 1 (no-toolchain rule applies).
+1. If neither tool is runnable in this repo, skip to Phase 1 (the no-toolchain rule applies).
 2. Autofix **only pool paths for this repo**:
    - Prefer local CLIs on the file list: `pnpm exec prettier --write <files>`, then `pnpm exec eslint --fix <files>` (or `node_modules/.bin/...`).
    - Project scripts (`pnpm format`, etc.) **only** if they accept the same path list.
-   - Script can't be scoped → **skip** that step; note in tally. **Never** whole-repo format/lint.
+   - If a script can't be scoped to the file list, **skip** that step and note it in the summary. **Never** format or lint the whole repo.
 3. Unfixable ESLint must not abort polish. Consume logs yourself; don't dump them at the user.
 4. **Refresh pool:** post-autofix diff; re-read touched untracked (when in scope); **re-read Source-B paths** autofix may have changed (when Source B is in scope).
 5. Drop from lens scope only files that **had a dirty diff** which became purely mechanical (format/import-order/class-order only). **Do not drop** Source-B (or other pool) files that have no remaining git diff — e.g. just committed — those stay in scope for judgment; lenses review current file contents.
-6. Leftover ESLint: safe behavior-identical → maybe Phase 3; correctness → note for code review; pure style → ignore.
+6. Leftover ESLint findings: a safe behavior-identical fix may go in Phase 3, a correctness finding gets noted for code review, and pure style is ignored.
 
 **Autofix no-op ≠ done.** If Prettier/ESLint made no changes, still continue to Phase 1 whenever the judgment pool is non-empty. “Already clean” is only for after lenses find nothing worth applying (or a truly trivial pool under the size gate).
 
-Tally later: "Autofixed N files; K issues remain → fixed/skipped/routed."
+Keep the numbers for the summary: how many files autofix touched, and what happened to each leftover lint finding (fixed, skipped, or sent to code review).
 
 ## Phase 1 — Four lenses (parallel, read-only)
 
@@ -110,13 +110,17 @@ Smallest correct edit. Chesterton's Fence; don't strip named concepts/test seams
 
 1. If useful, note whether the gate was already failing before your cleanups (quick baseline: run once before apply, or record known failure). Don't blame pre-existing failures on polish.
 2. After apply: fresh-eyes on the resulting diff; revert polish-owned scope creep.
-3. Run recon's gate. New failure caused by a polish cleanup → revert **that** cleanup; continue others. No gate → say so.
+3. Run recon's gate. If a polish cleanup caused a new failure, revert **that** cleanup and continue with the others. If there is no gate, say so.
 
-**Summary (brief):** autofix tally; applied; skipped + why; correctness leftovers for code review if any. Or "already clean."
+**Summary.** Write it in the global Communication voice: a few full sentences, answer first. Say what autofix touched, what you cleaned up and why it is safe, what you left alone and why, and anything correctness-shaped that belongs in code review. If nothing was worth changing, say the code was already clean and stop.
+
+```
+Autofix reformatted three files. I removed the unused draft state in the editor and swapped a hand-rolled date formatter for the existing helper; both keep behavior identical and the full check passes. I left the two similar upload handlers duplicated because they are likely to diverge. One thing for code review: the retry loop in the uploader never gives up.
+```
 
 ## Argument routing
 
-First token → scope (table above). Remaining tokens → Additional Focus for every lens. No scope keyword → default row.
+The first token sets the scope (table above). The remaining tokens become Additional Focus for every lens. With no scope keyword, use the default row.
 
 Examples: `/polish` · `/polish all` · `/polish branch` · `/polish all auth forms`
 

@@ -8,7 +8,7 @@ argument-hint: "[optimal | full | minimal | audit | packages | docs] [custom ins
 
 Repo catch-up: latest versions this stack can honestly take, plus migrations, plus a loud call-out for must-upgrades, vulns, deprecations, and things that are severely behind.
 
-`$ARGUMENTS`: optional **mode** (first token) then **custom instructions**. Empty = `optimal`. If the first token is not a mode below, the whole argument is custom instructions on `optimal`. Security-audit / Dependabot / outdated with no upgrade language → `audit` (report only).
+`$ARGUMENTS`: optional **mode** (first token) then **custom instructions**. Empty = `optimal`. If the first token is not a mode below, the whole argument is custom instructions on `optimal`. A security-audit, Dependabot, or outdated request with no upgrade language means `audit` (report only).
 
 Honor `AGENTS.md` holds. Don't commit unless asked.
 
@@ -56,7 +56,7 @@ A passed mode or custom instruction is the answer. Don't also prompt.
 
 ## Flow
 
-recon → audit → classify → apply (unless `audit`/`plan`) → verify → report.
+Recon first, then audit, classify, apply (unless the mode is `audit` or `plan`), verify, and report.
 
 After detecting the stack, read only that section of [stacks.md](stacks.md). If none match, stop and say so.
 
@@ -102,11 +102,15 @@ Finish what a bump starts: remove APIs, config keys, and docs it superseded. Don
 
 ### 5. Verify
 
-Gate (and extra CI jobs) green. Already red before the bump → say so, don't blame the bump. New failure → fix or revert **that** bump. Re-run the stack's security audit (not a second outdated). Remaining high/critical stay in the report.
+Gate (and extra CI jobs) green. If it was already red before the bump, say so and don't blame the bump. A new failure means fix or revert **that** bump. Re-run the stack's security audit (not a second outdated). Remaining high/critical stay in the report.
 
 ### 6. Report
 
-**Must** first, then what landed, then skipped holds/majors, then moderate-and-below as a count unless one is reachable. If a bump changes what the app does, say that in the first sentence. No recap.
+Write it in the global Communication voice: full sentences, answer first. If a bump changes what the app does, that is the first sentence. Then the Must items, then what landed, then the holds and majors you skipped and why, then moderate-and-below advisories as a single count unless one is reachable from production code. No recap of the steps.
+
+```
+Everything on the current major is now up to date and the full check passes. One Must: the image library had a high-severity advisory, fixed by its patch release. Next stayed on its current minor and the React packages moved together. I skipped the ESLint major because AGENTS.md holds it. Four moderate advisories remain, all dev-only.
+```
 
 ## Distinct from
 

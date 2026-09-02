@@ -34,7 +34,7 @@ For dev questions inside a repo, check what's actually installed **before** sear
 ## 3. Verify (the part that makes it vet, not a vibe-check)
 
 - **Don't assert from training data.** Never take a checkable fact — version, API signature, price, date, deprecation, "latest", best practice — from memory. In a repo, section 2 first; then search. Outside a repo, search first.
-- **Go to the right source of truth.** Rank, don't average. Confirm you're on the project's canonical domain (the one linked from the repo or package registry), not a mirror, clone, or lookalike. A discussions / answers / `community.` / forum surface on that same brand is vibe, not the spec — `learn.` / `docs.` style hosts can still be the real docs; don't use the hostname alone.
+- **Go to the right source of truth.** Use the best-ranked source below; don't average across weaker ones. Confirm you're on the project's canonical domain (the one linked from the repo or package registry), not a mirror, clone, or lookalike. A discussions, answers, `community.`, or forum page on that same brand is community opinion, not the spec, while `learn.` and `docs.` hosts can still be the real docs. Judge the page, not the hostname alone.
   1. Specs, **version-matched** official docs (Next.js, React, TypeScript, Flutter), language/platform docs (MDN, dart.dev), source, README, changelog, GitHub **releases**. This is the answer for APIs, versions, and facts.
   2. Vendor blog and the vendor's own X/account: **announcements only**. Confirm the fact in (1) before citing. Not the API spec. Someone else's X is (5).
   3. Independent benchmarks, tests, and named reports for real-world behavior (perf, reliability, compatibility). GitHub Advisories / NVD / OSV for vulns.
@@ -43,8 +43,8 @@ For dev questions inside a repo, check what's actually installed **before** sear
 - **Known bug / "is anyone else hitting this" / workaround** → search that project's issues and Discussions (then other (5) if needed). Say whether it's open, closed, or a maintainer-confirmed workaround. Then check (1) changelog/releases for a fix in a version you can take. Don't treat a random comment as the spec.
 - **Keep looking until the claim is settled.** The cite floor is not a search cap. A thin, version-mismatched, or partial page means another fetch, not a verdict. `vet` and `vet/research` are the same.
 - **Don't call it settled from one product-docs page.** Anything dated — this version, "latest", deprecation, best practice — needs docs **and** the changelog or releases (or bundled version-matched docs) in agreement. A language-spec fact (MDN `includes`, TypeScript Handbook) can stop on one fetched spec page. A first page that merely *looks* complete is not corroboration.
-- **Hard cap: 8 searches and 16 fetches** per run. That cap is a ceiling, not a target. Stop earlier if settled. Cap hit first → verdict with what's still missing, then stop. Failed or off-domain fetches count. Don't start a second topic. A multi-claim last answer shares this budget; spend it on the claims, not padding.
-- **Walk the ranking, don't pad.** Extra sources should be more of (1), then (2)–(3) if the claim is an announcement, behavioral, or disputed. Do not add (5) to look busy — unless the question *is* a known-issue / workaround, then (5) is the search, and (1) confirms whether it's fixed.
+- **Hard cap: 8 searches and 16 fetches** per run. That cap is a ceiling, not a target. Stop earlier if settled. If you hit the cap first, give the verdict with what's still missing, then stop. Failed or off-domain fetches count. Don't start a second topic. A multi-claim last answer shares this budget; spend it on the claims, not padding.
+- **Extra sources come from the top of the ranking.** When one page isn't enough, fetch more of (1), then (2) and (3) if the claim is an announcement, about real-world behavior, or disputed. Don't add (5) to look thorough. The exception is a known-issue or workaround question, where (5) is where you search and (1) confirms whether it's fixed.
 - **Cite floor:** a language-spec fact still needs at least one fetched, version-matched, canonical page. Recommendations, disputes, security, and anything dated need at least two independent sources from (1)–(3). Fetch more whenever those don't settle it. If sources conflict, *surface the conflict* — don't silently pick one.
 - **Snippets aren't sources.** Search finds the page; confirm the claim on the page before citing. Fetch the smallest slice that settles it. A long spec, explainer, changelog, or blog: targeted extract (find / start-line / a prompt for the relevant section), not the whole document.
 - **Best practices are recommendations, not facts.** Establish the current official recommendation, as of when, and what it superseded; give a clear pick when the evidence supports one, and present the tradeoffs when it doesn't.
@@ -54,7 +54,7 @@ For dev questions inside a repo, check what's actually installed **before** sear
 
 ## 4. Present the result
 
-One-line verdict, then only what was wrong. A clean result is a few sentences and the sources — not a row per fact, not a scoreboard. Cite like a careful teammate, not a paper: no footnotes, no bibliography, no "according to."
+One-line verdict, then only what was wrong, in the global Communication voice: full sentences, plain words. A clean result is a few sentences and the sources, not a row per fact and not a scoreboard. Cite like a careful teammate, not a paper: no footnotes, no bibliography, no "according to."
 
 - **Verdict first:** `✅ Yes.` / `❌ No.` / `⚠️ Yes, except …` One emoji on that line so it pops when I scroll back; don't mark every claim. Then the one or two things that are wrong, still uncertain, or missing.
 - **Cite the pages that settled it** as autolinked names (`[Next.js docs](url)`, date only when the page shows one). Quote a short phrase when the exact wording is the proof (an API name, a version). Don't blockquote a page. Don't dump every page you opened.
@@ -71,4 +71,4 @@ One-line verdict, then only what was wrong. A clean result is a few sentences an
 ## 5. Boundaries
 
 - vet **reports/answers — it doesn't apply changes.** After an audit, wait for approval before editing. End-of-slice "we good" / "anything outstanding" / "final review" / "final double check" is `pass`, which vets then patches.
-- Bigger than a cross-check? Open-ended exploratory research → a standalone deep-research round. Bugs in a code diff, or "double check" that the code is correct → the harness's code reviewer (Bugbot in Cursor, `/review` in Claude Code). Confirming a code change works → run it locally. Don't web-search a local correctness check.
+- Bigger than a cross-check? Open-ended exploratory research gets a standalone deep-research round. Confirming a code change works means running it locally; don't web-search a local correctness check.
