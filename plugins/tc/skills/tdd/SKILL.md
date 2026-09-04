@@ -31,7 +31,7 @@ If testing a case means reaching inside the thing under test, that is a design s
 
 ## 3. The loop
 
-Find the repo's own test command before the first run: the package manifest's scripts, the test config, CI, the Makefile. Never assume `npm test`. Run the narrowest target that covers the case, a single file or a single test name, and save the full suite for the end.
+Find the repo's own test command before the first run: the package manifest's scripts, the test config, CI, the Makefile. Never assume `npm test`. If the repo has no test setup at all, stop and say so rather than picking one: a test framework is a new dependency and that is the user's call, not a side effect of building a feature. Run the narrowest target that covers the case, a single file or a single test name, and save the full suite for the end.
 
 One case at a time, all the way through, then the next:
 

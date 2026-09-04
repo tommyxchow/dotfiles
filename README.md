@@ -72,7 +72,7 @@ files.
 | `/tdd` | Build new behavior test first: name the cases, red, then the smallest code that passes. |
 | `/polish` | Shape of code you already wrote. |
 | `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. |
-| `/pass` | Slice is done: vet, leftovers, polish if code-shaped, ship-ready. Not a commit. |
+| `/pass` | Slice is done: vet, leftovers, polish if code-shaped, ship-ready, then the commit. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
