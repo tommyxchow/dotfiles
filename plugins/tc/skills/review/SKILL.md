@@ -20,7 +20,14 @@ Find what is wrong or missing in a change before anyone else does. Real defects 
 ## 2. Size the run
 
 - **Small** (one concern, a handful of files): one read of the diff with every lens in mind. No fan-out.
-- **Large** (several concerns or many files): fan out read-only reviewers in parallel, one per lens or one per area, each with its diff slice, the intent, the repo's rules, the finding rule below, and a cap of about eight findings. Never ask any of them to find everything. Then reconcile.
+- **Large** (several concerns or many files): triage first, then fan out read-only reviewers in parallel, one per lens or one per area, each with its diff slice, the intent, the repo's rules, the finding rule below, and a cap of about eight findings. Never ask any of them to find everything. Then reconcile.
+
+**Triage, on a large run only.** Depth is finite, so spend it where a defect would cost something. Read closely anything touching auth or permissions, money, a data migration, a server path, newly accepted external input, or concurrency, plus wherever the change's actual purpose lives. Move fast over generated files, lockfiles, mass renames, formatting-only churn, test fixtures, and vendored code. Then **say the split in two lines before the findings**, because a silent triage hides its own mistakes and this one can file the thing the user cared about under boring:
+
+```
+Read closely: the session handling, the payments webhook, the migration.
+Skimmed: 40 files of regenerated types, the test fixture renames.
+```
 
 Read the diff, not the repo. Open the callers of a changed function, the types it uses, and its tests, and stop there unless a finding needs more. Don't search the web; if a finding hinges on how a vendor API behaves, do one targeted check or hand it to `vet`.
 
