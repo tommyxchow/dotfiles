@@ -49,7 +49,7 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
 
 These route to a skill, not to a fresh attempt at the task.
 
-- Vet, research, look this up, is this still true, known issue, workaround: follow the `vet` skill. It has the full source ranking. Keep searching and fetching until the claim is settled.
+- Vet, research, look this up, is this still true, known issue, workaround: follow the `vet` skill. It has the full source ranking and the stop rules: one good source settles a fact, and a fact the vendor never published is reported as not documented, not hunted.
 - We good, anything outstanding, or a status check: answer from what you already know plus `git status`, in a few sentences: what works, what is unverified, what is uncommitted. No new checks. If something looks off, say so and offer `pass`.
 - Quick pass, do a pass, final pass, final review, final double check, close this out, or "pass" on its own: follow the `pass` skill. The word mid-sentence (tests pass, pass a prop) never triggers it. Pass is not polish, not a code review, and not permission to commit.
 - Review, code review, review this, is this correct, check the code: follow the `review` skill. It hunts real bugs, security, performance, edge cases, and missing pieces; style and cleanup stay with `polish`.
