@@ -69,6 +69,7 @@ files.
 | Slash | When |
 |-------|------|
 | `/vet` | A claim, version, known issue, or "is this still true". Not "is this code correct". Reports, then waits. |
+| `/tdd` | Build new behavior test first: name the cases, red, then the smallest code that passes. |
 | `/polish` | Shape of code you already wrote. |
 | `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. |
 | `/pass` | Slice is done: vet, leftovers, polish if code-shaped, ship-ready. Not a commit. |

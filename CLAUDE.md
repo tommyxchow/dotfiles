@@ -34,8 +34,8 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
 
 - **The installer links first-party skills into `~/.claude/skills`.** Claude,
   Cursor, Grok, and OpenCode all read that path. `opencode/commands` provides
-  `/vet`, `/tldr`, `/polish`, `/review`, `/grill-me`, `/refresh`, and `/pass` wrappers.
-  Do not also copy those skills into `~/.config/opencode/skills`.
+  `/vet`, `/tldr`, `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, and
+  `/pass` wrappers. Do not also copy those skills into `~/.config/opencode/skills`.
   Keep shared skills portable Agent Skills (`name` and `description` required).
   Claude-only `context` / `agent` / `background` are fine on a skill that should
   fork; other harnesses ignore them. Don't put `allowed-tools` on a shared skill.
@@ -49,7 +49,8 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
   instead of running the installer. After changing `.claude-plugin/marketplace.json`
   or `plugins/tc/`: push, then `/plugin marketplace update chow`,
   `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish` /
-  `grill-me` / `refresh` / `pass` edits are live through `~/.claude/skills` with no push.
+  `review` / `tdd` / `grill-me` / `refresh` / `pass` edits are live through
+  `~/.claude/skills` with no push.
 
 - **Catalog entries for plugins in other repos need `source: url` with an `https://`
   URL, never `source: github`.** This does not apply to `extraKnownMarketplaces`, where

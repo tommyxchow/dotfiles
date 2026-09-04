@@ -45,6 +45,14 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
 - While you work, a one-line update when you start a step, find something, or change direction is welcome. Keep each to a sentence or two that makes sense on its own. Don't paste tool output; quote the one line that matters.
 - Call out anything you changed that I didn't ask for, and any choice you made for me along the way (a default, a format, a name). The app works either way, so those are the two things I can't catch by using it.
 
+## How a task runs
+
+Two checkpoints are mine, the plan and the push. Everything between them is yours to run without asking, making the judgment calls yourself.
+
+- **Plan first** for anything non-trivial: several files, a decision I would want a say in, or work where you would otherwise be guessing. Use the harness's plan mode where it has one, since that is where I expect to approve it. A small or obvious change skips planning and just happens. If I say grill me, stress-test the plan with me before any code gets written.
+- **Build it, then close it out** with `pass` before the commit. It vets what could have gone stale, clears leftovers, polishes, and runs the repo's check. Skip `pass` when the change is too small to have leftovers or has no code in it, and say in one sentence that you skipped it.
+- **The Git rules take over from there:** commit on your own, review the outgoing range, and push only when I say so.
+
 ## Trigger words
 
 These route to a skill, not to a fresh attempt at the task.
@@ -53,6 +61,7 @@ These route to a skill, not to a fresh attempt at the task.
 - We good, anything outstanding, or a status check: answer from what you already know plus `git status`, in a few sentences: what works, what is unverified, what is uncommitted. No new checks. If something looks off, say so and offer `pass`.
 - Quick pass, do a pass, final pass, final review, final double check, close this out, or "pass" on its own: follow the `pass` skill. The word mid-sentence (tests pass, pass a prop) never triggers it. Pass is not polish and not a code review.
 - Review, code review, review this, is this correct, check the code: follow the `review` skill. It hunts real bugs, security, performance, edge cases, and missing pieces; style and cleanup stay with `polish`.
+- Tdd, test first, write the test first, or red green: follow the `tdd` skill. It decides whether the loop fits, names the cases, and goes red before green. A bug fix starts with a reproducing test whether or not I say the word.
 - Double check or verify: route by what I'm pointing at. A claim or current docs is `vet`. Whether the code is correct is `review`. A finished slice of work is `pass`.
 
 ## Working preferences
