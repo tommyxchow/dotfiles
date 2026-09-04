@@ -25,15 +25,15 @@ case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*)
     # Git Bash and friends can't create the symlinks Windows needs, so this is
     # a thin front door for install.ps1 rather than a second implementation.
+    # PowerShell 7, not Windows PowerShell 5.1: install.ps1 writes with
+    # utf8NoBOM, which 5.1 does not have, and would fail part-installed.
+    if ! command -v pwsh > /dev/null 2>&1; then
+      echo "PowerShell 7 (pwsh) not found. Install it, then re-run." >&2
+      exit 1
+    fi
     ps1="$DOTFILES/install.ps1"
     command -v cygpath > /dev/null 2>&1 && ps1="$(cygpath -w "$ps1")"
-    for pwsh_exe in pwsh pwsh.exe powershell.exe; do
-      if command -v "$pwsh_exe" > /dev/null 2>&1; then
-        exec "$pwsh_exe" -NoProfile -File "$ps1"
-      fi
-    done
-    echo "PowerShell not found. Install it, or run install.ps1 yourself." >&2
-    exit 1
+    exec pwsh -NoProfile -File "$ps1"
     ;;
   *)
     echo "Unsupported OS: $(uname -s)." >&2
