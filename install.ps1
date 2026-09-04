@@ -303,4 +303,18 @@ if (Test-Path $skillsRoot) {
     }
 }
 
+# grok.com's Customize Grok box holds 4000 characters and truncates silently
+# past that. Nothing loads this file, so an over-length paste is only found by
+# pasting it.
+$webMd = Join-Path $dotfiles ".claude/CLAUDE.web.md"
+if (Test-Path $webMd) {
+    $webLen = (Get-Content -Raw $webMd).Length
+    if ($webLen -gt 4000) {
+        Write-Host "  WARN  CLAUDE.web.md is $webLen chars, over grok.com's 4000 limit" -ForegroundColor Yellow
+    }
+    else {
+        Write-Host "  OK    CLAUDE.web.md fits grok.com's 4000-char limit ($webLen)" -ForegroundColor Green
+    }
+}
+
 Write-Host "`nDone." -ForegroundColor Green

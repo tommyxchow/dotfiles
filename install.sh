@@ -333,5 +333,21 @@ check_skill_descriptions() {
 }
 check_skill_descriptions
 
+# grok.com's Customize Grok box holds 4000 characters and truncates silently
+# past that. Nothing loads this file, so an over-length paste is only found by
+# pasting it.
+check_web_instructions() {
+  local src="$DOTFILES/.claude/CLAUDE.web.md"
+  local len
+  [ -f "$src" ] || return 0
+  len="$(wc -m < "$src" | tr -d ' ')"
+  if [ "$len" -gt 4000 ]; then
+    printf "  WARN  CLAUDE.web.md is %s chars, over grok.com's 4000 limit\n" "$len"
+  else
+    printf "  OK    CLAUDE.web.md fits grok.com's 4000-char limit (%s)\n" "$len"
+  fi
+}
+check_web_instructions
+
 echo
 echo "Done."

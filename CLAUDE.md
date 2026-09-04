@@ -30,7 +30,10 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
   loads it: paste it by hand into claude.ai (Settings > Instructions for Claude)
   and grok.com (Customize Grok). When a Communication or External writing rule changes in
   `.claude/CLAUDE.md`, mirror it there if it applies to chat. Keep the file
-  paste-clean: no header, no comments.
+  paste-clean: no header, no comments. **Hard cap 4000 characters**, which is
+  grok.com's limit and the tighter of the two; it truncates silently past that,
+  so cut a whole rule rather than compressing sentences. The installer warns
+  when the file goes over.
 
 - **The installer links first-party skills into `~/.claude/skills`.** Claude,
   Cursor, Grok, and OpenCode all read that path. `opencode/commands` provides
