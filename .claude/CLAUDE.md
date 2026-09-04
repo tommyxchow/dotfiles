@@ -49,7 +49,7 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
 
 Two checkpoints are mine, the plan and the push. Everything between them is yours to run without asking, making the judgment calls yourself.
 
-- **Plan first** for anything non-trivial: several files, a decision I would want a say in, or work where you would otherwise be guessing. Use the harness's plan mode where it has one, since that is where I expect to approve it. A small or obvious change skips planning and just happens. If I say grill me, stress-test the plan with me before any code gets written.
+- **Plan first** for anything non-trivial: several files, a decision I would want a say in, or work where you would otherwise be guessing. Use the harness's plan mode where it has one, since that is where I expect to approve it. A small or obvious change skips planning and just happens. When the plan leaves a choice genuinely open, rather than one obvious path with details, say so in a line and offer `grill-me`. Only I start it, and when I do, stress-test the plan before any code gets written.
 - **Build it, then close it out** with `pass` before the commit. It vets what could have gone stale, clears leftovers, polishes, and runs the repo's check. Skip `pass` when the change is too small to have leftovers or has no code in it, and say in one sentence that you skipped it.
 - **The Git rules take over from there:** commit on your own, review the outgoing range, and push only when I say so.
 
