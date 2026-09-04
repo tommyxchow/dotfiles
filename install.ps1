@@ -292,9 +292,19 @@ if (Test-Path $skillsRoot) {
         if (-not (Test-Path $skillFile)) { continue }
         $line = Get-Content $skillFile | Where-Object { $_ -match '^description:' } | Select-Object -First 1
         if (-not $line) { continue }
-        $len = ($line -replace '^description:\s*', '').Length
+        $desc = $line -replace '^description:\s*', ''
+        # A folded or literal block would measure as its marker, so the cap would
+        # never fire. Say so instead of reporting a passing two-byte description.
+        if ($desc -eq '' -or $desc.StartsWith('>') -or $desc.StartsWith('|')) {
+            Write-Host "  WARN  $($skillDir.Name) description is empty or a YAML block; this check reads one line only" -ForegroundColor Yellow
+            $over = $true
+            continue
+        }
+        # Bytes, to match install.sh. Bytes are never fewer than characters, so
+        # this warns slightly early and never too late.
+        $len = [System.Text.Encoding]::UTF8.GetByteCount($desc)
         if ($len -gt 1024) {
-            Write-Host "  WARN  $($skillDir.Name) description is $len chars, over the 1024 spec cap" -ForegroundColor Yellow
+            Write-Host "  WARN  $($skillDir.Name) description is $len bytes, over the 1024 spec cap" -ForegroundColor Yellow
             $over = $true
         }
     }
@@ -308,7 +318,7 @@ if (Test-Path $skillsRoot) {
 # pasting it.
 $webMd = Join-Path $dotfiles ".claude/CLAUDE.web.md"
 if (Test-Path $webMd) {
-    $webLen = (Get-Content -Raw $webMd).Length
+    $webLen = [System.Text.Encoding]::UTF8.GetByteCount((Get-Content -Raw $webMd))
     if ($webLen -gt 4000) {
         Write-Host "  WARN  CLAUDE.web.md is $webLen chars, over grok.com's 4000 limit" -ForegroundColor Yellow
     }

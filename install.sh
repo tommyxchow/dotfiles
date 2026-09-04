@@ -316,13 +316,23 @@ write_statusline
 # the other harnesses reading the same files.
 check_skill_descriptions() {
   local over=0
-  local skill name len
+  local skill name desc len
   for skill in "$DOTFILES"/plugins/tc/skills/*/SKILL.md; do
     [ -f "$skill" ] || continue
     name="$(basename "$(dirname "$skill")")"
-    len="$(awk '/^description:/ { sub(/^description:[[:space:]]*/, ""); printf "%s", $0; exit }' "$skill" | wc -c | tr -d ' ')"
+    desc="$(awk '/^description:/ { sub(/^description:[[:space:]]*/, ""); printf "%s", $0; exit }' "$skill")"
+    # A folded or literal block would measure as its marker, so the cap would
+    # never fire. Say so instead of reporting a passing two-byte description.
+    case "$desc" in
+      '' | '>'* | '|'*)
+        printf "  WARN  %s description is empty or a YAML block; this check reads one line only\n" "$name"
+        over=1
+        continue
+        ;;
+    esac
+    len="$(printf '%s' "$desc" | wc -c | tr -d ' ')"
     if [ "$len" -gt 1024 ]; then
-      printf "  WARN  %s description is %s chars, over the 1024 spec cap\n" "$name" "$len"
+      printf "  WARN  %s description is %s bytes, over the 1024 spec cap\n" "$name" "$len"
       over=1
     fi
   done
@@ -335,12 +345,15 @@ check_skill_descriptions
 
 # grok.com's Customize Grok box holds 4000 characters and truncates silently
 # past that. Nothing loads this file, so an over-length paste is only found by
-# pasting it.
+# pasting it. Both counts here are bytes, not characters: `wc -m` counts
+# characters only under a UTF-8 locale and silently falls back to bytes
+# otherwise, so it would answer differently on each machine. Bytes are never
+# fewer than characters, so this warns slightly early and never too late.
 check_web_instructions() {
   local src="$DOTFILES/.claude/CLAUDE.web.md"
   local len
   [ -f "$src" ] || return 0
-  len="$(wc -m < "$src" | tr -d ' ')"
+  len="$(wc -c < "$src" | tr -d ' ')"
   if [ "$len" -gt 4000 ]; then
     printf "  WARN  CLAUDE.web.md is %s chars, over grok.com's 4000 limit\n" "$len"
   else
