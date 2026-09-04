@@ -103,6 +103,7 @@ Working is the floor, not the bar. Code should read as if a careful senior engin
 ## Git
 
 - Commit without asking once a slice is finished and verified, one commit per slice, and put the hash in the close. Half-done or unverified work stays uncommitted. Push only when I say so.
+- Stage the files the slice touched, never `git add -A` or `.`. My working tree usually carries unrelated local churn, like the model and effort keys a `/model` call writes into a settings file. If a file holds both your change and mine, say so instead of quietly committing both.
 - Use Conventional Commits: `type(scope): subject` in lowercase, no trailing period, tightly scoped. Append `!` before `:` for breaking changes. When the why isn't obvious from the subject, put it in the body so future me can reconstruct the reasoning.
 - Prefix new branches with `tc/`.
 - On personal GitHub repos, commit to `main` unless it is a long-running arc; then use a PR. Keep related work on the current PR. Split or stack only when the change is genuinely different and a split would make review easier.

@@ -11,15 +11,13 @@ to this repo).
 ```bash
 git clone https://github.com/tommyxchow/dotfiles.git ~/dev/dotfiles
 cd ~/dev/dotfiles
-./install.sh          # macOS / Linux
+./install.sh
 ```
 
-```powershell
-pwsh -File install.ps1    # Windows
-```
-
-Windows needs **Developer Mode** on (Settings > System > For developers) or symlink
-creation fails.
+Same command everywhere. On Windows it hands off to `install.ps1`, which does the
+real work there, so run it from Git Bash or run `pwsh -File install.ps1` directly.
+Windows also needs **Developer Mode** on (Settings > System > For developers) or
+symlink creation fails.
 
 On a fresh machine you can also clone, open this repo in Cursor / Grok / OpenCode,
 and say **resync**. The repo `CLAUDE.md` points at `docs/resync.md`. That playbook

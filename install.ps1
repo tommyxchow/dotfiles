@@ -281,4 +281,26 @@ else {
     Write-Host "  SKIP  statusline-install skill (not in repo)" -ForegroundColor DarkGray
 }
 
+# The Agent Skills spec caps description at 1024 characters and Claude Code
+# allows more, so an over-cap description passes here and only misbehaves in
+# the other harnesses reading the same files.
+$skillsRoot = Join-Path $dotfiles "plugins/tc/skills"
+if (Test-Path $skillsRoot) {
+    $over = $false
+    foreach ($skillDir in Get-ChildItem -Path $skillsRoot -Directory) {
+        $skillFile = Join-Path $skillDir.FullName "SKILL.md"
+        if (-not (Test-Path $skillFile)) { continue }
+        $line = Get-Content $skillFile | Where-Object { $_ -match '^description:' } | Select-Object -First 1
+        if (-not $line) { continue }
+        $len = ($line -replace '^description:\s*', '').Length
+        if ($len -gt 1024) {
+            Write-Host "  WARN  $($skillDir.Name) description is $len chars, over the 1024 spec cap" -ForegroundColor Yellow
+            $over = $true
+        }
+    }
+    if (-not $over) {
+        Write-Host "  OK    skill descriptions within the 1024-char spec cap" -ForegroundColor Green
+    }
+}
+
 Write-Host "`nDone." -ForegroundColor Green

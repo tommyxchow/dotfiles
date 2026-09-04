@@ -1,7 +1,7 @@
 # dotfiles
 
-Config repo. `install.sh` / `install.ps1` symlink files from here into their real
-locations. See `README.md` for the full mapping.
+Config repo. `./install.sh` symlinks files from here into their real locations, and
+hands off to `install.ps1` on Windows. See `README.md` for the full mapping.
 
 ## Resync
 
@@ -18,8 +18,9 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
   The repo files are canonical: editing them updates Claude, OpenCode, and
   Grok immediately. Cursor cannot symlink a local plugin at this repo, so the
   installer copies `.claude/CLAUDE.md` into
-  `~/.cursor/plugins/local/tc/rules/global.mdc`. Re-run `./install.sh` (or
-  `install.ps1`) after editing that file, then **Developer: Reload Window**. Do
+  `~/.cursor/plugins/local/tc/rules/global.mdc`. That copy is stale until you
+  re-run `./install.sh` after editing that file, whichever agent or editor made
+  the edit, and then **Developer: Reload Window**. Do
   not also keep a User Rule with the same text. Cursor's third-party config
   setting still imports installed Claude plugins and skills.
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this

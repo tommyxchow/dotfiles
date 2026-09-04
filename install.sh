@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Dotfiles installer — creates symlinks from this repo to config locations.
-# For Windows, use install.ps1 instead (symlinks require Developer Mode).
+# Runs anywhere: on Windows it hands off to install.ps1, which does the real
+# work there because symlinks need Developer Mode.
 # Usage: ./install.sh
 set -e
 
@@ -21,8 +22,21 @@ case "$(uname -s)" in
     VSCODE_USER="$HOME/.config/Code/User"
     CURSOR_USER="$HOME/.config/Cursor/User"
     ;;
+  MINGW*|MSYS*|CYGWIN*)
+    # Git Bash and friends can't create the symlinks Windows needs, so this is
+    # a thin front door for install.ps1 rather than a second implementation.
+    ps1="$DOTFILES/install.ps1"
+    command -v cygpath > /dev/null 2>&1 && ps1="$(cygpath -w "$ps1")"
+    for pwsh_exe in pwsh pwsh.exe powershell.exe; do
+      if command -v "$pwsh_exe" > /dev/null 2>&1; then
+        exec "$pwsh_exe" -NoProfile -File "$ps1"
+      fi
+    done
+    echo "PowerShell not found. Install it, or run install.ps1 yourself." >&2
+    exit 1
+    ;;
   *)
-    echo "Unsupported OS: $(uname -s). Use install.ps1 on Windows." >&2
+    echo "Unsupported OS: $(uname -s)." >&2
     exit 1
     ;;
 esac
@@ -296,6 +310,28 @@ write_grok_lsp() {
 write_grok_lsp
 
 write_statusline
+
+# The Agent Skills spec caps description at 1024 characters and Claude Code
+# allows more, so an over-cap description passes here and only misbehaves in
+# the other harnesses reading the same files.
+check_skill_descriptions() {
+  local over=0
+  local skill name len
+  for skill in "$DOTFILES"/plugins/tc/skills/*/SKILL.md; do
+    [ -f "$skill" ] || continue
+    name="$(basename "$(dirname "$skill")")"
+    len="$(awk '/^description:/ { sub(/^description:[[:space:]]*/, ""); printf "%s", $0; exit }' "$skill" | wc -c | tr -d ' ')"
+    if [ "$len" -gt 1024 ]; then
+      printf "  WARN  %s description is %s chars, over the 1024 spec cap\n" "$name" "$len"
+      over=1
+    fi
+  done
+  if [ "$over" = 0 ]; then
+    printf "  OK    skill descriptions within the 1024-char spec cap\n"
+  fi
+  return 0
+}
+check_skill_descriptions
 
 echo
 echo "Done."

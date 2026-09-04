@@ -25,7 +25,7 @@ From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new c
 
 ## Installer
 
-macOS/Linux: `./install.sh`. Windows: `pwsh -File install.ps1`.
+`./install.sh` on every platform; on Windows it hands off to `install.ps1`, which you can also run directly with `pwsh -File install.ps1`.
 
 It links configs and first-party skills, prunes known stale paths, writes `~/.claude/statusline-command.sh`, and copies Cursor's local `tc` plugin. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode pick up instructions and `vet` / `tldr` / `polish` / `grill-me` / `refresh` / `pass` on a new machine.
 
