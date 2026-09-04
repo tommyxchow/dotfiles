@@ -35,13 +35,13 @@ Refactored `useAuth` to memoize the `session` selector and gated `<Nav>` on `sta
 I'm usually watching, and sometimes I auto-accept and only read the close. Write for both: short updates as you go, and a close that is enough on its own. Sometimes I scroll back to one step, so each update should make sense alone.
 
 - Close with what works now in app terms, where to look, and what is still broken or unverified. Skip any part that is empty.
-- End the close with Next options only when something needs my sign-off: finished work that is not committed yet, a real choice, or follow-up work outside the task. The task's own remaining work never goes in Next; finish it instead. Use this exact shape (numbered lists read as steps, and bare lines collapse into one paragraph):
+- End the close with Next options only when something needs my sign-off: a push, a real choice, or follow-up work outside the task. The task's own remaining work never goes in Next; finish it instead. Use this exact shape (numbered lists read as steps, and bare lines collapse into one paragraph):
   ```
   Next
-  - [1] Commit and push this to main (recommended)
+  - [1] Push to main (recommended)
   - [2] Leave it local
   ```
-- Slot `[1]` is always the path you would take and the only one tagged `(recommended)`. Up to four real options I can answer with `1` or `1 and 3`. Don't invent options to fill slots, and skip the block entirely when nothing needs picking. When I reply with keys, restate each key's option in a few words as you act on it.
+- Slot `[1]` is always the path you would take and the only one tagged `(recommended)`. Two options is the normal shape. Add a third or fourth only when it changes what I end up with, not how you get there; `[1]` with one detail added is not an option. Skip the block entirely when nothing needs picking. I answer with `1` or `1 and 3`; restate each key's option in a few words as you act on it.
 - While you work, a one-line update when you start a step, find something, or change direction is welcome. Keep each to a sentence or two that makes sense on its own. Don't paste tool output; quote the one line that matters.
 - Call out anything you changed that I didn't ask for, and any choice you made for me along the way (a default, a format, a name). The app works either way, so those are the two things I can't catch by using it.
 
@@ -51,7 +51,7 @@ These route to a skill, not to a fresh attempt at the task.
 
 - Vet, research, look this up, is this still true, known issue, workaround: follow the `vet` skill. It has the full source ranking and the stop rules: one good source settles a fact, and a fact the vendor never published is reported as not documented, not hunted.
 - We good, anything outstanding, or a status check: answer from what you already know plus `git status`, in a few sentences: what works, what is unverified, what is uncommitted. No new checks. If something looks off, say so and offer `pass`.
-- Quick pass, do a pass, final pass, final review, final double check, close this out, or "pass" on its own: follow the `pass` skill. The word mid-sentence (tests pass, pass a prop) never triggers it. Pass is not polish, not a code review, and not permission to commit.
+- Quick pass, do a pass, final pass, final review, final double check, close this out, or "pass" on its own: follow the `pass` skill. The word mid-sentence (tests pass, pass a prop) never triggers it. Pass is not polish and not a code review.
 - Review, code review, review this, is this correct, check the code: follow the `review` skill. It hunts real bugs, security, performance, edge cases, and missing pieces; style and cleanup stay with `polish`.
 - Double check or verify: route by what I'm pointing at. A claim or current docs is `vet`. Whether the code is correct is `review`. A finished slice of work is `pass`.
 
@@ -102,6 +102,7 @@ Working is the floor, not the bar. Code should read as if a careful senior engin
 
 ## Git
 
+- Commit without asking once a slice is finished and verified, one commit per slice, and put the hash in the close. Half-done or unverified work stays uncommitted. Push only when I say so.
 - Use Conventional Commits: `type(scope): subject` in lowercase, no trailing period, tightly scoped. Append `!` before `:` for breaking changes. When the why isn't obvious from the subject, put it in the body so future me can reconstruct the reasoning.
 - Prefix new branches with `tc/`.
 - On personal GitHub repos, commit to `main` unless it is a long-running arc; then use a PR. Keep related work on the current PR. Split or stack only when the change is genuinely different and a split would make review easier.
