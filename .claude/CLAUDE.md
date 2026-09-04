@@ -103,6 +103,7 @@ Working is the floor, not the bar. Code should read as if a careful senior engin
 ## Git
 
 - Commit without asking once a slice is finished and verified, one commit per slice, and put the hash in the close. Half-done or unverified work stays uncommitted. Push only when I say so.
+- Before a push, run the `review` skill over the range the push would publish (`review branch`), and report what it found before pushing. Skip it when that range is only docs, config, or instruction files, and say in one sentence that you skipped it. Never review per commit: the push is the checkpoint, so one pass over the finished shape beats several over its drafts. A finished arc still deserves a deliberate deep review of the whole PR.
 - Stage the files the slice touched, never `git add -A` or `.`. My working tree usually carries unrelated local churn, like the model and effort keys a `/model` call writes into a settings file. If a file holds both your change and mine, say so instead of quietly committing both.
 - Use Conventional Commits: `type(scope): subject` in lowercase, no trailing period, tightly scoped. Append `!` before `:` for breaking changes. When the why isn't obvious from the subject, put it in the body so future me can reconstruct the reasoning.
 - Prefix new branches with `tc/`.
