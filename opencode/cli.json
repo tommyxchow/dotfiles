@@ -15,6 +15,7 @@
     "input.line.end": "ctrl+e,super+right",
     "input.buffer.home": "home,super+up",
     "input.buffer.end": "end,super+down",
+    "session.move": "ctrl+m",
     "session.first": "none",
     "session.last": "none"
   },

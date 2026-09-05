@@ -52,12 +52,19 @@ Ghostty is macOS/Linux only, so `install.ps1` skips it.
 
 Windows Terminal settings are not linked (profiles and GUIDs are machine-local).
 OpenCode V2 still has no Windows keybind section. Use the same WT `sendInput`
-CSI-u pattern as [V1's Shift+Enter note](https://opencode.ai/docs/keybinds/#windows-terminal)
-(`unbound` is not enough). Ctrl+Tab is `\u001b[9;5u`; Ctrl+Backspace is
-`\u001b[127;5u`; Ctrl+Shift+Z is `\u001b[122;6u` (otherwise WT sends the
-same `0x1a` as Ctrl+Z). OpenCode does not publish those strings; they are
-the same encoding as V1's `\u001b[13;2u`. Leave Ctrl+Shift+Tab on WT. Store path:
+CSI-u pattern as [V1's Shift+Enter note](https://opencode.ai/docs/keybinds/#windows-terminal).
+`unbound` is not enough. OpenCode does not publish these strings; they use
+that same encoding (`\u001b[13;2u` for Shift+Enter). Leave Ctrl+Shift+Tab
+on WT. Store path:
 `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`.
+
+| Chord | Sequence | Why |
+| --- | --- | --- |
+| Ctrl+Tab | `\u001b[9;5u` | WT next-tab; Tab has no Ctrl byte |
+| Ctrl+Backspace | `\u001b[127;5u` | WT sends plain Backspace |
+| Ctrl+Shift+Z | `\u001b[122;6u` | same `0x1a` as Ctrl+Z |
+| Ctrl+M | `\u001b[109;5u` | same Enter as ASCII CR; Move session / new worktree |
+| Ctrl+Shift+T | `\u001b[116;6u` | WT new tab; reopen session tab |
 
 Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatibility,
 so it does not need a separate instructions link. Its own settings live in
