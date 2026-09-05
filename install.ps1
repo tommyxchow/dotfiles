@@ -52,6 +52,9 @@ Prune-Stale "$HOME/.claude/skills/resync"
 Prune-Stale "$HOME/.agents/skills/resync"
 Prune-Stale "$HOME/.config/opencode/skills/resync"
 Prune-Stale "$HOME/.config/opencode/commands/resync.md"
+Prune-Stale "$HOME/.claude/skills/grilling"
+Prune-Stale "$HOME/.agents/skills/grilling"
+Prune-Stale "$HOME/.config/opencode/skills/grilling"
 Prune-Stale "$HOME/.codex/AGENTS.md"
 
 $links = @(

@@ -87,7 +87,7 @@ First-party skills are live links into `~/.claude/skills`. Do not also enable
 `tc@chow` on a machine that ran the installer, or Claude and Cursor load the
 same skills twice. Keep `tc@chow` in the marketplace catalog for machines that
 only install the plugin. Do not also install `mattpocock-skills` from the official
-marketplace, or `grill-me` / `grilling` load twice. `ek`, `improve`,
+marketplace, or `grill-me` loads twice. `ek`, `improve`,
 `typescript-lsp`, and `frontend-design` stay marketplace plugins.
 
 ## Cursor

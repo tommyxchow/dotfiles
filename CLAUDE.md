@@ -40,12 +40,15 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
   `/vet`, `/tldr`, `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, and
   `/pass` wrappers. Do not also copy those skills into `~/.config/opencode/skills`.
   Keep shared skills portable Agent Skills (`name` and `description` required).
-  Claude-only `context` / `agent` / `background` are fine on a skill that should
-  fork; other harnesses ignore them. Don't put `allowed-tools` on a shared skill.
+  Claude-only `context` / `agent` / `background` / `disable-model-invocation` are
+  fine where a skill should fork or stay user-started; other harnesses ignore
+  them, so whatever such a key enforces has to be written into the skill's own
+  text as well or it only holds in Claude Code. Don't put `allowed-tools` on a
+  shared skill.
   Do not enable `tc@chow` on a machine that ran the installer: that plugin is
   the same files via the marketplace cache, so both would load. Do not install
-  `mattpocock-skills` from the official marketplace either: `grill-me` and
-  `grilling` already live in `plugins/tc/skills`.
+  `mattpocock-skills` from the official marketplace either: it ships its own
+  `grill-me`, which would collide with the one in `plugins/tc/skills`.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`

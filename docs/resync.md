@@ -86,23 +86,17 @@ Delete only what is clearly leftover from an older layout:
 
 Do not delete skills in `~/.claude/skills` that are not from this repo. Do not delete `ek@chow` or `improve@improve` caches while those plugins are installed.
 
-## Vendored skills
+## Skill sources
 
-`ek@chow` is not this. Marketplace update already ran. Never copy Emil's files into this repo.
-
-The copies are `plugins/tc/skills/grill-me` and `plugins/tc/skills/grilling`, from [mattpocock/skills](https://github.com/mattpocock/skills) `skills/productivity/<name>/SKILL.md` on `main`. Credits live in `.claude/README.md`.
-
-For each, fetch current upstream `SKILL.md` and diff against the repo file.
-
-- Match: say so.
-- Drift: say whether to take it (behavior vs example/format) and wait. Do not apply. Do not commit.
-- 404: find the new path from that repo's README. Do not invent a third skill to copy.
-
-Do not install `mattpocock-skills` from the marketplace. That loads a second copy.
+Nothing here is vendored. Every skill in `plugins/tc/skills` is written in this
+repo, so there is no upstream file to diff. Credits for borrowed ideas live in
+`.claude/README.md`. Never copy Emil's files in; `ek@chow` is a marketplace
+plugin and its update already ran. Do not install `mattpocock-skills` from the
+marketplace either: its `grill-me` would collide with ours.
 
 ## Report
 
-What changed, anything still broken, what the user must do, and whether a vendored skill drifted.
+What changed, anything still broken, and what the user must do.
 
 - Cursor: **Developer: Reload Window** after the local plugin rewrite.
 - Grok / OpenCode: new `~/.claude` links are live; no extra reload if the session already sees them.
