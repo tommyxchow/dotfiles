@@ -120,6 +120,7 @@ link "vscode/keybindings.json" "$CURSOR_USER/keybindings.json"
 link "ghostty/config"          "$HOME/.config/ghostty/config"
 link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
+link "opencode/cli.json"       "$HOME/.config/opencode/cli.json"
 
 for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   [ -d "$skill_dir" ] || continue

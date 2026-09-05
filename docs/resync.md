@@ -67,7 +67,7 @@ If `claude` is missing, say so in the report and continue.
 
 **Grok:** `~/.grok/config.toml` must carry the non-default keys from `grok/config.toml` — the installer patches them; re-run it if drifted. Everything else in that file is Grok-owned runtime state; do not manage it. `~/.grok/lsp.json` should exist (installer seeds from `grok/lsp.json`); warn if `typescript-language-server` is missing from PATH. No extra links: Grok reads `~/.claude/CLAUDE.md` and `~/.claude/skills` through Claude compatibility.
 
-**OpenCode:** it already reads `~/.claude/skills`. Do not also link first-party skills into `~/.config/opencode/skills`. Slash-command stubs in `~/.config/opencode/commands` stay. Do not also link `~/.agents/skills`.
+**OpenCode:** it already reads `~/.claude/skills`. Do not also link first-party skills into `~/.config/opencode/skills`. Slash-command stubs in `~/.config/opencode/commands` stay. `~/.config/opencode/cli.json` is the TUI/keybinds file from `opencode/cli.json`. On Windows, apply the WT sendInput chords from the README; they are not linked. Do not also link `~/.agents/skills`.
 
 **Project-scope leftovers:** only if `claude` exists. `claude plugin list` plus `~/.claude/plugins/installed_plugins.json`. Uninstall `--scope project` any plugin that is not a user-scope install of an enabled plugin. Run the uninstall from that `projectPath`. Snapshot and restore user `enabledPlugins` after, same as above.
 

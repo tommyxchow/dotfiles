@@ -39,6 +39,7 @@ copy. `*.bak` is gitignored.
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
 | `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode reads this path too) |
 | `opencode/commands/*.md` | `~/.config/opencode/commands/{name}` |
+| `opencode/cli.json` | `~/.config/opencode/cli.json` |
 
 Cursor cannot symlink a local plugin at this repo (the loader rejects targets
 outside `~/.cursor/plugins/local`). The installer writes a real plugin at
@@ -48,6 +49,14 @@ that file, then **Developer: Reload Window**. Do not also paste it into User
 Rules or the same text is injected twice.
 
 Ghostty is macOS/Linux only, so `install.ps1` skips it.
+
+Windows Terminal settings are not linked (profiles and GUIDs are machine-local).
+OpenCode V2 still has no Windows keybind section. Use the same WT `sendInput`
+CSI-u pattern as [V1's Shift+Enter note](https://opencode.ai/docs/keybinds/#windows-terminal)
+(`unbound` is not enough). Ctrl+Tab is `\u001b[9;5u`; Ctrl+Backspace is
+`\u001b[127;5u`. OpenCode does not publish those two strings; they are the
+same encoding as V1's `\u001b[13;2u`. Leave Ctrl+Shift+Tab on WT. Store path:
+`%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`.
 
 Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatibility,
 so it does not need a separate instructions link. Its own settings live in

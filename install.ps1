@@ -65,6 +65,7 @@ $links = @(
     @{ Source = "vscode/keybindings.json";  Target = "$env:APPDATA/Cursor/User/keybindings.json" }
     @{ Source = ".claude/settings.json";    Target = "$HOME/.claude/settings.json" }
     @{ Source = ".claude/CLAUDE.md";        Target = "$HOME/.claude/CLAUDE.md" }
+    @{ Source = "opencode/cli.json";        Target = "$HOME/.config/opencode/cli.json" }
 )
 
 Get-ChildItem (Join-Path $dotfiles "plugins/tc/skills") -Directory -ErrorAction SilentlyContinue | ForEach-Object {
