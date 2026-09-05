@@ -21,13 +21,13 @@ The invocation argument is `$ARGUMENTS` (empty on bare `/tldr`).
 | `changes` | The actual work product: `git status`, diff against the merge base (or uncommitted diff), recent commits — ground truth over chat claims |
 | `pr <number or url>` or a PR URL | The PR via `gh pr view` (title, body, review comments) and `gh pr diff` |
 | Path to a file (exists on disk) | Read the file, TL;DR its content |
-| URL (`http://` or `https://`) | WebFetch it, TL;DR the page |
+| URL (`http://` or `https://`) | Fetch it, TL;DR the page |
 | Multi-line pasted text | TL;DR that text |
 | Short phrase / topic name | TL;DR what was discussed about that topic in the recent conversation |
 
 Route natural phrasing by intent, not exact keywords: "what changed", "the diff", "what we did to the code" → `changes`; any PR mention → `pr`; other conversational phrases → topic.
 
-For ambiguous strings (e.g. a short word that could be a topic or a filename), try `Read` first; on a not-found error, treat it as a topic.
+For ambiguous strings (e.g. a short word that could be a topic or a filename), try reading it as a file first; on a not-found error, treat it as a topic.
 
 This skill is for single-session and ad-hoc summaries, not week-scale rollups across many sessions.
 

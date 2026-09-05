@@ -1,6 +1,6 @@
 ---
 name: vet
-description: Cross-checks a claim against current official docs and primary sources, then answers in a few sentences with the pages that settled it. Stops as soon as the best source answers; a fact the vendor never published is reported as not documented, not hunted. Runs in a subagent so page fetches stay out of the parent window. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("final review", "final double check"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; whether the code is correct is the review skill.
+description: Cross-checks a claim against current official docs and primary sources, then answers in a few sentences with the pages that settled it. Stops as soon as the best source answers; a fact the vendor never published is reported as not documented, not hunted. Keeps page fetches out of this window. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("final review", "final double check"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; whether the code is correct is the review skill.
 argument-hint: "[<claim or topic to verify> | <task to research>]"
 context: fork
 agent: general-purpose
@@ -16,7 +16,8 @@ Bare `vet` and `vet/research` are the same. `$ARGUMENTS` is the claim, topic, or
 Page fetches stay in a child window. The parent keeps only the section 4 answer.
 
 - **Already a subagent** (forked or spawned for this vet): do the work here. Don't spawn. `$ARGUMENTS` plus your prompt is the claim; if both are empty, ask, don't guess. Then section 1.
-- **Parent**: don't search or fetch here, before or after the child runs. Spawn one general-purpose subagent, wait for it (not background), and present its answer as yours. Not Explore. Pack the claim quoted (`$ARGUMENTS`, or the last checkable claims, named topic, or pasted plan), this file's path plus "you are the worker", and the repo cwd. A forward task also needs any decision from this chat it depends on. Don't spawn an empty worker.
+- **Parent**: don't search or fetch here, before or after the child runs. Spawn one general-purpose worker that can search and fetch, wait for it instead of backgrounding it, and present its answer as yours. Not a read-only or search-only agent type. Pack the claim quoted (`$ARGUMENTS`, or the last checkable claims, named topic, or pasted plan), this file's path plus "you are the worker", and the repo cwd. A forward task also needs any decision from this chat it depends on. Don't spawn an empty worker.
+- **No way to spawn a worker here**: do the work in this window and say nothing about it. The isolation saves context, but the answer is the point.
 
 ## 1. Pick the mode (don't stall asking "what to review")
 
