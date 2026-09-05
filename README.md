@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal config for git, VS Code, Ghostty, Claude Code, OpenCode, Cursor, and Grok Build. The
+Personal config for git, VS Code, Ghostty, Claude Code, OpenCode 2, Cursor, and Grok Build. The
 installer symlinks files from this repo into their real locations, so editing a file
 here changes the live config immediately. Cursor global instructions are the exception:
 the installer copies `.claude/CLAUDE.md` into a local plugin (Cursor rejects a symlink
@@ -19,7 +19,7 @@ real work there, so run it from Git Bash or run `pwsh -File install.ps1` directl
 Windows also needs **Developer Mode** on (Settings > System > For developers) or
 symlink creation fails.
 
-On a fresh machine you can also clone, open this repo in Cursor / Grok / OpenCode,
+On a fresh machine you can also clone, open this repo in Cursor / Grok / OpenCode 2,
 and say **resync**. The repo `CLAUDE.md` points at `docs/resync.md`. That playbook
 is repo-local, not a global skill.
 
@@ -37,7 +37,9 @@ copy. `*.bak` is gitignored.
 | `ghostty/config` | `~/.config/ghostty/config` |
 | `.claude/settings.json` | `~/.claude/settings.json` |
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
-| `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode reads this path too) |
+| `.claude/CLAUDE.md` | `~/.config/opencode/AGENTS.md` (OpenCode 2 user-global instructions) |
+| `CLAUDE.md` | `AGENTS.md` in this repo (OpenCode 2 project instructions; installer-only) |
+| `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode 2 reads this path too) |
 | `opencode/commands/*.md` | `~/.config/opencode/commands/{name}` |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
 
@@ -51,7 +53,7 @@ Rules or the same text is injected twice.
 Ghostty is macOS/Linux only, so `install.ps1` skips it.
 
 Windows Terminal settings are not linked (profiles and GUIDs are machine-local).
-OpenCode V2 still has no Windows keybind section. Use the same WT `sendInput`
+OpenCode 2 still has no Windows keybind section. Use the same WT `sendInput`
 CSI-u pattern as [V1's Shift+Enter note](https://opencode.ai/docs/keybinds/#windows-terminal).
 `unbound` is not enough. OpenCode does not publish these strings; they use
 that same encoding (`\u001b[13;2u` for Shift+Enter). Leave Ctrl+Shift+Tab
@@ -75,9 +77,12 @@ The installer also seeds `~/.grok/lsp.json` from `grok/lsp.json` when missing (r
 the Windows `.cmd` shim on that platform) and warns if `typescript-language-server`
 is not on PATH.
 
-OpenCode uses its Claude Code compatibility fallback to read the shared
-`~/.claude/CLAUDE.md` instructions, plus project `AGENTS.md` or `CLAUDE.md`
-files and `~/.claude/skills`. Do not also copy first-party skills into
+This setup is OpenCode 2 (`opencode2`, [V2 docs](https://opencode.ai/v2/docs/)).
+It reads user-global instructions from `~/.config/opencode/AGENTS.md` and
+project `AGENTS.md` walking up from the working directory. It does not load
+`CLAUDE.md`. The installer links those `AGENTS.md` paths to the shared
+`.claude/CLAUDE.md` and this repo's `CLAUDE.md`. Skills still come from
+`~/.claude/skills`. Do not also copy first-party skills into
 `~/.config/opencode/skills`.
 
 Slash from any repo after the installer has run. Details live in the skill
@@ -130,6 +135,6 @@ claude.ai and grok.com. The installer never touches it; paste it by hand.
 
 The installer links skills and writes the statusline. Marketplace plugins (`ek`,
 `improve`, `typescript-lsp`, `frontend-design`) still need `claude plugin install`
-when Claude Code is on the machine. Cursor, Grok, and OpenCode get first-party
+when Claude Code is on the machine. Cursor, Grok, and OpenCode 2 get first-party
 skills from the installer alone. Saying **resync** in this repo does both. See
 [`.claude/README.md`](.claude/README.md) for the declared plugins.

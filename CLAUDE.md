@@ -15,14 +15,17 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
   `~/.claude/CLAUDE.md` points to `.claude/CLAUDE.md`.**
-  The repo files are canonical: editing them updates Claude, OpenCode, and
-  Grok immediately. Cursor cannot symlink a local plugin at this repo, so the
-  installer copies `.claude/CLAUDE.md` into
-  `~/.cursor/plugins/local/tc/rules/global.mdc`. That copy is stale until you
-  re-run `./install.sh` after editing that file, whichever agent or editor made
-  the edit, and then **Developer: Reload Window**. Do
-  not also keep a User Rule with the same text. Cursor's third-party config
-  setting still imports installed Claude plugins and skills.
+  The repo files are canonical: editing them updates Claude, OpenCode 2, and
+  Grok immediately. OpenCode 2 reads the global text through
+  `~/.config/opencode/AGENTS.md` (installer link to `.claude/CLAUDE.md`); it
+  does not load `~/.claude/CLAUDE.md`. In this repo the installer also links
+  `AGENTS.md` to this file so OpenCode 2 sees these gotchas. Cursor cannot
+  symlink a local plugin at this repo, so the installer copies
+  `.claude/CLAUDE.md` into `~/.cursor/plugins/local/tc/rules/global.mdc`. That
+  copy is stale until you re-run `./install.sh` after editing that file,
+  whichever agent or editor made the edit, and then **Developer: Reload
+  Window**. Do not also keep a User Rule with the same text. Cursor's
+  third-party config setting still imports installed Claude plugins and skills.
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this
   repo belongs in this file instead.
 
@@ -36,7 +39,7 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
   when the file goes over.
 
 - **The installer links first-party skills into `~/.claude/skills`.** Claude,
-  Cursor, Grok, and OpenCode all read that path. `opencode/commands` provides
+  Cursor, Grok, and OpenCode 2 all read that path. `opencode/commands` provides
   `/vet`, `/tldr`, `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, and
   `/pass` wrappers. Do not also copy those skills into `~/.config/opencode/skills`.
   Keep shared skills portable Agent Skills (`name` and `description` required).

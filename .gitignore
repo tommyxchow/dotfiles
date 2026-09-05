@@ -1,2 +1,4 @@
 *.bak
 .claude/worktrees/
+# OpenCode 2 only reads AGENTS.md. The installer links the root file to CLAUDE.md.
+/AGENTS.md

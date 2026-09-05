@@ -1,8 +1,9 @@
 # Shared Agent Config
 
 This directory holds the shared global instructions and Claude Code settings.
-The shared instructions also land in OpenCode and Grok Build via Claude Code
-compatibility.
+Grok Build reads them through Claude Code compatibility. OpenCode 2 reads the
+same text through an installer link at `~/.config/opencode/AGENTS.md`; it does
+not load `~/.claude/CLAUDE.md`.
 Personal plugins ship from the `chow` marketplace in this same repo
 (`tommyxchow/dotfiles`). Third-party plugins are declared as separate marketplaces in
 `settings.json`.
@@ -13,7 +14,7 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Shared global instructions (linked into Claude Code; read by OpenCode and Grok Build; copied by the installer into Cursor's local `tc` plugin) |
+| `CLAUDE.md` | Shared global instructions (linked into Claude Code and OpenCode 2 as `~/.config/opencode/AGENTS.md`; read by Grok Build; copied by the installer into Cursor's local `tc` plugin) |
 | `CLAUDE.web.md` | Web-chat twin of `CLAUDE.md` for claude.ai and grok.com. Nothing loads it; paste it by hand. Mirror Communication and External writing changes here when they apply to chat |
 | `settings.json` | Claude Code permissions, sandbox, model/effort, plugins, statusline, marketplaces |
 
@@ -32,12 +33,12 @@ rules out of `CLAUDE.md` into a style: Cursor and Grok Build would lose them, an
 strips coding instructions. `outputStyle` is unset in `settings.json`.
 
 The installer links first-party skills into `~/.claude/skills`. Claude, Cursor,
-Grok, and OpenCode all read that path. The official `gh` skill also lives there
+Grok, and OpenCode 2 all read that path. The official `gh` skill also lives there
 via `gh skill install` (resync installs or updates it); do not copy it into
 `plugins/tc/skills`. `opencode/commands` adds `/vet`, `/tldr`,
 `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, and `/pass` wrappers without duplicating the
 skill instructions. Do not enable `tc@chow` alongside those links, and do not
-also copy those skills into `~/.config/opencode/skills`. OpenCode does not load
+also copy those skills into `~/.config/opencode/skills`. OpenCode 2 does not load
 Claude marketplace plugins, so `ek` remains Claude Code-only and
 upstream-managed. Machine catch-up is a repo playbook (`docs/resync.md`).
 Product-repo upgrades are the `refresh` skill. Correctness review is the `review` skill. End-of-slice closer is the `pass` skill.
@@ -118,6 +119,13 @@ Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatib
 so the installer does not create a separate Grok instructions link. Confirm effective
 discovery with the inspector inside an active Grok session; the standalone
 `grok inspect` command may report a different instruction list.
+
+### OpenCode 2
+
+This setup is OpenCode 2 (`opencode2`). The installer links
+`~/.config/opencode/AGENTS.md` to `CLAUDE.md` here. OpenCode 2 does not read
+`~/.claude/CLAUDE.md`. Skills still come from `~/.claude/skills`. Slash commands
+are the stubs in `opencode/commands`.
 
 ## Auditing config
 

@@ -65,6 +65,8 @@ $links = @(
     @{ Source = "vscode/keybindings.json";  Target = "$env:APPDATA/Cursor/User/keybindings.json" }
     @{ Source = ".claude/settings.json";    Target = "$HOME/.claude/settings.json" }
     @{ Source = ".claude/CLAUDE.md";        Target = "$HOME/.claude/CLAUDE.md" }
+    @{ Source = ".claude/CLAUDE.md";        Target = "$HOME/.config/opencode/AGENTS.md" }
+    @{ Source = "CLAUDE.md";                Target = (Join-Path $dotfiles "AGENTS.md") }
     @{ Source = "opencode/cli.json";        Target = "$HOME/.config/opencode/cli.json" }
 )
 
