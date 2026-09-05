@@ -54,8 +54,9 @@ Windows Terminal settings are not linked (profiles and GUIDs are machine-local).
 OpenCode V2 still has no Windows keybind section. Use the same WT `sendInput`
 CSI-u pattern as [V1's Shift+Enter note](https://opencode.ai/docs/keybinds/#windows-terminal)
 (`unbound` is not enough). Ctrl+Tab is `\u001b[9;5u`; Ctrl+Backspace is
-`\u001b[127;5u`. OpenCode does not publish those two strings; they are the
-same encoding as V1's `\u001b[13;2u`. Leave Ctrl+Shift+Tab on WT. Store path:
+`\u001b[127;5u`; Ctrl+Shift+Z is `\u001b[122;6u` (otherwise WT sends the
+same `0x1a` as Ctrl+Z). OpenCode does not publish those strings; they are
+the same encoding as V1's `\u001b[13;2u`. Leave Ctrl+Shift+Tab on WT. Store path:
 `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`.
 
 Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatibility,
@@ -92,7 +93,9 @@ The installer also writes `~/.claude/statusline-command.sh` from
 `plugins/tc/skills/statusline-install`, so a new machine does not need
 `/tc:statusline-install`. Re-run the installer after editing that skill.
 
-First-party skills are live links into `~/.claude/skills`. Do not also enable
+First-party skills are live links into `~/.claude/skills`. The official `gh`
+skill is installed there by resync (`gh skill install`), not linked from this
+repo. Do not also enable
 `tc@chow` on a machine that ran the installer, or Claude and Cursor load the
 same skills twice. Keep `tc@chow` in the marketplace catalog for machines that
 only install the plugin. Do not also install `mattpocock-skills` from the official

@@ -65,6 +65,11 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
 - **`ek@chow` is upstream-only.** Never vendor, copy, or edit its skill files here.
   Refresh it with `/plugin update ek@chow`.
 
+- **The official `gh` skill lives in `~/.claude/skills/gh` via `gh skill
+  install`, not in this repo.** Do not vendor it into `plugins/tc/skills`.
+  Resync installs or updates it. One copy in `~/.claude/skills`; do not also
+  install it for cursor, opencode, or grok.
+
 - **Install and uninstall plugins with `--scope user`.** `claude plugin uninstall
   --scope project` also deletes the key from user-scope `enabledPlugins`, and the
   interactive `/plugin` menu installs to project scope. Either way, check

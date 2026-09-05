@@ -62,6 +62,7 @@ These route to a skill, not to a fresh attempt at the task.
 - Quick pass, do a pass, final pass, final review, final double check, close this out, or "pass" on its own: follow the `pass` skill. The word mid-sentence (tests pass, pass a prop) never triggers it. Pass is not polish and not a code review.
 - Review, code review, review this, is this correct, check the code: follow the `review` skill. It hunts real bugs, security, performance, edge cases, and missing pieces; style and cleanup stay with `polish`.
 - Tdd, test first, write the test first, or red green: follow the `tdd` skill. It decides whether the loop fits, names the cases, and goes red before green. A bug fix starts with a reproducing test whether or not I say the word.
+- Gh flags, gh api, or GitHub CLI: follow the official `gh` skill. Prefer `gh` over GitHub MCP. A GitHub URL or the word mid-sentence never triggers it.
 - Double check or verify: route by what I'm pointing at. A claim or current docs is `vet`. Whether the code is correct is `review`. A finished slice of work is `pass`.
 
 ## Working preferences
