@@ -17,18 +17,22 @@ Every decision branches into the decisions that hang off it. The **frontier** is
 
 Ask the whole frontier in one round. A question whose answer depends on another question still open in this round belongs to the next round, not this one. Each round the user answers pushes the frontier outward and unblocks whatever was waiting behind it.
 
+## What earns a question
+
+A question earns its place when the answer changes what gets built. Drop everything else: anything the plan already settles, anything with one sensible answer you can take yourself and just name as you go, and anything you could look up. Three questions that expose a branch nobody had thought about beat eight that survey the plan back at the user.
+
 ## A round
 
 Number the questions and put your own recommended answer on each, so the user can agree in a word instead of writing an essay. Then stop and wait. The decisions are theirs: never answer your own round and carry on.
 
 ```
-**Q1: <short title>**
+❓ **Q1: <short title>**
 
 <the question, with the options where there are any>
 
-Recommend: <your answer, and the one-line why>
+➡️ <your recommended answer, and the one-line why>
 
-**Q2: <short title>**
+❓ **Q2: <short title>**
 
 <...>
 ```
