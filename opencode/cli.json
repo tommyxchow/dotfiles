@@ -5,12 +5,16 @@
     "mode": "system"
   },
   "keybinds": {
-    "prompt.stash": "ctrl+s",
+    "prompt.stash": "ctrl+s,super+s",
     "prompt.stash.list": "ctrl+l",
-    "input.select.all": "ctrl+a",
-    "input.line.home": "none",
-    "input.buffer.home": "home",
-    "input.buffer.end": "end",
+    "input.select.all": "ctrl+a,super+a",
+    "input.select.word.forward": "alt+shift+f,alt+shift+right,ctrl+shift+right",
+    "input.select.word.backward": "alt+shift+b,alt+shift+left,ctrl+shift+left",
+    "input.redo": "ctrl+shift+z,ctrl+y,super+shift+z",
+    "input.line.home": "super+left",
+    "input.line.end": "ctrl+e,super+right",
+    "input.buffer.home": "home,super+up",
+    "input.buffer.end": "end,super+down",
     "session.first": "none",
     "session.last": "none"
   },
