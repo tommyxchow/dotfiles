@@ -41,84 +41,53 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
   - [1] Push to main (recommended)
   - [2] Leave it local
   ```
-- Slot `[1]` is always the path you would take and the only one tagged `(recommended)`. Two options is the normal shape. Add a third or fourth only when it changes what I end up with, not how you get there; `[1]` with one detail added is not an option. Skip the block entirely when nothing needs picking. I answer with `1` or `1 and 3`; restate each key's option in a few words as you act on it.
-- While you work, a one-line update when you start a step, find something, or change direction is welcome. Keep each to a sentence or two that makes sense on its own. Don't paste tool output; quote the one line that matters.
-- Call out anything you changed that I didn't ask for, and any choice you made for me along the way (a default, a format, a name). The app works either way, so those are the two things I can't catch by using it.
+- Slot `[1]` is always the path you would take and the only one tagged `(recommended)`. Two options is the normal shape. Add a third or fourth only when it changes what I end up with, not how you get there. Skip the block when nothing needs picking. I answer with `1` or `1 and 3`; restate each key's option in a few words as you act on it.
+- A one-line update when you start a step, find something, or change direction. Don't paste tool output; quote the one line that matters.
+- Call out anything you changed that I didn't ask for, and any choice you made for me.
 
 ## How a task runs
 
-Two checkpoints are mine, the plan and the push. Everything between them is yours to run without asking, making the judgment calls yourself.
+Two checkpoints are mine, the plan and the push. Everything between them is yours.
 
-- **Plan first** for anything non-trivial: several files, a decision I would want a say in, or work where you would otherwise be guessing. Use the harness's plan mode where it has one, since that is where I expect to approve it. A small or obvious change skips planning and just happens. When the plan leaves a choice genuinely open, rather than one obvious path with details, say so in a line and offer `grill-me`. Only I start it, and when I do, stress-test the plan before any code gets written.
-- **Build it, then close it out** with `pass`. It vets what could have gone stale, clears leftovers, polishes, runs the repo's check, and commits once its report says ship-ready. Skip `pass` when the change is too small to have leftovers or has no code in it, say in one sentence that you skipped it, and commit it yourself.
-- **The Git rules take over from there:** commit on your own, review the outgoing range, and push only when I say so.
+- **Plan first** for anything non-trivial: several files, a decision I would want a say in, or work where you would otherwise be guessing. Use the harness's plan mode where it has one. A small change just happens. When the plan leaves a real choice open, say so and offer `grill-me`. Only I start it.
+- **Build it, then close it out** with `pass`. Skip `pass` when the change is too small to have leftovers or has no code in it, say so, and commit it yourself.
+- Commit a finished slice without asking, one commit per slice, hash in the close. Half-done work stays uncommitted. Push only when I say so. Before a push, `review branch` (skip when that range is only docs, config, or instruction files). Before a PR merges, `review pr <number>` once as a whole: per-push reviews never saw two commits together. On a large or risky PR, point me at the harness's own deeper review command, since only I can start one.
 
-## Trigger words
-
-These route to a skill, not to a fresh attempt at the task.
-
-- Vet, research, look this up, is this still true, known issue, workaround: follow the `vet` skill. It has the full source ranking and the stop rules: one good source settles a fact, and a fact the vendor never published is reported as not documented, not hunted.
-- We good, anything outstanding, or a status check: answer from what you already know plus `git status`, in a few sentences: what works, what is unverified, what is uncommitted. No new checks. If something looks off, say so and offer `pass`.
-- Quick pass, do a pass, final pass, final review, final double check, close this out, or "pass" on its own: follow the `pass` skill. The word mid-sentence (tests pass, pass a prop) never triggers it. Pass is not polish and not a code review.
-- Review, code review, review this, is this correct, check the code: follow the `review` skill. It hunts real bugs, security, performance, edge cases, and missing pieces; style and cleanup stay with `polish`.
-- Tdd, test first, write the test first, or red green: follow the `tdd` skill. It decides whether the loop fits, names the cases, and goes red before green. A bug fix starts with a reproducing test whether or not I say the word.
-- Gh flags, gh api, or GitHub CLI: follow the official `gh` skill. Prefer `gh` over GitHub MCP. A GitHub URL or the word mid-sentence never triggers it.
-- Double check or verify: route by what I'm pointing at. A claim or current docs is `vet`. Whether the code is correct is `review`. A finished slice of work is `pass`.
+A status check ("we good", "anything outstanding") is what you already know plus `git status`: what works, what is unverified, what is uncommitted. No new checks. Double-check routes by object: a claim or current docs is `vet`, whether the code is correct is `review`, a finished slice is `pass`. Prefer the official `gh` skill over GitHub MCP.
 
 ## Working preferences
 
 - Before using a framework or library API, check the installed version against its matching official docs rather than memory. If a newer release already fixes the problem, prefer that bump over a workaround, following the bump rules below.
-- Official docs beat X, blogs, and forums (Reddit, Stack Overflow, Discord, GitHub issues and Discussions). Forums show what people are hitting, never what the API is. A personal blog counts only when the author is a known expert on that project.
-- Default to doing the recommended thing, plus cheap follow-through already in scope. Ask first when the change is large, hard to undo, or a decision I can't infer from the task. Don't start a second task, and don't add a README, docs page, or summary file the task didn't ask for. Offering Next options isn't a second task.
-- Patch and minor bumps to fix something are fine. Ask first, with the options and your recommendation, before a major bump, a new dependency, a pinned or patched package, a new linter, formatter, CI gate, or coverage tool, or anything similarly hard to undo. The reason for a pin is usually in the commit or AGENTS.md.
-- When a command or fetch fails for a transient reason (timeout, offline, 401, cancelled), retry or move on. Don't add a workaround, pin, or fallback to the code because of it.
-- When I explicitly ask for all or every relevant item, or an exhaustive update to a list or source, inspect the complete source and cover every match. Don't stop at a representative subset.
-- Finish what a change starts. When new code replaces old, delete the old path in the same change, including re-exports and compatibility shims for callers you can update yourself, commented-out blocks, and debug logging. Update every relevant occurrence when a shared pattern changes, and clean up temporary files and scripts created for iteration.
-- Never claim something works on faith. Run or check it when feasible. Prefer the repo's own full check over a single linter pass, and don't invent a gate the repo doesn't have.
-- New behavior gets tests: the happy path plus the edge cases likely to break (empty, error, boundary). Start targeted and expand when the risk warrants it. A bug fix starts with a regression test that reproduces it.
-- For UI work, put most coverage at the integration level, unit tests on pure logic, and e2e only on critical journeys. Follow the repo if it already splits tests differently. Tests assert what the user sees, not which library is imported.
-- If I paste another agent's plan, diff, or answer, check it. Don't agree by default. Say what holds, what is weak, and what you would change.
+- Official docs beat X, blogs, and forums. Forums show what people are hitting, never what the API is.
+- Default to the recommended thing, plus cheap follow-through already in scope. Ask first when the change is large, hard to undo, or a decision I can't infer. Don't start a second task, and don't add a README or docs page the task didn't ask for.
+- Patch and minor bumps to fix something are fine. Ask first, with the options and your recommendation, before a major bump, a new dependency, a pinned or patched package, a new linter, formatter, CI gate, or coverage tool. The reason for a pin is usually in the commit or AGENTS.md.
+- When a command or fetch fails for a transient reason (timeout, offline, 401, cancelled), retry or move on. Don't add a workaround to the code because of it.
+- When I ask for all or every relevant item, cover every match. Don't stop at a representative subset.
+- Finish what a change starts. Delete the old path in the same change, including shims for callers you can update, commented-out blocks, and debug logging.
+- Never claim something works on faith. Prefer the repo's own full check over a single linter pass, and don't invent a gate the repo doesn't have.
+- New behavior gets tests: the happy path plus the edges likely to break. A bug fix starts with a regression test. UI coverage is integration-first, e2e only on critical journeys. Tests assert what the user sees.
+- If I paste another agent's plan, diff, or answer, check it. Don't agree by default.
 
 ## Code
 
-Working is the floor, not the bar. Code should read as if a careful senior engineer on this repo wrote it in one sitting: only what the task needs, in the repo's own patterns, with nothing left over.
+Working is the floor, not the bar. Fit the repo. Follow it when it already differs.
 
-- In JS/TS repos, use `pnpm` / `pnx` (`pnpm dlx` / `pnpx`), never `npm` / `npx` / `yarn`.
-- Prefer the simplest solution that fits the existing codebase, in the fewest lines that still read plainly. Reuse existing patterns and helpers before adding new ones. Don't add an option, parameter, layer, or config for a case the task doesn't have. A fancy reactive collection is usually worse than a plain array you replace (`[...old, next]`).
-- Flat and direct. Early returns and lookup tables beat deep nesting, and a plain function beats a class, factory, or registry with one use. A wrapper that only forwards to one call is noise; call the thing.
-- Inline until a pattern appears three times, then extract. Two similar blocks that could diverge stay duplicated.
-- Don't switch a layout or structure strategy (flex vs grid, Column vs Stack) as a side effect of an unrelated task. Changing it is fine when it is the task or it is actually broken.
-- Don't paper over types with `as`, non-null `!`, or `any`. Fix them at the definition. A genuine exception gets a one-line why, same as an eslint-disable. Mutually exclusive states are a union (Dart: sealed), not a pile of boolean flags.
-- Named exports by default; a default export only where the framework requires one (`page`/`layout`, configs, `React.lazy`). Use `satisfies` for config and lookup objects that should stay literal.
-- Validate at the boundary, then trust the types. Parse loosely-typed third-party payloads down to the fields you use (Zod in TS). Inside, no extra validation on your own already-typed endpoints, no null checks on values the types say can't be null, no try/catch that only rethrows or swallows, and no "just in case" fallbacks. Anything security-relevant (who is signed in, what they own, limits) is enforced on the server; a client-side check is only feedback.
-- Handle an error where something can be done about it, and let the rest propagate. The message names what failed and for what: `Upload failed: photo.jpg is over 10 MB`, not `Something went wrong`. The user sees the plain version; the log gets the detail. When a protocol or an in-house spec defines error codes or shapes (HTTP statuses, IRC numerics, a team's error envelope), look up what each code means and use that one; never report success with an error tucked inside. With no spec, follow the repo's existing error shape.
-- Treat every input as untrusted: parametrize queries and commands, escape for the output context, and never build a shell command, query, or path from raw strings. Don't hand-roll auth, sessions, or crypto; use what the platform or repo already has. Anything shipped to the client, including `PUBLIC`-prefixed env vars, is public, so no secrets there.
-- New JS/TS files and directories use kebab-case, including components (`theme-toggle.tsx`). Follow the repo if it already differs.
-- Names say what a thing is in this domain. `data`, `result`, `temp`, `item2`, and `processData` are placeholders, and so is a new `utils` or `helpers` file. Name the file for what it does, or put the function beside its caller.
-- Put a new file where the repo already keeps that kind of file. With no convention to follow, put it next to what it belongs to, like a variant beside its original. Don't create a directory for a single file unless the framework needs one, and don't leave scratch files at the repo root.
-- One file holds one thing, at the size the repo already uses. When a file starts to hold a second thing, split it at that seam. Don't pile every related piece into one file, and don't split a long but linear file just for length.
-- Comment the non-obvious why (a constraint, a quirk, an intent), never what the code already says, and most functions need no comment at all. `// loop over users`, a docblock that repeats the signature, and section dividers are noise. `// Stripe sends amounts in cents` earns its line. No leftover task crumbs.
-- Logs are structured and tell a story: event, key context, outcome. Never log secrets, tokens, or PII. Redact them.
+- In JS/TS, `pnpm` / `pnx` (`pnpm dlx` / `pnpx`), never `npm` / `npx` / `yarn`.
+- Simplest thing that fits: no extra option, layer, or file for a case the task doesn't have. Inline until a pattern appears three times.
+- Don't paper over types with `as`, `!`, or `any`. Mutually exclusive states are a union (Dart: sealed). Named exports unless the framework requires a default. New JS/TS files use kebab-case, including components.
+- Validate at the boundary (Zod in TS), then trust the types. Security stays on the server. Treat input as untrusted: never build a shell command, query, or path from raw strings, and no secrets in `PUBLIC` env vars or the client.
+- Error messages name what failed and for what. The user sees the plain version; the log gets the detail. Never log secrets, tokens, or PII.
 
-## UI baseline
+## UI
 
-- Follow the project's existing design language. Keep accessibility, clear affordances, comfortable touch targets, and readable contrast, and handle loading, error, empty, and degraded states.
-- Don't paint success until the work succeeded. Loading uses a layout-accurate skeleton, not a spinner on a blank page. Chips and toggles that imply connected or on stay dimmed or hidden while the request is in flight.
-- Style from the project's theme roles and CSS tokens. Don't double-mute a role that is already secondary (`onSurfaceVariant` then `alpha: 0.6`, `text-muted-foreground/60`). Prefer deleting decorative borders over restyling them.
-- Underlines for destinations, buttons for actions. Destructive controls say the verb ("Delete photo", not "OK") and never get default emphasis.
-- Don't spend server resources or API quota on content the user may never see (eager refetch, SSR for offscreen rows, uncapped revalidation). Pause loops that are not Effects (canvas, rAF, Dart timers) when a view is offscreen or backgrounded.
-- State lives where its lifetime is. Anything shareable or back-button-worthy (filters, tab, page, search) goes in the URL. A deliberate setting (values, defaults, resets) goes in storage. Auth and anything the server must see goes in an httpOnly cookie, never local storage. Ephemeral UI state (in-progress text, scroll position, whatever the last screen happened to be) stays in memory. No secrets or PII in the URL or client storage.
-- For UI changes, when browser or preview tools are available, inspect the rendered result and relevant interactions when practical.
+Follow the project's design language. Don't paint success until the work succeeded: loading is a skeleton, not a spinner on a blank page. Style from theme tokens; don't double-mute a role that is already secondary. Shareable state in the URL, settings in storage, auth in an httpOnly cookie, ephemeral UI in memory. Inspect the rendered result when browser tools are available.
 
 ## Git
 
-- Commit without asking once a slice is finished and verified, one commit per slice, and put the hash in the close. Half-done or unverified work stays uncommitted. Push only when I say so.
-- Before a push, run the `review` skill over the range the push would publish (`review branch`), and report what it found before pushing. Skip it when that range is only docs, config, or instruction files, and say in one sentence that you skipped it. Never review per commit: the push is the checkpoint, so one pass over the finished shape beats several over its drafts.
-- Before a PR merges, review it once as a single change with `review pr <number>`, even though every push in it was already reviewed. Those reviews never saw two commits together, so look at what they interact with, what an early commit left dead that a later one replaced, and whether the description still matches what is in the branch. On a large or risky PR, point me at the harness's own deeper review command where it has one, since only I can start one.
-- Stage the files the slice touched, never `git add -A` or `.`. My working tree usually carries unrelated local churn, like the model and effort keys a `/model` call writes into a settings file. If a file holds both your change and mine, say so instead of quietly committing both.
-- Use Conventional Commits: `type(scope): subject` in lowercase, no trailing period, tightly scoped. Append `!` before `:` for breaking changes. When the why isn't obvious from the subject, put it in the body so future me can reconstruct the reasoning.
+- Stage the files the slice touched, never `git add -A` or `.`. If a file holds both your change and mine, say so.
+- Conventional Commits: `type(scope): subject` in lowercase, no trailing period. `!` before `:` for breaking. Why in the body when the subject isn't enough.
 - Prefix new branches with `tc/`.
-- On personal GitHub repos, commit to `main` unless it is a long-running arc; then use a PR. Keep related work on the current PR. Split or stack only when the change is genuinely different and a split would make review easier.
+- Personal GitHub repos: commit to `main` unless it is a long-running arc.
 
 ## External writing
 
@@ -138,4 +107,4 @@ This file rides along to every harness (Claude Code, Cursor, OpenCode 2, Grok Bu
 - Add a rule after the same mistake happens twice, or when I state a preference. If it then over-fires, add a skip rather than more style. Prune lines that went stale whenever the file is touched.
 - Multi-step playbooks that only run in one repo live as `docs/` in that repo, not as global skills. Don't add `.vscode/` settings or per-repo agent permissions to a product repo when the dotfiles already cover them.
 
-First-party skills under `plugins/tc/skills` follow the example and prune rules above, and they may keep step-by-step playbooks. Communication and Session flow live here; skills point at them, they don't copy or restyle them.
+First-party skills under `plugins/tc/skills` follow the example and prune rules above, and they may keep step-by-step playbooks. Communication and Session flow live here; skills point at them, they don't copy or restyle them. Skill routing lives in each skill's description, not in this file.

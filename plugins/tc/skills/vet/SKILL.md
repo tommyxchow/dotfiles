@@ -13,11 +13,15 @@ Bare `vet` and `vet/research` are the same. `$ARGUMENTS` is the claim, topic, or
 
 ## Isolate
 
-Page fetches stay in a child window. The parent keeps only the section 4 answer.
+Page fetches stay in child windows. The coordinator keeps only the section 4 answer.
 
-- **Already a subagent** (forked or spawned for this vet): do the work here. Don't spawn. `$ARGUMENTS` plus your prompt is the claim; if both are empty, ask, don't guess. Then section 1.
-- **Parent**: don't search or fetch here, before or after the child runs. Spawn one general-purpose worker that can search and fetch, wait for it instead of backgrounding it, and present its answer as yours. Not a read-only or search-only agent type. Pack the claim quoted (`$ARGUMENTS`, or the last checkable claims, named topic, or pasted plan), this file's path plus "you are the worker", and the repo cwd. A forward task also needs any decision from this chat it depends on. Don't spawn an empty worker.
-- **No way to spawn a worker here**: do the work in this window and say nothing about it. The isolation saves context, but the answer is the point.
+- **Leaf** (prompt says you are a leaf, or you were given a single claim): do the work here. Don't spawn. `$ARGUMENTS` plus your prompt is the claim; if both are empty, ask, don't guess. Then section 1.
+- **Coordinator** (the parent chat, or a forked skill that received the full topic): don't search or fetch here. Split independent claims, or vendors when several claims share one canonical page, and spawn those leaves in the same turn. One claim stays one worker. Wait for every leaf instead of backgrounding them, then reconcile into one section-4 answer.
+- Pack each leaf with its quoted claim, this file's path plus "you are a leaf", and the repo cwd. Not a read-only or search-only agent type. A forward task also needs any decision from this chat it depends on. Don't spawn an empty worker.
+- Don't spawn a leaf per source for the same fact; one good source still settles. Cap at four leaves; leftover claims ride with the leaf that shares a page, or the last leaf. Never spawn more than one hop: leaves never split again.
+- **No way to spawn a worker here**: do the work in this window and say nothing about it. Independent searches and fetches still go in the same turn. The isolation saves context, but the answer is the point.
+
+One claim ("does `Map` use `has`?") is one leaf. A pasted plan with independent facts (HGIG vs DTM, Fine Tune Dark Areas with HGIG, whether a C3 needs ColorControl) is one leaf each, same turn. Claims that live on one page ride together.
 
 ## 1. Pick the mode (don't stall asking "what to review")
 
@@ -48,7 +52,7 @@ For a dev question inside a repo, read the installed version from the manifest o
 - **Best practices are recommendations, not facts.** State the current official recommendation, as of when, and what it superseded. Give a clear pick when the evidence supports one, and the tradeoffs when it doesn't. If sources conflict, surface the conflict; don't silently pick one.
 - **Date what's time-sensitive.** Note "as of <today>" when recency matters; cite a page date only when the page shows one.
 - **Flag what's missing**, not just what's wrong. Omissions are the most common miss.
-- **Past a handful of fetches and still not settled?** That is open-ended research, not a vet. Give the verdict with what's still missing and stop. Don't start a second topic. Several claims in one run share that budget.
+- **Past a handful of fetches and still not settled?** That is open-ended research, not a vet. Give the verdict with what's still missing and stop. Don't start a second topic. Each leaf has its own budget. The coordinator does not add fetches after the leaves return.
 - **Fallback when web is blocked:** read the manifest, lockfile, and bundled docs directly and say so. Vet never reads binaries, runs scripts against an install, or reverse-engineers anything; that is a normal session's job. If neither web nor bundled docs work, say you couldn't check. Don't assert.
 
 ## 4. Present the result
