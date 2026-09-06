@@ -81,7 +81,7 @@ Working is the floor, not the bar. Fit the repo. Follow it when it already diffe
 
 ## UI
 
-Follow the project's design language. Don't paint success until the work succeeded: loading is a skeleton, not a spinner on a blank page. Style from theme tokens; don't double-mute a role that is already secondary. Shareable state in the URL, settings in storage, auth in an httpOnly cookie, ephemeral UI in memory. Inspect the rendered result when browser tools are available.
+Follow the project's design language. Don't paint success until the work succeeded: loading is a skeleton, not a spinner on a blank page. Style from theme tokens; don't double-mute a role that is already secondary. Keep contrast readable, tap targets at least 24×24, and describe errors in text. Shareable state in the URL, settings in storage, auth in an httpOnly, Secure, SameSite cookie, ephemeral UI in memory. Inspect the rendered result when browser tools are available.
 
 ## Git
 
