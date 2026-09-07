@@ -1,6 +1,6 @@
 ---
 name: pr
-description: 'Owns the pull request from near-ready to ready for review. Verifies each acceptance criterion with evidence, runs the whole-branch review in a fresh subagent, runs pass, pushes, and opens the draft with the standard body (summary, what-to-review table with sizes, AC ledger, test plan, screenshots, risk, stack). Then keeps that body current and addresses open review threads in one batch. `ready` flips the draft after the readiness check; `rebase` restacks after a parent merges. Use when the user says pr, open a pr, draft pr, ship it, take this to a pr, update the pr, address the reviews, fix the review comments, mark pr as ready, is this ready, final review, close out the pr, rebase the stack, sync the stack, sync this down to another pr, or pastes UAT feedback. Also runs on its own when a build reaches near-ready. Not the slice closer (that''s pass), not a report-only review (that''s review), not a summary (that''s tldr pr). Never merges.'
+description: 'Owns the pull request from near-ready to ready for review. Verifies each acceptance criterion with evidence, runs the whole-branch review in a fresh subagent, runs pass, pushes, and opens the draft with the standard body (summary, what-to-review table with sizes, AC ledger, test plan, screenshots, risk, stack). Then keeps that body current and addresses open review threads in one batch. `ready` flips the draft after the readiness check; `rebase` restacks when a parent moves or merges. Use when the user says pr, open a pr, draft pr, ship it, take this to a pr, update the pr, address the reviews, fix the review comments, mark pr as ready, is this ready, final review, close out the pr, rebase the stack, sync the stack, sync this down to another pr, or pastes UAT feedback. Also runs on its own when a build reaches near-ready. Not the slice closer (that''s pass), not a report-only review (that''s review), not a summary (that''s tldr pr). Never merges.'
 argument-hint: "[ready | rebase | reviews | <focus or pasted feedback>]"
 ---
 
@@ -54,7 +54,7 @@ Work bots review drafts on every push, so this runs once, near the end, not per 
 
 ## 3. Update
 
-1. **Head check.** Be on the PR's head branch, with `headRefOid` an ancestor of `HEAD` (`git merge-base --is-ancestor <headRefOid> HEAD`). Local commits ahead of it are normal, since this section ends in a push. Stop only for the wrong branch or a diverged history, and then say which branch is where; with several worktrees open that is the mistake that costs an hour.
+1. **Head check.** Be on the PR's head branch, with the `headRefOid` from `gh pr view` an ancestor of `HEAD` (`git merge-base --is-ancestor <headRefOid> HEAD`). Local commits ahead of it are normal, since this section ends in a push. Stop only for the wrong branch or a diverged history, and then say which branch is where; with several worktrees open that is the mistake that costs an hour.
 2. **Body.** Rebuild section 6 from the current diff and ledger. Every commit that changed what the PR does or its evidence should already have refreshed it; if the body is stale, that is a finding about the last session, fix it now.
 3. **Threads.** Read them with GraphQL, because REST comments carry no thread ids and `gh` has no resolve command:
 
