@@ -113,6 +113,7 @@ prune_stale "$HOME/.config/opencode/skills/grilling"
 prune_stale "$HOME/.codex/AGENTS.md"
 
 link "git/.gitconfig"          "$HOME/.gitconfig"
+link "git/ignore"              "$HOME/.config/git/ignore"
 link "vscode/settings.json"    "$VSCODE_USER/settings.json"
 link "vscode/keybindings.json" "$VSCODE_USER/keybindings.json"
 link "vscode/settings.json"    "$CURSOR_USER/settings.json"

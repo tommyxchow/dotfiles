@@ -59,6 +59,7 @@ Prune-Stale "$HOME/.codex/AGENTS.md"
 
 $links = @(
     @{ Source = "git/.gitconfig";           Target = "$HOME/.gitconfig" }
+    @{ Source = "git/ignore";               Target = "$HOME/.config/git/ignore" }
     @{ Source = "vscode/settings.json";     Target = "$env:APPDATA/Code/User/settings.json" }
     @{ Source = "vscode/keybindings.json";  Target = "$env:APPDATA/Code/User/keybindings.json" }
     @{ Source = "vscode/settings.json";     Target = "$env:APPDATA/Cursor/User/settings.json" }
