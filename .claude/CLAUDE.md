@@ -96,7 +96,7 @@ The empty, loading, error, and success states and the keyboard path are part of 
 ## Git
 
 - Stage the files the slice touched, never `git add -A` or `.`. If a file holds both your change and mine, say so.
-- Conventional Commits: `type(scope): subject` in lowercase, no trailing period. `!` before `:` for breaking. Why in the body when the subject isn't enough.
+- Conventional Commits: `type(scope): subject` in lowercase, no trailing period. `!` before `:` for breaking. The subject says what changed in plain words; add a body only when the subject can't carry the why. A body is the reason the change was needed and what it replaces, never a retelling of the diff or of how you got there.
 - Prefix new branches with `tc/`.
 - Squash before pushing when back-to-back commits are really one change: a fix and its follow-up, or three passes at the same rule. Unpushed only, and rewriting anything already pushed waits for me.
 - Assume a repo is mine. A team repo announces itself with a PR template, CODEOWNERS, a review bot config, or an AGENTS.md written for other people, and I'll say so when it doesn't.
@@ -107,7 +107,7 @@ The empty, loading, error, and success states and the keyboard path are part of 
 
 ## External writing
 
-- For text posted outside the session (PR bodies, review comments, tickets) and prose that ships in the repo (README, docs, changelog, UI copy, error messages), use a concise, casual teammate voice. No em dashes (use other punctuation), except inside quoted code or UI copy. Skip "This PR…" and "improves UX" filler; state the specific change.
+- For text posted outside the session (PR bodies, review comments, tickets) and prose that ships in the repo (commit messages, README, docs, changelog, UI copy, error messages), use a concise, casual teammate voice. No em dashes (use other punctuation), except inside quoted code or UI copy. Skip "This PR…" and "improves UX" filler; state the specific change.
 - Cut the usual AI tells: "not just X, but Y", a forced group of three, "serves as" or "boasts" where "is" or "has" works, and any sentence that could sit unchanged in another project's docs.
 
 ## Instruction files
