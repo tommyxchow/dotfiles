@@ -89,7 +89,7 @@ Each subagent gets: post-0.5 scope; the **absolute path** to this skill's `refer
 
 | Lens | Owns |
 |---|---|
-| **Reuse** | re-implements an existing helper/util |
+| **Reuse** | re-implements an existing helper/util, including a semantic duplicate spelled differently |
 | **Quality** | redundant state, copy-paste, dead code, needless guards, nesting, placeholder names, type escapes, convention drift, needlessly dense or clever code |
 | **Efficiency** | wasted work, missed concurrency, hot-path bloat, no-op updates, leaks |
 | **Altitude** | bandaids, symptom-vs-cause, wrong layer, grab-bag files |

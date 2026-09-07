@@ -45,7 +45,7 @@ Things that count as criteria even when the ticket never wrote them down: the em
 In order, and say each step in one line as it happens:
 
 1. **Ledger.** Section 1 on the whole checklist. Anything unverified that a test or a run could settle cheaply gets settled now.
-2. **Review.** `review branch fix` on the branch against its intended base, with the ledger and summary as the intent, in a fresh-context subagent when the harness can spawn one, inline when it can't. Confirmed findings get fixed with a regression test where the behavior is testable; "likely" findings go in the report. Say which mode ran.
+2. **Review.** `review branch fix` on the branch against its intended base, with the ledger and summary as the intent, in a fresh-context subagent when the harness can spawn one, inline when it can't. Confirmed findings get fixed with the smallest change that removes the scenario, plus a regression test where the behavior is testable; "likely" findings go in the report. Say which mode ran.
 3. **Pass.** Follow `pass`. It vets, removes leftovers, polishes, runs the repo's full check, and commits. If review or pass changed files, re-run whatever the ledger's evidence depended on.
 4. **Push.** `git push -u origin <branch>`. Taking a task to a draft PR carries the permission to push that branch. Stacked: the base is the parent branch, not the default branch.
 5. **Create.** `gh pr create --draft --base <base> --title "<type(scope): subject>" --body-file <tmp>` with the body in section 6. Title follows Conventional Commits; add the ticket key where the repo's recent PR titles do. Solo repos still get a draft, because the body is where the evidence lives.

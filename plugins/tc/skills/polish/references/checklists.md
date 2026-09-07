@@ -53,6 +53,7 @@ Caps eagerness:
 1. **Existing utility/helper** — shared/util or adjacent modules already do this → call that.
 2. **Duplicate function** — new function ≡ existing → call existing.
 3. **Inline logic with a utility** — hand-rolled path/env/clone/merge/guard → established helper.
+4. **Semantic duplicate** — same intent as existing code, different implementation, so it does not read as a copy: a second date formatter with different steps, a second retry loop with its own backoff, a permission rule spelled a new way. Search by what the code does, not by how it looks. Two implementations of one rule drift, and only one of them gets the next fix.
 
 ---
 

@@ -60,7 +60,7 @@ Dedup, rank worst first by severity then confidence, and write it in the global 
 The repo's PR checklist in CONTRIBUTING.md also asks for a changelog line, and this change has none.
 ```
 
-`fix`, or "review and fix": apply the fixes worst first, each with a regression test where the behavior is testable, then rerun the quick check and report what changed. Never fix silently during a plain review.
+`fix`, or "review and fix": apply the fixes worst first, each with a regression test where the behavior is testable, then rerun the quick check and report what changed. A fix is the smallest change that removes the failure scenario: no new abstraction layer, no defensive branch for a case the types already rule out, no test for something that cannot happen. A reviewer asked to find gaps reports some even when the work is sound, so a finding that needs a big fix is worth re-reading before you build around it. Never fix silently during a plain review.
 
 ## Distinct from
 
