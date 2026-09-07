@@ -10,7 +10,7 @@ Repo catch-up: latest versions this stack can honestly take, plus migrations, pl
 
 `$ARGUMENTS`: optional **mode** (first token) then **custom instructions**. Empty = `optimal`. If the first token is not a mode below, the whole argument is custom instructions on `optimal`. A security-audit, Dependabot, or outdated request with no upgrade language means `audit` (report only).
 
-Honor `AGENTS.md` holds. Don't commit unless asked.
+Honor `AGENTS.md` holds. `audit` reports and changes nothing. The modes that do change code close the way any other slice does, through `pass`.
 
 ## Collision: machine vs repo
 

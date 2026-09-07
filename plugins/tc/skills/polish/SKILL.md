@@ -1,6 +1,6 @@
 ---
 name: polish
-description: End-of-slice cleanup for React/TS apps — Prettier + ESLint autofix on touched files first (when present), then four judgment lenses (reuse, quality, efficiency, altitude), then high-confidence cleanups behind a verify gate. Heavier than a quick tidy-up. Use for "polish", "dry clean", "make this less hacky", or "reduce duplication". Shape only — not a bug hunt; not the pass skill ("final review", "final double check", "close this out", cleanup-before-commit). Default scope is dirty work plus files edited this session (still in scope after commit); `/polish all` for the full branch slice. Never installs tools.
+description: End-of-slice cleanup for React/TS apps — Prettier + ESLint autofix on touched files first (when present), then four judgment lenses (reuse, quality, efficiency, altitude), then high-confidence cleanups behind a verify gate. Heavier than a quick tidy-up. Use for "polish", "dry clean", "make this less hacky", or "reduce duplication". Shape only — not a bug hunt; not the pass skill ("final double check", "close this out", cleanup-before-commit), and not the pr skill, which owns "final review" and "is this ready" once a PR exists. Default scope is dirty work plus files edited this session (still in scope after commit); `/polish all` for the full branch slice. Never installs tools.
 argument-hint: "[staged | unstaged | branch | all | <focus>]"
 ---
 
@@ -112,7 +112,7 @@ Smallest correct edit. Chesterton's Fence; don't strip named concepts/test seams
 
 1. If useful, note whether the gate was already failing before your cleanups (quick baseline: run once before apply, or record known failure). Don't blame pre-existing failures on polish.
 2. After apply: fresh-eyes on the resulting diff; revert polish-owned scope creep.
-3. Run recon's gate. If a polish cleanup caused a new failure, revert **that** cleanup and continue with the others. If there is no gate, say so.
+3. Run recon's gate. If you applied nothing and this same tree already passed that gate this session, such as the run `tdd` just finished, cite that result instead of running it twice. Anything you applied means the gate runs. If a polish cleanup caused a new failure, revert **that** cleanup and continue with the others. If there is no gate, say so.
 
 **Summary.** Write it in the global Communication voice: a few full sentences, answer first. Say what autofix touched, what you cleaned up and why it is safe, what you left alone and why, and anything correctness-shaped that belongs in code review. If nothing was worth changing, say the code was already clean and stop.
 

@@ -18,7 +18,7 @@ Not a command. Refresh reads **one** section after it detects the stack. Don't r
 
 ## Flutter
 
-- `flutter pub outdated` columns ([dart pub outdated](https://dart.dev/tools/pub/cmd/pub-outdated), [Flutter deps](https://docs.flutter.dev/packages-and-plugins/dependency-management)): Upgradable → `flutter pub upgrade` (Optimal / Minimal). Resolvable that needs a pubspec bump is a package major → Ask unless `full`. `full` → `flutter pub upgrade --major-versions` (rewrites constraints). Latest > Resolvable stays skipped (blocked by another dep).
+- `flutter pub outdated` columns ([dart pub outdated](https://dart.dev/tools/pub/cmd/pub-outdated), [Flutter deps](https://docs.flutter.dev/packages-and-plugins/dependency-management)): Upgradable → `flutter pub upgrade` on Optimal. Minimal names the packages instead (`flutter pub upgrade <pkg> ...`), since a bare upgrade takes every dependency to the newest version its constraint allows and that includes feature minors Minimal never promised. Resolvable that needs a pubspec bump is a package major → Ask unless `full`. `full` → `flutter pub upgrade --major-versions` (rewrites constraints). Latest > Resolvable stays skipped (blocked by another dep).
 - `flutter --version` vs `environment` in `pubspec.yaml`. A pin lagging the SDK is Must: it blocks `flutter pub upgrade`. Don't run `flutter upgrade` (SDK) in a repo visit — report machine SDK vs pin vs current stable.
 - Don't add `dependency_overrides` unless they agreed (same as pnpm overrides). Don't swap git-pinned forks back to pub.dev. Other holds (e.g. secure storage) stay unless a GHSA forces Ask.
 - Verify: `flutter analyze` + `flutter test`. Commit regenerated `.g.dart` when the repo's rule is to commit them.
