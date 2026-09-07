@@ -62,14 +62,14 @@ Work bots review drafts on every push, so this runs once, near the end, not per 
    gh api graphql -F owner=<o> -F repo=<r> -F pr=<n> -f query='
      query($owner:String!,$repo:String!,$pr:Int!){ repository(owner:$owner,name:$repo){
        pullRequest(number:$pr){ reviewThreads(first:100){ nodes{
-         id isResolved isOutdated path line
+         id isResolved isOutdated viewerCanResolve path line
          comments(first:20){ nodes{ author{login} body url } } } } } } }'
    ```
 
    Keep only unresolved threads. Bot and human authors get the same treatment. Drop any thread whose last comment is your own decline: those stay open by design, and answering again posts a duplicate. A reviewer who replied after that decline puts the thread back in play.
 4. **Triage before touching code.** Work the open ledger items and the threads as one list, and dedupe anything describing the same root cause. For each: trace or reproduce the scenario the way `review` does. Then one of **fix** (real, in scope), **decline** (wrong, already handled, or out of the ticket's scope, with the evidence), or **ask** (the fix would change agreed scope or the reviewers want conflicting things). Ask items go to the user as one consolidated question, not one by one.
 5. **Fix in one batch.** Root cause, not the line the bot pointed at; regression test where testable; check related in-scope paths for the same mistake. Run the repo's full check. One commit, `fix(<scope>): address review` with the threads' subjects in the body. One push. Every push is a bot round at work, so never push per comment.
-6. **Close the loop on GitHub.** Resolve every thread you fixed: `resolveReviewThread(input:{threadId:$id})`, several per mutation with aliases. Reply on every thread you declined with the reason, under the user's account, and leave it open so the reviewer sees it. Never resolve a declined thread. If GraphQL or permissions fail partway, report which threads actually resolved: aliased mutations apply in order, so the ones before the failure already landed and cannot be taken back.
+6. **Close the loop on GitHub.** Resolve every thread you fixed: `resolveReviewThread(input:{threadId:$id})`, several per mutation with aliases. Say up front which ones `viewerCanResolve` rules out rather than finding out mid-batch. Reply on every thread you declined with the reason, under the user's account, and leave it open so the reviewer sees it. Never resolve a declined thread. If GraphQL or permissions fail partway, report which threads actually resolved: aliased mutations apply in order, so the ones before the failure already landed and cannot be taken back.
 7. **Learn.** If a thread class recurred, or a bot found something `review` should have caught, propose one line for that repo's `AGENTS.md` review section in the report. Propose, don't apply: that file is team-shared and outside the ticket.
 
 Don't kick bots to re-review, don't wait on them, don't detect which bot posted. If a review arrives later, the user says `pr` again.
@@ -104,7 +104,7 @@ Record every branch tip in the stack first (`git rev-parse <each branch>`). Each
 5. Run the repo's full check, then `git push --force-with-lease` every branch that moved, to your own branches only and never to one someone else pushes to.
 6. Say which branches moved and onto what, and name any you could not move.
 
-Don't try to move a stack in one pass with `--update-refs`: it only rewrites branches pointing inside the replayed range, and it skips a branch another worktree holds while still reporting success.
+`rebase.updateRefs` is on in this setup, so every rebase already moves the refs inside the range it replays. That is harmless per branch and is not a way to move a whole stack: it never reaches a branch sitting above the range, and it skips a branch another worktree holds without a word, still exiting 0.
 
 Asking for a restack carries the permission to force-push the branches it moves, so don't stop to ask again mid-stack. GitHub usually retargets a child PR when its base branch is deleted; confirm with `gh pr view --json baseRefName` and `gh pr edit --base <newbase>` only if it didn't.
 
