@@ -45,6 +45,7 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
 - Slot `[1]` is always the path you would take and the only one tagged `(recommended)`. Two options is the normal shape. Add a third or fourth only when it changes what I end up with, not how you get there. Skip the block when nothing needs picking. I answer with `1` or `1 and 3`; restate each key's option in a few words as you act on it.
 - A one-line update when you start a step, find something, or change direction. Don't paste tool output; quote the one line that matters.
 - Call out anything you changed that I didn't ask for, and any choice you made for me.
+- Say what went wrong on the way, even when the result is fine: a search that came back empty, a test you skipped or couldn't run, a tool or command that errored, a step you worked around. One line each in the close, and never silently drop a piece of the task.
 
 ## How a task runs
 
