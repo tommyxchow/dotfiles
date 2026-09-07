@@ -12,6 +12,8 @@ Takes a branch from "the build is near ready" to "ready for review" and keeps it
 
 It calls `review` and `pass` and does not rewrite them. It never merges, and it never marks ready except in `ready` mode.
 
+Work that never needed a plan never needs this skill. With no acceptance checklist behind the change, it is a small fix: `pass` commits it and that is the end, per the global git rules.
+
 ## Decide by state
 
 Look before acting: `gh pr view --json number,isDraft,baseRefName,headRefOid,url,mergeStateStatus,reviewDecision` (a non-zero exit means no PR for this branch), then `git status` and whether the plan's acceptance checklist has items without evidence.

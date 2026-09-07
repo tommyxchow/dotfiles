@@ -3,6 +3,15 @@
 Config repo. `./install.sh` symlinks files from here into their real locations, and
 hands off to `install.ps1` on Windows. See `README.md` for the full mapping.
 
+## Personal first, work compatible
+
+This is my personal setup. Everything in it has to work when I am alone in a
+repo with no ticket, no PR template, and no review bots, and still hold up in a
+team repo that has all three. A rule or skill that assumes a ticket exists, that
+bots review every push, or that someone else reads the PR needs a solo path too.
+This repo is public, so nothing here names an employer, an internal repo, or a
+work-only tool.
+
 ## Resync
 
 When I say resync, update, sync this machine, or catch this machine up: read

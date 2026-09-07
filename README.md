@@ -103,7 +103,7 @@ files.
 
 `/tldr` summarizes. `statusline-install` is Claude-only setup.
 
-The skills chain on their own during a task (plan ends in a checklist, build runs `tdd` where it fits, slices close with `pass`, the branch ends with `pr`), so the slash commands are shortcuts, not the only way in. The global `.claude/CLAUDE.md` "How a task runs" section is where that chain is written down.
+The skills chain on their own during a task (plan ends in a checklist, build runs `tdd` where it fits, slices close with `pass`, planned work ends with `pr`), so the slash commands are shortcuts, not the only way in. The global `.claude/CLAUDE.md` "How a task runs" section is where that chain is written down.
 
 The installer also writes `~/.claude/statusline-command.sh` from
 `plugins/tc/skills/statusline-install`, so a new machine does not need
