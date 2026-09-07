@@ -12,16 +12,16 @@ Takes a branch from "the build is near ready" to "ready for review" and keeps it
 
 It calls `review` and `pass` and does not rewrite them. It never merges, and it never marks ready except in `ready` mode.
 
-Work that never needed a plan never needs this skill. With no acceptance checklist behind the change, it is a small fix: `pass` commits it and that is the end, per the global git rules.
+Work that never needed a plan never needs this skill: a small fix is `pass`'s to commit, and that is the end, per the global git rules. Work that did have a plan and arrives without its checklist has lost it, not outgrown it, so section 1 rebuilds one.
 
 ## Decide by state
 
-Look before acting: `gh pr view --json number,isDraft,baseRefName,headRefOid,url,mergeStateStatus,reviewDecision` (a non-zero exit means no PR for this branch), then `git status` and whether the plan's acceptance checklist has items without evidence.
+Look before acting: `gh pr view --json number,isDraft,baseRefName,headRefOid,url,mergeStateStatus,reviewDecision`, then `git status` and whether the plan's acceptance checklist has items without evidence. Only "no pull requests found" means there is no PR; any other failure is a failed lookup, so say so and stop rather than opening a second PR over the top of one you couldn't see.
 
 - **No PR yet** → Open (section 2).
 - **`ready`, or "mark as ready", "is this ready", "final review", "close out the pr"** → Ready (section 4).
 - **`rebase`, "restack", "sync the stack", or a branch below this one moved or merged** → Restack (section 5), then Update.
-- **PR exists, anything else** → Update (section 3): refresh the body, address open review threads if there are any, otherwise say there are none and stop.
+- **PR exists, anything else** → Update (section 3): refresh the body, then work the open ledger items and unresolved review threads. Nothing open in either: say so and stop.
 - **Pasted UAT feedback or a scope change**, in any mode → fold it into the ledger first (section 1), then continue.
 
 ## 1. The ledger
@@ -38,7 +38,7 @@ Things that count as criteria even when the ticket never wrote them down: the em
 
 **Feedback and scope changes.** A pasted PM or reviewer note becomes numbered items tagged "UAT feedback," one per distinct point, screenshots read for the points the text left out. Each ends fixed with evidence, declined with a one-line reason to relay, or one question back with a recommended reading when a screenshot is ambiguous. A criterion the user drops mid-build stays in the ledger marked dropped, so nothing disappears silently.
 
-**Browser UAT is opt-in.** If the user opted in at plan time, drive the preview or localhost with the browser tool for every visual criterion. If they did not, don't start a browser; mark those items "covered by tests, not driven in a browser" and put the click path in the test plan. If they opted in and the tool errors or is missing, stop and say so rather than falling back to "should work." Prefer the preview over localhost when the PR has one, and only after the deployment's commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head); a preview of the previous push is not evidence for this one.
+**Browser UAT is opt-in.** If the user opted in at plan time, drive the preview or localhost with the browser tool for every visual criterion. If they did not, don't start a browser; mark those items "covered by tests, not driven in a browser" where a test really covers the criterion and "unverified" where none does, and put the click path in the test plan either way. If they opted in and the tool errors or is missing, stop and say so rather than falling back to "should work." Prefer the preview over localhost when the PR has one, and only after the deployment's commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head); a preview of the previous push is not evidence for this one.
 
 ## 2. Open
 
@@ -54,7 +54,7 @@ Work bots review drafts on every push, so this runs once, near the end, not per 
 
 ## 3. Update
 
-1. **Head check.** The checked-out head must be the PR's head (`git rev-parse HEAD` equals `headRefOid`). With several worktrees open this is the mistake that costs an hour; if they differ, stop and say which branch is where.
+1. **Head check.** Be on the PR's head branch, with `headRefOid` an ancestor of `HEAD` (`git merge-base --is-ancestor <headRefOid> HEAD`). Local commits ahead of it are normal, since this section ends in a push. Stop only for the wrong branch or a diverged history, and then say which branch is where; with several worktrees open that is the mistake that costs an hour.
 2. **Body.** Rebuild section 6 from the current diff and ledger. Every commit that changed what the PR does or its evidence should already have refreshed it; if the body is stale, that is a finding about the last session, fix it now.
 3. **Threads.** Read them with GraphQL, because REST comments carry no thread ids and `gh` has no resolve command:
 
@@ -66,10 +66,10 @@ Work bots review drafts on every push, so this runs once, near the end, not per 
          comments(first:20){ nodes{ author{login} body url } } } } } } }'
    ```
 
-   Keep only unresolved threads. Bot and human authors get the same treatment.
-4. **Triage before touching code.** Dedupe threads that describe the same root cause. For each: trace or reproduce the scenario the way `review` does. Then one of **fix** (real, in scope), **decline** (wrong, already handled, or out of the ticket's scope, with the evidence), or **ask** (the fix would change agreed scope or the reviewers want conflicting things). Ask items go to the user as one consolidated question, not one by one.
+   Keep only unresolved threads. Bot and human authors get the same treatment. Drop any thread whose last comment is your own decline: those stay open by design, and answering again posts a duplicate. A reviewer who replied after that decline puts the thread back in play.
+4. **Triage before touching code.** Work the open ledger items and the threads as one list, and dedupe anything describing the same root cause. For each: trace or reproduce the scenario the way `review` does. Then one of **fix** (real, in scope), **decline** (wrong, already handled, or out of the ticket's scope, with the evidence), or **ask** (the fix would change agreed scope or the reviewers want conflicting things). Ask items go to the user as one consolidated question, not one by one.
 5. **Fix in one batch.** Root cause, not the line the bot pointed at; regression test where testable; check related in-scope paths for the same mistake. Run the repo's full check. One commit, `fix(<scope>): address review` with the threads' subjects in the body. One push. Every push is a bot round at work, so never push per comment.
-6. **Close the loop on GitHub.** Resolve every thread you fixed: `resolveReviewThread(input:{threadId:$id})`, several per mutation with aliases. Reply on every thread you declined with the reason, under the user's account, and leave it open so the reviewer sees it. Never resolve a declined thread. If GraphQL or permissions fail, say so and leave everything unresolved rather than half-doing it.
+6. **Close the loop on GitHub.** Resolve every thread you fixed: `resolveReviewThread(input:{threadId:$id})`, several per mutation with aliases. Reply on every thread you declined with the reason, under the user's account, and leave it open so the reviewer sees it. Never resolve a declined thread. If GraphQL or permissions fail partway, report which threads actually resolved: aliased mutations apply in order, so the ones before the failure already landed and cannot be taken back.
 7. **Learn.** If a thread class recurred, or a bot found something `review` should have caught, propose one line for that repo's `AGENTS.md` review section in the report. Propose, don't apply: that file is team-shared and outside the ticket.
 
 Don't kick bots to re-review, don't wait on them, don't detect which bot posted. If a review arrives later, the user says `pr` again.
@@ -81,7 +81,7 @@ The readiness check runs on the current head, then flips the draft when everythi
 - Head check as in section 3, and the body reflects this head.
 - Every ledger item is proven, exercised, or unverified with a reason the user has accepted.
 - No unresolved actionable threads. Declined threads with a reply are fine.
-- The repo's full check is green on this head; `gh pr checks` shows required checks passing or pending, none failing.
+- The repo's full check is green on this head; `gh pr checks` shows required checks passing or pending, none failing. A repo with no check of its own says so and counts as unverified, never as a pass.
 - `review pr <number>` has run once as a whole on this head. If it hasn't, run it now, since per-push reviews never saw the commits together. Confirmed findings get fixed, which sends this back to step one.
 - The PR is stacked only on parents that are merged or themselves ready, and says so.
 
