@@ -1,6 +1,6 @@
 ---
 name: pr
-description: 'Owns the pull request from near-ready to ready for review. Verifies each acceptance criterion with evidence, runs the whole-branch review in a fresh subagent, runs pass, pushes, and opens the draft with the standard body (summary, what-to-review table with sizes, AC ledger, test plan, screenshots, risk, stack). Then keeps that body current and addresses open review threads in one batch. `ready` flips the draft after the readiness check; `rebase` restacks after a parent merges. Use when the user says pr, open a pr, draft pr, ship it, take this to a pr, update the pr, address the reviews, fix the review comments, mark pr as ready, is this ready, final review, close out the pr, rebase the stack, or pastes UAT feedback. Also runs on its own when a build reaches near-ready. Not the slice closer (that''s pass), not a report-only review (that''s review), not a summary (that''s tldr pr). Never merges.'
+description: 'Owns the pull request from near-ready to ready for review. Verifies each acceptance criterion with evidence, runs the whole-branch review in a fresh subagent, runs pass, pushes, and opens the draft with the standard body (summary, what-to-review table with sizes, AC ledger, test plan, screenshots, risk, stack). Then keeps that body current and addresses open review threads in one batch. `ready` flips the draft after the readiness check; `rebase` restacks after a parent merges. Use when the user says pr, open a pr, draft pr, ship it, take this to a pr, update the pr, address the reviews, fix the review comments, mark pr as ready, is this ready, final review, close out the pr, rebase the stack, sync the stack, sync this down to another pr, or pastes UAT feedback. Also runs on its own when a build reaches near-ready. Not the slice closer (that''s pass), not a report-only review (that''s review), not a summary (that''s tldr pr). Never merges.'
 argument-hint: "[ready | rebase | reviews | <focus or pasted feedback>]"
 ---
 
@@ -20,7 +20,7 @@ Look before acting: `gh pr view --json number,isDraft,baseRefName,headRefOid,url
 
 - **No PR yet** → Open (section 2).
 - **`ready`, or "mark as ready", "is this ready", "final review", "close out the pr"** → Ready (section 4).
-- **`rebase`, "restack", or the parent PR of a stacked branch has merged** → Restack (section 5), then Update.
+- **`rebase`, "restack", "sync the stack", or a branch below this one moved or merged** → Restack (section 5), then Update.
 - **PR exists, anything else** → Update (section 3): refresh the body, address open review threads if there are any, otherwise say there are none and stop.
 - **Pasted UAT feedback or a scope change**, in any mode → fold it into the ledger first (section 1), then continue.
 
@@ -89,14 +89,24 @@ All of that holds: `gh pr ready <number>`, then report. Anything fails: report w
 
 ## 5. Restack
 
-The common case: the parent PR squash-merged, so the child still carries the parent's original commits and its base branch may be gone.
+Two jobs share this section, and the easy one comes up far more often.
 
-1. Find the parent's last head before merge (`gh pr view <parent> --json headRefOid,mergeCommit,baseRefName`) and the new base (the parent's `baseRefName`).
-2. `git fetch`, then `git rebase --onto origin/<newbase> <parentHeadRefOid> <child>`. With more than one PR above, run it from the lowest child with `--update-refs` so the whole stack moves in one pass.
-3. Conflicts you can resolve mechanically (the parent's own hunks reappearing), resolve. Anything that needs a judgment call: stop with the conflicting files named and wait.
-4. Run the repo's full check. Then `git push --force-with-lease` to your own branches only, never to a branch someone else pushes to.
-5. GitHub usually retargets a child PR when its base branch is deleted; confirm with `gh pr view --json baseRefName` and `gh pr edit --base <newbase>` only if it didn't.
-6. Say which branches moved and onto what.
+**The parent moved and is still open.** New commits on it, review fixes, or work pulled down from a child. Every branch above it runs `git rebase <parent branch>`, bottom-up, and that is all: the fork point is still reachable, and git drops by patch-id anything already on the parent. Moving work down the stack is a cherry-pick onto the lower branch followed by this same catch-up above it, and the cherry-picked commit deduplicates itself.
+
+**The parent merged.** A squash merge rewrites its commits into one new commit, so the child still carries originals git can no longer match and the base branch may be gone. That is the recipe below. An unstacked branch never gets here; it is `git fetch` and `git rebase origin/<default>`.
+
+Record every branch tip in the stack first (`git rev-parse <each branch>`). Each rebase needs the commit its branch was forked from, and that commit loses its name as soon as the branch below it moves. When the parent already moved and nothing was recorded, `<parent branch>@{1}` is its previous tip; branch reflogs are shared, so a session that owns only its own worktree can read it without asking the session that did the rebase.
+
+1. Find the parent's last head before merge (`gh pr view <parent> --json headRefOid,mergeCommit,baseRefName`) and the new base (the parent's `baseRefName`), then `git fetch`.
+2. Rebase bottom-up, one branch at a time: `git rebase --onto <parent's new tip> <parent's recorded old tip> <branch>`. The lowest branch rebases onto `origin/<newbase>`.
+3. Run each rebase from the worktree that has that branch checked out, since git refuses to touch a branch another worktree holds.
+4. Conflicts you can resolve mechanically (the parent's own hunks reappearing), resolve. Anything that needs a judgment call: stop with the conflicting files named and wait.
+5. Run the repo's full check, then `git push --force-with-lease` every branch that moved, to your own branches only and never to one someone else pushes to.
+6. Say which branches moved and onto what, and name any you could not move.
+
+Don't try to move a stack in one pass with `--update-refs`: it only rewrites branches pointing inside the replayed range, and it skips a branch another worktree holds while still reporting success.
+
+Asking for a restack carries the permission to force-push the branches it moves, so don't stop to ask again mid-stack. GitHub usually retargets a child PR when its base branch is deleted; confirm with `gh pr view --json baseRefName` and `gh pr edit --base <newbase>` only if it didn't.
 
 "Stack this PR" at build time means: branch from the current branch, and the PR's `--base` is that branch.
 
