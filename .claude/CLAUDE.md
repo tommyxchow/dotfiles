@@ -98,6 +98,7 @@ The empty, loading, error, and success states and the keyboard path are part of 
 - Stage the files the slice touched, never `git add -A` or `.`. If a file holds both your change and mine, say so.
 - Conventional Commits: `type(scope): subject` in lowercase, no trailing period. `!` before `:` for breaking. Why in the body when the subject isn't enough.
 - Prefix new branches with `tc/`.
+- Squash before pushing when back-to-back commits are really one change: a fix and its follow-up, or three passes at the same rule. Unpushed only, and rewriting anything already pushed waits for me.
 - Assume a repo is mine. A team repo announces itself with a PR template, CODEOWNERS, a review bot config, or an AGENTS.md written for other people, and I'll say so when it doesn't.
 - In my own repos a small change commits straight to `main`. Planned work still gets its own branch and a PR, and I merge it whenever I like.
 - One PR does one thing. A refactor the feature needs goes in its own PR first, and the feature stacks on it. Half-finished work hides behind a flag or an unrouted page, not on a long-lived branch.
