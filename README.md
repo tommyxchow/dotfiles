@@ -94,12 +94,16 @@ files.
 | `/tdd` | Build new behavior test first: name the cases, red, then the smallest code that passes. |
 | `/polish` | Shape of code you already wrote. |
 | `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. |
-| `/pass` | Slice is done: vet, leftovers, polish if code-shaped, ship-ready, then the commit. |
+| `/pass` | Slice is done: vet, leftovers, polish if code-shaped, slice-ready, then the commit. |
+| `/pr` | Branch is near ready: prove the acceptance checklist, review in a fresh subagent, pass, push, open the draft with the standard body. Again later to refresh the body and address review threads in one batch. `pr ready` flips the draft; `pr rebase` restacks after a parent merges. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
-| `/grill-me` | Stress-test a plan. |
+| `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
+| **audit** (this repo) | This **setup**. Follow `docs/audit.md`: re-examine the instructions and skills against current harnesses and recent pain, then propose. |
 
 `/tldr` summarizes. `statusline-install` is Claude-only setup.
+
+The skills chain on their own during a task (plan ends in a checklist, build runs `tdd` where it fits, slices close with `pass`, the branch ends with `pr`), so the slash commands are shortcuts, not the only way in. The global `.claude/CLAUDE.md` "How a task runs" section is where that chain is written down.
 
 The installer also writes `~/.claude/statusline-command.sh` from
 `plugins/tc/skills/statusline-install`, so a new machine does not need

@@ -6,14 +6,14 @@ argument-hint: "[staged | unstaged | branch | all | pr <number|url>] [fix] [<foc
 
 # Review
 
-Find what is wrong or missing in a change before anyone else does. Real defects only: something a user, an attacker, or the next deploy would hit. Shape, naming, duplication, and comments belong to `polish`; leftovers and the ship-ready gate belong to `pass`.
+Find what is wrong or missing in a change before anyone else does. Real defects only: something a user, an attacker, or the next deploy would hit. Shape, naming, duplication, and comments belong to `polish`; leftovers and the slice gate belong to `pass`; the PR's readiness belongs to `pr`.
 
 `$ARGUMENTS`: an optional scope keyword first (`staged`, `unstaged`, `branch`, `all`, `pr <number|url>`), an optional `fix`, then focus text. Bare `review` uses the default scope and reports only.
 
 ## 1. Recon, kept cheap
 
-1. **Pool.** Build it the way `polish` does: dirty work plus files edited this session by default, or whatever the scope keyword says. `pr` reads the PR diff and description with the repo's PR tool. Read the diff once; open the rest of a file only where the diff touches it.
-2. **Intent.** Know what the change was supposed to do before judging it: the task in this conversation, the PR body, or the commit messages. A review without the intent finds the wrong things.
+1. **Pool.** Build it the way `polish` does: dirty work plus files edited this session by default, or whatever the scope keyword says. `branch` diffs against the PR's base branch, never `@{upstream}` (see the polish scope table for why). `pr` reads the PR diff and description with the repo's PR tool, and before running anything local checks that the checked-out head is the PR's head; with several worktrees open they drift, and a review of the wrong tree is worse than none. Read the diff once; open the rest of a file only where the diff touches it.
+2. **Intent.** Know what the change was supposed to do before judging it: the acceptance checklist when the plan has one, then the task in this conversation, the PR body, or the commit messages. A review without the intent finds the wrong things, and a checklist item with no code behind it is a finding.
 3. **The repo's own rules come first.** Look for a review checklist or guideline: `CONTRIBUTING.md`, a PR template, a review section in `AGENTS.md`, `CLAUDE.md`, or `docs/`, and any reviewer config the repo already runs (a review bot config, Danger, a `review` or `check` script). If the repo defines what a review checks, that list is the checklist, and the lenses below only fill what it does not cover. If the repo has review tooling that runs locally, run it, read its output, and don't repeat what it already reported. The global preferences are the fallback, never the override.
 4. **Cheapest bug finder first.** If the repo has a quick typecheck, lint, or test command, run it once on the pool and read the failures before reading the diff. Don't invent a gate the repo doesn't have, and don't run a slow full suite here; `pass` owns the ship gate.
 
@@ -39,8 +39,9 @@ Every finding needs a concrete failure scenario: which input or state, and what 
 - **Edge cases.** Empty, one, huge, unicode, duplicate, concurrent, timed out, partially failed, retried, out of order, time zones and DST, the boundary value itself.
 - **Security.** A missing auth or ownership check on any server path touched, untrusted input reaching a query, command, path, or HTML, secrets in code, logs, URLs, or the client bundle, data in a response the caller shouldn't get, unsafe defaults such as open CORS or open redirects, privilege escalation.
 - **Performance.** Only what a user or a bill would notice: N+1, unbounded loops or payloads, missing pagination, work on a hot path or the main thread, memory that grows without bound. No micro-optimization.
-- **Missing.** A case the task implies that the diff never handles, error handling absent where the user would see it, the migration, config, env var, feature flag, or docs the change needs, and tests for new behavior, named by the case rather than by a coverage number.
-- **Unasked behavior change.** Something changed that the task didn't ask for, which the author may not have noticed.
+- **Missing.** A case the task implies that the diff never handles, an acceptance criterion with nothing behind it, the empty, loading, or error state of new UI, error handling absent where the user would see it, the migration, config, env var, feature flag, or docs the change needs, and tests for new behavior, named by the case rather than by a coverage number.
+- **Unasked behavior change.** Something changed that the task didn't ask for, which the author may not have noticed. A refactor riding along inside a feature change counts: name it, since it belongs in its own PR.
+- **Unreadable hot path.** Normally style is polish's job, but a piece of logic a reviewer can't follow in one read (a dense one-liner, a nested ternary, a clever trick) on a path that matters is worth one finding here, because nobody can review what they can't read.
 
 ## 4. Verify before reporting
 
@@ -68,4 +69,5 @@ The repo's PR checklist in CONTRIBUTING.md also asks for a changelog line, and t
 | `polish`       | Shape of working code. Review is whether it works.                           |
 | `pass`         | Leftovers and the ship gate. Pass says when review hasn't run; it doesn't run it. |
 | `vet`          | Claims against docs. Review reads code and sends a vendor-API question to vet. |
+| `pr`           | Ships the branch. It runs `review branch fix` in a fresh subagent before the draft and `review pr` before ready. |
 | PR review bots | Run after push. Review runs before, so the bot finds less.                   |

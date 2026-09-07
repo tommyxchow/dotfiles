@@ -6,7 +6,7 @@ argument-hint: "[staged | unstaged | branch | all | <focus>]"
 
 # Polish — autofix then judgment cleanup
 
-Improve the **shape** of working code. Not bugs (route those to the `review` skill). Not a full rewrite. Not `pass` (vet + leftovers + ship-ready).
+Improve the **shape** of working code. Not bugs (route those to the `review` skill). Not a full rewrite. Not `pass` (vet + leftovers + slice-ready commit).
 
 The flow is scope, then Prettier and ESLint prep, then four review lenses, then reconcile, apply, and verify. Report fewer, surer findings rather than many uncertain ones.
 
@@ -28,8 +28,10 @@ Build the review pool:
 | *(default)* | dirty vs HEAD (`git diff HEAD` if staged exists, else `git diff`) | include | include via `git status` |
 | `unstaged` | `git diff` | include | include |
 | `staged` | `git diff --cached` | include | no |
-| `branch` | committed range only: `@{upstream}...HEAD` (fallback `origin/HEAD...HEAD`, then `main...HEAD` / `master...HEAD`) | **exclude** | **exclude** |
+| `branch` | committed range only: `<base>...HEAD` where base is the PR's base branch (`gh pr view --json baseRefName`), else the default branch (`origin/HEAD`), else `main` / `master` | **exclude** | **exclude** |
 | `all` | same range as `branch` **+** dirty vs HEAD (`git diff HEAD` so staged+unstaged are included) | include | include |
+
+Never use `@{upstream}...HEAD` for the branch range: once the branch has been pushed that range is the unpushed commits, which is empty right after a push, and on a stacked branch a default-branch fallback drags the parent PR's changes in.
 
 If both sources are empty after applying the table, fall back to files the user named; if none, ask.
 
@@ -88,7 +90,7 @@ Each subagent gets: post-0.5 scope; the **absolute path** to this skill's `refer
 | Lens | Owns |
 |---|---|
 | **Reuse** | re-implements an existing helper/util |
-| **Quality** | redundant state, copy-paste, dead code, needless guards, nesting, placeholder names, type escapes, convention drift |
+| **Quality** | redundant state, copy-paste, dead code, needless guards, nesting, placeholder names, type escapes, convention drift, needlessly dense or clever code |
 | **Efficiency** | wasted work, missed concurrency, hot-path bloat, no-op updates, leaks |
 | **Altitude** | bandaids, symptom-vs-cause, wrong layer, grab-bag files |
 

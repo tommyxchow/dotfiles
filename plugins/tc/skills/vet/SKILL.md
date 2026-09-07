@@ -1,6 +1,6 @@
 ---
 name: vet
-description: 'Cross-checks a claim against current official docs and primary sources, then answers in a few sentences with the pages that settled it. Stops as soon as the best source answers; a fact the vendor never published is reported as not documented, not hunted. Keeps page fetches out of this window. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, or pass ("final review", "final double check"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; whether the code is correct is the review skill.'
+description: 'Cross-checks a claim against current official docs and primary sources, then answers in a few sentences with the pages that settled it. Stops as soon as the best source answers; a fact the vendor never published is reported as not documented, not hunted. Keeps page fetches out of this window. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, pass ("final double check"), or pr ("final review", "is this ready"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; whether the code is correct is the review skill.'
 argument-hint: "[<claim or topic to verify> | <task to research>]"
 context: fork
 agent: general-purpose
@@ -27,7 +27,7 @@ One claim ("does `Map` use `has`?") is one leaf. A pasted plan with independent 
 
 - **Bare `vet` / `research` / search / look this up / cross-check / is this still true** → check the last response or the named topic (section 3). Short answer (section 4).
 - **"is anyone else hitting this" / known issue / workaround** → the known-issue path in section 3.
-- **"double check" / "verify"** → route by object. A claim, version, API, "latest", or current docs → this skill. Whether the code is correct, the diff, or this function → the `review` skill. A finished slice ("final double check", "close this out") → `pass`. Don't search just because they said double check.
+- **"double check" / "verify"** → route by object. A claim, version, API, "latest", or current docs → this skill. Whether the code is correct, the diff, or this function → the `review` skill. A finished slice ("final double check", "close this out") → `pass`. Whether the PR is ready ("final review", "is this ready") → `pr`. Don't search just because they said double check.
 - **Pasted plan from another model** ("chatgpt said", "wdyt", "what do you think") → audit the claims in the paste. Same short answer unless several claims are wrong or uncertain.
 - **"vet" attached to a forward task** ("build X and vet it", "what's the best Y") → do the task research-backed: check each checkable fact against a current source before asserting it, and cite inline as you go.
 - **Ambiguous** → the last checkable claims if the last turn asserted a fact; the last code change if they mean correctness. Only ask if there is genuinely nothing to act on.
@@ -73,5 +73,5 @@ One-line verdict, then only what was wrong, in the global Communication voice: f
 
 ## 5. Boundaries
 
-- vet **reports or answers; it doesn't apply changes.** After an audit, wait for approval before editing. "Final review" / "final double check" / "close this out" is `pass`, which vets then patches.
+- vet **reports or answers; it doesn't apply changes.** After an audit, wait for approval before editing. "Final double check" / "close this out" is `pass`, which vets then patches; "final review" on a branch with a PR is `pr`.
 - Open-ended exploratory research is a standalone deep-research round, not a vet. Confirming a code change works means running it locally; don't web-search a local correctness check.

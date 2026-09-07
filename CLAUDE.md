@@ -11,6 +11,13 @@ When I say resync, update, sync this machine, or catch this machine up: read
 Refreshing a **product** repo (packages, framework migrations, shadcn) is the
 `refresh` skill, including when I say resync in that repo.
 
+## Audit
+
+When I say audit the setup, meta review, optimize my workflow, or self review:
+read `docs/audit.md` and follow it. It re-examines the global instructions,
+skills, and harness configs against what the harnesses can do now and what has
+been going wrong, then proposes changes and waits. Also repo-local.
+
 ## Gotchas
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
@@ -40,8 +47,8 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
 
 - **The installer links first-party skills into `~/.claude/skills`.** Claude,
   Cursor, Grok, and OpenCode 2 all read that path. `opencode/commands` provides
-  `/vet`, `/tldr`, `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, and
-  `/pass` wrappers. Do not also copy those skills into `~/.config/opencode/skills`.
+  `/vet`, `/tldr`, `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, `/pass`,
+  and `/pr` wrappers. Do not also copy those skills into `~/.config/opencode/skills`.
   Keep shared skills portable Agent Skills (`name` and `description` required).
   Claude-only `context` / `agent` / `background` / `disable-model-invocation` are
   fine where a skill should fork or stay user-started; other harnesses ignore
@@ -58,7 +65,7 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
   instead of running the installer. After changing `.claude-plugin/marketplace.json`
   or `plugins/tc/`: push, then `/plugin marketplace update chow`,
   `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish` /
-  `review` / `tdd` / `grill-me` / `refresh` / `pass` edits are live through
+  `review` / `tdd` / `grill-me` / `refresh` / `pass` / `pr` edits are live through
   `~/.claude/skills` with no push.
 
 - **Catalog entries for plugins in other repos need `source: url` with an `https://`

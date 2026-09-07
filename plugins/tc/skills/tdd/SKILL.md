@@ -15,15 +15,17 @@ Grow the feature and its tests together, one failing test at a time. The loop is
 Decide first and say which way in one sentence. Don't ask.
 
 - **It fits** when the change has an observable result: a function or module with inputs and outputs, business rules, a parser or format, an API route, a bug with a reproduction. A bug fix always starts here, because the regression test is the proof the fix works.
-- **It doesn't fit** when there is nothing to assert yet: exploration where the shape is still unknown, config, docs, copy, styling and visual layout, a one-line change, a throwaway script. Say so and build it normally, with the repo's usual tests after.
+- **It doesn't fit** when there is nothing to assert yet: exploration where the shape is still unknown, config, docs, copy, styling and visual layout, a change with no behavior change (a rename, a moved file), a throwaway script. Say so and build it normally, with the repo's usual tests after. Size is not the test: a one-line permission fix has behavior and fits.
 - **It half fits** more often than either. Take the part with observable behavior through the loop and build the rest normally. A form's validation rules are testable; which shade of grey the error text is, is not.
 
 ## 2. Name the cases before the first test
 
 Never write a test at a boundary you chose silently.
 
+- **If the plan has an acceptance checklist**, that is the list: one or more cases per criterion, in the criterion's words. Add the edges it didn't mention, and say which ones you added.
 - **If the user gave cases**, those are the list. Add the edges they didn't mention, and say which ones you added.
-- **If not, derive them**: the happy path, the edges most likely to break (empty, one, many, the boundary value, the error path), and for a bug, the exact failure reported.
+- **If neither, derive them**: the happy path, the edges most likely to break (empty, one, many, the boundary value, the error path), and for a bug, the exact failure reported.
+- **Changing code that has no tests**: pin its current behavior first with a characterization test (assert what it does today, even the odd parts), then start the loop for the change. Otherwise you can't tell a deliberate change from an accident.
 - **Say where you'll test them.** The function, the module's public surface, the route's response, what the component renders. Pick the outermost boundary that still fails for one clear reason, because a test bound to internals breaks on every refactor and proves nothing about behavior.
 - **Then start.** State the list and the boundary in a few lines and go. Stop and ask only when the boundary is a real design decision, such as inventing a new module seam to make something testable.
 
@@ -36,12 +38,12 @@ Find the repo's own test command before the first run: the package manifest's sc
 One case at a time, all the way through, then the next:
 
 1. **Write one failing test** for one case.
-2. **Run it and read the failure.** It has to fail for the reason the case describes. A failure from a typo, a missing import, or a broken fixture is not red: fix it and run again. A test that passes before the code exists is asserting nothing, so fix the test.
+2. **Run it and read the failure.** It has to fail for the reason the case describes. A failure from a typo, a missing import, or a broken fixture is not red: fix it and run again. A test that passes before the code exists usually means the test asserts nothing, so fix the test. If instead the behavior already exists and no other test covers it, keep it and say so: it is acceptance evidence for that criterion, not a red-green step.
 3. **Write the smallest code that passes.** No extra cases, no speculative branches, no handling for a case you haven't written a test for yet.
 4. **Run it again and see green.**
 5. **Next case.**
 
-Never write the implementation first and backfill the tests around it. If the code for a case already exists, the loop is over for that case; don't add a test that recomputes what the code does.
+Never write the implementation first and backfill the tests around it. If the code for a case already exists and a test already covers it, the loop is over for that case; don't add a second test that recomputes what the code does.
 
 ## 4. What makes a test worth keeping
 
@@ -54,7 +56,7 @@ Never write the implementation first and backfill the tests around it. If the co
 
 ## 5. Close
 
-Say which cases are covered and which you deliberately left out, then run the repo's full check once. Reshaping the code you just wrote is `polish`. Hunting defects in it is `review`. Neither runs here.
+Say which cases are covered and which you deliberately left out, then run the repo's full check once. Name each test against its acceptance criterion when there is a checklist, since `pr` reads that as the criterion's evidence. Reshaping the code you just wrote is `polish`. Hunting defects in it is `review`. Neither runs here.
 
 ```
 Built the retry backoff with four cases: first retry waits the base delay, each retry doubles it, the delay is capped at the ceiling, and a non-retryable status throws instead of waiting. Each test failed first for its own reason before the code went in.
@@ -69,4 +71,5 @@ I left the jitter untested. It's random by design, and pinning it would only ass
 | `polish` | Shape of working code. TDD writes it, polish reshapes it afterwards.     |
 | `review` | Finds defects in a finished change. TDD prevents a class of them upfront. |
 | `pass`   | The end-of-slice closer. TDD is how the code inside the slice got built. |
+| `pr`     | Proves the acceptance checklist and ships. TDD is where most of that proof comes from. |
 | `vet`    | Checks claims against docs. TDD checks behavior against tests.           |

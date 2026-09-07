@@ -75,6 +75,7 @@ Caps eagerness:
 12. **Guards for impossible cases** — null checks on non-nullable values, try/catch that only rethrows or swallows, "just in case" fallbacks → delete and trust the types.
 13. **Pass-through wrapper** — a function whose body is one call to another with the same arguments → call the callee directly.
 14. **Placeholder names** — `data`, `result`, `temp`, `item2`, `processData`, a new `utils`/`helpers` file → name it for what it is, or move it beside its one caller.
+15. **Needlessly dense or clever code** — a chained one-liner, nested ternary, or bitwise trick where a plain few lines with named steps read at a glance; single-letter or abbreviated names outside a tiny loop; code compressed to save lines rather than to say something. Readability for a reviewer seeing only this hunk is the goal → expand it. Length added this way is not a finding.
 
 Correctness-shaped checks stay in code review.
 
