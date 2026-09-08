@@ -42,8 +42,6 @@ copy. `*.bak` is gitignored.
 | `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode 2 reads this path too) |
 | `opencode/commands/*.md` | `~/.config/opencode/commands/{name}` |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
-| `opencode/opencode.jsonc` | `~/.config/opencode/opencode.jsonc` |
-| `mcp/mcp.json` | `~/.cursor/mcp.json` (Grok reads this file too) |
 
 Cursor cannot symlink a local plugin at this repo (the loader rejects targets
 outside `~/.cursor/plugins/local`). The installer writes a real plugin at
@@ -51,19 +49,6 @@ outside `~/.cursor/plugins/local`). The installer writes a real plugin at
 `.claude/CLAUDE.md` with `alwaysApply: true`. Re-run the installer after editing
 that file, then **Developer: Reload Window**. Do not also paste it into User
 Rules or the same text is injected twice.
-
-## MCP servers
-
-`mcp/mcp.json` holds the global MCP servers (`chrome-devtools`, `next-devtools`,
-fetched on demand via `pnpm dlx`). It is symlinked to `~/.cursor/mcp.json`, which
-Grok also loads through its Cursor compatibility layer. The installer merges the
-same servers into Claude Code's user scope inside the stateful `~/.claude.json`
-(no dedicated file to symlink): entries already present win, so servers added
-with `claude mcp add` are never clobbered. Delete one from `~/.claude.json` to
-let the installer re-seed it. OpenCode reads its own block in
-`opencode/opencode.jsonc`, which needs `cmd /c pnpm ...` on Windows because pnpm
-is a `.cmd` shim there. Rewriting `~/.claude.json` can race a running Claude
-Code session, so run the installer while no Claude session is open.
 
 Ghostty is macOS/Linux only, so `install.ps1` skips it.
 
@@ -139,7 +124,7 @@ The installer links editor settings and writes the local `tc` plugin above.
 Enable **Rules, Skills, Subagents → Include third-party Plugins, Skills, and
 other configs** so Cursor also loads installed Claude plugins and skills. Cursor
 does not run Claude's marketplace install, so install those plugins in Claude
-Code first.
+Code first. `~/.cursor/mcp.json` stays outside the installer.
 
 ## What does not get linked
 

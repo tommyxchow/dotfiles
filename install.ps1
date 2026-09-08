@@ -69,8 +69,6 @@ $links = @(
     @{ Source = ".claude/CLAUDE.md";        Target = "$HOME/.config/opencode/AGENTS.md" }
     @{ Source = "CLAUDE.md";                Target = (Join-Path $dotfiles "AGENTS.md") }
     @{ Source = "opencode/cli.json";        Target = "$HOME/.config/opencode/cli.json" }
-    @{ Source = "opencode/opencode.jsonc";  Target = "$HOME/.config/opencode/opencode.jsonc" }
-    @{ Source = "mcp/mcp.json";             Target = "$HOME/.cursor/mcp.json" }
 )
 
 Get-ChildItem (Join-Path $dotfiles "plugins/tc/skills") -Directory -ErrorAction SilentlyContinue | ForEach-Object {
@@ -123,42 +121,8 @@ foreach ($link in $links) {
     Clean-Bak $sourcePath $target
 }
 
-# Claude Code stores user-scope MCP servers inside the stateful ~/.claude.json
-# (no dedicated file to symlink, and Grok reads this file too via its Claude
-# compatibility layer). Merge servers missing from mcp/mcp.json; entries already
-# present win, so servers added with `claude mcp add` are never clobbered. Rewrites
-# reformat the file, so skip the run when Claude Code is mid-session.
-$mcpSeed = Join-Path $dotfiles "mcp/mcp.json"
-$claudeJson = Join-Path $HOME ".claude.json"
-if (-not (Test-Path $mcpSeed)) {
-    Write-Host "  SKIP  mcp/mcp.json (not in repo)" -ForegroundColor DarkGray
-}
-elseif (-not (Test-Path $claudeJson)) {
-    Copy-Item $mcpSeed $claudeJson
-    Write-Host "  SEED  $claudeJson" -ForegroundColor Cyan
-}
-else {
-    $state = Get-Content -Raw $claudeJson | ConvertFrom-Json -AsHashtable
-    $seed = Get-Content -Raw $mcpSeed | ConvertFrom-Json -AsHashtable
-    $servers = if ($state.Contains("mcpServers") -and $state["mcpServers"] -is [System.Collections.Hashtable]) { $state["mcpServers"] } else { @{} }
-    $changed = $false
-    foreach ($entry in $seed["mcpServers"].GetEnumerator()) {
-        if (-not $servers.Contains($entry.Key)) {
-            $servers[$entry.Key] = $entry.Value
-            $changed = $true
-        }
-    }
-    if (-not $changed) {
-        Write-Host "  OK    $claudeJson" -ForegroundColor Green
-    }
-    else {
-        $state["mcpServers"] = $servers
-        [System.IO.File]::WriteAllText($claudeJson, (ConvertTo-Json $state -Depth 100))
-        Write-Host "  PATCH $claudeJson" -ForegroundColor Cyan
-    }
-}
-
-# Cursor rejects a plugin folder that symlinks to this repo. Write a real# directory under ~/.cursor/plugins/local and copy CLAUDE.md into an
+# Cursor rejects a plugin folder that symlinks to this repo. Write a real
+# directory under ~/.cursor/plugins/local and copy CLAUDE.md into an
 # alwaysApply rule. Re-run the installer after editing CLAUDE.md, then
 # Developer: Reload Window. Do not put a description on the rule; Cursor has
 # mapped alwaysApply + description to agent-requestable.
