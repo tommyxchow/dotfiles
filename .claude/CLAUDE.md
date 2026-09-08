@@ -118,7 +118,7 @@ Follow the project's design language. Don't paint success until the work succeed
 - Work in the worktree the harness put you in. It creates one per task, so don't run `git worktree add` yourself or move the work to a folder I didn't open.
 - Worktrees isolate files, not ports or local databases, so a dev server you start needs its own port.
 - "Stack this PR" means branch from the parent and set the PR's base to it. When a parent merges, `pr rebase` moves the children. Plain git, no stacking tool.
-- A dispatched session's worktree starts from the default branch, so stacking there means pointing the new branch at the named parent before the first commit, never rebasing after the fact.
+- A dispatched session starts on a fresh branch off the default and cannot see what "this" pointed at. Stacking there means pointing that branch at a parent you name, before its first commit; ask which parent when nothing names one.
 
 ## External writing
 
