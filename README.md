@@ -3,8 +3,8 @@
 Personal config for git, VS Code, Ghostty, Claude Code, OpenCode 2, Cursor, and Grok Build. The
 installer symlinks files from this repo into their real locations, so editing a file
 here changes the live config immediately. Cursor global instructions are the exception:
-the installer copies `.claude/CLAUDE.md` into a local plugin (Cursor rejects a symlink
-to this repo).
+the installer copies `.claude/CLAUDE.md` into a local plugin and adds Cursor's
+`alwaysApply: true` frontmatter.
 
 ## Install
 
@@ -43,8 +43,8 @@ copy. `*.bak` is gitignored.
 | `opencode/commands/*.md` | `~/.config/opencode/commands/{name}` |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
 
-Cursor cannot symlink a local plugin at this repo (the loader rejects targets
-outside `~/.cursor/plugins/local`). The installer writes a real plugin at
+Cursor supports symlinked local plugins, but its rule file needs frontmatter
+that the shared `CLAUDE.md` does not carry. The installer writes a real plugin at
 `~/.cursor/plugins/local/tc` whose `rules/global.mdc` is a copy of
 `.claude/CLAUDE.md` with `alwaysApply: true`. Re-run the installer after editing
 that file, then **Developer: Reload Window**. Do not also paste it into User
@@ -79,8 +79,9 @@ is not on PATH.
 
 This setup is OpenCode 2 (`opencode2`, [V2 docs](https://opencode.ai/v2/docs/)).
 It reads user-global instructions from `~/.config/opencode/AGENTS.md` and
-project `AGENTS.md` walking up from the working directory. It does not load
-`CLAUDE.md`. The installer links those `AGENTS.md` paths to the shared
+project `AGENTS.md` walking up from the working directory. The global
+`~/.claude/CLAUDE.md` is a fallback when the primary global file is missing.
+The installer links those `AGENTS.md` paths to the shared
 `.claude/CLAUDE.md` and this repo's `CLAUDE.md`. Skills still come from
 `~/.claude/skills`. Do not also copy first-party skills into
 `~/.config/opencode/skills`.
