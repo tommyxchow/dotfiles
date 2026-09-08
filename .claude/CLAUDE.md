@@ -115,7 +115,8 @@ Follow the project's design language. Don't paint success until the work succeed
 - In my own repos a small change commits straight to `main`. Planned work still gets its own branch and a PR, and I merge it whenever I like.
 - One PR does one thing. A refactor the feature needs goes in its own PR first, and the feature stacks on it. Half-finished work hides behind a flag or an unrouted page, not on a long-lived branch.
 - Shared schema and API changes expand, migrate, then contract across PRs. Never ship a breaking change and its consumer in one deploy. A risky change (migration, backfill, auth, money) names its rollback in the PR body.
-- One worktree per task, each with its own dev-server port; worktrees isolate files, not ports or local databases.
+- Work in the worktree the harness put you in. It creates one per task, so don't run `git worktree add` yourself or move the work to a folder I didn't open.
+- Worktrees isolate files, not ports or local databases, so a dev server you start needs its own port.
 - "Stack this PR" means branch from the current branch and set the PR's base to it. When a parent merges, `pr rebase` moves the children. Plain git, no stacking tool.
 
 ## External writing
