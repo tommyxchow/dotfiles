@@ -1,0 +1,68 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // Standalone (curl) install on Windows: opencode's autoupdate shells out to
+  // `bash`, which resolves to WSL and silently updates the Linux copy instead.
+  // Upgrade with: & "C:\Program Files\Git\bin\bash.exe" -c "curl -fsSL https://opencode.ai/v2/install | bash"
+  "autoupdate": false,
+  // chrome-devtools-mcp is fetched on demand via pnpm dlx, never installed as a
+  // dependency. `cmd /c` is required on Windows: pnpm resolves to a .cmd shim,
+  // which Node refuses to spawn directly.
+  "mcp": {
+    "servers": {
+      "chrome-devtools": {
+        "type": "local",
+        "command": ["cmd", "/c", "pnpm", "dlx", "chrome-devtools-mcp@latest"]
+      },
+      "next-devtools": {
+        "type": "local",
+        "command": ["cmd", "/c", "pnpm", "dlx", "next-devtools-mcp@latest"]
+      }
+    }
+  },
+  // Unsloth does not ship Ctrl+T variants. Blank (no variant) uses the server pin: medium.
+  "providers": {
+    "unsloth-studio": {
+      "models": {
+        "unsloth/Qwen3.8-27B-GGUF": {
+          "variants": [
+            {
+              "id": "low",
+              "body": {
+                "chat_template_kwargs": {
+                  "enable_thinking": true,
+                  "reasoning_effort": "low"
+                }
+              }
+            },
+            {
+              "id": "medium",
+              "body": {
+                "chat_template_kwargs": {
+                  "enable_thinking": true,
+                  "reasoning_effort": "medium"
+                }
+              }
+            },
+            {
+              "id": "xhigh",
+              "body": {
+                "chat_template_kwargs": {
+                  "enable_thinking": true,
+                  "reasoning_effort": "xhigh"
+                }
+              }
+            },
+            {
+              "id": "off",
+              "body": {
+                "chat_template_kwargs": {
+                  "enable_thinking": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

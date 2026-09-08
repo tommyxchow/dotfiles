@@ -124,6 +124,8 @@ link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.config/opencode/AGENTS.md"
 link "CLAUDE.md"               "$DOTFILES/AGENTS.md"
 link "opencode/cli.json"       "$HOME/.config/opencode/cli.json"
+link "opencode/opencode.jsonc" "$HOME/.config/opencode/opencode.jsonc"
+link "mcp/mcp.json"            "$HOME/.cursor/mcp.json"
 
 for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   [ -d "$skill_dir" ] || continue
@@ -210,6 +212,43 @@ write_statusline() {
 }
 
 write_cursor_plugin
+
+# Claude Code stores user-scope MCP servers inside the stateful ~/.claude.json
+# (no dedicated file to symlink, and Grok reads this file too via its Claude
+# compatibility layer). Merge servers missing from mcp/mcp.json; entries already
+# present win, so servers added with `claude mcp add` are never clobbered.
+write_claude_mcp() {
+  local src="$DOTFILES/mcp/mcp.json"
+  local dest="$HOME/.claude.json"
+
+  if [ ! -f "$src" ]; then
+    printf "  SKIP  mcp/mcp.json (not in repo)\n"
+    return
+  fi
+  if ! command -v jq > /dev/null 2>&1; then
+    printf "  WARN  jq not found — user-scope Claude Code MCP not synced\n"
+    return
+  fi
+  if [ ! -f "$dest" ]; then
+    cp "$src" "$dest"
+    printf "  SEED  %s\n" "$dest"
+    return
+  fi
+  local tmp
+  tmp="$(mktemp)"
+  # Both sides of * merge recursively; src first so existing dest entries win.
+  jq --slurpfile src "$src" \
+     '. * {mcpServers: (($src[0].mcpServers // {}) * (.mcpServers // {}))}' \
+     "$dest" > "$tmp"
+  if cmp -s "$tmp" "$dest"; then
+    rm -f "$tmp"
+    printf "  OK    %s\n" "$dest"
+  else
+    mv "$tmp" "$dest"
+    printf "  PATCH %s\n" "$dest"
+  fi
+}
+write_claude_mcp
 
 # Grok Build reads ~/.grok/config.toml and writes runtime state back into it
 # (marketplace bookkeeping, pinned sessions), so it is never symlinked. Seed a
