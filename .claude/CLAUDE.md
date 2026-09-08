@@ -117,7 +117,8 @@ Follow the project's design language. Don't paint success until the work succeed
 - Shared schema and API changes expand, migrate, then contract across PRs. Never ship a breaking change and its consumer in one deploy. A risky change (migration, backfill, auth, money) names its rollback in the PR body.
 - Work in the worktree the harness put you in. It creates one per task, so don't run `git worktree add` yourself or move the work to a folder I didn't open.
 - Worktrees isolate files, not ports or local databases, so a dev server you start needs its own port.
-- "Stack this PR" means branch from the current branch and set the PR's base to it. When a parent merges, `pr rebase` moves the children. Plain git, no stacking tool.
+- "Stack this PR" means branch from the parent and set the PR's base to it. When a parent merges, `pr rebase` moves the children. Plain git, no stacking tool.
+- A dispatched session's worktree starts from the default branch, so stacking there means pointing the new branch at the named parent before the first commit, never rebasing after the fact.
 
 ## External writing
 
