@@ -47,8 +47,9 @@ something wants attention, so it's findable without reading the line.
 - The repo comes from `workspace.repo.name` (the `origin` remote), falling back
   to the dir basename, then dropping out entirely when there's no origin and the
   basename is already the worktree name. The worktree name is `worktree.name`
-  (`--worktree` sessions) or `workspace.git_worktree` (any `git worktree add`
-  tree).
+  (present only in a Claude worktree session) falling back to
+  `workspace.git_worktree` (populated for any worktree, Claude's included, so it
+  only means "made by hand" once `worktree.name` has come back empty).
 - A `--worktree` session names its branch `worktree-<name>`, which would print
   the worktree name twice. That case **drops the branch**, since the place has
   already said it.
