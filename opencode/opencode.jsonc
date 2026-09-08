@@ -11,11 +11,21 @@
     "servers": {
       "chrome-devtools": {
         "type": "local",
-        "command": ["cmd", "/c", "pnpm", "dlx", "chrome-devtools-mcp@latest"]
+        "command": [
+          "cmd",
+          "/c",
+          "pnpm",
+          "dlx",
+          "chrome-devtools-mcp@latest",
+          "--autoConnect"
+        ]
       },
       "next-devtools": {
         "type": "local",
-        "command": ["cmd", "/c", "pnpm", "dlx", "next-devtools-mcp@latest"]
+        "command": ["cmd", "/c", "pnpm", "dlx", "next-devtools-mcp@latest"],
+        "environment": {
+          "AGENT_BROWSER_AUTO_CONNECT": "1"
+        }
       }
     }
   },

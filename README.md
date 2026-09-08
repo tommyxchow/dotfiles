@@ -65,6 +65,29 @@ let the installer re-seed it. OpenCode reads its own block in
 is a `.cmd` shim there. Rewriting `~/.claude.json` can race a running Claude
 Code session, so run the installer while no Claude session is open.
 
+### Browser automation: main Chrome only
+
+chrome-devtools runs with `--autoConnect` (OpenCode config) so it attaches to the
+running main Chrome instead of spawning its own instance. Chrome 144+ shows one
+"Allow remote debugging?" dialog per attach — because the server holds one CDP
+connection, that is one prompt per session, then silence. One-time setup: enable
+remote debugging at `chrome://inspect`. Gotchas seen on Chrome 152:
+
+- The toggle only takes effect after a Chrome restart; until then Chrome listens
+  but writes no `DevToolsActivePort`, so every tool reports "No running Chrome
+  instance found".
+- If discovery fails later ("Could not connect to Chrome"), restarting Chrome
+  re-arms the endpoint.
+- The dialog can stack multiple times per attach — Chrome-side bug, tracked as
+  ChromeDevTools/chrome-devtools-mcp#1794, still open as of September 2026.
+
+agent-browser (Vercel, fronted by next-devtools' `browser_eval`, env
+`AGENT_BROWSER_AUTO_CONNECT=1` set in the OpenCode config) also attaches to the
+main Chrome, but re-prompts on every command because its CLI re-attaches per
+invocation — usable only for single-shot checks. Its own-instance mode and
+`--profile` login snapshots spawn a second browser; avoid both when the goal is
+"main browser only". Prefer chrome-devtools for anything multi-step.
+
 Ghostty is macOS/Linux only, so `install.ps1` skips it.
 
 Windows Terminal settings are not linked (profiles and GUIDs are machine-local).
