@@ -34,10 +34,12 @@ been going wrong, then proposes changes and waits. Also repo-local.
   The repo files are canonical: editing them updates Claude, OpenCode 2, and
   Grok immediately. OpenCode 2 reads the global text through
   `~/.config/opencode/AGENTS.md` (installer link to `.claude/CLAUDE.md`); it
-  does not load `~/.claude/CLAUDE.md`. In this repo the installer also links
-  `AGENTS.md` to this file so OpenCode 2 sees these gotchas. Cursor cannot
-  symlink a local plugin at this repo, so the installer copies
-  `.claude/CLAUDE.md` into `~/.cursor/plugins/local/tc/rules/global.mdc`. That
+  reads `~/.claude/CLAUDE.md` only as a fallback when that primary is missing,
+  so the link is what actually feeds it. In this repo the installer also links
+  `AGENTS.md` to this file so OpenCode 2 sees these gotchas. Cursor does support
+  symlinked local plugins now, but `rules/global.mdc` needs `alwaysApply: true`
+  frontmatter that `.claude/CLAUDE.md` doesn't carry, so the installer still
+  copies it into `~/.cursor/plugins/local/tc/rules/global.mdc`. That
   copy is stale until you re-run `./install.sh` after editing that file,
   whichever agent or editor made the edit, and then **Developer: Reload
   Window**. Do not also keep a User Rule with the same text. Cursor's

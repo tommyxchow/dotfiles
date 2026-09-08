@@ -118,7 +118,7 @@ Follow the project's design language. Don't paint success until the work succeed
 - Shared schema and API changes expand, migrate, then contract across PRs. Never ship a breaking change and its consumer in one deploy. A risky change (migration, backfill, auth, money) names its rollback in the PR body.
 - Some sessions run in a worktree I set up for one task, others are just the main checkout. Either way don't create a worktree, and don't move the work into a folder I didn't open.
 - In a team repo a session outside a worktree is usually questions and discussion with nothing written yet, since I open a worktree when I mean to change code. Ask before editing in one.
-- Worktrees isolate files, not ports or local databases, so a dev server you start needs its own port.
+- A worktree is a clean checkout of tracked files only, so gitignored ones like `.env` don't come along. It isolates files but not ports or local databases, so a dev server you start needs its own port.
 - When I name a parent to stack on, usually partway through, rebase this branch onto it and set the PR's base to it. Most sessions never stack.
 - When a parent merges, `pr rebase` moves the children. Plain git, no stacking tool.
 

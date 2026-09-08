@@ -9,7 +9,7 @@ enabled = true # default: false
 
 [features]
 lsp_tools = true # default: false
-two_pass_compaction = true # default: false, opt-in prefire compaction
+two_pass_compaction = true # default: true since 1.0.21; kept in case it flips back
 
 [ui]
 theme = "auto" # default: GrokNight
