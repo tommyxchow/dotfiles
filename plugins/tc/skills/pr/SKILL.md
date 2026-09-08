@@ -12,7 +12,7 @@ Takes a branch from "the build is near ready" to "ready for review" and keeps it
 
 It calls `review` and `pass` and does not rewrite them. It never merges, and it never marks ready except in `ready` mode.
 
-Work that never needed a plan never needs this skill: a small fix is `pass`'s to commit, and that is the end, per the global git rules. Work that did have a plan and arrives without its checklist has lost it, not outgrown it, so section 1 rebuilds one.
+In the user's own repos, work that never needed a plan never needs this skill either: `pass` commits the small fix and that is the end. A team repo gives every change a PR however small, so a small fix still comes here, with a short ledger from section 1. Work that did have a plan and arrives without its checklist has lost it, not outgrown it, and section 1 rebuilds that too.
 
 ## Decide by state
 
@@ -95,7 +95,7 @@ Two jobs share this section, and the easy one comes up far more often.
 
 **The parent merged.** A squash merge rewrites its commits into one new commit, so the child still carries originals git can no longer match and the base branch may be gone. That is the recipe below. An unstacked branch never gets here; it is `git fetch` and `git rebase origin/<default>`.
 
-Record every branch tip in the stack first (`git rev-parse <each branch>`). Each rebase needs the commit its branch was forked from, and that commit loses its name as soon as the branch below it moves. When the parent already moved and nothing was recorded, `<parent branch>@{1}` is its previous tip; branch reflogs are shared, so a session that owns only its own worktree can read it without asking the session that did the rebase.
+Each rebase needs the commit its branch was forked from, and that commit loses its name as soon as the branch below it moves. `<parent branch>@{1}` is that previous tip, and branch reflogs are shared, so a session holding only its own worktree reads it without asking the session that did the rebase. Recording every tip up front (`git rev-parse <each branch>`) is the safer route on the rarer occasion that one session owns the whole stack.
 
 1. Find the parent's last head before merge (`gh pr view <parent> --json headRefOid,mergeCommit,baseRefName`) and the new base (the parent's `baseRefName`), then `git fetch`.
 2. Rebase bottom-up, one branch at a time: `git rebase --onto <parent's new tip> <parent's recorded old tip> <branch>`. The lowest branch rebases onto `origin/<newbase>`.
@@ -108,7 +108,7 @@ Record every branch tip in the stack first (`git rev-parse <each branch>`). Each
 
 Asking for a restack carries the permission to force-push the branches it moves, so don't stop to ask again mid-stack. GitHub usually retargets a child PR when its base branch is deleted; confirm with `gh pr view --json baseRefName` and `gh pr edit --base <newbase>` only if it didn't.
 
-"Stack this PR" at build time means: branch from the current branch, and the PR's `--base` is that branch.
+"Stack this PR" sets the PR's `--base` to the named parent; the global git rules cover reparenting the branch. If the parent is named after the PR exists, that reparenting is this section plus `gh pr edit --base`.
 
 ## 6. Body
 

@@ -16,6 +16,8 @@ The installer is the mechanical source of truth (`install.sh` / `install.ps1`). 
 
 Prefer the current workspace if it is this repo (root `install.sh` plus `.claude/CLAUDE.md`). Else `~/dev/dotfiles`. If neither exists, clone `https://github.com/tommyxchow/dotfiles.git` to `~/dev/dotfiles` and continue from there. Do not search the whole disk.
 
+Never install from a linked worktree of this repo. You are in one when `git rev-parse --path-format=absolute --git-common-dir` and `--git-dir` differ; don't compare `--git-common-dir` to `.git`, which is already `../.git` one directory down. The installer links absolute paths into whatever checkout it runs from, so a worktree you later delete leaves this machine's config pointing at a folder that is gone. `--git-common-dir` names the main checkout to use instead.
+
 ## Pull
 
 From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new clone.
