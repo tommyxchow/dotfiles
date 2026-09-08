@@ -121,7 +121,8 @@ foreach ($link in $links) {
     Clean-Bak $sourcePath $target
 }
 
-# Cursor rejects a plugin folder that symlinks to this repo. Write a real
+# Cursor can load a symlinked local plugin, but the rule file needs
+# alwaysApply frontmatter that .claude/CLAUDE.md does not carry. Write a real
 # directory under ~/.cursor/plugins/local and copy CLAUDE.md into an
 # alwaysApply rule. Re-run the installer after editing CLAUDE.md, then
 # Developer: Reload Window. Do not put a description on the rule; Cursor has

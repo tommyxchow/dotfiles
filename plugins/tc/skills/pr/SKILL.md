@@ -56,17 +56,41 @@ Work bots review drafts on every push, so this runs once, near the end, not per 
 
 1. **Head check.** Be on the PR's head branch, with the `headRefOid` from `gh pr view` an ancestor of `HEAD` (`git merge-base --is-ancestor <headRefOid> HEAD`). Local commits ahead of it are normal, since this section ends in a push. Stop only for the wrong branch or a diverged history, and then say which branch is where; with several worktrees open that is the mistake that costs an hour.
 2. **Body.** Rebuild section 6 from the current diff and ledger. Every commit that changed what the PR does or its evidence should already have refreshed it; if the body is stale, that is a finding about the last session, fix it now.
-3. **Threads.** Read them with GraphQL, because REST comments carry no thread ids and `gh` has no resolve command:
+3. **Threads.** Read every page with GraphQL, because REST comments carry no thread ids and `gh` has no resolve command. First fetch the threads:
 
-   ```
-   gh api graphql -F owner=<o> -F repo=<r> -F pr=<n> -f query='
-     query($owner:String!,$repo:String!,$pr:Int!){ repository(owner:$owner,name:$repo){
-       pullRequest(number:$pr){ reviewThreads(first:100){ nodes{
-         id isResolved isOutdated viewerCanResolve path line
-         comments(first:20){ nodes{ author{login} body url } } } } } } }'
+   ```bash
+   gh api graphql --paginate --slurp -F owner=<o> -F repo=<r> -F pr=<n> -f query='
+     query($owner:String!,$repo:String!,$pr:Int!,$endCursor:String){
+       repository(owner:$owner,name:$repo){
+         pullRequest(number:$pr){
+           reviewThreads(first:100,after:$endCursor){
+             nodes{ id isResolved isOutdated viewerCanResolve path line }
+             pageInfo{ hasNextPage endCursor }
+           }
+         }
+       }
+     }'
    ```
 
-   Keep only unresolved threads. Bot and human authors get the same treatment. Drop any thread whose last comment is your own decline: those stay open by design, and answering again posts a duplicate. A reviewer who replied after that decline puts the thread back in play.
+   Collect the threads from every returned page and keep only unresolved ones. For each of those thread ids, fetch all its comments separately so each connection has its own cursor:
+
+   ```bash
+   gh api graphql --paginate --slurp -f thread=<thread-id> -f query='
+     query($thread:ID!,$endCursor:String){
+       node(id:$thread){
+         ... on PullRequestReviewThread{
+           comments(first:100,after:$endCursor){
+             nodes{ author{login} body url }
+             pageInfo{ hasNextPage endCursor }
+           }
+         }
+       }
+     }'
+   ```
+
+   Join each thread's comment pages in returned order before deciding what its last comment says. If any page fails, returns GraphQL errors, or lacks the expected connection, report the incomplete lookup and stop before triage or marking ready. Partial results never mean there is nothing left to address.
+
+   Bot and human authors get the same treatment. Drop any thread whose last comment is your own decline: those stay open by design, and answering again posts a duplicate. A reviewer who replied after that decline puts the thread back in play.
 4. **Triage before touching code.** Work the open ledger items and the threads as one list, and dedupe anything describing the same root cause. For each: trace or reproduce the scenario the way `review` does. Then one of **fix** (real, in scope), **decline** (wrong, already handled, or out of the ticket's scope, with the evidence), or **ask** (the fix would change agreed scope or the reviewers want conflicting things). Ask items go to the user as one consolidated question, not one by one.
 5. **Fix in one batch.** Root cause, not the line the bot pointed at; regression test where testable; check related in-scope paths for the same mistake. Run the repo's full check. One commit, `fix(<scope>): address review` with the threads' subjects in the body. One push. Every push is a bot round at work, so never push per comment.
 6. **Close the loop on GitHub.** Resolve every thread you fixed: `resolveReviewThread(input:{threadId:$id})`, several per mutation with aliases. Say up front which ones `viewerCanResolve` rules out rather than finding out mid-batch. Reply on every thread you declined with the reason, under the user's account, and leave it open so the reviewer sees it. Never resolve a declined thread. If GraphQL or permissions fail partway, report which threads actually resolved: aliased mutations apply in order, so the ones before the failure already landed and cannot be taken back.
@@ -80,7 +104,7 @@ The readiness check runs on the current head, then flips the draft when everythi
 
 - Head check as in section 3, and the body reflects this head.
 - Every ledger item is proven, exercised, or unverified with a reason the user has accepted.
-- No unresolved actionable threads. Declined threads with a reply are fine.
+- No unresolved actionable threads, checked with the complete thread and comment lookup in section 3. Declined threads with a reply are fine.
 - The repo's full check is green on this head; `gh pr checks` shows required checks passing or pending, none failing. A repo with no check of its own says so and counts as unverified, never as a pass.
 - `review pr <number>` has run once as a whole on this head. If it hasn't, run it now, since per-push reviews never saw the commits together. Confirmed findings get fixed, which sends this back to step one.
 - The PR is stacked only on parents that are merged or themselves ready, and says so.
@@ -95,7 +119,7 @@ Two jobs share this section, and the easy one comes up far more often.
 
 **The parent merged.** A squash merge rewrites its commits into one new commit, so the child still carries originals git can no longer match and the base branch may be gone. That is the recipe below. An unstacked branch never gets here; it is `git fetch` and `git rebase origin/<default>`.
 
-Each rebase needs the commit its branch was forked from, and that commit loses its name as soon as the branch below it moves. `<parent branch>@{1}` is that previous tip, and branch reflogs are shared, so a session holding only its own worktree reads it without asking the session that did the rebase. Recording every tip up front (`git rev-parse <each branch>`) is the safer route on the rarer occasion that one session owns the whole stack.
+Each rebase needs the old parent tip that bounds the child's own commits. Use a recorded SHA when available. Otherwise inspect `git reflog show <parent branch>` and identify the value immediately before the relevant rebase or rewrite. Branch reflogs are shared across worktrees, so another session can read that history. `<parent branch>@{1}` is only the immediately previous value; a commit after the rebase makes it the wrong boundary. Verify the candidate against the child's history and inspect `<old tip>..<child>` to ensure it contains only the work to replay. If the boundary cannot be established, stop and name what is missing rather than guessing. When one session owns the whole stack, record every tip before moving any branch (`git rev-parse <each branch>`).
 
 1. Find the parent's last head before merge (`gh pr view <parent> --json headRefOid,mergeCommit,baseRefName`) and the new base (the parent's `baseRefName`), then `git fetch`.
 2. Rebase bottom-up, one branch at a time: `git rebase --onto <parent's new tip> <parent's recorded old tip> <branch>`. The lowest branch rebases onto `origin/<newbase>`.

@@ -3,8 +3,8 @@
 Personal config for git, VS Code, Ghostty, Claude Code, OpenCode 2, Cursor, and Grok Build. The
 installer symlinks files from this repo into their real locations, so editing a file
 here changes the live config immediately. Cursor global instructions are the exception:
-the installer copies `.claude/CLAUDE.md` into a local plugin (Cursor rejects a symlink
-to this repo).
+the installer copies `.claude/CLAUDE.md` into a local plugin and adds Cursor's
+`alwaysApply: true` frontmatter.
 
 ## Install
 
@@ -43,8 +43,8 @@ copy. `*.bak` is gitignored.
 | `opencode/commands/*.md` | `~/.config/opencode/commands/{name}` |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
 
-Cursor cannot symlink a local plugin at this repo (the loader rejects targets
-outside `~/.cursor/plugins/local`). The installer writes a real plugin at
+Cursor supports symlinked local plugins, but its rule file needs frontmatter
+that the shared `CLAUDE.md` does not carry. The installer writes a real plugin at
 `~/.cursor/plugins/local/tc` whose `rules/global.mdc` is a copy of
 `.claude/CLAUDE.md` with `alwaysApply: true`. Re-run the installer after editing
 that file, then **Developer: Reload Window**. Do not also paste it into User
