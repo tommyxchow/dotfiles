@@ -22,7 +22,7 @@ Find what is wrong or missing in a change before anyone else does. Real defects 
 - **Small** (one concern, a handful of files): one read of the diff with every lens in mind. No fan-out.
 - **Large** (several concerns or many files): triage first, then fan out read-only reviewers in parallel, one per lens or one per area, each with its diff slice, the intent, the repo's rules, the finding rule below, and a cap of about eight findings. Never ask any of them to find everything. Then reconcile.
 
-**Triage, on a large run only.** Depth is finite, so spend it where a defect would cost something. Read closely anything touching auth or permissions, money, a data migration, a server path, newly accepted external input, or concurrency, plus wherever the change's actual purpose lives. Move fast over generated files, lockfiles, mass renames, formatting-only churn, test fixtures, and vendored code. Then **say the split in two lines before the findings**, because a silent triage hides its own mistakes and this one can file the thing the user cared about under boring:
+**Triage, on a large run only.** Depth is finite, so spend it where a defect would cost something. Read closely anything touching auth or permissions, money, a data migration, a schema or API contract, a server path, newly accepted external input, or concurrency, plus wherever the change's actual purpose lives. Move fast over generated files, lockfiles, mass renames, formatting-only churn, test fixtures, and vendored code. Then **say the split in two lines before the findings**, because a silent triage hides its own mistakes and this one can file the thing the user cared about under boring:
 
 ```
 Read closely: the session handling, the payments webhook, the migration.
@@ -45,7 +45,7 @@ Every finding needs a concrete failure scenario: which input or state, and what 
 
 ## 4. Verify before reporting
 
-For every finding that would be high or medium: trace the scenario through the callers, types, and tests to confirm it is reachable, and run a quick test or script when that is cheap. Mark it confirmed (reproduced or fully traced) or likely (traced, not run). Drop anything that stays a guess. A review with three sure findings beats one with ten maybes.
+For every finding that would be high or medium: trace the scenario through the callers, types, and tests to confirm it is reachable, and run a quick test or script when that is cheap. Mark it confirmed (reproduced or fully traced) or likely (traced, not run). Drop anything that stays a guess. If the proposed fix is another guard, default, or catch-all, and no real caller reaches that state, drop it too; a missing auth check or a user-visible error path still counts, because those have a caller. A review with three sure findings beats one with ten maybes.
 
 ## 5. Report
 
