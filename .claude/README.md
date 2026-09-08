@@ -2,8 +2,8 @@
 
 This directory holds the shared global instructions and Claude Code settings.
 Grok Build reads them through Claude Code compatibility. OpenCode 2 reads the
-same text through an installer link at `~/.config/opencode/AGENTS.md`.
-It falls back to `~/.claude/CLAUDE.md` when that primary global file is missing.
+same text through an installer link at `~/.config/opencode/AGENTS.md`; it does
+not load `~/.claude/CLAUDE.md`.
 Personal plugins ship from the `chow` marketplace in this same repo
 (`tommyxchow/dotfiles`). Third-party plugins are declared as separate marketplaces in
 `settings.json`.
@@ -123,9 +123,9 @@ discovery with the inspector inside an active Grok session; the standalone
 ### OpenCode 2
 
 This setup is OpenCode 2 (`opencode2`). The installer links
-`~/.config/opencode/AGENTS.md` to `CLAUDE.md` here. That primary global file
-wins over the `~/.claude/CLAUDE.md` fallback. Skills still come from
-`~/.claude/skills`. Slash commands are the stubs in `opencode/commands`.
+`~/.config/opencode/AGENTS.md` to `CLAUDE.md` here. OpenCode 2 does not read
+`~/.claude/CLAUDE.md`. Skills still come from `~/.claude/skills`. Slash commands
+are the stubs in `opencode/commands`.
 
 ## Auditing config
 
