@@ -102,7 +102,7 @@ Follow the project's design language. Don't paint success until the work succeed
 - Keep contrast readable, tap targets at least 24×24, and describe errors in text.
 - Shareable state in the URL, settings in storage, auth in an httpOnly, Secure, SameSite cookie, ephemeral UI in memory.
 - The empty, loading, error, and success states and the keyboard path are part of the feature, not follow-ups; a PM finds them on the first click.
-- Browser UAT (Chrome MCP or whatever browser tool the session has) is opt-in, because one shared Chrome can't serve several sessions at once. If I opted in and the tool is missing or errors, stop and tell me so we can fix it.
+- Browser UAT (Chrome MCP or whatever browser tool the session has) is opt-in, because one shared Chrome can't serve several sessions at once. Work in your own tab; I keep mine. If I opted in and the tool is missing or errors, stop and tell me so we can fix it.
 - Never write that the UI works without having driven it.
 
 ## Git
@@ -125,7 +125,7 @@ Follow the project's design language. Don't paint success until the work succeed
 
 ## External writing
 
-- For text posted outside the session (PR bodies, review comments, tickets) and prose that ships in the repo (commit messages, README, docs, changelog, UI copy, error messages), use a concise, casual teammate voice. No em dashes (use other punctuation), except inside quoted code or UI copy. Skip "This PR…" and "improves UX" filler; state the specific change.
+- For text posted outside the session (PR bodies, review comments, tickets) and prose that ships in the repo (commit messages, README, docs, changelog, UI copy, error messages), use a concise, casual teammate voice. No em dashes (use other punctuation), except inside quoted code or UI copy. Skip "This PR…" and "improves UX" filler; state the specific change. The test is whether a person reads it as my words, so files only agents read, like skill bodies and the repo's own playbooks, are exempt.
 - Cut the usual AI tells: "not just X, but Y", a forced group of three, "serves as" or "boasts" where "is" or "has" works, and any sentence that could sit unchanged in another project's docs.
 
 ## Instruction files
@@ -138,7 +138,9 @@ This file rides along to every harness (Claude Code, Cursor, OpenCode 2, Grok Bu
 - Written for the weakest model, cheap for the strongest: constrain outcomes, not step-by-step process. One idea per bullet, a short example where it helps, nothing as vague as "write clean code".
 - Write it in the voice you want back. Models tend to copy the register and formatting of their instructions, so a rule about plain language is written in plain language. Where a skill describes a report, spell the shape out in full sentences with a short example, never as fragments to fill in.
 - Examples teach shape, not today's versions. Don't freeze an API name, RC, or date in a global file; look it up. `refresh/stacks.md` may hold stack gotchas and still gets pruned when touched.
-- Add a rule after the same mistake happens twice, or when I state a preference. If it then over-fires, add a skip rather than more style. Prune lines that went stale whenever the file is touched.
+- Patterns earn rules, observations don't: add one after the same mistake happens twice, or when I state a preference. If it then over-fires, add a skip rather than more style. Prune lines that went stale whenever the file is touched.
 - Multi-step playbooks that only run in one repo live as `docs/` in that repo, not as global skills. Don't add `.vscode/` settings or per-repo agent permissions to a product repo when the dotfiles already cover them.
+- A rule only fires from a file that is always loaded. Anything in a `docs/` playbook or a skill body is a note until an agent goes looking for it, so a gate that has to hold every session belongs here.
+- Skills take their arguments as plain words, never `--flags`. Scope keywords like `branch`, `all`, or `pr <number>` are right; a `--fix` switch is not.
 
 First-party skills under `plugins/tc/skills` follow the example and prune rules above, and they may keep step-by-step playbooks. Communication and Session flow live here; skills point at them, they don't copy or restyle them. Skill routing lives in each skill's description, not in this file.

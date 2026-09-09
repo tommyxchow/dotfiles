@@ -21,7 +21,7 @@ Repo-level gotchas for anyone (or any agent) editing this repo live in the root 
 Harness response-style defaults conflict, so `CLAUDE.md` has to override them rather
 than assume them. Claude Code's Default is not the short style; Concise is opt-in
 and other harnesses still push brevity. Grok Build asks for complete sentences and
-plain language rather than identifiers. The `IMPORTANT — readable beats brief` line
+plain language rather than identifiers. The `IMPORTANT: readable beats brief` line
 exists so a terse default does not win. Don't prune it just because the harness you
 happen to be testing in already reads fine.
 
@@ -57,7 +57,7 @@ Plugin content for `chow` lives outside this directory:
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `review`, `tdd`, `grill-me`, `refresh`, `pass`, `pr`, `statusline-install` files. Marketplace packaging only — do not enable on a machine that ran the installer. |
+| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `review`, `tdd`, `grill-me`, `refresh`, `pass`, `pr`, `statusline-install` files. Marketplace packaging only. Do not enable on a machine that ran the installer. |
 | `ek@chow` | `emilkowalski/skills` (git url) | Whatever is in upstream `skills/` (not vendored here) |
 
 Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.
@@ -87,7 +87,7 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
    `~/.claude/`, write the statusline, and copy Cursor's local plugin.
 2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` declare the
    marketplace plugins below, but `enabledPlugins` alone does **not** install
-   them. Install each, then `/reload-plugins`. Skip `tc@chow` here — the
+   them. Install each, then `/reload-plugins`. Skip `tc@chow` here, since the
    installer already linked those skills:
 
    ```bash
