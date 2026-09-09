@@ -36,7 +36,7 @@ The installer links first-party skills into `~/.claude/skills`. Claude, Cursor,
 Grok, and OpenCode 2 all read that path. The official `gh` skill also lives there
 via `gh skill install` (resync installs or updates it); do not copy it into
 `plugins/tc/skills`. `opencode/commands` adds `/vet`, `/tldr`,
-`/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, `/pass`, and `/pr` wrappers without duplicating the
+`/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, `/pass`, `/pr`, and `/cleanup` wrappers without duplicating the
 skill instructions. Do not enable `tc@chow` alongside those links, and do not
 also copy those skills into `~/.config/opencode/skills`. OpenCode 2 does not load
 Claude marketplace plugins, so `ek` remains Claude Code-only and
@@ -57,7 +57,7 @@ Plugin content for `chow` lives outside this directory:
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `review`, `tdd`, `grill-me`, `refresh`, `pass`, `pr`, `statusline-install` files. Marketplace packaging only. Do not enable on a machine that ran the installer. |
+| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `review`, `tdd`, `grill-me`, `refresh`, `pass`, `pr`, `cleanup`, `statusline-install` files. Marketplace packaging only. Do not enable on a machine that ran the installer. |
 | `ek@chow` | `emilkowalski/skills` (git url) | Whatever is in upstream `skills/` (not vendored here) |
 
 Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.

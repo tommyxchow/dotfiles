@@ -59,7 +59,7 @@ been going wrong, then proposes changes and waits. Also repo-local.
 - **The installer links first-party skills into `~/.claude/skills`.** Claude,
   Cursor, Grok, and OpenCode 2 all read that path. `opencode/commands` provides
   `/vet`, `/tldr`, `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, `/pass`,
-  and `/pr` wrappers. Do not also copy those skills into `~/.config/opencode/skills`.
+  `/pr`, and `/cleanup` wrappers. Do not also copy those skills into `~/.config/opencode/skills`.
   Keep shared skills portable Agent Skills (`name` and `description` required).
   Claude-only `context` / `agent` / `background` / `disable-model-invocation` are
   fine where a skill should fork or stay user-started; other harnesses ignore
@@ -76,7 +76,8 @@ been going wrong, then proposes changes and waits. Also repo-local.
   instead of running the installer. After changing `.claude-plugin/marketplace.json`
   or `plugins/tc/`: push, then `/plugin marketplace update chow`,
   `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish` /
-  `review` / `tdd` / `grill-me` / `refresh` / `pass` / `pr` edits are live through
+  `review` / `tdd` / `grill-me` / `refresh` / `pass` / `pr` / `cleanup` edits are live
+  through
   `~/.claude/skills` with no push.
 
 - **Catalog entries for plugins in other repos need `source: url` with an `https://`
