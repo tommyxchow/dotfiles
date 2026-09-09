@@ -98,7 +98,7 @@ files.
 | `/pr` | Branch is near ready: prove the acceptance checklist, review in a fresh subagent, pass, push, open the draft with the standard body. Again later to refresh the body and address review threads in one batch. `pr ready` flips the draft; `pr rebase` restacks after a parent merges. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
-| `/cleanup` | Repo hygiene: dead worktrees, merged branches, stale refs. Surveys before it deletes. |
+| `/cleanup` | Repo hygiene: dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
 | **audit** (this repo) | This **setup**. Follow `docs/audit.md`: re-examine the instructions and skills against current harnesses and recent pain, then propose. |
 

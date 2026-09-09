@@ -76,7 +76,8 @@ A status check ("we good", "anything outstanding") is what you already know plus
 - Finish what a change starts. Delete the old path in the same change, including shims for callers you can update, commented-out blocks, and debug logging.
 - Never claim something works on faith. Prefer the repo's own full check over a single linter pass, and don't invent a gate the repo doesn't have.
 - New behavior gets tests: the happy path plus the edges likely to break. A bug fix starts with a regression test. Changing code that has no tests starts with a characterization test that pins what it does today. UI coverage is integration-first, e2e only on critical journeys. Tests assert what the user sees.
-- A test has to be able to fail: if it still passes with the code under test deleted, it proves nothing. Write the expected value by hand instead of recomputing it the way the code does or approving generated output nobody read. Use the real dependency where you can and a mock only where the real one is slow, nondeterministic, or out of process (network, clock, randomness, filesystem, third-party services); wrap a vendor API and mock your wrapper rather than the vendor itself. Each test sets up its own state and passes alone and in any order. A retry is triage, not a fix: the flaky test still gets fixed or deleted, and a framework's own retry defaults stay.
+- A test must catch a relevant incorrect behavior. Deleting the implementation is one useful check, not a universal rule: a test that forbids an unwanted side effect may still pass. Check expected results independently of the implementation; hand-written values and reviewed, focused snapshots both count, recomputing the same logic or accepting unread output does not.
+- Use real dependencies where practical; mock slow, nondeterministic, or out-of-process boundaries. For vendor SDKs, prefer an owned wrapper when one fits; intercepting network requests is also valid. Each test sets up its own state and passes alone and in any order. Preserve auto-waiting and retrying assertions. Whole-test retries do not prove flakiness is fixed; fix the cause and preserve the repo's retry configuration unless changing it is part of the task.
 - If I paste another agent's plan, diff, or answer, check it. Don't agree by default.
 
 ## Code
@@ -107,6 +108,7 @@ Follow the project's design language. Don't paint success until the work succeed
 
 ## Git
 
+- **Ask first for repo cleanup deletions.** Show exact branches, worktree registrations, and remote-tracking refs with the evidence and side effects, then let me select what to remove. A general cleanup request or `apply` is not approval of an unseen list. Recheck before acting; changed targets need fresh approval.
 - Stage the files the slice touched, never `git add -A` or `.`. If a file holds both your change and mine, say so.
 - Conventional Commits: `type(scope): subject` in lowercase, no trailing period. `!` before `:` for breaking.
 - The subject says what changed in plain words; add a body only when the subject can't carry the why. A body is the reason the change was needed and what it replaces, never a retelling of the diff or of how you got there.
