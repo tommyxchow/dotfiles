@@ -24,21 +24,7 @@ Things a ticket usually leaves silent and a PM finds on the first click: the emp
 
 ## A round
 
-Use the harness's question tool when it has one: one entry per question, a short title, the options with your recommended one first and tagged `(Recommended)`, and a one-line why in its description. Set it to allow several answers only when the choices really combine. Then wait for the answers. The decisions are theirs: never answer your own round and carry on.
-
-Without a question tool, ask in text with the same shape and stop:
-
-```
-**Q1: <short title>**
-
-<the question, with the options where there are any>
-
-Recommended: <your answer, and the one-line why>
-
-**Q2: <short title>**
-
-<...>
-```
+Follow the global Session flow rules for question tools and the text fallback, including option order, recommendation labels, and waiting for answers. Give each question a short title. Ask independent questions together within the tool's limits; answers that change the remaining frontier come before the next round. The decisions are theirs: never answer your own round and carry on.
 
 Either way, the message that carries the round also names the decisions you took yourself and why, in a short paragraph, so the user can veto any of them in the same breath.
 

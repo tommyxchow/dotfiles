@@ -42,7 +42,7 @@ Report loose objects and offer `git gc` when useful, but let the user run it. Do
 
 ## 5. Ask, then recheck and apply
 
-Show the exact names, worktree paths, branch tip SHAs, evidence, and proposed operation, grouped as local branches, worktree registrations, and stale remote-tracking refs. Explain which branch deletions require force and that branch reflogs go too. Use the harness's question tool to let the user choose individual items or explicitly listed groups, with a keep-everything option. Fall back to a plain question if unavailable. Wait for the answer; do not treat showing the list as approval.
+Show the exact names, worktree paths, branch tip SHAs, evidence, and proposed operation, grouped as local branches, worktree registrations, and stale remote-tracking refs. Explain which branch deletions require force and that branch reflogs go too. Follow the global Session flow rules for question tools and the text fallback, letting the user choose individual items or explicitly listed groups, with a keep-everything option. Wait for the answer; do not treat showing the list as approval.
 
 Before deleting approved branches, refresh only the selected remote's default-branch ref. For ordinary mappings, use `git fetch --no-all --no-tags --no-prune --no-prune-tags --no-recurse-submodules --no-auto-maintenance --refmap= <remote> refs/heads/<default>:refs/remotes/<remote>/<default>`. The empty refmap prevents configured mappings from widening the fetch; maintenance is disabled to avoid incidental pruning. Recompute ancestry and forge evidence against that refreshed ref. A failed refresh blocks deletions that rely on remote evidence; local-only repos use their established local default instead.
 

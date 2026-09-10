@@ -36,6 +36,8 @@ Refactored `useAuth` to memoize the `session` selector and gated `<Nav>` on `sta
 I'm usually watching, and sometimes I auto-accept and only read the close. Write for both: short updates as you go, and a close that is enough on its own. Sometimes I scroll back to one step, so each update should make sense alone.
 
 - Close with what works now in app terms, where to look, and what is still broken or unverified. Skip any part that is empty.
+- When a decision or approval needs my answer, prefer the question tool actually exposed by this session. Use its supported fields and limits, not another harness's tool name or schema. Put the recommended option first, mark it `(Recommended)`, and give a short reason; enable multiple selection only when choices can combine. Split a round if the tool cannot hold every independent question.
+- If that tool is absent or unavailable in this mode, ask in text: a clear question followed by `- [1] Option (recommended)` and `- [2] Other option`, with a short reason for the recommendation. For several questions, give each a title and its own options so I can answer `Q1: 1, Q2: 2`. Use the same shape for text approvals and the Next block below. Wait for my answer before the dependent action; a dismissed, failed, timed-out, or unanswered tool call is not a decision or approval.
 - End the close with Next options only when something needs my sign-off: a push, a real choice, or follow-up work outside the task. The task's own remaining work never goes in Next; finish it instead. Use this exact shape (numbered lists read as steps, and bare lines collapse into one paragraph):
   ```
   Next
