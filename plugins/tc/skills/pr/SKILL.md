@@ -1,6 +1,6 @@
 ---
 name: pr
-description: 'Owns the pull request from near-ready to ready for review. Verifies each acceptance criterion with evidence, runs the whole-branch review in a fresh subagent, runs pass, pushes, and opens the draft with the standard body (summary, what-to-review table with sizes, AC ledger, test plan, screenshots, risk, stack). Then keeps that body current and addresses open review threads in one batch. `ready` flips the draft after the readiness check; `rebase` restacks when a parent moves or merges. Use for explicit PR requests, existing PR reviews and readiness, or restacking. For ship it, near-ready work, or UAT feedback without a PR, first apply the global Git rules: routine personal-repo work may end in a direct commit, even with a plan. Not the slice closer (that''s pass), not a report-only review (that''s review), not a summary (that''s tldr pr). Never merges.'
+description: 'Owns a pull request from near-ready to ready for review: verifies acceptance criteria, runs review and pass, opens a draft, maintains its evidence, and addresses review threads. Use for explicit PR requests, existing PR reviews and readiness, or restacking. Without a PR, apply the global Git rules to choose a direct commit or PR. `ready` flips the draft after verification; `rebase` restacks it. Not the slice closer (pass), a report-only review (review), or a summary (tldr pr). Never merges.'
 argument-hint: "[ready | rebase | reviews | <focus or pasted feedback>]"
 ---
 
@@ -12,7 +12,7 @@ Takes a branch from "the build is near ready" to "ready for review" and keeps it
 
 It calls `review` and `pass` and does not rewrite them. It never merges, and it never marks ready except in `ready` mode.
 
-Before entering the PR workflow, apply the global Git rules. Routine personal-repo work can end in a direct commit even if it needed a plan; neither a plan nor a local review automatically calls for a PR. Use this skill when the user requests a PR, one already exists for the task, or the change warrants a separate review. A team repo gives every change a PR however small. When taking planned work to a PR, keep its acceptance checklist; section 1 rebuilds a missing one.
+Apply the global Git rules before entering this workflow. Keep the plan's acceptance checklist when one exists; section 1 handles missing criteria.
 
 ## Decide by state
 
@@ -26,7 +26,7 @@ Look before acting: `gh pr view --json number,isDraft,baseRefName,headRefOid,url
 
 ## 1. The ledger
 
-The acceptance checklist comes from the plan. If there is none (a described idea, a GitHub issue, a session that lost it), derive three to five criteria from the conversation and the issue, state them, and confirm before spending effort proving them. Keep the ledger in the harness plan file where one exists until the PR body holds it.
+The acceptance checklist comes from the plan. Without one, derive three to five criteria from the conversation and any issue, state them, and confirm before spending effort proving them; a small, clear change can have a single criterion, the requested outcome. Keep the ledger in the harness plan file where one exists until the PR body holds it.
 
 Each criterion ends in exactly one state, and the word "unverified" is allowed:
 
@@ -42,7 +42,7 @@ Things that count as criteria even when the ticket never wrote them down: the em
 
 ## 2. Open
 
-In order, and say each step in one line as it happens:
+In order:
 
 1. **Ledger.** Section 1 on the whole checklist. Anything unverified that a test or a run could settle cheaply gets settled now.
 2. **Review.** `review branch fix` on the branch against its intended base, with the ledger and summary as the intent, in a fresh-context subagent when the harness can spawn one, inline when it can't. Confirmed findings get fixed with the smallest change that removes the scenario, plus a regression test where the behavior is testable; "likely" findings go in the report. Say which mode ran.
@@ -50,7 +50,7 @@ In order, and say each step in one line as it happens:
 4. **Push.** `git push -u origin <branch>`. Taking a task to a draft PR carries the permission to push that branch. Stacked: the base is the parent branch, not the default branch.
 5. **Create.** `gh pr create --draft --base <base> --title "<type(scope): subject>" --body-file <tmp>` with the body in section 6. Title follows Conventional Commits; add the ticket key where the repo's recent PR titles do. Solo repos still get a draft, because the body is where the evidence lives.
 
-Work bots review drafts on every push, so this runs once, near the end, not per slice.
+Run this once near the end, not per slice; in repos with push-triggered review bots, each push also starts another review round.
 
 ## 3. Update
 
@@ -92,7 +92,7 @@ Work bots review drafts on every push, so this runs once, near the end, not per 
 
    Bot and human authors get the same treatment. Drop any thread whose last comment is your own decline: those stay open by design, and answering again posts a duplicate. A reviewer who replied after that decline puts the thread back in play.
 4. **Triage before touching code.** Work the open ledger items and the threads as one list, and dedupe anything describing the same root cause. For each: trace or reproduce the scenario the way `review` does. Then one of **fix** (real, in scope), **decline** (wrong, already handled, or out of the ticket's scope, with the evidence), or **ask** (the fix would change agreed scope or the reviewers want conflicting things). Ask items go to the user as one consolidated question, not one by one.
-5. **Fix in one batch.** Root cause, not the line the bot pointed at; regression test where testable; check related in-scope paths for the same mistake. Run the repo's full check. One commit, `fix(<scope>): address review` with the threads' subjects in the body. One push. Every push is a bot round at work, so never push per comment.
+5. **Fix in one batch.** Root cause, not the line the bot pointed at; regression test where testable; check related in-scope paths for the same mistake. Run the repo's full check. One commit, `fix(<scope>): address review` with the threads' subjects in the body. One push, not one per comment.
 6. **Close the loop on GitHub.** Resolve every thread you fixed: `resolveReviewThread(input:{threadId:$id})`, several per mutation with aliases. Say up front which ones `viewerCanResolve` rules out rather than finding out mid-batch. Reply on every thread you declined with the reason, under the user's account, and leave it open so the reviewer sees it. Never resolve a declined thread. If GraphQL or permissions fail partway, report which threads actually resolved: aliased mutations apply in order, so the ones before the failure already landed and cannot be taken back.
 7. **Learn.** If a thread class recurred, or a bot found something `review` should have caught, propose one line for that repo's `AGENTS.md` review section in the report. Propose, don't apply: that file is team-shared and outside the ticket.
 
@@ -136,10 +136,10 @@ Asking for a restack carries the permission to force-push the branches it moves,
 
 ## 6. Body
 
-One screen, fixed order, in the global External writing voice. A repo PR template wins on order and headings; fill its sections with the content below and keep the table and ledger somewhere in it. Sections with nothing to say are omitted, not filled with "N/A." Anything long goes inside `<details>`.
+Global External writing voice, sized to the change. A repo PR template wins on order and headings; fill its sections with the content below. A small PR is a summary plus a test plan that carries the evidence; the review table and the criteria list earn their place on a PR with a multi-item ledger or several areas to read. Omit empty sections rather than writing "N/A," and fold long details inside `<details>`.
 
-1. **Summary.** Two or three sentences in app terms, plus `Closes #N` or the ticket link.
-2. **What to review.** Grouped by concern, not per file, worst risk first, at most about eight rows even on a big PR. Sizes come from `git diff --stat <base>...HEAD`; a total line at the bottom. The read/skim/skip call is the same split `review` makes when it triages.
+1. **Summary.** A short explanation in app terms, plus `Closes #N` or a ticket link when applicable.
+2. **What to review, for substantial changes.** Grouped by concern, not per file, worst risk first, at most about eight rows even on a big PR. Sizes come from `git diff --stat <base>...HEAD`; a total line at the bottom. The read/skim/skip call is the same split `review` makes when it triages.
 
    | Area | What changed | Size | Review |
    |---|---|---|---|
@@ -148,7 +148,7 @@ One screen, fixed order, in the global External writing voice. A repo PR templat
    | Tests | 6 new cases for the permission matrix | 2 files, +140 | Skim |
    | Generated types, lockfile | Regenerated after the schema change | 2 files, +410 / −380 | Skip |
 
-3. **Acceptance criteria.** The ledger from section 1, one line per item with its evidence or its "unverified" reason. UAT-feedback items keep their tag. Dropped items say dropped.
+3. **Acceptance criteria, when the ledger has more than one item.** The ledger from section 1, one line per item with its evidence or its "unverified" reason. UAT-feedback items keep their tag. Dropped items say dropped.
 4. **Test plan.** What ran (the check, the test counts) and the numbered click path for UAT, starting from the preview URL when there is one, otherwise `pnpm dev` and a route.
 5. **Screenshots.** Before and after for anything visual; folded past two.
 6. **Risk and rollback.** Only when the change is shared: a schema, an API, auth, money, a deploy others depend on. One sentence each for what could go wrong and how to back it out.
@@ -159,7 +159,7 @@ Numbers go in whenever they are cheap and change how the reader reads: sizes, te
 
 ## Report
 
-Write it in the global Communication voice: answer first, full sentences, app terms. Open with what state the PR is in now and its URL. Then what this run did: how many ledger items are proven, exercised, and unverified; what review found and fixed; what pass changed; which threads were fixed, declined, or need the user; whether the browser ran and against what. Then anything unverified and anything the user has to do, worst first. Skip empty parts. Don't walk the diff.
+Follow the global Communication and Session flow rules. Open with the PR's state and URL. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. Use ledger counts when they help explain a substantial checklist; omit routine step narration.
 
 ```
 Draft PR opened: https://github.com/org/app/pull/412. Viewers can no longer edit invoices, at the button and at the server.

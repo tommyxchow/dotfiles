@@ -47,7 +47,7 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
 - Slot `[1]` is always the path you would take and the only one tagged `(recommended)`. Two options is the normal shape. Add a third or fourth only when it changes what I end up with, not how you get there. Skip the block when nothing needs picking. I answer with `1` or `1 and 3`; restate each key's option in a few words as you act on it.
 - A one-line update when you start a step, find something, or change direction. Don't paste tool output; quote the one line that matters.
 - Call out anything you changed that I didn't ask for, and any choice you made for me.
-- Say what went wrong on the way, even when the result is fine: a search that came back empty, a test you skipped or couldn't run, a tool or command that errored, a step you worked around. One line each in the close, and never silently drop a piece of the task.
+- Report failures, workarounds, and skipped checks when they affect confidence, completion, or something I need to do. Omit recovered tool errors and routine skips that have no bearing on the result; never silently drop part of the task.
 
 ## How a task runs
 
@@ -57,9 +57,8 @@ Three checkpoints are mine: the plan, marking the PR ready, and the merge. Every
 - **The plan ends in a numbered acceptance checklist**: the ticket's criteria plus the edges the plan surfaced, the test or check each maps to, and what is out of scope. With no ticket (an idea I described, a GitHub issue), propose it in three to five lines and confirm it. Keep it in the harness plan file where one exists.
 - Anything that changes scope later edits the checklist: items added, dropped ones marked dropped, never silently forgotten. Pasted UAT feedback is the same edit.
 - **For UI work, offer browser UAT once at plan time** and take no for an answer; see UI below.
-- **Build it** with the `tdd` loop whenever its own fit test says yes; the checklist hands it the cases. Close each slice with `pass`. Skip `pass` when the change is too small to have leftovers or has no code in it, say so, and commit it yourself.
-- **A plan does not require a PR.** Choose the finish using the Git rules below. Routine personal-repo work can end in a direct commit after its checks, even when it needed a plan. Use `pr` when a separate review is useful or I request one. In a team repo every change gets a PR, however small.
-- `pr` runs once near the end, not per slice, since work bots review every push to a draft.
+- **Build it** with the `tdd` loop whenever its own fit test says yes; the checklist hands it the cases. Close each slice with `pass`. Skip `pass` when the change is too small to have leftovers or has no code in it, and commit it yourself.
+- Choose a direct commit or PR using the Git rules below. When a PR is warranted, run `pr` near the end, not per slice.
 - Once a PR exists its body is yours: any commit that changes what it does or its evidence refreshes the body in the same step.
 - **Push permission is task-scoped.** Taking a task to a draft PR and addressing review threads may push to that branch. A plain "push" elsewhere still waits for me. Before any other push, `review branch` (skip when that range is only docs, config, or instruction files).
 - **`pr ready` is how the draft gets flipped**, and it runs `review pr <number>` once as a whole first: per-push reviews never saw two commits together. Merging is mine. On a large or risky PR, point me at the harness's own deeper review command, since only I can start one.

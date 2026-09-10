@@ -6,9 +6,9 @@ argument-hint: "[<repo path>] [apply]"
 
 # Cleanup
 
-Reclaim a repo that has collected months of dead refs. Working files, ignored files, build output, and dependencies are out of scope. Branch deletion also removes that branch's reflog, so it still needs an explicit decision.
+Reclaim a repo that has collected months of dead refs.
 
-`$ARGUMENTS`: an optional repo path, defaulting to the current repo, and `apply` to request cleanup. Both start with a read-only survey. Neither `apply` nor a general request to clean up approves unseen deletions. Show the exact list and ask first; only the user's selection authorizes execution.
+`$ARGUMENTS`: an optional repo path, defaulting to the current repo, and `apply` to request cleanup. Both start with a read-only survey and use the approval flow in section 5.
 
 ## 1. Survey first
 
@@ -42,7 +42,7 @@ Report loose objects and offer `git gc` when useful, but let the user run it. Do
 
 ## 5. Ask, then recheck and apply
 
-Show the exact names, worktree paths, branch tip SHAs, evidence, and proposed operation, grouped as local branches, worktree registrations, and stale remote-tracking refs. Explain which branch deletions require force and that branch reflogs go too. Follow the global Session flow rules for question tools and the text fallback, letting the user choose individual items or explicitly listed groups, with a keep-everything option. Wait for the answer; do not treat showing the list as approval.
+Show the exact names, worktree paths, branch tip SHAs, evidence, and proposed operation, grouped as local branches, worktree registrations, and stale remote-tracking refs. Explain which branch deletions require force and that branch reflogs go too. Follow the global Session flow rules for question tools and the text fallback, letting the user choose individual items or explicitly listed groups, with a keep-everything option. Wait for the selection: neither `apply`, a general cleanup request, nor showing the list approves deletion.
 
 Before deleting approved branches, refresh only the selected remote's default-branch ref. For ordinary mappings, use `git fetch --no-all --no-tags --no-prune --no-prune-tags --no-recurse-submodules --no-auto-maintenance --refmap= <remote> refs/heads/<default>:refs/remotes/<remote>/<default>`. The empty refmap prevents configured mappings from widening the fetch; maintenance is disabled to avoid incidental pruning. Recompute ancestry and forge evidence against that refreshed ref. A failed refresh blocks deletions that rely on remote evidence; local-only repos use their established local default instead.
 
@@ -52,7 +52,7 @@ Never drop stashes, explicitly expire or delete reflogs, or touch working files,
 
 ## 6. Report
 
-Follow the global Communication and Session flow rules. Before approval, report the candidates and ask for the selection. After execution, say what actually ran, what was removed, and what was kept or failed. Do not describe a proposed deletion as completed.
+Follow the global Communication and Session flow rules. After execution, say what actually ran, what was removed, and what was kept or failed.
 
 ```
 Two branches are candidates: `fix/login` at <sha> is an ancestor of `origin/main`; `fix/menu` at <sha> matches the head of merged PR #12, whose merge commit is in `origin/main`, and needs force-deletion. Both deletions remove their branch reflogs. Nothing has been deleted. Which would you like to remove?
