@@ -19,9 +19,6 @@
     "session.first": "none",
     "session.last": "none"
   },
-  "attention": {
-    "enabled": true
-  },
   "session": {
     "sidebar": "hide",
     "scrollbar": true,
@@ -31,5 +28,8 @@
   },
   "prompt": {
     "image_preview": true
+  },
+  "tabs": {
+    "enabled": false
   }
 }
