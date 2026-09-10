@@ -70,7 +70,7 @@ on WT. Store path:
 
 Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatibility,
 so it does not need a separate instructions link. Its own settings live in
-`grok/config.toml` here — non-default keys only. Because Grok writes runtime state
+`grok/config.toml` here, non-default keys only. Because Grok writes runtime state
 back into `~/.grok/config.toml`, that file is never symlinked: the installer seeds it
 from the repo copy on new machines and patches just those keys afterwards.
 The installer also seeds `~/.grok/lsp.json` from `grok/lsp.json` when missing (rewriting
