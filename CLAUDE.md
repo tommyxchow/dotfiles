@@ -92,6 +92,18 @@ been going wrong, then proposes changes and waits. Also repo-local.
   Resync installs or updates it. One copy in `~/.claude/skills`; do not also
   install it for cursor, opencode, or grok.
 
+- **Herdr owns both of its agent surfaces; never vendor either into
+  `plugins/tc/skills`.** The skill is whatever `herdr --skill` prints, and the
+  pane hook is `herdr integration install claude`. Installing the integration
+  does not touch the skill, so the two refresh separately and resync does both.
+  Claude is also the only integration that writes into a file this repo tracks:
+  it rewrites the `hooks` entry in `.claude/settings.json` to an absolute machine
+  path. The committed entry is a portable `$HOME` form that dispatches on the
+  script name and already covers both platforms, so restore it after any
+  reinstall or that Windows path ships to every machine. Which integrations are
+  worth installing is a resync question; `docs/resync.md` has the current set and
+  the ones to skip.
+
 - **Install and uninstall plugins with `--scope user`.** `claude plugin uninstall
   --scope project` also deletes the key from user-scope `enabledPlugins`, and the
   interactive `/plugin` menu installs to project scope. Either way, check

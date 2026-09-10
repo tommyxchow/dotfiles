@@ -112,7 +112,8 @@ The installer also writes `~/.claude/statusline-command.sh` from
 
 First-party skills are live links into `~/.claude/skills`. The official `gh`
 skill is installed there by resync (`gh skill install`), not linked from this
-repo. Do not also enable
+repo. The `herdr` skill lands there the same way, printed by `herdr --skill`,
+alongside a pane hook from `herdr integration install claude`. Do not also enable
 `tc@chow` on a machine that ran the installer, or Claude and Cursor load the
 same skills twice. Keep `tc@chow` in the marketplace catalog for machines that
 only install the plugin. Do not also install `mattpocock-skills` from the official

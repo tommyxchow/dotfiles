@@ -101,6 +101,55 @@ link. Missing: `gh skill install cli/cli gh --agent claude-code --scope user`.
 Present: `gh skill update gh`. One copy in `~/.claude/skills`. Do not also
 install it for cursor, opencode, or grok.
 
+## Herdr skill and hook
+
+Skip this section if `herdr` is not on PATH.
+
+Herdr owns two surfaces and they refresh separately. The skill at
+`~/.claude/skills/herdr/SKILL.md` is not a first-party link, and the integration
+installer never writes it, so rewrite it from the binary every time:
+`herdr --skill > ~/.claude/skills/herdr/SKILL.md`. Do not diff the two first.
+The binary prints LF and the installed file is CRLF, so a raw diff calls every
+line changed even when the content is identical.
+
+The pane hook is the other surface, and it is per agent rather than per machine.
+Run `herdr integration status --outdated-only` and reinstall whatever it lists
+with `herdr integration install <agent>`. Keep that set to claude, codex, cursor,
+and grok. Only claude writes into a file this repo tracks; the rest are
+self-contained in their own config directories and need no cleanup.
+
+Do not install the opencode integration. It targets OpenCode 1 and does nothing
+on OpenCode 2, which is what this machine runs. Herdr still ships the v1
+named-export plugin shape that v2's loader rejects, and it registers a second
+plugin through `tui.jsonc`, the v1 terminal config that v2 replaced with
+`cli.json`. Herdr tracks this as an open bug, herdrdev/herdr#3652. Status is no
+help here: it would report `opencode: current` while nothing loads, and the
+second piece uses an id, `opencode-tui`, that never appears in the status list.
+None of this affects pane detection, which recognizes `opencode2.exe` on its own
+and needs no integration. Recheck after a herdr release notes OpenCode 2 support
+for integrations rather than for detection.
+
+Then check `git diff .claude/settings.json`. Installing the claude integration
+replaces the committed portable hook command with an absolute path into this
+machine's home directory, which does not belong in a public repo and is dead on
+the other platform.
+
+Restore the committed form with `git checkout -- .claude/settings.json`, after
+setting aside any other pending settings edit that command would discard along
+with it. The committed command already covers both platforms. Herdr writes
+`hooks/herdr-agent-state.ps1` and a `powershell -NoProfile -ExecutionPolicy
+Bypass -File` command on Windows, and `hooks/herdr-agent-state.sh` with `bash
+'<path>' session` everywhere else, which is exactly what the committed dispatch
+tests for by name.
+
+Still read the diff rather than restoring blind. If a future version ever writes
+another filename, widen the dispatch to match it, because an unmatched name is
+the bad case: the command exits 0 and the hook silently never runs.
+
+Reinstalls stay occasional. `herdr integration status` reads the version marker
+in the script file and ignores the settings entry, so the portable command
+survives and only a real version bump puts claude on the outdated list.
+
 ## Skill sources
 
 Nothing here is vendored. Every skill in `plugins/tc/skills` is written in this

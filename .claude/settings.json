@@ -4,6 +4,20 @@
     "defaultMode": "auto"
   },
   "model": "opus",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "h=\"$HOME/.claude/hooks/herdr-agent-state\"; if [ -f \"$h.sh\" ]; then bash \"$h.sh\" session; elif [ -f \"$h.ps1\" ]; then powershell -NoProfile -ExecutionPolicy Bypass -File \"$h.ps1\" session; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "bash \"$HOME/.claude/statusline-command.sh\"",
