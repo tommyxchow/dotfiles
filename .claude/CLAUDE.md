@@ -110,6 +110,7 @@ Follow the project's design language. Don't paint success until the work succeed
 
 ## Git
 
+- Prefer squash merges for PRs unless the repo requires another strategy. This preference does not grant merge permission.
 - **Ask first for repo cleanup deletions.** Show exact branches, worktree registrations, and remote-tracking refs with the evidence and side effects, then let me select what to remove. A general cleanup request or `apply` is not approval of an unseen list. Recheck before acting; changed targets need fresh approval.
 - Stage the files the slice touched, never `git add -A` or `.`. If a file holds both your change and mine, say so.
 - Conventional Commits: `type(scope): subject` in lowercase, no trailing period. `!` before `:` for breaking.
