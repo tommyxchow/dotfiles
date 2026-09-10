@@ -1,6 +1,6 @@
 ---
 name: pr
-description: 'Owns the pull request from near-ready to ready for review. Verifies each acceptance criterion with evidence, runs the whole-branch review in a fresh subagent, runs pass, pushes, and opens the draft with the standard body (summary, what-to-review table with sizes, AC ledger, test plan, screenshots, risk, stack). Then keeps that body current and addresses open review threads in one batch. `ready` flips the draft after the readiness check; `rebase` restacks when a parent moves or merges. Use when the user says pr, open a pr, draft pr, ship it, take this to a pr, update the pr, address the reviews, fix the review comments, mark pr as ready, is this ready, final review, close out the pr, rebase the stack, sync the stack, sync this down to another pr, or pastes UAT feedback. Also runs on its own when a build reaches near-ready. Not the slice closer (that''s pass), not a report-only review (that''s review), not a summary (that''s tldr pr). Never merges.'
+description: 'Owns the pull request from near-ready to ready for review. Verifies each acceptance criterion with evidence, runs the whole-branch review in a fresh subagent, runs pass, pushes, and opens the draft with the standard body (summary, what-to-review table with sizes, AC ledger, test plan, screenshots, risk, stack). Then keeps that body current and addresses open review threads in one batch. `ready` flips the draft after the readiness check; `rebase` restacks when a parent moves or merges. Use for explicit PR requests, existing PR reviews and readiness, or restacking. For ship it, near-ready work, or UAT feedback without a PR, first apply the global Git rules: routine personal-repo work may end in a direct commit, even with a plan. Not the slice closer (that''s pass), not a report-only review (that''s review), not a summary (that''s tldr pr). Never merges.'
 argument-hint: "[ready | rebase | reviews | <focus or pasted feedback>]"
 ---
 
@@ -12,7 +12,7 @@ Takes a branch from "the build is near ready" to "ready for review" and keeps it
 
 It calls `review` and `pass` and does not rewrite them. It never merges, and it never marks ready except in `ready` mode.
 
-In the user's own repos, work that never needed a plan never needs this skill either: `pass` commits the small fix and that is the end. A team repo gives every change a PR however small, so a small fix still comes here, with a short ledger from section 1. Work that did have a plan and arrives without its checklist has lost it, not outgrown it, and section 1 rebuilds that too.
+Before entering the PR workflow, apply the global Git rules. Routine personal-repo work can end in a direct commit even if it needed a plan; neither a plan nor a local review automatically calls for a PR. Use this skill when the user requests a PR, one already exists for the task, or the change warrants a separate review. A team repo gives every change a PR however small. When taking planned work to a PR, keep its acceptance checklist; section 1 rebuilds a missing one.
 
 ## Decide by state
 

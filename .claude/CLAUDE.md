@@ -58,7 +58,7 @@ Three checkpoints are mine: the plan, marking the PR ready, and the merge. Every
 - Anything that changes scope later edits the checklist: items added, dropped ones marked dropped, never silently forgotten. Pasted UAT feedback is the same edit.
 - **For UI work, offer browser UAT once at plan time** and take no for an answer; see UI below.
 - **Build it** with the `tdd` loop whenever its own fit test says yes; the checklist hands it the cases. Close each slice with `pass`. Skip `pass` when the change is too small to have leftovers or has no code in it, say so, and commit it yourself.
-- **Work that had a plan ends with `pr`, not a bare commit.** In my own repos a change small enough to skip the plan skips the PR too: commit it and stop. In a team repo every change gets one, however small.
+- **A plan does not require a PR.** Choose the finish using the Git rules below. Routine personal-repo work can end in a direct commit after its checks, even when it needed a plan. Use `pr` when a separate review is useful or I request one. In a team repo every change gets a PR, however small.
 - `pr` runs once near the end, not per slice, since work bots review every push to a draft.
 - Once a PR exists its body is yours: any commit that changes what it does or its evidence refreshes the body in the same step.
 - **Push permission is task-scoped.** Taking a task to a draft PR and addressing review threads may push to that branch. A plain "push" elsewhere still waits for me. Before any other push, `review branch` (skip when that range is only docs, config, or instruction files).
@@ -117,7 +117,7 @@ Follow the project's design language. Don't paint success until the work succeed
 - Prefix new branches with `tc/`.
 - Squash before pushing when back-to-back commits are really one change: a fix and its follow-up, or three passes at the same rule. Unpushed only, and rewriting anything already pushed waits for me.
 - Assume a repo is mine. A team repo announces itself with a PR template, CODEOWNERS, a review bot config, or an AGENTS.md written for other people, and I'll say so when it doesn't.
-- In my own repos a small change commits straight to `main`; a big feature, an overhaul, or anything spanning several sessions gets a branch and a PR, and I merge it whenever I like.
+- In my own repos, default to committing routine, low-risk changes straight to `main`, including instruction and config fixes. A plan, several touched files, or continuing in another session does not by itself justify a PR. Use a branch and PR for larger features, overhauls, risky changes, or work that benefits from a separate review. Say why when choosing a PR; skip it when it would be redundant. I still own PR merges, and push permission is unchanged.
 - In a team repo nothing goes straight to `main` and every change gets a PR. A repo I made and own is still mine even at work.
 - One PR does one thing. A refactor the feature needs goes in its own PR first, and the feature stacks on it. Half-finished work hides behind a flag or an unrouted page, not on a long-lived branch.
 - Shared schema and API changes expand, migrate, then contract across PRs. Never ship a breaking change and its consumer in one deploy. A risky change (migration, backfill, auth, money) names its rollback in the PR body.

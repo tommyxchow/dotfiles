@@ -38,4 +38,4 @@ Size it to the plan. Two or three real decisions is one round, and one round can
 
 ## Done
 
-Done when the frontier is empty: every branch visited, nothing left silently assumed. Close by restating the plan as settled, in the user's own decisions, and end it with a numbered acceptance checklist: the ticket's criteria plus the edges the interview surfaced, the test or check each one maps to, and what is explicitly out of scope. That checklist is what `tdd` takes its cases from and what `pr` proves later, so it has to be concrete enough to test against. Stop there. No code until the user confirms it reads right.
+Done when the frontier is empty: every branch visited, nothing left silently assumed. Close by restating the plan as settled, in the user's own decisions, and end it with a numbered acceptance checklist: the ticket's criteria plus the edges the interview surfaced, the test or check each one maps to, and what is explicitly out of scope. That checklist guides implementation and verification, and supplies the evidence if the work goes to a PR; planning does not decide that. Stop there. No code until the user confirms it reads right.
