@@ -47,11 +47,11 @@ Never write the implementation first and backfill the tests around it. If the co
 
 ## 4. What makes a test worth keeping
 
-The global rules carry the must-haves for any stack: a test that can fail, a hand-written expected value, real dependencies over mocks, and tests that pass alone and in any order. Four more on top of those:
+Follow the global testing rules for meaningful failures, independently checked expectations (including reviewed snapshots), dependencies, isolation, and retries. Four more on top of those:
 
 - **Assert what the caller can see**: the return value, the rendered output, the response body, the row that got written. Not which internal functions were called, and not how many times.
 - **Name the case, not the function.** "rejects an expired token", not "test login".
-- **The seam is a boundary, not a shortcut.** Mocking the wrapper you own around a vendor is fine. Mocking another part of the app to get a test passing means the boundary is in the wrong place; move it rather than reaching inside.
+- **Mock a boundary, not the behavior under test.** An owned vendor wrapper or intercepted network request can isolate a test. Mocking an app module is not by itself a reason to restructure; check whether it hides the behavior this test should exercise before moving the boundary.
 - **One reason to fail per test.** Two assertions about the same behavior are fine; two behaviors are two tests. Duplication between tests is fine, since a test should read top to bottom without chasing a helper.
 
 ## 5. Close

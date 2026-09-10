@@ -31,7 +31,7 @@ Examples: `/refresh full don't touch wrangler` · `/refresh minimal skip shadcn`
 
 ### When to ask
 
-Harness question tool if it exists; otherwise one short labeled question. **Don't ask** on a clean Optimal run with no majors and no must-upgrades.
+Follow the global Session flow rules for question tools and the text fallback, including a clearly marked recommendation. **Don't ask** on a clean Optimal run with no majors and no must-upgrades.
 
 Ask once when:
 
