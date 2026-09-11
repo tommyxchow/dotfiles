@@ -52,7 +52,7 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
 
 ## How a task runs
 
-Three checkpoints are mine: the plan, marking the PR ready, and the merge. Everything between them is yours, and the skills below chain on their own; I should not have to name one.
+Three checkpoints are mine: the plan, marking the PR ready, and the merge. Everything between them is yours, and the skills below chain on their own; I should not have to name one. The unit in between is a slice: the smallest piece of the task worth committing on its own.
 
 - **Plan first** for meaningful scope or risk, a decision I would want a say in, or work where you would otherwise be guessing. Use the harness's plan mode where it has one. Small or clear mechanical changes just happen, even across several files. When the plan leaves a real choice open, or the idea is too thin to build from, run `grill-me`.
 - Before writing code on a non-trivial task, batch a few questions for ambiguity that will propagate (data shape, API contract, naming) and the states people forget (empty, error, permission). Skip it when `grill-me` already ran, for a reversible local change, or anything the codebase already implies.
