@@ -54,6 +54,7 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
 Three checkpoints are mine: the plan, marking the PR ready, and the merge. Everything between them is yours, and the skills below chain on their own; I should not have to name one.
 
 - **Plan first** for anything non-trivial: several files, a decision I would want a say in, or work where you would otherwise be guessing. Use the harness's plan mode where it has one. A small change just happens. When the plan leaves a real choice open, or the idea is too thin to build from, run `grill-me`.
+- Before writing code on a non-trivial task, batch a few questions for ambiguity that will propagate (data shape, API contract, naming) and the states people forget (empty, error, permission). Skip it when `grill-me` already ran, for a reversible local change, or anything the codebase already implies.
 - **The plan ends in a numbered acceptance checklist**: the ticket's criteria plus the edges the plan surfaced, the test or check each maps to, and what is out of scope. With no ticket (an idea I described, a GitHub issue), propose it in three to five lines and confirm it. Keep it in the harness plan file where one exists.
 - Anything that changes scope later edits the checklist: items added, dropped ones marked dropped, never silently forgotten. Pasted UAT feedback is the same edit.
 - **For UI work, offer browser UAT once at plan time** and take no for an answer; see UI below.
@@ -72,7 +73,7 @@ A status check ("we good", "anything outstanding") is what you already know plus
 - Official docs beat X, blogs, and forums. Forums show what people are hitting, never what the API is.
 - Default to the recommended thing, plus cheap follow-through already in scope. Ask first when the change is large, hard to undo, or a decision I can't infer. Don't start a second task, and don't add a README or docs page the task didn't ask for.
 - Patch and minor bumps to fix something are fine. Ask first, with the options and your recommendation, before a major bump, a new dependency, a pinned or patched package, a new linter, formatter, CI gate, or coverage tool. A new client-side dependency also names its bundle cost in the ask. The reason for a pin is usually in the commit or AGENTS.md.
-- When a command or fetch fails for a transient reason (timeout, offline, 401, cancelled), retry or move on. Don't add a workaround to the code because of it.
+- When a command or fetch fails for a transient reason (timeout, offline, 401, cancelled, or `fsmonitor_ipc__send_query` after a worktree is removed), retry or move on. Don't add a workaround to the code because of it.
 - When I ask for all or every relevant item, cover every match. Don't stop at a representative subset.
 - Finish what a change starts. Delete the old path in the same change, including shims for callers you can update, commented-out blocks, and debug logging.
 - Never claim something works on faith. Prefer the repo's own full check over a single linter pass, and don't invent a gate the repo doesn't have.
@@ -113,7 +114,7 @@ Follow the project's design language. Don't paint success until the work succeed
 - **Ask first for repo cleanup deletions.** Show exact branches, worktree registrations, and remote-tracking refs with the evidence and side effects, then let me select what to remove. A general cleanup request or `apply` is not approval of an unseen list. Recheck before acting; changed targets need fresh approval.
 - Stage the files the slice touched, never `git add -A` or `.`. If a file holds both your change and mine, say so.
 - Conventional Commits: `type(scope): subject` in lowercase, no trailing period. `!` before `:` for breaking.
-- The subject says what changed in plain words; add a body only when the subject can't carry the why. A body is the reason the change was needed and what it replaces, never a retelling of the diff or of how you got there.
+- The subject says what changed in plain words. The body is the snapshot a later human or agent needs: each distinct change and why, what it replaces, enough to skip the diff. Skip the body when the subject already is that snapshot. Never a tour of the hunks or of how you got there, and don't pad.
 - Prefix new branches with `tc/`.
 - Squash before pushing when back-to-back commits are really one change: a fix and its follow-up, or three passes at the same rule. Unpushed only, and rewriting anything already pushed waits for me.
 - Assume a repo is mine. A team repo announces itself with a PR template, CODEOWNERS, a review bot config, or an AGENTS.md written for other people, and I'll say so when it doesn't.
@@ -121,8 +122,8 @@ Follow the project's design language. Don't paint success until the work succeed
 - In a team repo nothing goes straight to `main` and every change gets a PR. A repo I made and own is still mine even at work.
 - One PR does one thing. A refactor the feature needs goes in its own PR first, and the feature stacks on it. Half-finished work hides behind a flag or an unrouted page, not on a long-lived branch.
 - Shared schema and API changes expand, migrate, then contract across PRs. Never ship a breaking change and its consumer in one deploy. A risky change (migration, backfill, auth, money) names its rollback in the PR body.
-- Some sessions run in a worktree I set up for one task, others are just the main checkout. Either way don't create a worktree, and don't move the work into a folder I didn't open.
-- In a team repo a session outside a worktree is usually questions and discussion with nothing written yet, since I open a worktree when I mean to change code. Ask before editing in one.
+- Some sessions run in a worktree I set up for one task, others are just the main checkout. Don't create a worktree or move the work into a folder I didn't open unless I say yes. If the session is on the main checkout and a worktree would be cleaner, offer one and wait; I usually pick that up front. If I say yes, use the harness's own worktree command, never `git worktree add` into a random folder, then continue in that checkout.
+- In a team repo a session outside a worktree is usually questions and discussion with nothing written yet. Ask before editing in the main checkout.
 - A worktree is a clean checkout of tracked files only, so gitignored ones like `.env` don't come along. It isolates files but not ports or local databases, so a dev server you start needs its own port.
 - When I name a parent to stack on, usually partway through, rebase this branch onto it and set the PR's base to it. Most sessions never stack.
 - When a parent merges, `pr rebase` moves the children. Plain git, no stacking tool.
@@ -147,4 +148,4 @@ This file rides along to every harness (Claude Code, Cursor, OpenCode 2, Grok Bu
 - A rule only fires from a file that is always loaded. Anything in a `docs/` playbook or a skill body is a note until an agent goes looking for it, so a gate that has to hold every session belongs here.
 - Skills take their arguments as plain words, never `--flags`. Scope keywords like `branch`, `all`, or `pr <number>` are right; a `--fix` switch is not.
 
-First-party skills under `plugins/tc/skills` follow the example and prune rules above, and they may keep step-by-step playbooks. Communication and Session flow live here; skills point at them, they don't copy or restyle them. Skill routing lives in each skill's description, not in this file.
+First-party skills under `plugins/tc/skills` follow the example and prune rules above, and they may keep step-by-step playbooks. Communication and Session flow live here. The more specific of any two instruction files cites the broader one instead of restating or restyling it. Skill routing lives in each skill's description, not in this file.

@@ -47,6 +47,14 @@ been going wrong, then proposes changes and waits. Also repo-local.
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this
   repo belongs in this file instead.
 
+- **Don't `git switch` the linked checkout under a running session.** A branch
+  swap there rewrites the live config and skill files. Offer a worktree the
+  global way instead.
+
+- **Run the installer from the permanent checkout.** When working in a worktree,
+  wait until the changes reach the permanent checkout, then install there.
+  Installing from a worktree redirects the machine's live links into it.
+
 - **`.claude/CLAUDE.web.md` is the web-chat twin of `.claude/CLAUDE.md`.** Nothing
   loads it: paste it by hand into claude.ai (Settings > Instructions for Claude)
   and grok.com (Customize Grok). When a Communication or External writing rule changes in

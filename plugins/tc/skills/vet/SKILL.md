@@ -54,6 +54,7 @@ For a dev question inside a repo, read the installed version from the manifest o
 - **Flag what's missing**, not just what's wrong. Omissions are the most common miss.
 - **Past a handful of fetches and still not settled?** That is open-ended research, not a vet. Give the verdict with what's still missing and stop. Don't start a second topic. Each leaf has its own budget. The coordinator does not add fetches after the leaves return.
 - **Fallback when web is blocked:** read the manifest, lockfile, and bundled docs directly and say so. Vet never reads binaries, runs scripts against an install, or reverse-engineers anything; that is a normal session's job. If neither web nor bundled docs work, say you couldn't check. Don't assert.
+- **An empty fetch is a miss, not a puzzle.** Don't curl the page, open a browser, hit a third-party proxy, or scrape a dump with a script. Try at most one other verified official source for the same project, including its official GitHub repository. If that also fails to settle the claim, stop and say you couldn't verify it.
 
 ## 4. Present the result
 
