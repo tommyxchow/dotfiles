@@ -69,11 +69,11 @@ been going wrong, then proposes changes and waits. Also repo-local.
   `/vet`, `/tldr`, `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, `/pass`,
   `/pr`, and `/cleanup` wrappers. Do not also copy those skills into `~/.config/opencode/skills`.
   Keep shared skills portable Agent Skills (`name` and `description` required).
-  Claude-only `context` / `agent` / `background` / `disable-model-invocation` are
-  fine where a skill should fork or stay user-started; other harnesses ignore
-  them, so whatever such a key enforces has to be written into the skill's own
-  text as well or it only holds in Claude Code. Don't put `allowed-tools` on a
-  shared skill.
+  Claude-only `context` / `agent` / `background` are fine where a skill should
+  fork, and `disable-model-invocation` is read by Claude and Cursor but not by
+  every harness. Whatever such a key enforces has to be written into the skill's
+  own text as well or it only holds where the key is read. Don't put
+  `allowed-tools` on a shared skill.
   Do not enable `tc@chow` on a machine that ran the installer: that plugin is
   the same files via the marketplace cache, so both would load. Do not install
   `mattpocock-skills` from the official marketplace either: it ships its own

@@ -115,7 +115,7 @@ All of that holds: `gh pr ready <number>`, then report. Anything fails: report w
 
 Two jobs share this section, and the easy one comes up far more often.
 
-**The parent moved and is still open.** New commits on it, review fixes, or work pulled down from a child. Every branch above it runs `git rebase <parent branch>`, bottom-up, and that is all: the fork point is still reachable, and git drops by patch-id anything already on the parent. Moving work down the stack is a cherry-pick onto the lower branch followed by this same catch-up above it, and the cherry-picked commit deduplicates itself.
+**The parent moved forward and is still open.** New commits on it, review fixes, or work pulled down from a child, with its old tip still an ancestor of the new one (`git merge-base --is-ancestor <old tip> <parent branch>`). Every branch above it runs `git rebase <parent branch>`, bottom-up, and that is all: the fork point is still reachable, and git drops by patch-id anything already on the parent. Moving work down the stack is a cherry-pick onto the lower branch followed by this same catch-up above it, and the cherry-picked commit deduplicates itself. If the parent was amended, squashed, or had a commit dropped while open, that ancestor check fails; treat it like the merged case below, because a plain rebase would replay the parent's stale commits or resurrect the one it deliberately removed.
 
 **The parent merged.** A squash merge rewrites its commits into one new commit, so the child still carries originals git can no longer match and the base branch may be gone. That is the recipe below. An unstacked branch never gets here; it is `git fetch` and `git rebase origin/<default>`.
 

@@ -40,7 +40,7 @@ For a dev question inside a repo, read the installed version from the manifest o
 
 ## 3. Verify
 
-- **Don't assert from training data.** A checkable fact (version, API signature, price, date, deprecation, "latest", best practice) comes from a fetched page, never from memory or a search snippet. In a repo, section 2 first; then search.
+- **Don't assert from training data.** A checkable fact (version, API signature, price, date, deprecation, "latest", best practice) comes from a fetched page, never from memory or a search snippet. A fact already verified this session, or a pattern the repo already uses, is settled; re-check only what is new, changed, or disputed. In a repo, section 2 first; then search.
 - **Go straight to the best source.** Search once for the canonical page, fetch it, confirm the claim on the page. Don't average across weaker sources. Confirm you're on the project's canonical domain (the one the repo or package registry links to), not a mirror or lookalike. A discussions, answers, `community.`, or forum page on that brand is community opinion, not the spec; `learn.` and `docs.` hosts can still be the real docs.
   1. Specs, **version-matched** official docs (Next.js, React, TypeScript, Flutter), language and platform docs (MDN, dart.dev), source, README, changelog, GitHub **releases**. This settles APIs, versions, and facts.
   2. The vendor's own blog or account: announcements only. Confirm the fact in (1) before citing.

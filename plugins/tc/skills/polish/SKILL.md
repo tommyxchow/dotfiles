@@ -35,6 +35,8 @@ Never use `@{upstream}...HEAD` for the branch range: once the branch has been pu
 
 If both sources are empty after applying the table, fall back to files the user named; if none, ask.
 
+**Caller-supplied pool.** When another skill (`pass`) or the user hands over an explicit file list, that list is the whole pool and replaces Sources A and B. Session-wide discovery is for a bare `/polish`; `/polish all` still widens to the branch.
+
 **Post-commit / clean tree:** If Source A is empty (everything committed, clean working tree) but Source B is non-empty, the pool is still those session-edited files on disk. That is intentional — bare `/polish` means “what we worked on this session,” not “only uncommitted hunks.” Read those files from disk for Phase 0.5 and Phase 1; do not stop with “nothing to polish” / “already clean” just because `git status` is clean.
 
 If the pool clearly mixes unrelated work from another task, prefer Source B (when included) or ask **once** — don't block every run.
@@ -83,7 +85,7 @@ Keep the numbers for the summary: how many files autofix touched, and what happe
 
 ## Phase 1 — Four lenses (parallel, read-only)
 
-Exactly four read-only lenses in one message. No extra lens types (Tailwind/imports/types/format).
+Only when the size gate chose fan-out: four read-only lenses in one message, and at most four workers in total, so a sharded lens borrows from that cap rather than adding to it. Trivial and small pools run the same four checklists inline. No extra lens types (Tailwind/imports/types/format).
 
 Each subagent gets: post-0.5 scope; the **absolute path** to this skill's `references/checklists.md` and which sections to read (**its lens** + Finding format + Restraint) — paste those three sections inline if the path may not resolve in the subagent; recon + focus; owned/out-of-scope; **skip list** (Phase 0.5 + Prettier/ESLint-owned nits); findings only, schema, ~8 report cap (not a read cap); never "find ALL".
 
@@ -112,7 +114,7 @@ Smallest correct edit. Chesterton's Fence; don't strip named concepts/test seams
 
 1. If useful, note whether the gate was already failing before your cleanups (quick baseline: run once before apply, or record known failure). Don't blame pre-existing failures on polish.
 2. After apply: fresh-eyes on the resulting diff; revert polish-owned scope creep.
-3. Run recon's gate. If you applied nothing and this same tree already passed that gate this session, such as the run `tdd` just finished, cite that result instead of running it twice. Anything you applied means the gate runs. If a polish cleanup caused a new failure, revert **that** cleanup and continue with the others. If there is no gate, say so.
+3. Run recon's gate. If you applied nothing and this same tree already passed that gate this session, such as the run `tdd` just finished, cite that result instead of running it twice. Anything you applied means the gate runs, unless the caller passed `skip check`; then report the gate as skipped at the user's request and say what would have run. If a polish cleanup caused a new failure, revert **that** cleanup and continue with the others. If there is no gate, say so.
 
 **Summary.** Write it in the global Communication voice: a few full sentences, answer first. Say what autofix touched, what you cleaned up and why it is safe, what you left alone and why, and anything correctness-shaped that belongs in code review. If nothing was worth changing, say the code was already clean and stop.
 

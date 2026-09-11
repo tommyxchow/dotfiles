@@ -14,7 +14,7 @@ Honor `AGENTS.md` holds. `audit` reports and changes nothing. The modes that do 
 
 ## Collision: machine vs repo
 
-If this workspace **is the dotfiles/chow config repo** (root `install.sh` plus `docs/resync.md`): **stop**. Follow `docs/resync.md`, including `/refresh` and "resync" here. That playbook is pull, installer, plugins, leftover sweep — not packages. In any other repo, "resync" means this skill.
+If this workspace **is the dotfiles/chow config repo** (root `install.sh` plus `docs/resync.md`): **stop**. `audit` / `plan` here is the setup audit: follow `docs/audit.md` and change nothing. Any other mode, including bare `/refresh` and "resync", follows `docs/resync.md`, which is pull, installer, plugins, leftover sweep — not packages. In any other repo, "resync" means this skill.
 
 ## Modes
 
@@ -22,7 +22,7 @@ If this workspace **is the dotfiles/chow config repo** (root `install.sh` plus `
 |---|---|
 | *(none)* / `optimal` | Current-major latest + required migrations. Holds stay. Majors listed, not applied. **Default. No picker.** |
 | `full` | Optimal plus every major that is not a documented hold. Breaking a hold still needs a question. |
-| `minimal` | Patches, lockfile, security/compat that unblocks the gate or fixes a GHSA. No feature minors, no framework story, no shadcn style. |
+| `minimal` | Patches, lockfile, security/compat that unblocks the gate or fixes a GHSA. No feature minors, no framework story, no shadcn style. `pnpm update <pkg>` follows the manifest range and can take a minor, so name the patch (`pnpm update foo@1.2.1`) and check the lockfile stayed on the same minor. |
 | `audit` / `plan` | Report only. No edits. |
 | `packages` | Deps + lockfile + verify. Skip docs/UI unless a bump requires it. |
 | `docs` | AGENTS.md / README / CI comments vs vendor docs. Still mention holds that sit on a GHSA. |
@@ -48,7 +48,7 @@ A passed mode or custom instruction is the answer. Don't also prompt.
 - Never blanket `pnpm update --latest`. Target Apply packages with `pnpm update <pkg…>` ([pnpm update](https://pnpm.io/cli/update)): keeps the range operator, writes the resolved version. Exclude holds (`\!typescript`). An approved major: `pnpm update foo@2`. `catalog:` deps change in `pnpm-workspace.yaml`.
 - Honor **`minimumReleaseAge`** (check the installed default). No exclude for curiosity. **Security:** `pnpm audit --fix=update` may add a targeted exclude for the patched version ([pnpm audit](https://pnpm.io/cli/audit)). Leave it, mention it.
 - Don't stash/reset a dirty tree. Show `git status`; work on top or stop if the dirt is unrelated.
-- **Vet** Must, the framework line, and each Apply package (installed first, then vendor changelog / [GHSA](https://github.com/advisories) / registry). The outdated table is not settled. Don't changelog Skip rows. Don't load the full `vet` skill unless a claim is disputed. If a bump looks broken or a Must is disputed, search that package's issues; confirm in changelog/releases — don't cite a thread as the spec. Don't assert "latest" or "safe" from memory. No canary / RC / dist-tag except `latest` unless they asked.
+- **Vet** Must and the framework line against the vendor changelog / [GHSA](https://github.com/advisories), installed version first. For the rest of Apply, the batched `outdated` and `audit` output plus registry metadata settles a routine patch or minor; open a changelog or migration guide only for a major, an advisory, a deprecation, or a package whose API the repo calls directly. Group packages that share an upstream release and reuse anything already vetted this session. The outdated table alone is not settled. Don't changelog Skip rows. Don't load the full `vet` skill unless a claim is disputed. If a bump looks broken or a Must is disputed, search that package's issues; confirm in changelog/releases — don't cite a thread as the spec. Don't assert "latest" or "safe" from memory. No canary / RC / dist-tag except `latest` unless they asked.
 - Don't rewrite AGENTS/README to a CLI the pin doesn't ship. Match `packageManager` / the SDK pin.
 - Don't add `allowBuilds` entries (new postinstall) unless they agreed ([pnpm supply chain](https://pnpm.io/supply-chain-security)).
 - Verify with the repo's own full check (see stacks.md for this stack) plus extra jobs in the default CI workflow. Don't invent a gate the repo doesn't have. If the gate is already red, say so before bumping.

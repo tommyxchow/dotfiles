@@ -13,6 +13,9 @@ installed file at `~/.claude/statusline-command.sh` is a generated artifact — 
 is NOT committed anywhere. To set up a machine (or restore after edits), write
 the script below verbatim and point `settings.json` at it.
 
+Run this only when the user asks to install or restore the statusline. Never
+start it on your own, whatever the harness does with the frontmatter above.
+
 ## Output format
 
 ```
