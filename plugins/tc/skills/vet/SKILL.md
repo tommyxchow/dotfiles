@@ -36,6 +36,8 @@ One claim ("does `Map` use `has`?") is one leaf. A pasted plan with independent 
 
 For a dev question inside a repo, read the installed version from the manifest or lockfile (package.json, pnpm-lock.yaml, pubspec.yaml, …) before searching, and prefer docs for that version, including docs bundled in `node_modules`, over the live site, which is usually *latest*. When the question is a bug or a missing feature, also check the changelog between the installed and current version: if it is already fixed, say so and recommend the bump instead of a workaround. The target is the best current approach compatible with the project, not merely the newest.
 
+**Local sources come first for how the installed thing behaves.** Flags, subcommands, config keys, and API signatures are settled by `<tool> --help`, `man`, `pnpm help <cmd>`, or the `README` / `CHANGELOG` shipped with the installed package or SDK. That output is version-matched by definition and costs no fetch; cite it as "installed vX help output" and stop. The web still owns what the local copy can't know: "latest", what changed since the installed version, advisories, deprecations, prices, and best-practice recommendations. This is not a license to grep the whole install; the no-binaries rule in section 3 still holds.
+
 ## 3. Verify
 
 - **Don't assert from training data.** A checkable fact (version, API signature, price, date, deprecation, "latest", best practice) comes from a fetched page, never from memory or a search snippet. In a repo, section 2 first; then search.
