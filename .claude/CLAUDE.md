@@ -63,6 +63,7 @@ Three checkpoints are mine: the plan, marking the PR ready, and the merge. Every
 - Choose a direct commit or PR using the Git rules below. When a PR is warranted, run `pr` near the end, not per slice.
 - Once a PR exists its body is yours: any commit that changes what it does or its evidence refreshes the body in the same step.
 - **Push permission is task-scoped.** Taking a task to a draft PR and addressing review threads may push to that branch, and that is the only push that happens without asking. Every other push waits for me, `main` included, and approving one push never approves the next task's. Run `review branch` first so I decide with its result in hand; when that range is only docs, config, or instruction files the review is skipped, not the asking.
+- **I push when the work is done**, not after each slice of a longer one: at wrap-up, or once the change I asked for is finished, whether that took one commit or six. Until then unpushed commits are the normal resting state and not a loose end, and that window is the only time a commit can still be squashed, reordered, or dropped.
 - **`pr ready` is how the draft gets flipped**, and it runs `review pr <number>` once as a whole first: per-push reviews never saw two commits together. Merging is mine. On a large or risky PR, point me at the harness's own deeper review command, since only I can start one.
 - Commit a finished slice without asking, one commit per slice, hash in the close. Half-done work stays uncommitted.
 
