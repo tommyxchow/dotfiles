@@ -53,7 +53,7 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
 
 Three checkpoints are mine: the plan, marking the PR ready, and the merge. Everything between them is yours, and the skills below chain on their own; I should not have to name one.
 
-- **Plan first** for anything non-trivial: several files, a decision I would want a say in, or work where you would otherwise be guessing. Use the harness's plan mode where it has one. A small change just happens. When the plan leaves a real choice open, or the idea is too thin to build from, run `grill-me`.
+- **Plan first** for meaningful scope or risk, a decision I would want a say in, or work where you would otherwise be guessing. Use the harness's plan mode where it has one. Small or clear mechanical changes just happen, even across several files. When the plan leaves a real choice open, or the idea is too thin to build from, run `grill-me`.
 - Before writing code on a non-trivial task, batch a few questions for ambiguity that will propagate (data shape, API contract, naming) and the states people forget (empty, error, permission). Skip it when `grill-me` already ran, for a reversible local change, or anything the codebase already implies.
 - **The plan ends in a numbered acceptance checklist**: the ticket's criteria plus the edges the plan surfaced, the test or check each maps to, and what is out of scope. With no ticket (an idea I described, a GitHub issue), propose it in three to five lines and confirm it. Keep it in the harness plan file where one exists.
 - Anything that changes scope later edits the checklist: items added, dropped ones marked dropped, never silently forgotten. Pasted UAT feedback is the same edit.
@@ -69,7 +69,7 @@ A status check ("we good", "anything outstanding") is what you already know plus
 
 ## Working preferences
 
-- Before using a framework or library API, check the installed version against its matching official docs rather than memory. If a newer release already fixes the problem, prefer that bump over a workaround, following the bump rules below.
+- Reuse verified sources from this session and established in-repo patterns for routine API use. For unfamiliar, version-sensitive, or uncertain usage, check the installed version against its matching official docs rather than memory. If a newer release already fixes the problem, prefer that bump over a workaround, following the bump rules below.
 - Official docs beat X, blogs, and forums. Forums show what people are hitting, never what the API is.
 - Default to the recommended thing, plus cheap follow-through already in scope. Ask first when the change is large, hard to undo, or a decision I can't infer. Don't start a second task, and don't add a README or docs page the task didn't ask for.
 - Patch and minor bumps to fix something are fine. Ask first, with the options and your recommendation, before a major bump, a new dependency, a pinned or patched package, a new linter, formatter, CI gate, or coverage tool. A new client-side dependency also names its bundle cost in the ask. The reason for a pin is usually in the commit or AGENTS.md.
@@ -77,7 +77,7 @@ A status check ("we good", "anything outstanding") is what you already know plus
 - When I ask for all or every relevant item, cover every match. Don't stop at a representative subset.
 - Finish what a change starts. Delete the old path in the same change, including shims for callers you can update, commented-out blocks, and debug logging.
 - Never claim something works on faith. Prefer the repo's own full check over a single linter pass, and don't invent a gate the repo doesn't have.
-- New behavior gets tests: the happy path plus the edges likely to break. A bug fix starts with a regression test. Changing code that has no tests starts with a characterization test that pins what it does today. UI coverage is integration-first, e2e only on critical journeys. Tests assert what the user sees.
+- New behavior gets tests: the happy path plus the edges likely to break. A bug fix starts with a regression test. Before a behavior-preserving refactor of untested logic, add a characterization test that pins what it does today. Don't add test scaffolding for formatting, a mechanical rename, or a similarly low-impact edit with no behavior change. UI coverage is integration-first, e2e only on critical journeys. Tests assert what the user sees.
 - A test must catch a relevant incorrect behavior. Deleting the implementation is one useful check, not a universal rule: a test that forbids an unwanted side effect may still pass. Check expected results independently of the implementation; hand-written values and reviewed, focused snapshots both count, recomputing the same logic or accepting unread output does not.
 - Use real dependencies where practical; mock slow, nondeterministic, or out-of-process boundaries. For vendor SDKs, prefer an owned wrapper when one fits; intercepting network requests is also valid. Each test sets up its own state and passes alone and in any order. Preserve auto-waiting and retrying assertions. Whole-test retries do not prove flakiness is fixed; fix the cause and preserve the repo's retry configuration unless changing it is part of the task.
 - If I paste another agent's plan, diff, or answer, check it. Don't agree by default.
