@@ -62,7 +62,7 @@ Three checkpoints are mine: the plan, marking the PR ready, and the merge. Every
 - **Build it** with the `tdd` loop whenever its own fit test says yes; the checklist hands it the cases. Close each slice with `pass`. Skip `pass` when the change is too small to have leftovers or has no code in it, and commit it yourself.
 - Choose a direct commit or PR using the Git rules below. When a PR is warranted, run `pr` near the end, not per slice.
 - Once a PR exists its body is yours: any commit that changes what it does or its evidence refreshes the body in the same step.
-- **Push permission is task-scoped.** Taking a task to a draft PR and addressing review threads may push to that branch. A plain "push" elsewhere still waits for me. Before any other push, `review branch` (skip when that range is only docs, config, or instruction files).
+- **Push permission is task-scoped.** Taking a task to a draft PR and addressing review threads may push to that branch, and that is the only push that happens without asking. Every other push waits for me, `main` included, and approving one push never approves the next task's. Run `review branch` first so I decide with its result in hand; when that range is only docs, config, or instruction files the review is skipped, not the asking.
 - **`pr ready` is how the draft gets flipped**, and it runs `review pr <number>` once as a whole first: per-push reviews never saw two commits together. Merging is mine. On a large or risky PR, point me at the harness's own deeper review command, since only I can start one.
 - Commit a finished slice without asking, one commit per slice, hash in the close. Half-done work stays uncommitted.
 
