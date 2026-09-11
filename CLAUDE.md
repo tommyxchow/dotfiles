@@ -77,7 +77,10 @@ been going wrong, then proposes changes and waits. Also repo-local.
   Do not enable `tc@chow` on a machine that ran the installer: that plugin is
   the same files via the marketplace cache, so both would load. Do not install
   `mattpocock-skills` from the official marketplace either: it ships its own
-  `grill-me`, which would collide with the one in `plugins/tc/skills`.
+  `grill-me`, which would collide with the one in `plugins/tc/skills`. Cursor
+  ships a built-in `review` skill under the same name, and precedence for a
+  collision is undocumented; theirs is slash-only, so asking for a review in
+  words still reaches ours while typing `/review` there is ambiguous.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`

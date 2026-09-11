@@ -63,8 +63,10 @@ something wants attention, so it's findable without reading the line.
   `max`; Ultracode reports as `xhigh`). The display name's built-in
   `(… context)` suffix is stripped so the size isn't stated twice.
 - **`ctx 34%`** — context window used, labeled so it can't be confused with a
-  rate-limit percentage. Uncolored below 65, orange at 65, red at 75 as it
-  approaches the ~78% auto-compact trigger.
+  rate-limit percentage. Colored on the room left rather than the percentage:
+  orange under 70K tokens of headroom, red under 50K. On a 200K window that is
+  the familiar 65 and 75; on a 1M window it holds off until 93 and 95, because
+  auto-compact there fires far later.
 - **`5h 24% · 7d 42%`** — 5-hour and 7-day rate-limit windows **used**.
   Uncolored below 75, orange at 75, red at 90. Pro/Max only, and only after the
   first API response of a session.
@@ -126,14 +128,21 @@ Needs `bash`, `jq`, and `git` (plus `date`, always present):
 
 ## Color thresholds
 
-Both scales run the same direction (% used), so only the trip points differ.
-Context trips earlier because it has a hard deadline: the ~78% auto-compact.
+Both segments print a % used, and both mean "bigger is worse". Only the
+rate-limit scale trips on that percentage. Context trips on the tokens behind
+it, because its deadline is auto-compact and Claude Code derives that trigger
+from the window minus reserved output, never from a fixed percentage. 50K of
+room is the same amount of work whether the window is 200K or 1M, while 75%
+used is 50K on one and 250K on the other.
 
-| % used | Context | Rate-limit window |
-| ------ | ------- | ----------------- |
-| low    | none    | none              |
-| orange | 65+     | 75+               |
-| red    | 75+     | 90+, or `out`     |
+|        | Context        | Rate-limit window   |
+| ------ | -------------- | ------------------- |
+| low    | none           | none                |
+| orange | under 70K left | 75%+ used           |
+| red    | under 50K left | 90%+ used, or `out` |
+
+A window of 200K or less keeps the original 65 and 75 trip points exactly, since
+70K and 50K left are 65% and 75% used there.
 
 "None" is the terminal's default foreground, not a gray: uncolored values stay
 fully legible, they just carry no signal. Green and yellow are gone entirely,
@@ -185,10 +194,11 @@ if [ -z "$(echo "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0; fi
 # bash and passed via --arg) so empty fields are preserved on read. five_used and
 # seven_used are percentages *used*, matching the context percentage so every
 # number on the line runs the same direction; five_over and seven_over flag an
-# exhausted window; size is the context window (1M / 200K); project is the dir
-# basename.
+# exhausted window; size is the context window formatted (1M / 200K) and size_raw
+# the same value in tokens, which the context color scales its trip points from;
+# project is the dir basename.
 us=$'\037'
-IFS="$us" read -r model used_pct five_used five_over seven_used seven_over effort size project cur_dir five_reset seven_reset cost repo wt <<EOF
+IFS="$us" read -r model used_pct five_used five_over seven_used seven_over effort size size_raw project cur_dir five_reset seven_reset cost repo wt <<EOF
 $(jq -r --arg us "$us" '
 # used_percentage is documented 0–100. Clamp display at 100; flag only values
 # over 100 as spent (`out`), so 100% still means full.
@@ -203,6 +213,7 @@ def over: if . == null then "" elif . > 100 then "1" else "" end;
   ((.rate_limits.seven_day.used_percentage // null) | over),
   (.effort.level // ""),
   ((.context_window.context_window_size // null) | if . == null then "" elif . >= 1000000 then ((. / 1000000) | floor | tostring) + "M" elif . >= 1000 then ((. / 1000) | floor | tostring) + "K" else tostring end),
+  ((.context_window.context_window_size // null) | if type == "number" then floor else "" end),
   (((.workspace.project_dir // .workspace.current_dir // "") | gsub("\\\\"; "/") | split("/") | map(select(length > 0)) | last) // ""),
   ((.workspace.current_dir // "") | gsub("\\\\"; "/")),
   (.rate_limits.five_hour.resets_at // ""),
@@ -243,8 +254,8 @@ dot="${muted}·${reset}"
 # Color for a "% used" value, shared by every percentage on the line so a bigger
 # number always means worse and a colored one always means the same thing. A
 # value with room to spare gets no color at all: ink here is reserved for what
-# needs attention. Callers pass their own trip points, since context has a hard
-# auto-compact trigger around 78 while a rate-limit window only matters near
+# needs attention. Callers pass their own trip points, since context scales its
+# own to the window's headroom while a rate-limit window only matters near
 # exhaustion.
 color_used() {
   if [ "$1" -ge "$3" ]; then printf '%s' "$red"
@@ -345,11 +356,20 @@ modelseg="${reset}${model}${reset}"
 [ -n "$meta" ] && modelseg="${modelseg} ${muted}${meta}${reset}"
 
 # Segment 3 — context window used, labeled so the % can't be mistaken for a
-# rate-limit one. Uncolored until it nears the ~78% auto-compact trigger.
+# rate-limit one. The trip points are headroom, not percentage: orange under 70K
+# tokens left, red under 50K, so the same amount of remaining room colors the
+# same on any window. A 200K window resolves to the original 65 and 75, and
+# anything smaller or unreported keeps those rather than scaling past them.
 ctxseg=""
 if [ -n "$used_pct" ]; then
   pct=$(printf "%.0f" "$used_pct")
-  ctxseg="${muted}ctx${reset} $(color_used "$pct" 65 75)${pct}%${reset}"
+  ctx_orange=65
+  ctx_red=75
+  if [ -n "$size_raw" ] && [ "$size_raw" -gt 200000 ]; then
+    ctx_orange=$(( 100 - 70000 * 100 / size_raw ))
+    ctx_red=$(( 100 - 50000 * 100 / size_raw ))
+  fi
+  ctxseg="${muted}ctx${reset} $(color_used "$pct" "$ctx_orange" "$ctx_red")${pct}%${reset}"
 fi
 
 # Segment 4 — rate-limit usage: 5h · 7d (dot only between two present windows)

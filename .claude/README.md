@@ -132,9 +132,12 @@ are the stubs in `opencode/commands`.
 Worth doing when a notably better model ships, or on a new machine:
 
 1. `/insights` to generate fresh usage data.
-2. `/doctor` for the removal side: unused skills and plugins, `CLAUDE.md` lines a session
+2. `/skill-doctor` for unused skills: which loaded skills never get invoked, what they
+   cost in context, and where to turn them off. It skips bundled and enterprise skills,
+   and says nothing about broken ones, which are `claude plugin validate`'s job.
+3. `/doctor` for the rest of the removal side: unused plugins, `CLAUDE.md` lines a session
    could derive on its own, duplicate memory files, install health.
-3. Ask Claude for the addition side, which `/doctor` does not cover: read the `/insights`
+4. Ask Claude for the addition side, which `/doctor` does not cover: read the `/insights`
    report and the `feedback` memories under `~/.claude/projects/*/memory/`, and propose
    `CLAUDE.md` rules or new skills for mistakes and workflows that keep recurring.
 

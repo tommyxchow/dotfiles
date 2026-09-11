@@ -92,7 +92,7 @@ Do not delete skills in `~/.claude/skills` that are not from this repo. Do not d
 
 Run the `cleanup` skill's read-only survey in each candidate repo (the sibling project folders from "Find the repo"). Show exact candidates and let the user select what to delete before applying anything; resync does not grant deletion approval.
 
-Git GC eventually prunes stale worktree registrations when it runs, but automatic GC is conditional, so an explicit survey is still useful. Claude Code periodically cleans eligible subagent and background-session worktrees, not every ordinary worktree session. Cursor has configurable retention-based periodic cleanup. Grok's worktree GC runs only when invoked. Report any Grok cleanup separately; do not run `grok worktree gc --max-age 7d` automatically, since it removes worktree folders outside the cleanup skill's scope.
+Git GC eventually prunes stale worktree registrations when it runs, but automatic GC is conditional, so an explicit survey is still useful. Claude Code periodically cleans eligible subagent and background-session worktrees, not every ordinary worktree session. Cursor has configurable retention-based periodic cleanup. Grok's own docs disagree on its worktree GC: the website says it runs only when invoked, while the user guide bundled with the installed build says the same pass also runs on a timer. Neither documents whether `worktree.auto_gc` is on by default, so survey rather than assume. Report any Grok cleanup separately; do not run `grok worktree gc --max-age 7d` automatically, since it removes worktree folders outside the cleanup skill's scope.
 
 ## Official gh skill
 
