@@ -94,6 +94,34 @@ Run the `cleanup` skill's read-only survey in each candidate repo (the sibling p
 
 Git GC eventually prunes stale worktree registrations when it runs, but automatic GC is conditional, so an explicit survey is still useful. Claude Code periodically cleans eligible subagent and background-session worktrees, not every ordinary worktree session. Cursor has configurable retention-based periodic cleanup. Grok's own docs disagree on its worktree GC: the website says it runs only when invoked, while the user guide bundled with the installed build says the same pass also runs on a timer. Neither documents whether `worktree.auto_gc` is on by default, so survey rather than assume. Report any Grok cleanup separately; do not run `grok worktree gc --max-age 7d` automatically, since it removes worktree folders outside the cleanup skill's scope.
 
+## OpenCode install and channel
+
+OpenCode 2 is still the beta channel. The regular installer at
+`https://opencode.ai/install` serves the v1 line from GitHub releases, so a new
+machine that runs the URL everyone shares silently lands on v1. Install v2 with
+`curl -fsSL https://opencode.ai/v2/install | bash`, from Git Bash on Windows.
+
+Both channels install a binary named `opencode` now, so the command no longer
+tells you which line you are on. `opencode --version` does, and a `1.x` there
+means the machine is on the wrong channel. `opencode2` is only a back-compat
+shim the v2 installer writes.
+
+Check each resync whether the channels have merged:
+
+```bash
+gh api repos/anomalyco/opencode/releases/latest -q .tag_name
+```
+
+A `v1.x` means keep using the v2 URL. A `v2.x` or higher means v2 reached the
+regular channel: switch installs and any upgrade wrapper to
+`https://opencode.ai/install`, after which the `opencode2` shim stops mattering.
+
+The built-in `opencode upgrade` runs bare `bash` on the installer it downloads.
+On Windows that resolves to the WSL launcher and updates the Linux copy instead,
+so upgrades there have to route through Git Bash. This machine does that with an
+`opencode` function in `Microsoft.PowerShell_profile.ps1`, which this repo does
+not track.
+
 ## Official gh skill
 
 If `gh` is on PATH, `~/.claude/skills/gh` should exist and is not a first-party
