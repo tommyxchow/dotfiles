@@ -125,7 +125,7 @@ discovery with the inspector inside an active Grok session; the standalone
 
 ### OpenCode 2
 
-This setup is OpenCode 2 (`opencode2`). The installer links
+This setup is OpenCode 2; the binary is `opencode`. The installer links
 `~/.config/opencode/AGENTS.md` to `CLAUDE.md` here. OpenCode 2 does not read
 `~/.claude/CLAUDE.md`. Skills still come from `~/.claude/skills`. Slash commands
 are the stubs in `opencode/commands`.

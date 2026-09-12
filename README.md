@@ -78,7 +78,8 @@ The installer also seeds `~/.grok/lsp.json` from `grok/lsp.json` when missing (r
 the Windows `.cmd` shim on that platform) and warns if `typescript-language-server`
 is not on PATH.
 
-This setup is OpenCode 2 (`opencode2`, [V2 docs](https://opencode.ai/v2/docs/)).
+This setup is OpenCode 2 ([V2 docs](https://opencode.ai/v2/docs/)). The binary
+is `opencode`, with `opencode2` left as a back-compat shim.
 It reads user-global instructions from `~/.config/opencode/AGENTS.md` and
 project `AGENTS.md` walking up from the working directory. It does not load
 `CLAUDE.md`. The installer links those `AGENTS.md` paths to the shared

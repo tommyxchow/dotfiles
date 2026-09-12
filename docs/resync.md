@@ -125,7 +125,7 @@ plugin through `tui.jsonc`, the v1 terminal config that v2 replaced with
 `cli.json`. Herdr tracks this as an open bug, herdrdev/herdr#3652. Status is no
 help here: it would report `opencode: current` while nothing loads, and the
 second piece uses an id, `opencode-tui`, that never appears in the status list.
-None of this affects pane detection, which recognizes `opencode2.exe` on its own
+None of this affects pane detection, which recognizes `opencode.exe` on its own
 and needs no integration. Recheck after a herdr release notes OpenCode 2 support
 for integrations rather than for detection.
 
