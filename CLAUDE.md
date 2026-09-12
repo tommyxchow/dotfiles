@@ -44,6 +44,16 @@ been going wrong, then proposes changes and waits. Also repo-local.
 
 ## Gotchas
 
+- **Don't add `permissions.deny` or `autoMode` rules for destructive commands.**
+  Auto mode already ships ~70 soft blocks, and they are better than anything
+  written here: one rule names `rm -rf`, `git reset --hard`, `git clean -fd[x]`,
+  `git restore .` and `git stash drop` plus the PowerShell, Python and Node
+  spellings, another names force pushing and remote-history rewrites. Run
+  `claude auto-mode defaults` and check before concluding something is missing.
+  A `deny` rule matches a literal command prefix, so it covers one spelling and
+  nothing else, and `Bash(git push --force*)` would also match
+  `--force-with-lease` that restacking needs.
+
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
   `~/.claude/CLAUDE.md` points to `.claude/CLAUDE.md`.**
   The repo files are canonical: editing them updates the linked files on disk.
