@@ -1,6 +1,6 @@
 ---
 name: cleanup
-description: 'Repo hygiene for dead worktree registrations, merged branches, stale remote-tracking refs, and a bloated object store. Surveys read-only, shows exact deletion candidates and their evidence, and asks the user to select what to remove before any deletion. Even apply requires approval of the list. Use when the user says clean up branches, stale branches, old worktrees, prune, tidy this repo, delete merged branches, or asks what is safe to delete here. Never drops a stash or touches working files, build output, or dependencies. Not the end-of-slice closer for pending changes (that is pass), code shaping (polish), or package catch-up (refresh).'
+description: 'Repo hygiene for dead worktree registrations, merged branches, stale remote-tracking refs, and a bloated object store. Surveys read-only, shows exact deletion candidates and their evidence, and asks the user to select what to remove before any deletion. Even apply requires approval of the list. Use when the user says clean up branches, stale branches, old worktrees, prune, tidy this repo, delete merged branches, or asks what is safe to delete here. Never drops a stash or touches working files, build output, or dependencies. Not the closer that commits pending changes (that is pass), code shaping (polish), or package catch-up (refresh).'
 argument-hint: "[<repo path>] [apply]"
 ---
 

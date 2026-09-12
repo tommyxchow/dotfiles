@@ -47,7 +47,7 @@ Never write the implementation first and backfill the tests around it. If the co
 
 ## 4. What makes a test worth keeping
 
-Follow the global testing rules for meaningful failures, independently checked expectations (including reviewed snapshots), dependencies, isolation, and retries. Four more on top of those:
+Follow the testing rules under global Working preferences for meaningful failures, independently checked expectations (including reviewed snapshots), dependencies, isolation, and retries. Four more on top of those:
 
 - **Assert what the caller can see**: the return value, the rendered output, the response body, the row that got written. Not which internal functions were called, and not how many times.
 - **Name the case, not the function.** "rejects an expired token", not "test login".
