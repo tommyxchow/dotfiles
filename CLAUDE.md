@@ -3,6 +3,21 @@
 Config repo. `./install.sh` symlinks files from here into their real locations, and
 hands off to `install.ps1` on Windows. See `README.md` for the full mapping.
 
+## The check
+
+**`./install.sh` is this repo's own check.** Run it from the permanent checkout
+before calling a change here verified, and read its output: it validates every
+skill description against the 1024-character spec cap and `.claude/CLAUDE.web.md`
+against grok.com's 4000-character limit, reports every link target, and rewrites
+Cursor's copy of the global file. A `WARN` line is a failing check.
+
+It is a gate with side effects, since it repoints the machine's live links. That
+is why it runs from the permanent checkout and never from a worktree.
+
+It checks mechanics, not judgment. It cannot tell whether a rule is right or
+whether two files now contradict each other, so it never substitutes for the
+review step in `.claude/CLAUDE.md`.
+
 ## Personal first, work compatible
 
 This is my personal setup. Everything in it has to work when I am alone in a
