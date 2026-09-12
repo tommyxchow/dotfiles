@@ -57,12 +57,3 @@ Follow the global Communication and Session flow rules. After execution, say wha
 ```
 Two branches are candidates: `fix/login` at <sha> is an ancestor of `origin/main`; `fix/menu` at <sha> matches the head of merged PR #12, whose merge commit is in `origin/main`, and needs force-deletion. Both deletions remove their branch reflogs. Nothing has been deleted. Which would you like to remove?
 ```
-
-## Distinct from
-
-| Skill     | This skill                                                                  |
-| --------- | --------------------------------------------------------------------------- |
-| `pass`    | Closes the slice you just built. Cleanup is the repo around it, and ignores pending changes. |
-| `polish`  | Shape of working code. Cleanup never opens a source file.                    |
-| `refresh` | Packages and framework versions. Cleanup touches no dependency.               |
-| `pr`      | Ships a branch. Cleanup removes the branches that already shipped.            |

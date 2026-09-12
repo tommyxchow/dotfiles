@@ -163,7 +163,7 @@ marketplace either: its `grill-me` would collide with ours.
 What changed, anything still broken, and what the user must do.
 
 - Cursor: **Developer: Reload Window** after the local plugin rewrite.
-- Grok / OpenCode 2: new `~/.claude` and `~/.config/opencode/AGENTS.md` links are live; no extra reload if the session already sees them.
+- Grok / OpenCode 2: links are updated on disk. Reload or start a new session if it has not loaded the revised instructions; link presence alone does not prove that.
 - Claude Code: `/reload-plugins` if marketplace plugins changed.
 
 Do not commit. Do not push.

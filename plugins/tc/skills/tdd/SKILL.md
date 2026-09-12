@@ -1,12 +1,12 @@
 ---
 name: tdd
-description: 'Test-driven loop for new behavior and bug fixes. Names the cases, writes one failing test, watches it fail for the right reason, then adds the smallest code that passes. Use when the user says tdd, test first, write the test first, red green, or asks for a test-driven approach, and for a bug fix that needs a reproducing regression test before any fix. Works from cases the user supplies or cases derived from the task and stated before the first test. Skips itself when the loop does not fit: exploratory work whose shape is unknown, config, docs, styling, or a change with no observable behavior. Not a coverage sweep over existing code, not reshaping working code (that''s polish), and not defect hunting in a finished change (that''s review).'
+description: 'Builds new behavior and fixes bugs one failing test at a time. Use for tdd, test first, red green, or the build workflow when behavior can be asserted. State the cases, observe the relevant failure, then implement the smallest passing change. Skip for exploration with no settled behavior, config, docs, styling, and mechanical edits. Not an existing-code coverage sweep, cleanup (polish), or defect hunt (review).'
 argument-hint: "[<behavior to build or bug to fix>] [cases: <the cases you want>]"
 ---
 
 # TDD
 
-Grow the feature and its tests together, one failing test at a time. The loop is the point. A test you watched fail for the right reason is evidence that it can detect the thing it claims to detect, while a test written after the code usually just restates what the code already does.
+Grow the feature and tests together. Watching a test fail for the right reason provides evidence that it detects the behavior it claims to check; independently chosen expectations still matter.
 
 `$ARGUMENTS`: the behavior to build or the bug to fix, plus any cases the user already has in mind. Cases they name go in as given.
 
@@ -59,17 +59,5 @@ Follow the global testing rules for meaningful failures, independently checked e
 Say which cases are covered and which you deliberately left out, then run the repo's full check once. Name each test against its acceptance criterion when there is a checklist, since `pr` reads that as the criterion's evidence. Reshaping the code you just wrote is `polish`. Hunting defects in it is `review`. Neither runs here.
 
 ```
-Built the retry backoff with four cases: first retry waits the base delay, each retry doubles it, the delay is capped at the ceiling, and a non-retryable status throws instead of waiting. Each test failed first for its own reason before the code went in.
-
-I left the jitter untested. It's random by design, and pinning it would only assert the seed.
+Built the retry backoff with cases for the initial delay, doubling, the cap, and non-retryable errors. Each test failed first for its own reason before the code went in. For jitter, controlled random inputs at the low and high ends verify the permitted delay range without depending on a seed or real time.
 ```
-
-## Distinct from
-
-| Skill    | This skill                                                              |
-| -------- | ----------------------------------------------------------------------- |
-| `polish` | Shape of working code. TDD writes it, polish reshapes it afterwards.     |
-| `review` | Finds defects in a finished change. TDD prevents a class of them upfront. |
-| `pass`   | The end-of-slice closer. TDD is how the code inside the slice got built. |
-| `pr`     | Proves the acceptance checklist and ships. TDD is where most of that proof comes from. |
-| `vet`    | Checks claims against docs. TDD checks behavior against tests.           |

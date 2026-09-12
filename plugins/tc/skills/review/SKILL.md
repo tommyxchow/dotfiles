@@ -1,18 +1,18 @@
 ---
 name: review
-description: 'Local code review of pending changes before a commit or PR. Finds real defects only, ranked worst first with a concrete failure scenario each and verified before reporting: bugs, security holes and leaks, performance problems, unhandled edge cases, and missing pieces. Follows the repo''s own review guidelines and tooling first, then the global preferences, and plugs the gaps. Use when the user says review, code review, review this, review the diff, is this correct, check the code, or double check the code. Report-only unless the user says fix. Not style, cleanup, or simplification (that''s polish), not the end-of-slice closer (that''s pass), not claim checking against docs (that''s vet). Scope defaults to dirty work plus files edited this session; `branch`, `all`, or `pr <number|url>` widen it.'
+description: 'Finds concrete defects and missing behavior in code changes, verified and ranked worst first. Use for review, code review, review the diff, is this correct, or double check the code. Reports only unless asked to fix or called by the build completion workflow. PR readiness questions go to pr; shape cleanup to polish; final cleanup to pass; factual claims to vet. Default scope is dirty work plus session edits; `branch` is committed changes only, `all` includes pending work, and `pr <number|url>` reviews the published PR.'
 argument-hint: "[staged | unstaged | branch | all | pr <number|url>] [fix] [<focus>]"
 ---
 
 # Review
 
-Find what is wrong or missing in a change before anyone else does. Real defects only: something a user, an attacker, or the next deploy would hit. Shape, naming, duplication, and comments belong to `polish`; leftovers and the slice gate belong to `pass`; the PR's readiness belongs to `pr`.
+Find real defects: something a user, an attacker, or the next deploy would hit. Use the task's intent and repo rules, then verify each finding before reporting it.
 
 `$ARGUMENTS`: an optional scope keyword first (`staged`, `unstaged`, `branch`, `all`, `pr <number|url>`), an optional `fix`, then focus text. Bare `review` uses the default scope and reports only.
 
 ## 1. Recon, kept cheap
 
-1. **Pool.** Build it the way `polish` does: dirty work plus files edited this session by default, or whatever the scope keyword says. `branch` diffs against the PR's base branch, never `@{upstream}` (see the polish scope table for why). `pr` reads the PR diff and description with the repo's PR tool, and before running anything local checks that the checked-out head is the PR's head; with several worktrees open they drift, and a review of the wrong tree is worse than none. Read the diff once; open the rest of a file only where the diff touches it.
+1. **Pool.** Use `polish`'s scope table and task-ownership filter. `branch` is committed changes only; `all` includes pending and untracked task changes. A caller-supplied base or diff replaces discovery. On direct-to-default-branch work, use the recorded task-start commit, not the current branch tip as its own base. `pr` reads the published diff and description; local verification requires matching `HEAD` and no dirty changes affecting that verification. Otherwise report the mismatch and review the published diff without claiming local results prove it. Read the diff once; open context where needed.
 2. **Intent.** Know what the change was supposed to do before judging it: the acceptance checklist when the plan has one, then the task in this conversation, the PR body, or the commit messages. A review without the intent finds the wrong things, and a checklist item with no code behind it is a finding.
 3. **The repo's own rules come first.** Look for a review checklist or guideline: `CONTRIBUTING.md`, a PR template, a review section in `AGENTS.md`, `CLAUDE.md`, or `docs/`, and any reviewer config the repo already runs (a review bot config, Danger, a `review` or `check` script). If the repo defines what a review checks, that list is the checklist, and the lenses below only fill what it does not cover. If the repo has review tooling that runs locally, run it, read its output, and don't repeat what it already reported. The global preferences are the fallback, never the override.
 4. **Cheapest bug finder first.** If the repo has a quick typecheck, lint, or test command, run it once on the pool and read the failures before reading the diff. If this exact tree already passed that command this session, such as the run `tdd` just finished, cite that result instead of rerunning. Don't invent a gate the repo doesn't have, and don't run a slow full suite here; `pass` owns the ship gate.
@@ -37,10 +37,10 @@ Every finding needs a concrete failure scenario: which input or state, and what 
 
 - **Correctness.** Wrong condition, off-by-one, wrong coercion, a null path the types don't rule out, an unawaited promise or unhandled rejection, state that can go stale, a changed function whose other callers weren't updated.
 - **Edge cases.** Empty, one, huge, unicode, duplicate, concurrent, timed out, partially failed, retried, out of order, time zones and DST, the boundary value itself.
-- **Security.** A missing auth or ownership check on any server path touched, untrusted input reaching a query, command, path, or HTML, secrets in code, logs, URLs, or the client bundle, data in a response the caller shouldn't get, unsafe defaults such as open CORS or open redirects, privilege escalation.
+- **Security.** A missing auth or ownership check on a protected operation, failure to enforce a public endpoint's intended access policy, untrusted input reaching a query, command, path, or HTML, secrets in code, logs, URLs, or the client bundle, data in a response the caller shouldn't get, unsafe CORS or open redirects, privilege escalation.
 - **Performance.** Only what a user or a bill would notice: N+1, unbounded loops or payloads, missing pagination, work on a hot path or the main thread, memory that grows without bound. No micro-optimization.
 - **Missing.** A case the task implies that the diff never handles, an acceptance criterion with nothing behind it, the empty, loading, or error state of new UI, error handling absent where the user would see it, and the migration, config, env var, feature flag, or docs the change needs. On tests: none for new behavior, one named by a coverage number rather than by the case, one that cannot catch a relevant incorrect behavior, or a bug fix that adds no regression test. Passing with an empty implementation is not enough to reject a negative assertion such as "no event is sent without consent."
-- **Unasked behavior change.** Something changed that the task didn't ask for, which the author may not have noticed. A refactor riding along inside a feature change counts: name it, since it belongs in its own PR.
+- **Unasked behavior change.** Something changed that the task didn't ask for, which the author may not have noticed. Small necessary refactors are allowed by the global Git rules; flag unrelated or risky restructuring that should have been separated.
 - **Unreadable hot path.** Normally style is polish's job, but a piece of logic a reviewer can't follow in one read (a dense one-liner, a nested ternary, a clever trick) on a path that matters is worth one finding here, because nobody can review what they can't read.
 
 ## 4. Verify before reporting
@@ -61,13 +61,3 @@ The repo's PR checklist in CONTRIBUTING.md also asks for a changelog line, and t
 ```
 
 `fix`, or "review and fix": apply the fixes worst first, each with a regression test where the behavior is testable, then rerun the quick check and report what changed. A fix is the smallest change that removes the failure scenario: no new abstraction layer, no defensive branch for a case the types already rule out, no test for something that cannot happen. A reviewer asked to find gaps reports some even when the work is sound, so a finding that needs a big fix is worth re-reading before you build around it. Never fix silently during a plain review.
-
-## Distinct from
-
-| Skill          | This skill                                                                   |
-| -------------- | ---------------------------------------------------------------------------- |
-| `polish`       | Shape of working code. Review is whether it works.                           |
-| `pass`         | Leftovers and the ship gate. Pass says when review hasn't run; it doesn't run it. |
-| `vet`          | Claims against docs. Review reads code and sends a vendor-API question to vet. |
-| `pr`           | Ships the branch. It runs `review branch fix` in a fresh subagent before the draft and `review pr` before ready. |
-| PR review bots | Run after push. Review runs before, so the bot finds less.                   |

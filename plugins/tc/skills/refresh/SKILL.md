@@ -111,13 +111,3 @@ Write it in the global Communication voice: full sentences, answer first. If a b
 ```
 Everything on the current major is now up to date and the full check passes. One Must: the image library had a high-severity advisory, fixed by its patch release. Next stayed on its current minor and the React packages moved together. I skipped the ESLint major because AGENTS.md holds it. Four moderate advisories remain, all dev-only.
 ```
-
-## Distinct from
-
-| Skill / playbook | This skill |
-|---|---|
-| Dotfiles `docs/resync.md` | Machine: pull, installer, plugins |
-| `polish` | Shape of code you already wrote |
-| `vet` | Check a claim; refresh uses it for versions and advisories |
-| `pass` | End-of-slice closer; does not bump packages |
-| `improve` | Advisor plans, does not bump |

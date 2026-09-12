@@ -1,4 +1,4 @@
-Everything in this file is a strong default, not a law. Where it says nothing, do what you would normally do. If following a rule would make the result worse, do the better thing and say in one sentence which rule you bent and why. Two kinds don't bend: anything marked "ask first", and anything about secrets, verification claims, or the package manager.
+Everything in this file is a strong default, not a law. Where it says nothing, do what you would normally do. If following a rule would make the result worse, do the better thing and briefly say why. Approval requirements, secrets, verification claims, and the package manager don't bend.
 
 ## Communication
 
@@ -52,20 +52,20 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
 
 ## How a task runs
 
-Three checkpoints are mine: the plan, marking the PR ready, and the merge. Everything between them is yours, and the skills below chain on their own; I should not have to name one. The unit in between is a slice: the smallest piece of the task worth committing on its own.
+I approve meaningful plans, marking PRs ready, and merges. Push permission is below. Everything between those checkpoints is yours; the skills chain without me naming them. A slice is the smallest piece of the task worth committing on its own.
 
 - **Plan first** for meaningful scope or risk, a decision I would want a say in, or work where you would otherwise be guessing. Use the harness's plan mode where it has one. Small or clear mechanical changes just happen, even across several files. When the plan leaves a real choice open, or the idea is too thin to build from, run `grill-me`.
-- Before writing code on a non-trivial task, batch a few questions for ambiguity that will propagate (data shape, API contract, naming) and the states people forget (empty, error, permission). Skip it when `grill-me` already ran, for a reversible local change, or anything the codebase already implies.
-- **The plan ends in a numbered acceptance checklist**: the ticket's criteria plus the edges the plan surfaced, the test or check each maps to, and what is out of scope. With no ticket (an idea I described, a GitHub issue), propose it in three to five lines and confirm it. Keep it in the harness plan file where one exists.
-- Anything that changes scope later edits the checklist: items added, dropped ones marked dropped, never silently forgotten. Pasted UAT feedback is the same edit.
+- Ask only about unresolved decisions that change scope, risk, or what gets built. Batch independent questions; skip what the codebase or an approved plan already settles.
+- **A plan ends in a numbered acceptance checklist**: the requested outcome, relevant edges, the check each maps to, and what is out of scope. Keep it in the harness plan file where one exists, and where none does, restate it in the close or the PR body so a resumed session still has it. Get approval once. A small, clear change needs neither a formal plan nor another confirmation just because it has no ticket.
+- Use the same model to plan and build unless I choose otherwise. When work moves to another model or session, the existing plan carries approved scope, decisions, constraints, code entry points, checks, and current progress. The builder owns implementation details; ask again only when new evidence changes an agreed decision, scope, or risk.
+- Update the checklist when scope changes, including UAT feedback. Keep dropped items marked dropped. If blocked, report what is needed and finish independent in-scope work; don't claim completion while required work or verification is blocked.
 - **For UI work, offer browser UAT once at plan time** and take no for an answer; see UI below.
 - **Build it** with the `tdd` loop whenever its own fit test says yes; the checklist hands it the cases. Close each slice with `pass`. Skip `pass` when the change is too small to have leftovers or has no code in it, and commit it yourself.
-- Choose a direct commit or PR using the Git rules below. When a PR is warranted, run `pr` near the end, not per slice.
-- Once a PR exists its body is yours: any commit that changes what it does or its evidence refreshes the body in the same step.
-- **Push permission is task-scoped.** Taking a task to a draft PR and addressing review threads may push to that branch, and that is the only push that happens without asking. Every other push waits for me, `main` included, and approving one push never approves the next task's. Run `review branch` first so I decide with its result in hand; when that range is only docs, config, or instruction files the review is skipped, not the asking.
-- **I push when the work is done**, not after each slice of a longer one: at wrap-up, or once the change I asked for is finished, whether that took one commit or six. Until then unpushed commits are the normal resting state and not a loose end, and that window is the only time a commit can still be squashed, reordered, or dropped.
-- **`pr ready` is how the draft gets flipped**, and it runs `review pr <number>` once as a whole first: per-push reviews never saw two commits together. Merging is mine. On a large or risky PR, point me at the harness's own deeper review command, since only I can start one.
-- Commit a finished slice without asking, one commit per slice, hash in the close. Half-done work stays uncommitted.
+- **Completion is the same with or without a PR.** Account for each acceptance criterion, run the repo's full check, and use `review all fix` on the complete task diff, including pending and untracked work. Record the task's starting commit before editing on the default branch. Fix confirmed in-scope findings; review subsequent substantive edits and rerun affected checks. Reuse evidence valid for the same tree. Mechanical changes and docs/config/instruction-only work need relevant checks, not a code-review ceremony.
+- Choose a direct commit or PR using the Git rules below. Run `pr` near the end, not per slice. Its body publishes the acceptance evidence and stays current with each push that changes the work or its evidence.
+- **Push permission is task-scoped.** Taking a task through the draft-PR workflow or addressing its review feedback permits ordinary pushes to that task's branch. In a repo of mine, a finished task may also push its own branch or `main` when completion holds cleanly: every criterion accounted for, the repo's own full check green, and the review leaving no confirmed finding unfixed. An explicitly requested restack permits force-with-lease pushes to the identified, user-owned stack branches; merely noticing a moved parent does not. Ask first for every other push: a team repo, a criterion left unverified that I haven't accepted, a failing or absent check, and any other rewrite of pushed history.
+- Push, or offer the push, once the whole task is done and its verification and review results are in hand, not after each slice. Say in the close what went where. Commit finished slices without asking and include the hash in the close. Half-done work stays uncommitted; unpushed commits during a task are normal.
+- **Readiness questions report; explicit approval acts.** "Is this ready?", "final review", and "close out the PR" check readiness without flipping the draft, which is `pr check`. `pr ready` or "mark it ready" checks and flips it. Merging needs separate approval. On a large or risky PR, point me at the harness's own deeper review command, since only I can start one.
 
 A status check ("we good", "anything outstanding") is what you already know plus `git status`: what works, what is unverified, what is uncommitted. No new checks. Prefer the official `gh` skill over GitHub MCP.
 
@@ -92,41 +92,42 @@ Working is the floor, not the bar. Fit the repo. Follow it when it already diffe
 - Simplest thing that fits: no extra option, layer, or file for a case the task doesn't have. Inline until a pattern appears three times.
 - Don't paper over types with `as`, `!`, or `any`. Mutually exclusive states are a union (Dart: sealed). Named exports unless the framework requires a default. New JS/TS files use kebab-case, including components.
 - Write for the reviewer who sees only this hunk cold in a diff. A plain five-line version beats a clever one-liner, names say what the thing is, and code is never shortened to save lines or tokens. I rarely read the code, so when I do it has to read at a glance.
-- Validate at the boundary (Zod in TS), then trust the types. Security stays on the server. Treat input as untrusted: never build a shell command, query, or path from raw strings, and no secrets in `PUBLIC` env vars or the client.
+- Validate external input at the boundary with the repo's validator, then trust the types. Prefer Zod when choosing a TS validator; adding it still needs dependency approval. Security stays on the server. Never interpolate untrusted input into a shell command, query, or filesystem path, and no secrets in `PUBLIC` env vars or the client.
 - Every mutation is idempotent or guarded against a double submit. Retries, double clicks, and a refreshed form are the normal case.
 - Error messages name what failed and for what. The user sees the plain version; the log gets the detail. Never log secrets, tokens, or PII.
 - Never swallow an error: catch it to add context or show the user something, otherwise let it reach the boundary and the reporter. An empty `catch` is a finding.
-- Next.js (App Router) security: verify authentication and authorization inside every Server Action and route handler, not only in a layout, page, or proxy. Database access lives in a `server-only` data access layer.
-- Next.js structure: fetch in parallel on the server, keep `"use client"` boundaries as low in the tree as they can go, and give every route real `loading`, `error`, and `not-found` UI. The repo's own AGENTS.md carries its caching and deploy gotchas.
+- Next.js (App Router) security: enforce authentication and authorization for protected operations inside Server Actions and route handlers, not only in a layout, page, or proxy. Intentionally public endpoints enforce their intended access policy. Database access lives in a `server-only` data access layer.
+- Next.js structure: fetch independent data in parallel on the server and keep `"use client"` boundaries low in the tree. Cover relevant loading, error, and not-found states; shared route boundaries count. The repo's own AGENTS.md carries its caching and deploy gotchas.
 
 ## UI
 
-Follow the project's design language. Don't paint success until the work succeeded: loading is a skeleton, not a spinner on a blank page.
+Follow the project's design language. Don't paint success until the work succeeded. Prefer skeletons for page content that is loading; short actions need an appropriate pending state on the control.
 
 - Style from theme tokens; don't double-mute a role that is already secondary.
 - Keep contrast readable, tap targets at least 24×24, and describe errors in text.
 - Shareable state in the URL, settings in storage, auth in an httpOnly, Secure, SameSite cookie, ephemeral UI in memory.
 - The empty, loading, error, and success states and the keyboard path are part of the feature, not follow-ups; a PM finds them on the first click.
-- Browser UAT (Chrome MCP or whatever browser tool the session has) is opt-in, because one shared Chrome can't serve several sessions at once. Work in your own tab; I keep mine. If I opted in and the tool is missing or errors, stop and tell me so we can fix it.
+- Browser UAT is opt-in. Use the session's browser tool in your own tab; when it connects to shared Chrome, coordinate access and leave my tabs alone. If opted-in UAT is unavailable or errors, report the blocker and pause that check while finishing independent work.
 - Never write that the UI works without having driven it.
 
 ## Git
 
 - Prefer squash merges for PRs unless the repo requires another strategy. This preference does not grant merge permission.
 - **Ask first for repo cleanup deletions.** Show exact branches, worktree registrations, and remote-tracking refs with the evidence and side effects, then let me select what to remove. A general cleanup request or `apply` is not approval of an unseen list. Recheck before acting; changed targets need fresh approval.
-- Stage the files the slice touched, never `git add -A` or `.`. If a file holds both your change and mine, say so.
+- Commit only this task's changes, never `git add -A` or `.`. Inspect the staged diff before committing. In mixed files, stage only this task's hunks and preserve unrelated edits, including any already staged. Ask only when ownership or separation is unclear.
 - Conventional Commits: `type(scope): subject` in lowercase, no trailing period. `!` before `:` for breaking.
 - The subject says what changed in plain words. The body is the snapshot a later human or agent needs: each distinct change and why, what it replaces, enough to skip the diff. Skip the body when the subject already is that snapshot. Never a tour of the hunks or of how you got there, and don't pad.
 - Prefix new branches with `tc/`.
-- Squash before pushing when back-to-back commits are really one change: a fix and its follow-up, or three passes at the same rule. Unpushed only, and rewriting anything already pushed waits for me.
-- Assume a repo is mine. A team repo announces itself with a PR template, CODEOWNERS, a review bot config, or an AGENTS.md written for other people, and I'll say so when it doesn't.
-- In my own repos, default to committing routine, low-risk changes straight to `main`, including instruction and config fixes. A plan, several touched files, or continuing in another session does not by itself justify a PR. Use a branch and PR for larger features, overhauls, risky changes, or work that benefits from a separate review. Say why when choosing a PR; skip it when it would be redundant. I still own PR merges, and push permission is unchanged.
+- Squash before pushing when back-to-back commits are really one change: a fix and its follow-up, or three passes at the same rule. Unpushed only; pushed-history permissions are in How a task runs.
+- Assume a repo is mine unless I say otherwise or its contribution rules establish a shared workflow. A PR template, CODEOWNERS, or review bot alone does not establish ownership; follow its actual contribution requirements either way.
+- In my own repos, default to committing routine, low-risk changes straight to `main`, including instruction and config fixes. A plan, several touched files, or continuing in another session does not by itself justify a PR. Use a branch and PR for larger features, overhauls, risky changes, or work that benefits from a separate review. Say why when choosing a PR; skip it when it would be redundant. I still own PR merges, and choosing either route changes nothing about push permission, which is in How a task runs.
 - In a team repo nothing goes straight to `main` and every change gets a PR. A repo I made and own is still mine even at work.
-- One PR does one thing. A refactor the feature needs goes in its own PR first, and the feature stacks on it. Half-finished work hides behind a flag or an unrouted page, not on a long-lived branch.
+- One PR does one thing. Small refactors needed by the feature can stay with it; split independently useful or risky refactors into their own PR first and stack when needed. Half-finished work hides behind a flag or an unrouted page, not on a long-lived branch.
 - Shared schema and API changes expand, migrate, then contract across PRs. Never ship a breaking change and its consumer in one deploy. A risky change (migration, backfill, auth, money) names its rollback in the PR body.
 - Some sessions run in a worktree I set up for one task, others are just the main checkout. Don't create a worktree or move the work into a folder I didn't open unless I say yes. If the session is on the main checkout and a worktree would be cleaner, offer one and wait; I usually pick that up front. If I say yes, use the harness's own worktree command, never `git worktree add` into a random folder, then continue in that checkout.
 - In a team repo a session outside a worktree is usually questions and discussion with nothing written yet. Ask before editing in the main checkout.
 - A worktree is a clean checkout of tracked files only, so gitignored ones like `.env` don't come along. It isolates files but not ports or local databases, so a dev server you start needs its own port.
+- Assume other sessions of mine are running in sibling checkouts of the same repo. Don't switch branches, stash, or rewrite a ref another session could be using, and give any server or database you start its own port.
 - When I name a parent to stack on, usually partway through, rebase this branch onto it and set the PR's base to it. Most sessions never stack.
 - When a parent merges, `pr rebase` moves the children. Plain git, no stacking tool.
 

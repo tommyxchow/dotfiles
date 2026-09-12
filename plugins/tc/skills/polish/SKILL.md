@@ -1,14 +1,12 @@
 ---
 name: polish
-description: End-of-slice cleanup for React/TS apps — Prettier + ESLint autofix on touched files first (when present), then four judgment lenses (reuse, quality, efficiency, altitude), then high-confidence cleanups behind a verify gate. Heavier than a quick tidy-up. Use for "polish", "dry clean", "make this less hacky", or "reduce duplication". Shape only — not a bug hunt; not the pass skill ("final double check", "close this out", cleanup-before-commit), and not the pr skill, which owns "final review" and "is this ready" once a PR exists. Default scope is dirty work plus files edited this session (still in scope after commit); `/polish all` for the full branch slice. Never installs tools.
+description: 'Behavior-preserving cleanup using existing format/lint tools and four lenses: reuse, quality, efficiency, altitude. Tuned for React/TS, with non-React checks usable elsewhere. Use for polish, dry clean, make this less hacky, or reduce duplication. Correctness goes to review; slice completion to pass; PR readiness to pr. Default scope is dirty work plus session edits, including after commit; all includes the branch and pending work. Never installs tools.'
 argument-hint: "[staged | unstaged | branch | all | <focus>]"
 ---
 
 # Polish — autofix then judgment cleanup
 
-Improve the **shape** of working code. Not bugs (route those to the `review` skill). Not a full rewrite. Not `pass` (vet + leftovers + slice-ready commit).
-
-The flow is scope, then Prettier and ESLint prep, then four review lenses, then reconcile, apply, and verify. Report fewer, surer findings rather than many uncertain ones.
+Improve the **shape** of working code: scope, existing formatter/linter prep, four lenses, then apply and verify high-confidence cleanups. A discovered correctness defect goes to the owning build workflow or a review finding; never disguise a behavior change as polish.
 
 Tuned for React + TypeScript (Next.js, Expo, Vite, etc.) with **Prettier + ESLint**. Portable: when the tools are missing, skip autofix and don't invent formatting findings. **Never install** packages or use `npx`/`pnpm dlx`/`npm exec` to fetch tools for polish — only already-installed local binaries (e.g. `pnpm exec prettier` / `node_modules/.bin`).
 
@@ -16,7 +14,7 @@ Harness format-on-save is unreliable across Cursor / Claude Code / OpenCode. Bat
 
 ## Phase 0 — Scope and recon
 
-**Scope keywords:** only the **first** argument token may be a scope keyword (`staged` / `unstaged` / `branch` / `all`). Everything after that is Additional Focus — so focus text like “all buttons” does not change scope.
+**Scope keywords:** the first argument token may be `staged`, `unstaged`, `branch`, or `all`; the rest is focus text. `/polish all buttons` means branch-wide scope focused on buttons. Use `/polish buttons` to keep the default scope.
 
 Build the review pool:
 
@@ -28,10 +26,10 @@ Build the review pool:
 | *(default)* | dirty vs HEAD (`git diff HEAD` if staged exists, else `git diff`) | include | include via `git status` |
 | `unstaged` | `git diff` | include | include |
 | `staged` | `git diff --cached` | include | no |
-| `branch` | committed range only: `<base>...HEAD` where base is the PR's base branch (`gh pr view --json baseRefName`), else the default branch (`origin/HEAD`), else `main` / `master` | **exclude** | **exclude** |
+| `branch` | committed range only: `<base>...HEAD`, with the base established below | **exclude** | **exclude** |
 | `all` | same range as `branch` **+** dirty vs HEAD (`git diff HEAD` so staged+unstaged are included) | include | include |
 
-Never use `@{upstream}...HEAD` for the branch range: once the branch has been pushed that range is the unpushed commits, which is empty right after a push, and on a stacked branch a default-branch fallback drags the parent PR's changes in.
+**Base.** Honor a caller-supplied task base. Otherwise use the PR's intended base, or the established default branch for an unstacked feature branch. On the default branch itself, use the recorded task-start commit; if missing, establish it from the task's commits or ask. Never compare a branch with itself and call the empty diff a review. Never use `@{upstream}...HEAD` for a feature branch: it drops pushed work, and the default branch would include a stacked parent's changes.
 
 If both sources are empty after applying the table, fall back to files the user named; if none, ask.
 
@@ -39,7 +37,7 @@ If both sources are empty after applying the table, fall back to files the user 
 
 **Post-commit / clean tree:** If Source A is empty (everything committed, clean working tree) but Source B is non-empty, the pool is still those session-edited files on disk. That is intentional — bare `/polish` means “what we worked on this session,” not “only uncommitted hunks.” Read those files from disk for Phase 0.5 and Phase 1; do not stop with “nothing to polish” / “already clean” just because `git status` is clean.
 
-If the pool clearly mixes unrelated work from another task, prefer Source B (when included) or ask **once** — don't block every run.
+Filter every pool by task ownership before editing. Dirty or session-edited files can contain unrelated hunks. Preserve those and any staged state under the global Git rule; skip whole-file autofix on mixed files when it would change unrelated work. Ask once only if ownership cannot be established.
 
 **Recon (cheap):**
 
@@ -75,7 +73,7 @@ If the pool clearly mixes unrelated work from another task, prefer Source B (whe
    - Project scripts (`pnpm format`, etc.) **only** if they accept the same path list.
    - If a script can't be scoped to the file list, **skip** that step and note it in the summary. **Never** format or lint the whole repo.
 3. Unfixable ESLint must not abort polish. Consume logs yourself; don't dump them at the user.
-4. **Refresh pool:** post-autofix diff; re-read touched untracked (when in scope); **re-read Source-B paths** autofix may have changed (when Source B is in scope).
+4. **Refresh pool:** inspect the post-autofix diff for ownership and scope; undo only autofix-owned changes outside the pool. Re-read touched untracked and Source-B paths when in scope.
 5. Drop from lens scope only files that **had a dirty diff** which became purely mechanical (format/import-order/class-order only). **Do not drop** Source-B (or other pool) files that have no remaining git diff — e.g. just committed — those stay in scope for judgment; lenses review current file contents.
 6. Leftover ESLint findings: a safe behavior-identical fix may go in Phase 3, a correctness finding gets noted for code review, and pure style is ignored.
 
@@ -121,13 +119,3 @@ Smallest correct edit. Chesterton's Fence; don't strip named concepts/test seams
 ```
 Autofix reformatted three files. I removed the unused draft state in the editor and swapped a hand-rolled date formatter for the existing helper; both keep behavior identical and the full check passes. I left the two similar upload handlers duplicated because they are likely to diverge. One thing for code review: the retry loop in the uploader never gives up.
 ```
-
-## Argument routing
-
-The first token sets the scope (table above). The remaining tokens become Additional Focus for every lens. With no scope keyword, use the default row.
-
-Examples: `/polish` · `/polish all` · `/polish branch` · `/polish all auth forms`
-
-## Note on posted text
-
-In-session prose can use em dashes. Commit/PR text follows the global External writing rules (concise casual teammate voice, no em dashes, no filler).

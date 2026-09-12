@@ -31,8 +31,9 @@ been going wrong, then proposes changes and waits. Also repo-local.
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
   `~/.claude/CLAUDE.md` points to `.claude/CLAUDE.md`.**
-  The repo files are canonical: editing them updates Claude, OpenCode 2, and
-  Grok immediately. OpenCode 2 reads the global text through
+  The repo files are canonical: editing them updates the linked files on disk.
+  Already-running sessions may need a reload or restart to load revised
+  instructions. OpenCode 2 reads the global text through
   `~/.config/opencode/AGENTS.md` (installer link to `.claude/CLAUDE.md`); it
   does not load `~/.claude/CLAUDE.md`, so the link is what actually feeds it.
   In this repo the installer also links
@@ -77,10 +78,17 @@ been going wrong, then proposes changes and waits. Also repo-local.
   Do not enable `tc@chow` on a machine that ran the installer: that plugin is
   the same files via the marketplace cache, so both would load. Do not install
   `mattpocock-skills` from the official marketplace either: it ships its own
-  `grill-me`, which would collide with the one in `plugins/tc/skills`. Cursor
-  ships a built-in `review` skill under the same name, and precedence for a
-  collision is undocumented; theirs is slash-only, so asking for a review in
-  words still reaches ours while typing `/review` there is ambiguous.
+  `grill-me`, which would collide with the one in `plugins/tc/skills`.
+  Harnesses also ship review, cleanup, and audit skills of their own, and they
+  arrive and get renamed release to release, so don't list them here or in a
+  skill body. Two cases cover it. A **name collision**, like Cursor's built-in
+  `review`: precedence is undocumented and theirs is slash-only, so asking in
+  words still reaches ours while typing `/review` there is ambiguous. A
+  **different name for stronger tooling**, like a deeper cloud review only I
+  can start: `.claude/CLAUDE.md` already says to point at it, and the
+  `review` skill already defers to tooling the repo runs itself. Ours stay
+  because they are the only copies that work in all four harnesses and read a
+  repo's own rules first.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`

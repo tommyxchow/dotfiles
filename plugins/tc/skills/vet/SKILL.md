@@ -7,7 +7,7 @@ agent: general-purpose
 background: false
 ---
 
-vet answers from **current online sources** instead of memory. It checks the claim, cites the page that settled it, and says what is uncertain or missing. It is a quick lookup, not a research project: most runs are one or two searches and a few fetches.
+vet checks claims against **version-matched local documentation or current primary sources**, cites what settled them, and names what remains uncertain. It is a bounded lookup, not a research project.
 
 Bare `vet` and `vet/research` are the same. `$ARGUMENTS` is the claim, topic, or forward task.
 
@@ -27,7 +27,7 @@ One claim ("does `Map` use `has`?") is one leaf. A pasted plan with independent 
 
 - **Bare `vet` / `research` / search / look this up / cross-check / is this still true** → check the last response or the named topic (section 3). Short answer (section 4).
 - **"is anyone else hitting this" / known issue / workaround** → the known-issue path in section 3.
-- **"double check" / "verify"** → route by object. A claim, version, API, "latest", or current docs → this skill. Whether the code is correct, the diff, or this function → the `review` skill. A finished slice ("final double check", "close this out") → `pass`. Whether the PR is ready ("final review", "is this ready") → `pr`. Don't search just because they said double check.
+- **"double check" / "verify"** → route by object. A claim, version, API, "latest", or current docs → this skill. Code correctness → `review`. A finished slice ("final double check", "close this out") → `pass`. PR readiness ("final review", "is this ready") → `pr check`, which reports without flipping the draft.
 - **Pasted plan from another model** ("chatgpt said", "wdyt", "what do you think") → audit the claims in the paste. Same short answer unless several claims are wrong or uncertain.
 - **"vet" attached to a forward task** ("build X and vet it", "what's the best Y") → do the task research-backed: check each checkable fact against a current source before asserting it, and cite inline as you go.
 - **Ambiguous** → the last checkable claims if the last turn asserted a fact; the last code change if they mean correctness. Only ask if there is genuinely nothing to act on.

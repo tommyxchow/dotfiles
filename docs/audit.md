@@ -15,7 +15,7 @@ Run it when a notably better model ships, when the same pain recurs across sever
 - `opencode/commands/*.md`, `opencode/cli.json`, `.claude/settings.json`, `grok/config.toml`: harness config.
 - `README.md`, `.claude/README.md`, `CLAUDE.md`, `docs/`: the docs that describe all of the above.
 
-Read them first. Then work through the sections below in order.
+Read the requested surfaces first. A content-focused audit can skip local machine diagnostics and usage data; do not treat an infrequently used machine as evidence about the user's normal workflow.
 
 ## 1. Harness delta
 
@@ -33,8 +33,8 @@ Lines that no longer earn their place:
 
 - A rule a current model follows without being told. Test it by asking whether the rule exists because a mistake happened twice; if you can't name the mistake, it is a candidate.
 - Stale references: a version, an API name, a tool that no longer exists, a skill or command the README lists that isn't in the tree, or the reverse.
-- A skill nothing invokes. Where the harness has `/insights` or `/doctor`, run them and read the result; otherwise say usage is unknown.
-- `.claude/CLAUDE.web.md` over its 4000-byte cap, or drifted from the Communication rules it mirrors.
+- A skill nothing invokes. On a machine the user actually works on, the harness's own diagnostics answer this: `/insights` for fresh usage data, `/skill-doctor` for loaded skills that never get invoked and what they cost in context, `/doctor` for unused plugins, derivable instruction lines, duplicate memory files, and install health. `claude plugin validate` owns broken skills, which `/skill-doctor` says nothing about. On a machine the user rarely codes on, skip all of it and say usage is unknown rather than reading a quiet machine as evidence.
+- `.claude/CLAUDE.web.md` over its 4000-character cap, or drifted from the Communication rules it mirrors.
 
 ## 3. Addition side
 
@@ -52,11 +52,31 @@ Turn each pattern into a proposal aimed at where it belongs: a first-party skill
 
 ## 5. Consistency
 
-- Every skill description routes without overlapping another's trigger words; read them side by side.
-- The "Distinct from" tables agree with each other in both directions.
+- Skill descriptions resolve ambiguous phrases consistently by intent and state. Shared words are fine; a PR readiness question and approval to mark ready must lead to different actions.
+- Global rules own approval, completion, and communication. Skill bodies implement them without competing definitions or repeated routing tables.
 - `README.md`, `.claude/README.md`, and `docs/resync.md` name every skill and command in the tree, and nothing that isn't.
 - Every skill description is under the 1024-byte spec cap (`./install.sh` prints this).
 - Skill bodies don't rely on Claude-only frontmatter for behavior that has to hold in every harness; the text says it too.
+
+## 6. After approved edits: workflow trials
+
+For a workflow revision, test the changed decisions in disposable fixtures before calling it finished. This is part of the approved revision, not permission to edit during the audit or a new gate for ordinary coding tasks.
+
+Use fresh-context subagents when available, with only the revised instructions, relevant skills, fixture, and task prompt. Use the user's selected planning/build models if the harness exposes that choice; otherwise report which coverage was unavailable. Same-model planning and building is a normal case, not a missing handoff. Keep trials in temporary repositories, mock forge/network effects, and never push or change a real PR. No new test dependency is needed.
+
+Judge the actions and final artifacts against expectations chosen before the run. Do not give workers the expected answer or merely ask them to explain the rules. Exercise the relevant cases:
+
+| Task prompt and fixture | Expected result |
+| --- | --- |
+| Fix an obvious typo in a tiny personal repo | Edit and commit without a plan, an interview, or a derived checklist |
+| The same typo fix in a repo with a failing check | Commit, then ask before pushing instead of taking the clean-completion exception |
+| Build a feature from an already approved plan | Complete its checks without re-approval, whether continuing with the same model or receiving a handoff |
+| Fix code in a file with unrelated staged edits | Commit only task hunks; preserve the other edits and staged state |
+| Prepare a draft PR with committed, pending, and untracked task changes | Review all task changes, including edits after cleanup, before the mocked publish |
+| "Is this ready?" with an otherwise ready draft PR | Check and report; no code/PR edits, replies, resolutions, push, or ready flip |
+| Required verification is unavailable, but independent work remains | Finish independent work, report the blocked evidence, and avoid a completion claim |
+
+If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification; passing a simulation is not proof of either.
 
 ## Report
 

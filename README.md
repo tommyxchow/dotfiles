@@ -1,8 +1,9 @@
 # dotfiles
 
 Personal config for git, VS Code, Ghostty, Claude Code, OpenCode 2, Cursor, and Grok Build. The
-installer symlinks files from this repo into their real locations, so editing a file
-here changes the live config immediately. Cursor global instructions are the exception:
+installer symlinks files from this repo into their real locations, so edits update
+the linked files immediately. Active sessions may need a reload or restart to use
+revised instructions. Cursor global instructions are copied instead:
 the installer copies `.claude/CLAUDE.md` into a local plugin and adds Cursor's
 `alwaysApply: true` frontmatter.
 
@@ -95,7 +96,7 @@ files.
 | `/polish` | Shape of code you already wrote. |
 | `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. |
 | `/pass` | Slice is done: vet, leftovers, polish if code-shaped, slice-ready, then the commit. |
-| `/pr` | Branch is near ready: prove the acceptance checklist, review in a fresh subagent, pass, push, open the draft with the standard body. Again later to refresh the body and address review threads in one batch. `pr ready` flips the draft; `pr rebase` restacks after a parent merges. Never merges. |
+| `/pr` | Prepare the task, review its complete final diff, and publish a draft with acceptance evidence. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
 | `/cleanup` | Repo hygiene: dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
@@ -104,7 +105,13 @@ files.
 
 `/tldr` summarizes. `statusline-install` is Claude-only setup.
 
-The skills chain on their own during a task (plan ends in a checklist, build runs `tdd` where it fits, slices close with `pass`, planned work ends with `pr`), so the slash commands are shortcuts, not the only way in. The global `.claude/CLAUDE.md` "How a task runs" section is where that chain is written down.
+The skills chain during a task: plan where needed, build with `tdd` where it fits,
+and close slices with `pass`. Both direct commits and PRs use the same final
+acceptance, verification, and review requirements. `pr` publishes the evidence
+when a PR is warranted; having a plan does not require one. The same model can
+plan and build. Switching models or sessions carries the approved plan forward
+without another approval round. The global `.claude/CLAUDE.md` "How a task runs"
+section owns those rules; slash commands are shortcuts.
 
 The installer also writes `~/.claude/statusline-command.sh` from
 `plugins/tc/skills/statusline-install`, so a new machine does not need

@@ -32,7 +32,7 @@ Clean result is valid — don't manufacture findings to fill the table. Don't st
 
 Caps eagerness:
 
-- **Quality only — not bugs.** Correctness defect → one line `out-of-scope: route to code review`. Don't launder behavior changes as cleanup.
+- **Quality only — not bugs.** If any lens finds a correctness defect, return its concrete failure scenario as a review finding for the owning build workflow. Do not apply its fix as behavior-preserving cleanup.
 - **Preserve behavior.** Same inputs → same outputs, side effects, ordering, errors. If a test must change, it's not a cleanup.
 - **Defer to the toolchain.** Not a finding if Prettier/ESLint already handle it or Phase 0.5 just fixed it: spacing/quotes/semis, import order/style, class sort/wrap/whitespace/shorthand nits, unused imports ESLint fixes, mechanical `import type` ESLint fixes. Prefer judgment (reuse, altitude, design-shaped duplication) over re-litigating the linter/formatter. If neither tool is runnable in the repo, formatting/import-order stay out of scope entirely (don't hand-fix style).
 - **No speculative abstraction.** No YAGNI generalizations, no defensive layers for impossible cases.
@@ -93,7 +93,7 @@ Correctness-shaped checks stay in code review.
 3. **Hot-path bloat** — new blocking work on startup / per-request / per-render.
 4. **Recurring no-op updates** — writes when nothing changed; verify updater callbacks honor same-reference no-ops.
 5. **Unnecessary existence checks** — TOCTOU `exists` then `read` → operate and handle errors.
-6. **Memory** — unbounded structures, missing cleanup, leaked listeners; closures pinning huge scopes.
+6. **Memory** — unnecessary retention whose removal preserves observable behavior. Leaked listeners, missing lifecycle cleanup, or unbounded growth that changes behavior belong in a correctness finding.
 7. **Overly broad operations** — full file/table when one slice suffices.
 8. **Import / bundle cost** — whole library for one function; barrels that hurt client/edge bundles.
 

@@ -41,7 +41,10 @@ skill instructions. Do not enable `tc@chow` alongside those links, and do not
 also copy those skills into `~/.config/opencode/skills`. OpenCode 2 does not load
 Claude marketplace plugins, so `ek` remains Claude Code-only and
 upstream-managed. Machine catch-up is a repo playbook (`docs/resync.md`).
-Product-repo upgrades are the `refresh` skill. Correctness review is the `review` skill. End-of-slice closer is the `pass` skill. The pull request, from draft to ready, is the `pr` skill. Re-examining this setup itself is the repo playbook `docs/audit.md`.
+Product-repo upgrades use `refresh`. The global completion rule combines `review`
+and `pass` for both direct commits and PRs. `pr` publishes and maintains the PR;
+`pr check` reports readiness and only explicit `pr ready` approval flips the draft.
+Re-examining this setup itself is the repo playbook `docs/audit.md`.
 
 Plugin content for `chow` lives outside this directory:
 
@@ -129,17 +132,9 @@ are the stubs in `opencode/commands`.
 
 ## Auditing config
 
-Worth doing when a notably better model ships, or on a new machine:
-
-1. `/insights` to generate fresh usage data.
-2. `/skill-doctor` for unused skills: which loaded skills never get invoked, what they
-   cost in context, and where to turn them off. It skips bundled and enterprise skills,
-   and says nothing about broken ones, which are `claude plugin validate`'s job.
-3. `/doctor` for the rest of the removal side: unused plugins, `CLAUDE.md` lines a session
-   could derive on its own, duplicate memory files, install health.
-4. Ask Claude for the addition side, which `/doctor` does not cover: read the `/insights`
-   report and the `feedback` memories under `~/.claude/projects/*/memory/`, and propose
-   `CLAUDE.md` rules or new skills for mistakes and workflows that keep recurring.
+Saying **audit** in this repo follows [`docs/audit.md`](../docs/audit.md), which owns when
+to run one, what to examine, and which harness diagnostics are worth reading on a given
+machine. Don't keep a second checklist here.
 
 Approved edits land in this working tree directly, so review with `git diff` and commit.
 First-party skill edits under `plugins/tc/skills/` are live through `~/.claude/skills`
