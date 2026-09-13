@@ -37,8 +37,8 @@ Grok, and OpenCode 2 all read that path. The official `gh` skill also lives ther
 via `gh skill install` (resync installs or updates it); do not copy it into
 `plugins/tc/skills`. `opencode/commands` adds `/vet`, `/tldr`,
 `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, `/pass`, `/pr`, and `/cleanup` wrappers without duplicating the
-skill instructions. Do not enable `tc@chow` alongside those links, and do not
-also copy those skills into `~/.config/opencode/skills`. OpenCode 2 does not load
+skill instructions. What must never be installed twice is listed in the root
+`CLAUDE.md`. OpenCode 2 does not load
 Claude marketplace plugins, so `ek` remains Claude Code-only and
 upstream-managed. Machine catch-up is a repo playbook (`docs/resync.md`).
 Product-repo upgrades use `refresh`. The global completion rule combines `review`
@@ -60,7 +60,7 @@ Plugin content for `chow` lives outside this directory:
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `review`, `tdd`, `grill-me`, `refresh`, `pass`, `pr`, `cleanup`, `statusline-install` files. Marketplace packaging only. Do not enable on a machine that ran the installer. |
+| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `review`, `tdd`, `grill-me`, `refresh`, `pass`, `pr`, `cleanup`, `statusline-install` files. Marketplace packaging only, for machines that never ran the installer. |
 | `ek@chow` | `emilkowalski/skills` (git url) | Whatever is in upstream `skills/` (not vendored here) |
 
 Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.
@@ -156,4 +156,4 @@ machines that install the plugin instead.
 ## Credits
 
 - [emilkowalski/skills](https://github.com/emilkowalski/skills) - © Emil Kowalski, MIT. Referenced by `ek@chow`; not modified in this repo.
-- [mattpocock/skills](https://github.com/mattpocock/skills) - © 2026 Matt Pocock, MIT. Nothing here is a copy of his files. `grill-me` is written from scratch and keeps his design-tree and frontier framing. `tdd` is also from scratch, with its seam idea and its anti-patterns adapted from that repo's `tdd`, plus the red-before-green gates from [obra/superpowers](https://github.com/obra/superpowers) and the find-the-repo's-test-command rule from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills). Do not also install `mattpocock-skills` from the official marketplace: its `grill-me` would collide with this one.
+- [mattpocock/skills](https://github.com/mattpocock/skills) - © 2026 Matt Pocock, MIT. Nothing here is a copy of his files. `grill-me` is written from scratch and keeps his design-tree and frontier framing. `tdd` is also from scratch, with its seam idea and its anti-patterns adapted from that repo's `tdd`, plus the red-before-green gates from [obra/superpowers](https://github.com/obra/superpowers) and the find-the-repo's-test-command rule from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills).

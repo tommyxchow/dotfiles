@@ -98,29 +98,30 @@ been going wrong, then proposes changes and waits. Also repo-local.
   when the file goes over.
 
 - **The installer links first-party skills into `~/.claude/skills`.** Claude,
-  Cursor, Grok, and OpenCode 2 all read that path. `opencode/commands` provides
-  `/vet`, `/tldr`, `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, `/pass`,
-  `/pr`, and `/cleanup` wrappers. Do not also copy those skills into `~/.config/opencode/skills`.
-  Keep shared skills portable Agent Skills (`name` and `description` required).
-  Claude-only `context` / `agent` / `background` are fine where a skill should
-  fork, and `disable-model-invocation` is read by Claude and Cursor but not by
-  every harness. Whatever such a key enforces has to be written into the skill's
-  own text as well or it only holds where the key is read. Don't put
+  Cursor, Grok, and OpenCode 2 all read that path, and `opencode/commands`
+  provides the `/vet`, `/tldr`, `/polish`, `/review`, `/tdd`, `/grill-me`,
+  `/refresh`, `/pass`, `/pr`, and `/cleanup` wrappers. Do not also copy those
+  skills into `~/.config/opencode/skills`, do not enable `tc@chow` on a machine
+  that ran the installer (same files via the marketplace cache, so both would
+  load), and do not install `mattpocock-skills` from the official marketplace
+  (its `grill-me` collides with ours).
+
+- **Keep shared skills portable Agent Skills** (`name` and `description`
+  required). Claude-only `context` / `agent` / `background` are fine where a
+  skill should fork, and `disable-model-invocation` is read by Claude and Cursor
+  but not by every harness. Whatever such a key enforces has to be written into
+  the skill's own text as well or it only holds where the key is read. Don't put
   `allowed-tools` on a shared skill.
-  Do not enable `tc@chow` on a machine that ran the installer: that plugin is
-  the same files via the marketplace cache, so both would load. Do not install
-  `mattpocock-skills` from the official marketplace either: it ships its own
-  `grill-me`, which would collide with the one in `plugins/tc/skills`.
-  Harnesses also ship review, cleanup, and audit skills of their own, and they
-  arrive and get renamed release to release, so don't list them here or in a
-  skill body. Two cases cover it. A **name collision**, like Cursor's built-in
-  `review`: precedence is undocumented and theirs is slash-only, so asking in
-  words still reaches ours while typing `/review` there is ambiguous. A
-  **different name for stronger tooling**, like a deeper cloud review only I
-  can start: `.claude/CLAUDE.md` already says to point at it, and the
-  `review` skill already defers to tooling the repo runs itself. Ours stay
-  because they are the only copies that work in all four harnesses and read a
-  repo's own rules first.
+
+- **Don't list harness-shipped review, cleanup, or audit skills** here or in a
+  skill body; they arrive and get renamed release to release. Two cases cover
+  it. A **name collision**, like Cursor's built-in `review`: precedence is
+  undocumented and theirs is slash-only, so asking in words still reaches ours
+  while typing `/review` there is ambiguous. A **different name for stronger
+  tooling**, like a deeper cloud review only I can start: `.claude/CLAUDE.md`
+  already says to point at it, and the `review` skill already defers to tooling
+  the repo runs itself. Ours stay because they are the only copies that work in
+  all four harnesses and read a repo's own rules first.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`
@@ -143,17 +144,12 @@ been going wrong, then proposes changes and waits. Also repo-local.
   Resync installs or updates it. One copy in `~/.claude/skills`; do not also
   install it for cursor, opencode, or grok.
 
-- **Herdr owns both of its agent surfaces; never vendor either into
-  `plugins/tc/skills`.** The skill is whatever `herdr --skill` prints, and the
-  pane hook is `herdr integration install claude`. Installing the integration
-  does not touch the skill, so the two refresh separately and resync does both.
-  Claude is also the only integration that writes into a file this repo tracks:
-  it rewrites the `hooks` entry in `.claude/settings.json` to an absolute machine
-  path. The committed entry is a portable `$HOME` form that dispatches on the
-  script name and already covers both platforms, so restore it after any
-  reinstall or that Windows path ships to every machine. Which integrations are
-  worth installing is a resync question; `docs/resync.md` has the current set and
-  the ones to skip.
+- **Herdr owns its skill and its pane hook; never vendor either into
+  `plugins/tc/skills`.** `herdr integration install claude` rewrites the `hooks`
+  entry in `.claude/settings.json` to an absolute machine path. The committed
+  entry is a portable `$HOME` form that already covers both platforms, so
+  restore it after any reinstall or that path ships to every machine. How the
+  two surfaces refresh, and which integrations to skip, is in `docs/resync.md`.
 
 - **Inside this checkout, user scope and project scope are the same file.**
   Claude Code reads `<project>/.claude/settings.json` as project settings, and

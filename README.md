@@ -85,8 +85,7 @@ It reads user-global instructions from `~/.config/opencode/AGENTS.md` and
 project `AGENTS.md` walking up from the working directory. It does not load
 `CLAUDE.md`. The installer links those `AGENTS.md` paths to the shared
 `.claude/CLAUDE.md` and this repo's `CLAUDE.md`. Skills still come from
-`~/.claude/skills`. Do not also copy first-party skills into
-`~/.config/opencode/skills`.
+`~/.claude/skills`.
 
 Slash from any repo after the installer has run. Details live in the skill
 files.
@@ -122,12 +121,10 @@ The installer also writes `~/.claude/statusline-command.sh` from
 First-party skills are live links into `~/.claude/skills`. The official `gh`
 skill is installed there by resync (`gh skill install`), not linked from this
 repo. The `herdr` skill lands there the same way, printed by `herdr --skill`,
-alongside a pane hook from `herdr integration install claude`. Do not also enable
-`tc@chow` on a machine that ran the installer, or Claude and Cursor load the
-same skills twice. Keep `tc@chow` in the marketplace catalog for machines that
-only install the plugin. Do not also install `mattpocock-skills` from the official
-marketplace, or `grill-me` loads twice. `ek`, `improve`,
-`typescript-lsp`, and `frontend-design` stay marketplace plugins.
+alongside a pane hook from `herdr integration install claude`. `tc@chow` stays
+in the marketplace catalog for machines that only install the plugin; `ek`,
+`improve`, `typescript-lsp`, and `frontend-design` stay marketplace plugins.
+What must never be installed twice is listed in `CLAUDE.md`.
 
 ## Cursor
 
