@@ -35,7 +35,7 @@ If both sources are empty after applying the table, fall back to files the user 
 
 **Caller-supplied pool.** When another skill (`pass`) or the user hands over an explicit file list, that list is the whole pool and replaces Sources A and B. Session-wide discovery is for a bare `/polish`; `/polish all` still widens to the branch.
 
-**Post-commit / clean tree:** If Source A is empty (everything committed, clean working tree) but Source B is non-empty, the pool is still those session-edited files on disk. That is intentional — bare `/polish` means “what we worked on this session,” not “only uncommitted hunks.” Read those files from disk for Phase 0.5 and Phase 1; do not stop with “nothing to polish” / “already clean” just because `git status` is clean.
+**Post-commit / clean tree:** an empty Source A with a non-empty Source B is still a pool. Bare `/polish` means “what we worked on this session,” not “only uncommitted hunks,” so read those files from disk for Phase 0.5 and Phase 1, size the gate from the pool file set rather than from `git diff`, and never stop at “nothing to polish” because `git status` is clean or autofix changed nothing. “Already clean” is what the lenses say after they ran, or a truly trivial pool under the size gate.
 
 Filter every pool by task ownership before editing. Dirty or session-edited files can contain unrelated hunks. Preserve those and any staged state under the global Git rule; skip whole-file autofix on mixed files when it would change unrelated work. Ask once only if ownership cannot be established.
 
@@ -61,7 +61,7 @@ Filter every pool by task ownership before editing. Dirty or session-edited file
 - **No Prettier and no ESLint:** formatting/import-order/class-order stay **out of scope**. At most one summary note to consider adopting them. Do not hand-fix style.
 - **Outside React/TS** (Dart/Flutter, etc.): skip React-specific taste (Compiler, `useMemo`, JSX nesting, `import type`). Still run reuse / dead-code / altitude. Don't invent dartfmt.
 
-**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Small (≈2-5 files): one combined inline review covering all four checklist sections — don't spend four subagents on a pool one read can hold. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. **Empty git diff does not make the run trivial** when Source B still has files — size the gate from the pool file set, not from `git diff` alone. The lens `~8` is a **report cap**, not a read cap: keep looking at the pool; don't stop reviewing because you already have 8 rows; don't manufacture findings to fill 8.
+**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Small (≈2-5 files): one combined inline review covering all four checklist sections — don't spend four subagents on a pool one read can hold. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. Size from the pool file set, not `git diff` (see Post-commit above). The lens `~8` is a **report cap**, not a read cap: keep looking at the pool; don't stop reviewing because you already have 8 rows; don't manufacture findings to fill 8.
 
 ## Phase 0.5 — Prettier + ESLint prep
 
@@ -74,10 +74,8 @@ Filter every pool by task ownership before editing. Dirty or session-edited file
    - If a script can't be scoped to the file list, **skip** that step and note it in the summary. **Never** format or lint the whole repo.
 3. Unfixable ESLint must not abort polish. Consume logs yourself; don't dump them at the user.
 4. **Refresh pool:** inspect the post-autofix diff for ownership and scope; undo only autofix-owned changes outside the pool. Re-read touched untracked and Source-B paths when in scope.
-5. Drop from lens scope only files that **had a dirty diff** which became purely mechanical (format/import-order/class-order only). **Do not drop** Source-B (or other pool) files that have no remaining git diff — e.g. just committed — those stay in scope for judgment; lenses review current file contents.
+5. Drop from lens scope only files that **had a dirty diff** which became purely mechanical (format/import-order/class-order only). Pool files with no git diff stay (see Post-commit above); lenses review current file contents.
 6. Leftover ESLint findings: a safe behavior-identical fix may go in Phase 3, a correctness finding gets noted for code review, and pure style is ignored.
-
-**Autofix no-op ≠ done.** If Prettier/ESLint made no changes, still continue to Phase 1 whenever the judgment pool is non-empty. “Already clean” is only for after lenses find nothing worth applying (or a truly trivial pool under the size gate).
 
 Keep the numbers for the summary: how many files autofix touched, and what happened to each leftover lint finding (fixed, skipped, or sent to code review).
 
