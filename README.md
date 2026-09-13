@@ -33,6 +33,7 @@ copy. `*.bak` is gitignored.
 | Repo path | Target |
 |-----------|--------|
 | `git/.gitconfig` | `~/.gitconfig` |
+| `git/ignore` | `~/.config/git/ignore` |
 | `vscode/settings.json` | VS Code and Cursor user settings |
 | `vscode/keybindings.json` | VS Code and Cursor user keybindings |
 | `ghostty/config` | `~/.config/ghostty/config` |

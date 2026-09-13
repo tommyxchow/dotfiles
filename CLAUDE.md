@@ -73,6 +73,13 @@ been going wrong, then proposes changes and waits. Also repo-local.
   `.claude/CLAUDE.md` contains global instructions, so anything specific to this
   repo belongs in this file instead.
 
+- **Slash commands write into the repo through that link.** `/model`, `/effort`,
+  and anything else Claude Code saves as a default lands in
+  `.claude/settings.json`, so a dirty settings file after a session is usually a
+  preference a command saved, not an edit someone meant to keep. Read the diff
+  and decide whether that default belongs in the repo. Discarding it with
+  `git checkout` also undoes the live setting, since the two are one file.
+
 - **Don't `git switch` the linked checkout under a running session.** A branch
   swap there rewrites the live config and skill files. Offer a worktree the
   global way instead.
@@ -148,8 +155,13 @@ been going wrong, then proposes changes and waits. Also repo-local.
   worth installing is a resync question; `docs/resync.md` has the current set and
   the ones to skip.
 
-- **Install and uninstall plugins with `--scope user`.** `claude plugin uninstall
-  --scope project` also deletes the key from user-scope `enabledPlugins`, and the
-  interactive `/plugin` menu installs to project scope. Either way, check
-  `git diff .claude/settings.json` afterwards and restore any key that disappeared, or
-  the plugin silently stops loading everywhere.
+- **Inside this checkout, user scope and project scope are the same file.**
+  Claude Code reads `<project>/.claude/settings.json` as project settings, and
+  here that is the file `~/.claude/settings.json` links to. So a session run in
+  this repo also sees `enabledPlugins` at project scope, and the interactive
+  `/plugin` menu records project-scope installs with this repo as `projectPath`.
+  Install and uninstall plugins with `--scope user`. A `claude plugin uninstall
+  --scope project` run here edits this same file and so deletes the user-scope
+  key too; afterwards check `git diff .claude/settings.json` and put the key
+  back by editing the JSON, never with `git checkout`, which would also discard
+  any other pending settings change.

@@ -1,6 +1,9 @@
 {
   "name": "chow",
   "owner": { "name": "Tommy Chow" },
+  "metadata": {
+    "description": "Tommy Chow's personal agent skills (tc) and Emil Kowalski's design-engineering skills (ek)"
+  },
   "plugins": [
     {
       "name": "tc",
