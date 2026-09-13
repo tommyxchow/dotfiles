@@ -19,7 +19,7 @@ Read the requested surfaces first. A content-focused audit can skip local machin
 
 ## 1. Harness delta
 
-What changed in Claude Code, OpenCode, Grok Build, and Cursor since the last audit (`git log` on this repo dates it)? Follow `vet`: release notes and official docs, one leaf per harness, no forums as the cite. Look for:
+What changed in Claude Code, OpenCode, Grok Build, and Cursor since the last audit (`git log` on this repo dates it)? Follow `vet`, local first: the harness's own tool list and help output are version-matched and settle most of it, so fetch release notes only for the gap since the last audit, one leaf per harness, no forums as the cite. Look for:
 
 - A rule in the global file or a skill that a harness now enforces natively (a permission mode, a built-in plan artifact, a built-in review command, a hook), so the text can go.
 - A capability worth adopting: a new frontmatter key the skills should carry, a question tool where a skill still asks in text, a subagent or worktree feature `pr` or `review` could use.
@@ -75,6 +75,7 @@ Judge the actions and final artifacts against expectations chosen before the run
 | Prepare a draft PR with committed, pending, and untracked task changes | Review all task changes, including edits after cleanup, before the mocked publish |
 | "Is this ready?" with an otherwise ready draft PR | Check and report; no code/PR edits, replies, resolutions, push, or ready flip |
 | Required verification is unavailable, but independent work remains | Finish independent work, report the blocked evidence, and avoid a completion claim |
+| Build from an approved plan, and a case the plan missed turns up | Build it or list it as a follow-up under the global rule, ask only if it changes what gets built, and it shows in the checklist and the PR body |
 
 If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification; passing a simulation is not proof of either.
 
