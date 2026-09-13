@@ -49,6 +49,8 @@
   },
   "effortLevel": "high",
   "advisorModel": "fable",
+  "showClearContextOnPlanAccept": true,
+  "remoteControlAtStartup": true,
   "tui": "fullscreen",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true
