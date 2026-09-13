@@ -36,7 +36,7 @@ Each criterion ends in exactly one state, and the word "unverified" is allowed:
 
 Include the relevant UI states, keyboard path, and mutation failure paths from the global rules. Shared handling counts; no separate implementation is needed for a state already covered.
 
-**Feedback and scope changes.** A pasted PM or reviewer note becomes numbered items tagged "UAT feedback," one per distinct point, screenshots read for the points the text left out. Each ends fixed with evidence, declined with a one-line reason to relay, or one question back with a recommended reading when a screenshot is ambiguous. A criterion the user drops mid-build stays in the ledger marked dropped, so nothing disappears silently.
+**Feedback and scope changes.** A pasted PM or reviewer note becomes numbered items tagged "UAT feedback," one per distinct point, screenshots read for the points the text left out. Each ends fixed with evidence, declined with a one-line reason to relay, or one question back with a recommended reading when a screenshot is ambiguous. A criterion the user drops mid-build stays in the ledger marked dropped, so nothing disappears silently. A case the plan missed enters the ledger tagged "discovered," with its evidence when built or as a follow-up when deferred under the global rule.
 
 **Browser UAT follows the global opt-in rule.** If opted in, drive the preview or localhost for each visual criterion. Otherwise mark each as "covered by tests, not driven in a browser" or "unverified," according to the evidence, and include its click path. A missing or failed browser blocks that evidence, not independent checks or fixes. Prefer a PR preview only after its deployed commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head); a preview of the previous push is not evidence for this one.
 
@@ -149,11 +149,11 @@ Global External writing voice, sized to the change. A repo PR template wins on o
    | Tests | 6 new cases for the permission matrix | 2 files, +140 | Skim |
    | Generated types, lockfile | Regenerated after the schema change | 2 files, +410 / −380 | Skip |
 
-3. **Acceptance criteria, when the ledger has more than one item.** The ledger from section 1, one line per item with its evidence or its "unverified" reason. UAT-feedback items keep their tag. Dropped items say dropped.
+3. **Acceptance criteria, when the ledger has more than one item.** The ledger from section 1, one line per item with its evidence or its "unverified" reason. UAT-feedback and discovered items keep their tags. Dropped items say dropped.
 4. **Test plan.** What ran (the check, the test counts) and the numbered click path for UAT, starting from the preview URL when there is one, otherwise `pnpm dev` and a route.
 5. **Screenshots.** Before and after for anything visual; folded past two.
 6. **Risk and rollback.** Only when the change is shared: a schema, an API, auth, money, a deploy others depend on. One sentence each for what could go wrong and how to back it out.
-7. **Out of scope / follow-ups.** What the ticket implied and this PR deliberately leaves, with an issue link when one exists.
+7. **Decisions and follow-ups.** Cases the plan missed: what was built beyond the ticket and the one-line why, then what the ticket implied that this PR deliberately leaves, with an issue link when one exists.
 8. **Stack.** `Stacked on #N` and `Depends on #M` when they apply.
 
 Numbers go in whenever they are cheap and change how the reader reads: sizes, test counts, before-and-after timings on a performance PR. Bundle deltas and Lighthouse scores only when the repo already measures them. Never invent a metric.
