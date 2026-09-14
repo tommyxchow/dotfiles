@@ -139,7 +139,7 @@ GitHub usually retargets a child PR when its base branch is deleted; confirm wit
 
 Global External writing voice, sized to the change. A repo PR template wins on order and headings; fill its sections with the content below. A small PR is a summary plus a test plan that carries the evidence; the review table and the criteria list earn their place on a PR with a multi-item ledger or several areas to read. Omit empty sections rather than writing "N/A," and fold long details inside `<details>`.
 
-1. **Summary.** A short explanation in app terms, plus `Closes #N` or a ticket link when applicable.
+1. **Summary.** A short explanation in app terms, plus `Closes #N` or a ticket link when applicable. For a change with a mechanism worth knowing, follow it with how it works: the pieces and the flow between them in three to five sentences, a small diagram when the flow has more than two steps, and the one snippet that carries the idea, so the reader has the model before the diff.
 2. **What to review, for substantial changes.** Grouped by concern, not per file, worst risk first, at most about eight rows even on a big PR. Sizes come from `git diff --stat <base>...HEAD`; a total line at the bottom. The read/skim/skip call is the same split `review` makes when it triages.
 
    | Area | What changed | Size | Review |
