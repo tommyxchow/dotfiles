@@ -8,26 +8,19 @@ argument-hint: "[<topic>|<file path>|<url>|<text>|changes|pr <number|url>|sessio
 
 Produce TL;DR-first, skimmable technical writing. Lead with the answer, then progressively reveal detail. A reader who stops at the TL;DR walks away correct; a reader who continues learns more, not different.
 
-Voice matches global Communication. Don't recap at the end.
+Voice matches global Communication. Don't recap at the end. A TL;DR headed for posted output (a PR body, a commit, a ticket comment) follows the global External writing rules.
 
-The invocation argument is `$ARGUMENTS` (empty on bare `/tldr`).
+## What to summarize
 
-## Argument routing
+Bare `/tldr` summarizes the last few messages: what was just asked, just done, just decided. Don't roll up the whole session by default; pull earlier context only when it is needed to make sense of what was just said.
 
-| `$ARGUMENTS` | Source to summarize |
-|---|---|
-| **empty** (default) | The last few messages: what was just asked, just done, just decided |
-| `session` | The full session arc since it started (opt-in, expensive) |
-| `changes` | The actual work product: `git status`, diff against the merge base (or uncommitted diff), recent commits — ground truth over chat claims |
-| `pr <number or url>` or a PR URL | The PR via `gh pr view` (title, body, review comments) and `gh pr diff` |
-| Path to a file (exists on disk) | Read the file, TL;DR its content |
-| URL (`http://` or `https://`) | Fetch it, TL;DR the page |
-| Multi-line pasted text | TL;DR that text |
-| Short phrase / topic name | TL;DR what was discussed about that topic in the recent conversation |
+With an argument, summarize whatever it names, routed by what it is rather than by a keyword:
 
-Route natural phrasing by intent, not exact keywords: "what changed", "the diff", "what we did to the code" → `changes`; a request to summarize a specific PR (a number or URL) → `pr`; talk *about* PRs, such as why one was or wasn't opened, stays a topic; other conversational phrases → topic.
-
-For ambiguous strings (e.g. a short word that could be a topic or a filename), try reading it as a file first; on a not-found error, treat it as a topic.
+- The **code changes** (`changes`, or any phrasing like "what changed", "the diff", "what we did to the code"): `git status`, the diff against the merge base or the uncommitted diff, and recent commits. Ground truth over chat claims.
+- A **PR** (`pr <number|url>`, or a PR URL): `gh pr view` for title, body, and review comments, plus `gh pr diff`. Talk *about* PRs, such as why one was or wasn't opened, stays a topic.
+- The **whole session** (`session`): the full arc since it started, same skeleton as the default with a wider window. Opt-in because it is expensive.
+- A **file path** that exists on disk, a **URL**, or **pasted text**: read or fetch it and summarize that. A short word that could be a file or a topic is a file first; on not-found it is a topic.
+- Anything else is a **topic**: what was discussed about it in the recent conversation.
 
 This skill is for single-session and ad-hoc summaries, not week-scale rollups across many sessions.
 
@@ -35,22 +28,10 @@ This skill is for single-session and ad-hoc summaries, not week-scale rollups ac
 
 Drop any section that doesn't apply; trivial inputs get a one-line direct answer, no template.
 
-- **Recent exchange or session** (default and `session` modes): TL;DR of where things stand in app terms, then decisions made (with the one-line why), open questions / next steps, and files touched if any.
-- **Recommendation / substantive answer**: the pick first, then why it wins, then what to skip / tradeoffs — if recommending A over B, say what B is good for and why A wins here.
+- **Recent exchange or session**: TL;DR of where things stand in app terms, then decisions made (with the one-line why), open questions / next steps, and files touched if any. Build the narrative from your conversation memory, but pull concrete artifacts (file paths, branch names, ticket IDs, tools invoked) from your tool-use history, not from recall. If the exchange included code edits the user wasn't watching, cross-check the story against `git status` / `git diff` before telling it; chat claims can drift from the tree. State the end state (works, broken, unverified) explicitly. A trivial exchange (a one-line acknowledgment, a fix-this-typo) gets a one-line answer and nothing more.
+- **Recommendation / substantive answer**: the pick first, then why it wins, then what to skip / tradeoffs. If recommending A over B, say what B is good for and why A wins here.
 - **Document, article, or pasted text**: a one-to-three-sentence thesis, then key points, then details only when the source has nuance worth preserving.
-- **Changes or a PR** (`changes` / `pr` modes): what it changes and why in 1-3 sentences, in app terms rather than file names, then risk areas worst-first, what to review first, and anything broken or unverified. Mention tests only if they exist in the diff — never invent coverage. Read the diff before summarizing; don't summarize a diff from its description.
-
-**Writing for posted output:** in-session TL;DRs can use em dashes freely. If a TL;DR is headed for posted output (PR body, commit, Teams/Jira comment), follow the global External writing rules (concise casual teammate voice, no em dashes, no filler).
-
-## Default mode: the last few messages
-
-When `$ARGUMENTS` is empty, summarize the most recent exchange or two using the recent-exchange shape. Don't roll up the whole session by default. Pull earlier context only when it's needed to make sense of what was just said.
-
-Build the narrative from your conversation memory. Pull concrete artifacts (file paths, branch names, ticket IDs, tools invoked) from your tool-use history, not from recall.
-
-If the exchange included code edits the user wasn't watching, cross-check the story against `git status` / `git diff` before telling it — chat claims can drift from the tree. State the end state (works, broken, unverified) explicitly.
-
-If the recent exchange is trivial (one-line acknowledgment, a fix-this-typo), give a one-line answer and stop. For the full session arc, the user passes `session` (same skeleton, wider window).
+- **Changes or a PR**: what it changes and why in 1-3 sentences, in app terms rather than file names, then risk areas worst-first, what to review first, and anything broken or unverified. Mention tests only if they exist in the diff; never invent coverage. Read the diff before summarizing; don't summarize a diff from its description.
 
 ## Worked example
 
