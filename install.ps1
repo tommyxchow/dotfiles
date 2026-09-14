@@ -212,6 +212,7 @@ else {
         @{ Section = "features"; Key = "two_pass_compaction";  Value = "true" }
         @{ Section = "ui";       Key = "theme";                Value = '"auto"' }
         @{ Section = "ui";       Key = "auto_dark_theme";      Value = '"oscura-midnight"' }
+        @{ Section = "models";   Key = "default_reasoning_effort"; Value = '"high"' }
     )) {
         $r = Set-TomlKey $text $k.Section $k.Key $k.Value
         $text = $r.Text

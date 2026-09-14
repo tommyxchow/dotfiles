@@ -14,3 +14,6 @@ two_pass_compaction = true # default: true since 1.0.21; kept in case it flips b
 [ui]
 theme = "auto" # default: GrokNight
 auto_dark_theme = "oscura-midnight" # default: GrokNight
+
+[models]
+default_reasoning_effort = "high" # default: unset. xhigh buys nothing over high on Grok 4.6 (Artificial Analysis, Sept 2026)

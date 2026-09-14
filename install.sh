@@ -283,6 +283,7 @@ write_grok_config() {
   grok_toml_set "$dest" features two_pass_compaction true && changed=1
   grok_toml_set "$dest" ui theme '"auto"' && changed=1
   grok_toml_set "$dest" ui auto_dark_theme '"oscura-midnight"' && changed=1
+  grok_toml_set "$dest" models default_reasoning_effort '"high"' && changed=1
   if [ "$changed" = 1 ]; then
     printf "  PATCH %s\n" "$dest"
   else
