@@ -1,14 +1,14 @@
 ---
 name: review
-description: 'Finds concrete defects and missing behavior in code changes, verified and ranked worst first. Use for review, code review, review the diff, is this correct, or double check the code. Reports only unless asked to fix or called by the build completion workflow. PR readiness questions go to pr; shape cleanup to polish; final cleanup to pass; factual claims to vet. Default scope is dirty work plus session edits; `branch` is committed changes only, `all` includes pending work, and `pr <number|url>` reviews the published PR.'
-argument-hint: "[staged | unstaged | branch | all | pr <number|url>] [fix] [<focus>]"
+description: 'Finds concrete defects and missing behavior in code changes, verified and ranked worst first. Use for review, code review, review the diff, is this correct, or double check the code. Reports only unless the request says fix; "review and pass", with or without final, means this reports and pass then applies the confirmed findings. PR readiness questions go to pr; shape cleanup to polish; final cleanup to pass; factual claims to vet. Default scope is dirty work plus session edits; `branch` is committed changes only, `all` includes pending work, and `pr <number|url>` reviews the published PR. `quick` is one read of the essentials and never counts as the final review; `deep` or `deeper` is the expensive tier: fan-out whatever the size, one hop wider, every high or medium finding reproduced.'
+argument-hint: "[quick | deep] [staged | unstaged | branch | all | pr <number|url>] [fix] [<focus>]"
 ---
 
 # Review
 
 Find real defects: something a user, an attacker, or the next deploy would hit. Use the task's intent and repo rules, then verify each finding before reporting it.
 
-`$ARGUMENTS`: an optional scope keyword first (`staged`, `unstaged`, `branch`, `all`, `pr <number|url>`), an optional `fix`, then focus text. Bare `review` uses the default scope and reports only.
+`$ARGUMENTS`: an optional depth first (`quick`, or `deep` / `deeper` for the expensive tier), then an optional scope keyword (`staged`, `unstaged`, `branch`, `all`, `pr <number|url>`), an optional `fix`, then focus text. Bare `review` uses the default scope and reports only.
 
 ## 1. Recon, kept cheap
 
@@ -20,7 +20,9 @@ Find real defects: something a user, an attacker, or the next deploy would hit. 
 ## 2. Size the run
 
 - **Small** (one concern, a handful of files): one read of the diff with every lens in mind. No fan-out.
-- **Large** (several concerns or many files): triage first, then fan out read-only reviewers in parallel, one per lens or one per area, each with its diff slice, the intent, the repo's rules, the finding rule below, and a cap of about eight findings. Never ask any of them to find everything. Then reconcile.
+- **Large** (several concerns or many files): triage first, then fan out read-only reviewers in parallel, one per lens or one per area, each with its diff slice, the intent, the repo's rules, and the finding rule below. Their job is coverage, not filtering: every finding comes back with a confidence and a severity, and section 4 does the dropping. Then reconcile.
+- **Quick** (`quick review`): one read, no fan-out and no triage lines, whatever the size. Run the cheapest bug finder only if this tree hasn't had it this session. Correctness, security, and missing in full; edge cases and performance only where the diff obviously invites them. Skip section 4's tracing: a finding is confirmed only when the failure is plain in the diff itself, everything else is likely and marked "traced, not run", and guesses are dropped. Open the report with "Quick review", so nothing counts it as the final task review.
+- **Deep** (`deep`, `deeper`): the tier for a risky change or a large diff written in one go, and the expensive one by design. Fan out per lens whatever the size, and give the triage no skim bucket for hand-written code. Read one hop wider: the callers' callers where a contract changed, the existing tests for the touched behavior to check they still assert the right thing, and the rest of the repo for the same mistake. In section 4, reproduce every high or medium finding with a script or test so it lands confirmed rather than "traced, not run", since `pass` applies only confirmed findings. Earlier reviews of this tree are input, not reuse: read again, and don't re-report what they found unless it changed. Open the report with "Deep review".
 
 **Triage, on a large run only.** Depth is finite, so spend it where a defect would cost something. Read closely anything touching auth or permissions, money, a data migration, a schema or API contract, a server path, newly accepted external input, or concurrency, plus wherever the change's actual purpose lives. Move fast over generated files, lockfiles, mass renames, formatting-only churn, test fixtures, and vendored code. Then **say the split in two lines before the findings**, because a silent triage hides its own mistakes and this one can file the thing the user cared about under boring:
 
@@ -45,7 +47,7 @@ Every finding needs a concrete failure scenario: which input or state, and what 
 
 ## 4. Verify before reporting
 
-For every finding that would be high or medium: trace the scenario through the callers, types, and tests to confirm it is reachable, and run a quick test or script when that is cheap. Mark it confirmed (reproduced or fully traced) or likely (traced, not run). Drop anything that stays a guess. If the proposed fix is another guard, default, or catch-all, and no real caller reaches that state, drop it too; a missing auth check or a user-visible error path still counts, because those have a caller. A review with three sure findings beats one with ten maybes.
+For every finding that would be high or medium: trace the scenario through the callers, types, and tests to confirm it is reachable, and run a quick test or script when that is cheap. Mark it confirmed (reproduced or fully traced) or likely (traced, not run). Drop anything that stays a guess. If the proposed fix is another guard, default, or catch-all, and no real caller reaches that state, drop it too; a missing auth check or a user-visible error path still counts, because those have a caller. A review with three sure findings beats one with ten maybes. Low-severity findings aren't traced: keep one when its scenario is concrete and the fix is small, and drop the rest, since that is the cap the fan-out no longer has.
 
 ## 5. Report
 
@@ -60,4 +62,4 @@ Dedup, rank worst first by severity then confidence, and write it in the global 
 The repo's PR checklist in CONTRIBUTING.md also asks for a changelog line, and this change has none.
 ```
 
-`fix`, or "review and fix": apply the fixes worst first, each with a regression test where the behavior is testable, then rerun the quick check and report what changed. A fix is the smallest change that removes the failure scenario: no new abstraction layer, no defensive branch for a case the types already rule out, no test for something that cannot happen. A reviewer asked to find gaps reports some even when the work is sound, so a finding that needs a big fix is worth re-reading before you build around it. Never fix silently during a plain review.
+`fix`, or "review and fix": apply the fixes worst first, each with a regression test where the behavior is testable, then rerun the quick check and report what changed. A fix is the smallest change that removes the failure scenario: no new abstraction layer, no defensive branch for a case the types already rule out, no test for something that cannot happen. A reviewer asked to find gaps reports some even when the work is sound, so a finding that needs a big fix is worth re-reading before you build around it. Never fix silently during a plain review. "Review and pass" or "review/pass", with or without "final", means this report first (through `pr check` when a PR is open), then `pass` applies the confirmed findings under this same fix rule. `quick` in front makes both quick.

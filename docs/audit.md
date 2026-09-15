@@ -32,6 +32,7 @@ Say what you checked and the version or date it was current as of.
 Lines that no longer earn their place:
 
 - A rule a current model follows without being told. Test it by asking whether the rule exists because a mistake happened twice; if you can't name the mistake, it is a candidate.
+- A step in a skill that exists because an older model needed hand-holding, not because the method has that step. Newer models often do worse with enumerated hand-holding than with the goal and constraints; try the skill with those steps removed before keeping them. Steps that are the method, like tdd's loop or cleanup's safety checks, stay.
 - Stale references: a version, an API name, a tool that no longer exists, a skill or command the README lists that isn't in the tree, or the reverse.
 - A skill nothing invokes. On a machine the user actually works on, the harness's own diagnostics answer this: `/insights` for fresh usage data, `/skill-doctor` for loaded skills that never get invoked and what they cost in context, `/doctor` for unused plugins, derivable instruction lines, duplicate memory files, and install health. `claude plugin validate` owns broken skills, which `/skill-doctor` says nothing about. On a machine the user rarely codes on, skip all of it and say usage is unknown rather than reading a quiet machine as evidence.
 - `.claude/CLAUDE.web.md` over its 4000-character cap, or drifted from the Communication rules it mirrors.
