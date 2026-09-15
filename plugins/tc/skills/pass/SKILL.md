@@ -1,6 +1,6 @@
 ---
 name: pass
-description: 'Closes and commits a finished slice: apply the confirmed findings of a review that ran this session, vet stale-sensitive choices, remove leftovers, polish code, and run the repo check. Use for quick pass, final pass, final double check, close this out, plug the gaps, or pass on its own, not mid-sentence. "review and pass" or "review/pass", with or without final, runs review first (it reports) and then this. PR readiness goes to pr; correctness to review; code shape to polish; current facts to vet; packages to refresh. A bare status check uses known results and git status. Never pushes or substitutes for the final task review.'
+description: 'Closes and commits a finished slice: apply the confirmed findings of a review that ran this session, vet stale-sensitive choices, remove leftovers, polish code, and run the repo check. Use for quick pass, final pass, final double check, close this out, plug the gaps, or pass on its own, not mid-sentence. "review and pass" or "review/pass", with or without final, runs review first (it reports; `pr check` when a PR is open) and then this. PR readiness goes to pr; correctness to review; code shape to polish; current facts to vet; packages to refresh. A bare status check uses known results and git status. Never pushes or substitutes for the final task review.'
 argument-hint: "[skip polish | skip check | <focus>]"
 ---
 
