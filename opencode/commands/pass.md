@@ -1,5 +1,5 @@
 ---
-description: Close and commit a finished slice. Not the final task review.
+description: Close and commit a finished slice, applying the findings of a review run this session. Not the final task review.
 ---
 
 Load and follow the `pass` skill. Use the user's arguments as its options: $ARGUMENTS

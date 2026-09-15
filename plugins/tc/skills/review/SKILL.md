@@ -1,6 +1,6 @@
 ---
 name: review
-description: 'Finds concrete defects and missing behavior in code changes, verified and ranked worst first. Use for review, code review, review the diff, is this correct, or double check the code. Reports only unless asked to fix or called by the build completion workflow. PR readiness questions go to pr; shape cleanup to polish; final cleanup to pass; factual claims to vet. Default scope is dirty work plus session edits; `branch` is committed changes only, `all` includes pending work, and `pr <number|url>` reviews the published PR.'
+description: 'Finds concrete defects and missing behavior in code changes, verified and ranked worst first. Use for review, code review, review the diff, is this correct, or double check the code. Reports only unless the request says fix; "review and pass", with or without final, means this reports and pass then applies the confirmed findings. PR readiness questions go to pr; shape cleanup to polish; final cleanup to pass; factual claims to vet. Default scope is dirty work plus session edits; `branch` is committed changes only, `all` includes pending work, and `pr <number|url>` reviews the published PR.'
 argument-hint: "[staged | unstaged | branch | all | pr <number|url>] [fix] [<focus>]"
 ---
 
@@ -20,7 +20,7 @@ Find real defects: something a user, an attacker, or the next deploy would hit. 
 ## 2. Size the run
 
 - **Small** (one concern, a handful of files): one read of the diff with every lens in mind. No fan-out.
-- **Large** (several concerns or many files): triage first, then fan out read-only reviewers in parallel, one per lens or one per area, each with its diff slice, the intent, the repo's rules, the finding rule below, and a cap of about eight findings. Never ask any of them to find everything. Then reconcile.
+- **Large** (several concerns or many files): triage first, then fan out read-only reviewers in parallel, one per lens or one per area, each with its diff slice, the intent, the repo's rules, and the finding rule below. Their job is coverage, not filtering: every finding comes back with a confidence and a severity, and section 4 does the dropping. Then reconcile.
 
 **Triage, on a large run only.** Depth is finite, so spend it where a defect would cost something. Read closely anything touching auth or permissions, money, a data migration, a schema or API contract, a server path, newly accepted external input, or concurrency, plus wherever the change's actual purpose lives. Move fast over generated files, lockfiles, mass renames, formatting-only churn, test fixtures, and vendored code. Then **say the split in two lines before the findings**, because a silent triage hides its own mistakes and this one can file the thing the user cared about under boring:
 
@@ -60,4 +60,4 @@ Dedup, rank worst first by severity then confidence, and write it in the global 
 The repo's PR checklist in CONTRIBUTING.md also asks for a changelog line, and this change has none.
 ```
 
-`fix`, or "review and fix": apply the fixes worst first, each with a regression test where the behavior is testable, then rerun the quick check and report what changed. A fix is the smallest change that removes the failure scenario: no new abstraction layer, no defensive branch for a case the types already rule out, no test for something that cannot happen. A reviewer asked to find gaps reports some even when the work is sound, so a finding that needs a big fix is worth re-reading before you build around it. Never fix silently during a plain review.
+`fix`, or "review and fix": apply the fixes worst first, each with a regression test where the behavior is testable, then rerun the quick check and report what changed. A fix is the smallest change that removes the failure scenario: no new abstraction layer, no defensive branch for a case the types already rule out, no test for something that cannot happen. A reviewer asked to find gaps reports some even when the work is sound, so a finding that needs a big fix is worth re-reading before you build around it. Never fix silently during a plain review. "Review and pass" or "review/pass", with or without "final", means this report first, then `pass` applies the confirmed findings under this same fix rule.
