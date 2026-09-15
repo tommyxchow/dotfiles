@@ -94,9 +94,9 @@ files.
 |-------|------|
 | `/vet` | A claim, version, known issue, or "is this still true". Not "is this code correct". Reports, then waits. |
 | `/tdd` | Build new behavior test first: name the cases, red, then the smallest code that passes. |
-| `/polish` | Shape of code you already wrote. |
-| `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. |
-| `/pass` | Slice is done: apply this session's confirmed review findings, vet, leftovers, polish if code-shaped, slice-ready, then the commit. |
+| `/polish` | Shape of code you already wrote. `quick` is inline and removal-only. |
+| `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. `quick` is one read; `deep` is the full run. |
+| `/pass` | Slice is done: apply this session's confirmed review findings, vet, leftovers, polish if code-shaped, slice-ready, then the commit. `quick` trims vet and polish. |
 | `/pr` | Prepare the task, review its complete final diff, and publish a draft with acceptance evidence. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |

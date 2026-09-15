@@ -1,7 +1,7 @@
 ---
 name: polish
-description: 'Behavior-preserving cleanup using existing format/lint tools and four lenses: reuse, quality, efficiency, altitude. Tuned for React/TS, with non-React checks usable elsewhere. Use for polish, dry clean, make this less hacky, or reduce duplication. Correctness goes to review; slice completion to pass; PR readiness to pr. Default scope is dirty work plus session edits, including after commit; all includes the branch and pending work. Never installs tools.'
-argument-hint: "[staged | unstaged | branch | all | <focus>]"
+description: 'Behavior-preserving cleanup using existing format/lint tools and four lenses: reuse, quality, efficiency, altitude. Tuned for React/TS, with non-React checks usable elsewhere. Use for polish, dry clean, make this less hacky, or reduce duplication; `quick` is inline, removal-shaped cleanups only. Correctness goes to review; slice completion to pass; PR readiness to pr. Default scope is dirty work plus session edits, including after commit; all includes the branch and pending work. Never installs tools.'
+argument-hint: "[quick] [staged | unstaged | branch | all | <focus>]"
 ---
 
 # Polish — autofix then judgment cleanup
@@ -14,7 +14,7 @@ Harness format-on-save is unreliable across Cursor / Claude Code / OpenCode. Bat
 
 ## Phase 0 — Scope and recon
 
-**Scope keywords:** the first argument token may be `staged`, `unstaged`, `branch`, or `all`; the rest is focus text. `/polish all buttons` means branch-wide scope focused on buttons. Use `/polish buttons` to keep the default scope.
+**Scope keywords:** `quick` may come first (see the size gate); then the first token may be `staged`, `unstaged`, `branch`, or `all`; the rest is focus text. `/polish all buttons` means branch-wide scope focused on buttons. Use `/polish buttons` to keep the default scope.
 
 Build the review pool:
 
@@ -61,7 +61,7 @@ Filter every pool by task ownership before editing. Dirty or session-edited file
 - **No Prettier and no ESLint:** formatting/import-order/class-order stay **out of scope**. At most one summary note to consider adopting them. Do not hand-fix style.
 - **Outside React/TS** (Dart/Flutter, etc.): skip React-specific taste (Compiler, `useMemo`, JSX nesting, `import type`). Still run reuse / dead-code / altitude. Don't invent dartfmt.
 
-**Size gate.** Trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Small (≈2-5 files): one combined inline review covering all four checklist sections — don't spend four subagents on a pool one read can hold. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. Size from the pool file set, not `git diff` (see Post-commit above). The lens `~8` is a **report cap**, not a read cap: keep looking at the pool; don't stop reviewing because you already have 8 rows; don't manufacture findings to fill 8.
+**Size gate.** `quick`, from the user or handed down by `pass`: inline whatever the size, no fan-out, removal-shaped cleanups only (dead code, unused params, redundant state, needless guards), no extract, move, or split. Otherwise, trivial (≈1 file, few lines): skip fan-out; run checklists inline; still run Phase 0.5 if tools exist. Small (≈2-5 files): one combined inline review covering all four checklist sections — don't spend four subagents on a pool one read can hold. Large: four lenses; shard a lens across dirs only when that prompt would be huge (soft judgment). Parallel *shards* of the same four lenses only — never new lens types. Size from the pool file set, not `git diff` (see Post-commit above). The lens `~8` is a **report cap**, not a read cap: keep looking at the pool; don't stop reviewing because you already have 8 rows; don't manufacture findings to fill 8.
 
 ## Phase 0.5 — Prettier + ESLint prep
 
