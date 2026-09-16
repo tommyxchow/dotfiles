@@ -124,6 +124,7 @@ link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.config/opencode/AGENTS.md"
 link "CLAUDE.md"               "$DOTFILES/AGENTS.md"
 link "opencode/cli.json"       "$HOME/.config/opencode/cli.json"
+link "plugins/tc/skills/statusline-install/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
 
 for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   [ -d "$skill_dir" ] || continue
@@ -174,40 +175,6 @@ write_cursor_plugin() {
   fi
   mv "$tmp" "$rule"
   printf "  WRITE %s\n" "$rule"
-}
-
-# The skill markdown is the source of truth. settings.json already points here.
-write_statusline() {
-  local skill="$DOTFILES/plugins/tc/skills/statusline-install/SKILL.md"
-  local dest="$HOME/.claude/statusline-command.sh"
-  local tmp
-
-  if [ ! -f "$skill" ]; then
-    printf "  SKIP  statusline-install skill (not in repo)\n"
-    return
-  fi
-
-  mkdir -p "$(dirname "$dest")"
-  tmp="$(mktemp)"
-  awk '
-    /^## Script$/ { want = 1; next }
-    want && /^```bash$/ { code = 1; next }
-    code && /^```$/ { exit }
-    code { print }
-  ' "$skill" > "$tmp"
-
-  if [ ! -s "$tmp" ]; then
-    rm -f "$tmp"
-    printf "  SKIP  statusline script missing from skill\n"
-    return
-  fi
-  if [ -f "$dest" ] && cmp -s "$tmp" "$dest"; then
-    rm -f "$tmp"
-    printf "  OK    %s\n" "$dest"
-    return
-  fi
-  mv "$tmp" "$dest"
-  printf "  WRITE %s\n" "$dest"
 }
 
 write_cursor_plugin
@@ -317,8 +284,6 @@ write_grok_lsp() {
   fi
 }
 write_grok_lsp
-
-write_statusline
 
 # The Agent Skills spec caps description at 1024 characters and Claude Code
 # allows more, so an over-cap description passes here and only misbehaves in

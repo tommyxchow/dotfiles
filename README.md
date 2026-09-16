@@ -44,6 +44,7 @@ copy. `*.bak` is gitignored.
 | `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode 2 reads this path too) |
 | `opencode/commands/*.md` | `~/.config/opencode/commands/{name}` |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
+| `plugins/tc/skills/statusline-install/statusline-command.sh` | `~/.claude/statusline-command.sh` |
 
 Cursor supports symlinked local plugins, but its rule file needs frontmatter
 that the shared `CLAUDE.md` does not carry. The installer writes a real plugin at
@@ -114,9 +115,9 @@ plan and build. Switching models or sessions carries the approved plan forward
 without another approval round. The global `.claude/CLAUDE.md` "How a task runs"
 section owns those rules; slash commands are shortcuts.
 
-The installer also writes `~/.claude/statusline-command.sh` from
+The installer also links `~/.claude/statusline-command.sh` to the script in
 `plugins/tc/skills/statusline-install`, so a new machine does not need
-`/tc:statusline-install`. Re-run the installer after editing that skill.
+`/tc:statusline-install` and edits to the script are live.
 
 First-party skills are live links into `~/.claude/skills`. The official `gh`
 and `herdr` skills are installed there by resync through `gh skill install`
@@ -145,7 +146,7 @@ claude.ai and grok.com. The installer never touches it; paste it by hand.
 
 ## Claude Code still needs the marketplace step
 
-The installer links skills and writes the statusline. Marketplace plugins (`ek`,
+The installer links skills and the statusline. Marketplace plugins (`ek`,
 `improve`, `typescript-lsp`, `frontend-design`) still need `claude plugin install`
 when Claude Code is on the machine. Cursor, Grok, and OpenCode 2 get first-party
 skills from the installer alone. Saying **resync** in this repo does both. See

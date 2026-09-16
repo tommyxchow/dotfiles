@@ -87,7 +87,7 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 ## Setup
 
 1. Run the dotfiles installer to link instructions and first-party skills into
-   `~/.claude/`, write the statusline, and copy Cursor's local plugin.
+   `~/.claude/`, link the statusline, and copy Cursor's local plugin.
 2. Open Claude Code. `extraKnownMarketplaces` / `enabledPlugins` declare the
    marketplace plugins below, but `enabledPlugins` alone does **not** install
    them. Install each, then `/reload-plugins`. Skip `tc@chow` here, since the

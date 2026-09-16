@@ -69,6 +69,7 @@ $links = @(
     @{ Source = ".claude/CLAUDE.md";        Target = "$HOME/.config/opencode/AGENTS.md" }
     @{ Source = "CLAUDE.md";                Target = (Join-Path $dotfiles "AGENTS.md") }
     @{ Source = "opencode/cli.json";        Target = "$HOME/.config/opencode/cli.json" }
+    @{ Source = "plugins/tc/skills/statusline-install/statusline-command.sh"; Target = "$HOME/.claude/statusline-command.sh" }
 )
 
 Get-ChildItem (Join-Path $dotfiles "plugins/tc/skills") -Directory -ErrorAction SilentlyContinue | ForEach-Object {
@@ -254,40 +255,6 @@ if (Test-Path "$HOME/.grok") {
     else {
         Write-Host "  WARN  typescript-language-server not on PATH - pnpm add -g typescript-language-server typescript" -ForegroundColor Yellow
     }
-}
-
-$skillMd = Join-Path $dotfiles "plugins/tc/skills/statusline-install/SKILL.md"
-$statusline = Join-Path $HOME ".claude/statusline-command.sh"
-if (Test-Path $skillMd) {
-    $lines = Get-Content $skillMd
-    $code = New-Object System.Collections.Generic.List[string]
-    $want = $false
-    $inCode = $false
-    $fence = '```'
-    foreach ($line in $lines) {
-        if (-not $want -and $line -eq "## Script") { $want = $true; continue }
-        if ($want -and -not $inCode -and $line -eq ($fence + "bash")) { $inCode = $true; continue }
-        if ($inCode -and $line -eq $fence) { break }
-        if ($inCode) { [void]$code.Add($line) }
-    }
-    if ($code.Count -eq 0) {
-        Write-Host "  SKIP  statusline script missing from skill" -ForegroundColor DarkGray
-    }
-    else {
-        $desired = ($code -join "`n") + "`n"
-        $current = if (Test-Path $statusline) { Get-Content -Raw $statusline } else { "" }
-        if ($current -eq $desired) {
-            Write-Host "  OK    $statusline" -ForegroundColor Green
-        }
-        else {
-            New-Item -ItemType Directory -Path (Split-Path $statusline -Parent) -Force | Out-Null
-            Set-Content -Path $statusline -Value $desired -Encoding utf8NoBOM -NoNewline
-            Write-Host "  WRITE $statusline" -ForegroundColor Cyan
-        }
-    }
-}
-else {
-    Write-Host "  SKIP  statusline-install skill (not in repo)" -ForegroundColor DarkGray
 }
 
 # The Agent Skills spec caps description at 1024 characters and Claude Code
