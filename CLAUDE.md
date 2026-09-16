@@ -165,8 +165,9 @@ been going wrong, then proposes changes and waits. Also repo-local.
   `herdr integration install claude` rewrites the `hooks`
   entry in `.claude/settings.json` to an absolute machine path. The committed
   entry is a portable `$HOME` form that already covers both platforms, so
-  restore it after any reinstall or that path ships to every machine. How the
-  two surfaces refresh, and which integrations to skip, is in `docs/resync.md`.
+  restore it after any reinstall or that path ships to every machine. The
+  opencode integration writes into `opencode/cli.json` the same way. How the
+  two surfaces refresh, and when to skip one, is in `docs/resync.md`.
 
 - **Inside this checkout, user scope and project scope are the same file.**
   Claude Code reads `<project>/.claude/settings.json` as project settings, and

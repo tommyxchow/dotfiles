@@ -143,22 +143,26 @@ and reinstall through gh so updates reach it.
 
 Skip this section if `herdr` is not on PATH.
 
+Update the binary first: `herdr update`, run outside a herdr session since it
+refuses to swap itself from inside one. The channel is preview, because
+integration fixes ship in preview builds well before a stable tag; `herdr
+channel show` confirms it and `herdr channel set preview` restores it.
+
 The pane hook is the other surface, and it is per agent rather than per machine.
 Run `herdr integration status --outdated-only` and reinstall whatever it lists
 with `herdr integration install <agent>`. Keep that set to claude, codex, cursor,
-and grok. Only claude writes into a file this repo tracks; the rest are
-self-contained in their own config directories and need no cleanup.
+grok, and opencode. Two of those write into files this repo tracks: claude into
+`.claude/settings.json`, opencode into `opencode/cli.json` through the
+`~/.config/opencode/cli.json` link. Read both diffs after installing. The rest
+are self-contained in their own config directories and need no cleanup.
 
-Do not install the opencode integration. It targets OpenCode 1 and does nothing
-on OpenCode 2, which is what this machine runs. Herdr still ships the v1
-named-export plugin shape that v2's loader rejects, and it registers a second
-plugin through `tui.jsonc`, the v1 terminal config that v2 replaced with
-`cli.json`. Herdr tracks this as an open bug, herdrdev/herdr#3652. Status is no
-help here: it would report `opencode: current` while nothing loads, and the
-second piece uses an id, `opencode-tui`, that never appears in the status list.
-None of this affects pane detection, which recognizes `opencode.exe` on its own
-and needs no integration. Recheck after a herdr release notes OpenCode 2 support
-for integrations rather than for detection.
+The opencode integration only works from a build that ships its OpenCode 2
+plugin, which installs as `herdr-opencode/tui.js` under the config directory.
+Builds through preview 2026-09-08 carry only the OpenCode 1 plugin, which
+OpenCode 2 refuses to load while status still reports `current`; on those, skip
+it. Pane detection recognizes `opencode.exe` without any integration, so
+skipping only loses working/idle/blocked reporting and session restore. Delete
+this paragraph once the integration has installed from a newer build.
 
 Then check `git diff .claude/settings.json`. Installing the claude integration
 replaces the committed portable hook command with an absolute path into this
