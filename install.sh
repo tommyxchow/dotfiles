@@ -115,7 +115,8 @@ link "opencode/cli.json"       "$HOME/.config/opencode/cli.json"
 
 for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   [ -d "$skill_dir" ] || continue
-  link "plugins/tc/skills/$(basename "$skill_dir")" "$HOME/.claude/skills/$(basename "$skill_dir")"
+  name="$(basename "$skill_dir")"
+  link "plugins/tc/skills/$name" "$HOME/.claude/skills/$name"
 done
 
 # Links from older layouts: in the folders this installer manages, anything
