@@ -69,7 +69,7 @@ $links = @(
     @{ Source = ".claude/CLAUDE.md";        Target = "$HOME/.config/opencode/AGENTS.md" }
     @{ Source = "CLAUDE.md";                Target = (Join-Path $dotfiles "AGENTS.md") }
     @{ Source = "opencode/cli.json";        Target = "$HOME/.config/opencode/cli.json" }
-    @{ Source = "plugins/tc/skills/statusline-install/statusline-command.sh"; Target = "$HOME/.claude/statusline-command.sh" }
+    @{ Source = ".claude/statusline-command.sh";    Target = "$HOME/.claude/statusline-command.sh" }
 )
 
 Get-ChildItem (Join-Path $dotfiles "plugins/tc/skills") -Directory -ErrorAction SilentlyContinue | ForEach-Object {

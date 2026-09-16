@@ -58,7 +58,7 @@ Plugin content for `chow` lives outside this directory:
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | Same `vet`, `tldr`, `polish`, `review`, `tdd`, `grill-me`, `refresh`, `pass`, `pr`, `cleanup`, `statusline-install` files. Marketplace packaging only, for machines that never ran the installer. |
+| `tc@chow` | `./plugins/tc` | The same skill directories. Marketplace packaging only, for machines that never ran the installer. |
 | `ek@chow` | `emilkowalski/skills` (git url) | Whatever is in upstream `skills/` (not vendored here) |
 
 Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.

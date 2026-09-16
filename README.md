@@ -43,7 +43,7 @@ copy. `*.bak` is gitignored.
 | `CLAUDE.md` | `AGENTS.md` in this repo (OpenCode 2 project instructions; installer-only) |
 | `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode 2 reads this path too) |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
-| `plugins/tc/skills/statusline-install/statusline-command.sh` | `~/.claude/statusline-command.sh` |
+| `.claude/statusline-command.sh` | `~/.claude/statusline-command.sh` (design notes in `docs/statusline.md`) |
 
 Cursor supports symlinked local plugins, but its rule file needs frontmatter
 that the shared `CLAUDE.md` does not carry. The installer writes a real plugin at
@@ -106,7 +106,7 @@ through `/skills` there.
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
 | **audit** (this repo) | This **setup**. Follow `docs/audit.md`: re-examine the instructions and skills against current harnesses and recent pain, then propose. |
 
-`/tldr` summarizes. `statusline-install` is Claude-only setup.
+`/tldr` summarizes.
 
 The skills chain during a task: plan where needed, build with `tdd` where it fits,
 and close slices with `pass`. Both direct commits and PRs use the same final
@@ -116,9 +116,9 @@ plan and build. Switching models or sessions carries the approved plan forward
 without another approval round. The global `.claude/CLAUDE.md` "How a task runs"
 section owns those rules; slash commands are shortcuts.
 
-The installer also links `~/.claude/statusline-command.sh` to the script in
-`plugins/tc/skills/statusline-install`, so a new machine does not need
-`/tc:statusline-install` and edits to the script are live.
+The installer also links the Claude Code statusline script, so a new machine
+needs nothing else for it and edits to the script are live. The design behind
+it is in `docs/statusline.md`.
 
 First-party skills are live links into `~/.claude/skills`. The official `gh`
 and `herdr` skills are installed there by resync through `gh skill install`

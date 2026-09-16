@@ -8,7 +8,7 @@
     {
       "name": "tc",
       "source": "./plugins/tc",
-      "description": "Personal agent skills: vet, tldr, polish, review, tdd, pass, pr, grill-me, refresh, cleanup, statusline-install"
+      "description": "Personal agent skills for planning, building, reviewing, and shipping; every directory under plugins/tc/skills"
     },
     {
       "name": "ek",

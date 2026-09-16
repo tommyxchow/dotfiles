@@ -1,21 +1,11 @@
----
-name: statusline-install
-description: Install/restore my personal Claude Code statusline (location as "repo:worktree branch", model with context size + effort, context % used, 5h/7d rate-limit % used each with time-to-reset, and session cost) to ~/.claude/statusline-command.sh and wire it into settings.json. Canonical cross-platform bash (macOS/Linux native, Windows via Git Bash). Use to set up my statusline on a new machine or after a reset.
-model: haiku
-context: fork
-disable-model-invocation: true
----
+# Statusline
 
-# Statusline Install
-
-`statusline-command.sh` next to this file is the **source of truth** for my
-statusline. On a machine that ran the dotfiles installer,
-`~/.claude/statusline-command.sh` is already a symlink to it and nothing here
-needs to run. On a plugin-only machine, copy that file verbatim to the same
-path and point `settings.json` at it.
-
-Run this only when the user asks to install or restore the statusline. Never
-start it on your own, whatever the harness does with the frontmatter above.
+`.claude/statusline-command.sh` is my Claude Code statusline: location as
+`repo:worktree branch`, model with context size and effort, context used, the
+5h and 7d rate-limit windows, and session cost when it is real money. The
+installer links it to `~/.claude/statusline-command.sh` and `settings.json`
+already runs it, so a new machine needs nothing else. This file is the design
+notes behind the script.
 
 ## Output format
 
@@ -106,26 +96,24 @@ Needs `bash`, `jq`, and `git` (plus `date`, always present):
   every platform. The reset times use `date +%s` arithmetic (portable) rather
   than `date -d`/`date -r` formatting (which differs GNU vs BSD).
 
-## Install steps
+## Wiring
 
-1. Copy `${CLAUDE_SKILL_DIR}/statusline-command.sh` verbatim to
-   `~/.claude/statusline-command.sh`. No chmod needed — `settings.json` invokes it via `bash`, so the exec bit is
-   irrelevant on every platform.
-2. In `~/.claude/settings.json`, set:
+`settings.json` runs the linked script with `bash` on every platform, so no
+exec bit is needed:
 
-   ```json
-   "statusLine": {
-     "type": "command",
-     "command": "bash \"$HOME/.claude/statusline-command.sh\"",
-     "refreshInterval": 60
-   }
-   ```
+```json
+"statusLine": {
+  "type": "command",
+  "command": "bash \"$HOME/.claude/statusline-command.sh\"",
+  "refreshInterval": 60
+}
+```
 
-   `refreshInterval` re-runs the script on a timer on top of the event triggers
-   (new assistant message, `/compact`, permission-mode change, vim-mode toggle,
-   session start). Without it the reset countdowns freeze whenever the session
-   sits idle, so a terminal left open shows whatever was true at the last
-   message. 60s keeps them honest.
+`refreshInterval` re-runs the script on a timer on top of the event triggers
+(new assistant message, `/compact`, permission-mode change, vim-mode toggle,
+session start). Without it the reset countdowns freeze whenever the session
+sits idle, so a terminal left open shows whatever was true at the last
+message. 60s keeps them honest.
 
 ## Color thresholds
 
@@ -178,8 +166,3 @@ hue was doing nothing that layout wasn't, and dropping it means a colored token
 on this line always means "attention" with no exceptions.
 
 Codes: gray `\033[90m`, orange `\033[38;5;208m`, red `#BB6A7A`.
-
-## Script
-
-The script is `statusline-command.sh` in this skill's directory. Read it there;
-it is not repeated here so the file and the skill cannot drift apart.

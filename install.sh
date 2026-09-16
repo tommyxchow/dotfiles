@@ -124,7 +124,7 @@ link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.config/opencode/AGENTS.md"
 link "CLAUDE.md"               "$DOTFILES/AGENTS.md"
 link "opencode/cli.json"       "$HOME/.config/opencode/cli.json"
-link "plugins/tc/skills/statusline-install/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+link ".claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
 
 for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   [ -d "$skill_dir" ] || continue
