@@ -6,7 +6,7 @@ This playbook lives in the repo and loads only when you open this workspace and 
 
 Refreshing packages and framework versions in a **product** repo is the `refresh` skill. Do not run that here.
 
-Primary harnesses: **Claude Code**, **Cursor**, **Grok Build**, **OpenCode 2**. The installer is enough for instructions and first-party skills on all of those. Marketplace plugins (`ek`, `improve`, `frontend-design`, `typescript-lsp`) need the `claude` CLI; skip that section if it is not installed.
+Primary harnesses: **Claude Code**, **Cursor**, **Grok Build**, **OpenCode 2**. The installer is enough for instructions and first-party skills on all of those. Marketplace plugins (`ek`, `frontend-design`, `typescript-lsp`) need the `claude` CLI; skip that section if it is not installed.
 
 Flow: **find repo → pull or clone → installer → marketplace plugins (if `claude`) → dedupe → leftover sweep → vendored skills → report.**
 
@@ -50,7 +50,6 @@ Then update the ones that do not come from this working tree:
 ```bash
 claude plugin marketplace update chow
 claude plugin update ek@chow
-claude plugin update improve@improve
 ```
 
 Skip `tc@chow`. First-party skills are installer links into `~/.claude/skills`. Enabling the plugin loads a second cached copy.
@@ -86,7 +85,7 @@ Delete only what is clearly leftover from an older layout:
 - Plugin cache dirs under `~/.claude/plugins/cache` for plugins **not** in `installed_plugins.json` (skip this if there is no Claude plugin cache)
 - Empty `~/.agents` / `~/.agents/skills` / `~/.config/opencode/skills` after pruning
 
-Do not delete skills in `~/.claude/skills` that are not from this repo. Do not delete `ek@chow` or `improve@improve` caches while those plugins are installed.
+Do not delete skills in `~/.claude/skills` that are not from this repo. Do not delete the `ek@chow` cache while that plugin is installed.
 
 ## Stale worktrees and branches
 

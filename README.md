@@ -150,7 +150,6 @@ those skills are already linked:
 
 ```bash
 claude plugin install ek@chow --scope user
-claude plugin install improve@improve --scope user
 claude plugin install typescript-lsp@claude-plugins-official --scope user
 claude plugin install frontend-design@claude-plugins-official --scope user
 ```
@@ -197,8 +196,9 @@ project `AGENTS.md` walking up from the working directory. It does not load
 
 ## Plugins
 
-Personal plugins ship from the `chow` marketplace in this same repo. Third-party
-plugins are declared as separate marketplaces in `.claude/settings.json`.
+Personal plugins ship from the `chow` marketplace in this same repo, declared in
+`.claude/settings.json` under `extraKnownMarketplaces`. Official plugins come
+from `claude-plugins-official`, which needs no declaration.
 
 | Path | Purpose |
 |------|---------|
@@ -217,15 +217,9 @@ Plugin names are owner initials (`tc`, `ek`) because the name prefixes every ski
 
 `ek` uses a `url` plugin source with `strict: false` so Claude Code installs Emil's upstream `skills/` tree directly. Upstream has no `plugin.json`, so this catalog entry is the only place the name lives. Do not copy those files into this repo or install them via `skills.sh` / `npx skills`.
 
-**Do not "simplify" this to a `github` source.** `/plugin install` builds an SSH clone URL (`git@github.com:owner/repo.git`) for `source: github` and has no HTTPS fallback, so it dies with `Permission denied (publickey)` on any machine without a GitHub SSH key ([#47088](https://github.com/anthropics/claude-code/issues/47088), among several dupes). `source: url` with an explicit `https://` URL clones anonymously and needs no keys. `/plugin marketplace add` *does* have the HTTPS fallback, which is why the `chow` and `improve` marketplaces resolve fine either way.
+**Do not "simplify" this to a `github` source.** `/plugin install` builds an SSH clone URL (`git@github.com:owner/repo.git`) for `source: github` and has no HTTPS fallback, so it dies with `Permission denied (publickey)` on any machine without a GitHub SSH key ([#47088](https://github.com/anthropics/claude-code/issues/47088), among several dupes). `source: url` with an explicit `https://` URL clones anonymously and needs no keys. `/plugin marketplace add` *does* have the HTTPS fallback, which is why the `chow` marketplace resolves fine either way.
 
 Caveat: `strict: false` means the marketplace entry is the *entire* definition. The upstream repo has no `plugin.json` today; if Emil adds one that declares components, that's a conflict and the plugin fails to load. Switch the entry to `strict: true` (or drop the field) if that happens.
-
-### Other marketplaces (`extraKnownMarketplaces`)
-
-| Plugin | Marketplace repo | Notes |
-|--------|------------------|-------|
-| `improve@improve` | [shadcn/improve](https://github.com/shadcn/improve) | Codebase audit / planning skill |
 
 ### Official marketplace (`claude-plugins-official`)
 
@@ -242,7 +236,6 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 - `autoUpdate: true` is set on `chow` only, so `ek@chow` refreshes after a push
   (random delay up to 10 min), then Claude prompts for `/reload-plugins`. First-party
   skills on this machine do not wait on that: they are installer links.
-- `improve` deliberately has **no** `autoUpdate`. Third-party marketplaces default to off because a plugin executes arbitrary code with your user privileges; auto-updating a repo you don't control runs new code unreviewed. Update it by hand with `/plugin update improve@improve`.
 
 ## Credits
 
