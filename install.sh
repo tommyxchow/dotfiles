@@ -1,17 +1,13 @@
 #!/usr/bin/env bash
-# Dotfiles installer — creates symlinks from this repo to config locations.
-# Runs anywhere: on Windows it hands off to install.ps1, which does the real
-# work there because symlinks need Developer Mode.
+# Dotfiles installer — links files from this repo into their real locations.
+# One script for macOS, Linux, and Windows under Git Bash. Windows needs
+# Developer Mode (Settings > System > For developers) so an unelevated shell
+# can create symlinks; the installer stops with that hint when it cannot.
 # Usage: ./install.sh
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")" && pwd -P)"
-LEGACY_OPENCODE_SKILLS="$HOME/.config/opencode/skills"
-
-# Migration from the pre-OpenCode compatibility setup, which linked every tc skill.
-if [ -L "$LEGACY_OPENCODE_SKILLS" ] && [ "$(readlink "$LEGACY_OPENCODE_SKILLS")" = "$DOTFILES/plugins/tc/skills" ]; then
-  rm "$LEGACY_OPENCODE_SKILLS"
-fi
+WINDOWS=0
 
 case "$(uname -s)" in
   Darwin)
@@ -23,23 +19,30 @@ case "$(uname -s)" in
     CURSOR_USER="$HOME/.config/Cursor/User"
     ;;
   MINGW*|MSYS*|CYGWIN*)
-    # Git Bash and friends can't create the symlinks Windows needs, so this is
-    # a thin front door for install.ps1 rather than a second implementation.
-    # PowerShell 7, not Windows PowerShell 5.1: install.ps1 writes with
-    # utf8NoBOM, which 5.1 does not have, and would fail part-installed.
-    if ! command -v pwsh > /dev/null 2>&1; then
-      echo "PowerShell 7 (pwsh) not found. Install it, then re-run." >&2
-      exit 1
-    fi
-    ps1="$DOTFILES/install.ps1"
-    command -v cygpath > /dev/null 2>&1 && ps1="$(cygpath -w "$ps1")"
-    exec pwsh -NoProfile -File "$ps1"
+    WINDOWS=1
+    # Git Bash copies the file when asked for a symlink unless told otherwise.
+    # nativestrict makes ln -s create a real NTFS symlink, and fail rather
+    # than copy when Windows refuses.
+    export MSYS=winsymlinks:nativestrict
+    appdata="$(cygpath -u "$APPDATA")"
+    VSCODE_USER="$appdata/Code/User"
+    CURSOR_USER="$appdata/Cursor/User"
     ;;
   *)
     echo "Unsupported OS: $(uname -s)." >&2
     exit 1
     ;;
 esac
+
+if [ "$WINDOWS" = 1 ]; then
+  probe="$(mktemp -d)"
+  if ! ln -s "$DOTFILES/install.sh" "$probe/link" 2>/dev/null; then
+    rm -rf "$probe"
+    echo "Cannot create symlinks. Turn on Developer Mode (Settings > System > For developers) and re-run." >&2
+    exit 1
+  fi
+  rm -rf "$probe"
+fi
 
 clean_bak() {
   local src="$1"
@@ -60,6 +63,9 @@ clean_bak() {
   fi
 }
 
+# Every target this run links, so the sweep below knows what is current.
+LINKED="|"
+
 link() {
   local rel="$1"
   local target="$2"
@@ -70,6 +76,7 @@ link() {
     return
   fi
 
+  LINKED="$LINKED$target|"
   mkdir -p "$(dirname "$target")"
 
   if [ -L "$target" ] && [ "$(readlink "$target")" = "$src" ]; then
@@ -88,53 +95,50 @@ link() {
   clean_bak "$src" "$target"
 }
 
-# Drop leftover symlinks from older installer layouts.
-prune_stale() {
-  local path="$1"
-  [ -L "$path" ] || return 0
-  local t
-  t="$(readlink "$path")"
-  if [ ! -e "$path" ] || [ "${t#"$DOTFILES"}" != "$t" ]; then
-    rm -f "$path"
-    printf "  PRUNE %s\n" "$path"
-  fi
-}
-
-prune_stale "$HOME/.claude/notify.sh"
-prune_stale "$HOME/.claude/skills/understand"
-prune_stale "$HOME/.agents/skills/understand"
-prune_stale "$HOME/.claude/skills/resync"
-prune_stale "$HOME/.agents/skills/resync"
-prune_stale "$HOME/.config/opencode/skills/resync"
-prune_stale "$HOME/.config/opencode/commands/resync.md"
-prune_stale "$HOME/.claude/skills/grilling"
-prune_stale "$HOME/.agents/skills/grilling"
-prune_stale "$HOME/.config/opencode/skills/grilling"
-prune_stale "$HOME/.codex/AGENTS.md"
-
 link "git/.gitconfig"          "$HOME/.gitconfig"
 link "git/ignore"              "$HOME/.config/git/ignore"
 link "vscode/settings.json"    "$VSCODE_USER/settings.json"
 link "vscode/keybindings.json" "$VSCODE_USER/keybindings.json"
 link "vscode/settings.json"    "$CURSOR_USER/settings.json"
 link "vscode/keybindings.json" "$CURSOR_USER/keybindings.json"
-link "ghostty/config"          "$HOME/.config/ghostty/config"
+if [ "$WINDOWS" = 1 ]; then
+  printf "  SKIP  ghostty/config (macOS and Linux only)\n"
+else
+  link "ghostty/config"        "$HOME/.config/ghostty/config"
+fi
 link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.config/opencode/AGENTS.md"
+link ".claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
 link "CLAUDE.md"               "$DOTFILES/AGENTS.md"
 link "opencode/cli.json"       "$HOME/.config/opencode/cli.json"
-link ".claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
 
 for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   [ -d "$skill_dir" ] || continue
-  name="$(basename "$skill_dir")"
-  prune_stale "$HOME/.agents/skills/$name"
-  prune_stale "$HOME/.config/opencode/skills/$name"
-  link "plugins/tc/skills/$name" "$HOME/.claude/skills/$name"
+  link "plugins/tc/skills/$(basename "$skill_dir")" "$HOME/.claude/skills/$(basename "$skill_dir")"
 done
-rmdir "$HOME/.agents/skills" 2>/dev/null || true
-rmdir "$HOME/.agents" 2>/dev/null || true
+
+# Links from older layouts: in the folders this installer manages, anything
+# that points into this repo but was not linked above, plus dangling links
+# left by a deleted dotfiles checkout. Links to anything else are not ours.
+sweep() {
+  local path t
+  for path in "$@"; do
+    [ -L "$path" ] || continue
+    case "$LINKED" in *"|$path|"*) continue ;; esac
+    t="$(readlink "$path")"
+    if [ "${t#"$DOTFILES"}" != "$t" ] || { [ ! -e "$path" ] && [ "${t#*dotfiles}" != "$t" ]; }; then
+      rm -f "$path"
+      printf "  PRUNE %s\n" "$path"
+    fi
+  done
+}
+sweep "$HOME"/.claude/* "$HOME"/.claude/skills/* "$HOME"/.agents/skills/* \
+  "$HOME"/.config/opencode/* "$HOME"/.config/opencode/skills/* "$HOME"/.config/opencode/commands/* \
+  "$HOME"/.codex/*
+for dir in "$HOME/.agents/skills" "$HOME/.agents" "$HOME/.config/opencode/skills" "$HOME/.config/opencode/commands"; do
+  rmdir "$dir" 2>/dev/null || true
+done
 
 # Cursor can load a symlinked local plugin, but the rule file needs
 # alwaysApply frontmatter that .claude/CLAUDE.md does not carry. Write a real
@@ -171,7 +175,6 @@ write_cursor_plugin() {
   mv "$tmp" "$rule"
   printf "  WRITE %s\n" "$rule"
 }
-
 write_cursor_plugin
 
 # Grok Build reads ~/.grok/config.toml and writes runtime state back into it
@@ -232,7 +235,6 @@ write_grok_config() {
     printf "  SKIP  %s (no ~/.grok)\n" "$dest"
     return
   fi
-  mkdir -p "$HOME/.grok"
   if [ ! -f "$dest" ]; then
     cp "$seed" "$dest"
     printf "  SEED  %s\n" "$dest"
@@ -254,6 +256,9 @@ write_grok_config() {
 }
 write_grok_config
 
+# Seed user-scoped LSP definitions once and leave an existing file alone. The
+# repo file names the bare binary; a Windows npm-style install exposes a .cmd
+# shim instead, so that one field is rewritten on seed there.
 write_grok_lsp() {
   local seed="$DOTFILES/grok/lsp.json"
   local dest="$HOME/.grok/lsp.json"
@@ -267,7 +272,11 @@ write_grok_lsp() {
     return
   fi
   if [ ! -f "$dest" ]; then
-    cp "$seed" "$dest"
+    if [ "$WINDOWS" = 1 ]; then
+      sed 's/"typescript-language-server"/"typescript-language-server.cmd"/' "$seed" > "$dest"
+    else
+      cp "$seed" "$dest"
+    fi
     printf "  SEED  %s\n" "$dest"
   else
     printf "  OK    %s\n" "$dest"

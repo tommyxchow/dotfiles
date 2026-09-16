@@ -10,7 +10,7 @@ Primary harnesses: **Claude Code**, **Cursor**, **Grok Build**, **OpenCode 2**. 
 
 Flow: **find repo → pull or clone → installer → marketplace plugins (if `claude`) → dedupe → leftover sweep → vendored skills → report.**
 
-The installer is the mechanical source of truth (`install.sh` / `install.ps1`). Do not reimplement its links. This file is the judgment pass around it.
+The installer is the mechanical source of truth (`install.sh`). Do not reimplement its links. This file is the judgment pass around it.
 
 ## Find the repo
 
@@ -27,9 +27,9 @@ From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new c
 
 ## Installer
 
-`./install.sh` on every platform; on Windows it hands off to `install.ps1`, which you can also run directly with `pwsh -File install.ps1`.
+`./install.sh` on every platform, from Git Bash on Windows.
 
-It links configs, first-party skills, and the statusline script, prunes known stale paths, and copies Cursor's local `tc` plugin. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode 2 pick up instructions and `vet` / `tldr` / `polish` / `review` / `tdd` / `grill-me` / `refresh` / `pass` / `pr` / `cleanup` on a new machine.
+It links configs, first-party skills, and the statusline script, prunes links from older layouts, and copies Cursor's local `tc` plugin. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode 2 pick up instructions and `vet` / `tldr` / `polish` / `review` / `tdd` / `grill-me` / `refresh` / `pass` / `pr` / `cleanup` on a new machine.
 
 On Windows, symlink creation needs Developer Mode (or an elevated shell). If a link comes out dead, fix the mode and re-run the installer rather than replacing links with copies.
 

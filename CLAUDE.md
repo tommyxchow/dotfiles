@@ -1,7 +1,7 @@
 # dotfiles
 
-Config repo. `./install.sh` symlinks files from here into their real locations, and
-hands off to `install.ps1` on Windows. See `README.md` for the full mapping.
+Config repo. `./install.sh` symlinks files from here into their real locations on
+every platform. See `README.md` for the full mapping.
 
 ## The check
 

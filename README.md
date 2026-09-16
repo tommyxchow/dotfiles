@@ -15,10 +15,9 @@ cd ~/dev/dotfiles
 ./install.sh
 ```
 
-Same command everywhere. On Windows it hands off to `install.ps1`, which does the
-real work there, so run it from Git Bash or run `pwsh -File install.ps1` directly.
-Windows also needs **Developer Mode** on (Settings > System > For developers) or
-symlink creation fails.
+Same command everywhere. On Windows run it from Git Bash with **Developer
+Mode** on (Settings > System > For developers); the installer stops with that
+hint when it cannot create symlinks.
 
 On a fresh machine you can also clone, open this repo in Cursor / Grok / OpenCode 2,
 and say **resync**. The repo `CLAUDE.md` points at `docs/resync.md`. That playbook
@@ -52,7 +51,7 @@ that the shared `CLAUDE.md` does not carry. The installer writes a real plugin a
 that file, then **Developer: Reload Window**. Do not also paste it into User
 Rules or the same text is injected twice.
 
-Ghostty is macOS/Linux only, so `install.ps1` skips it.
+Ghostty is macOS/Linux only, so the installer skips it on Windows.
 
 Windows Terminal settings are not linked (profiles and GUIDs are machine-local).
 OpenCode 2 still has no Windows keybind section. Use the same WT `sendInput`
