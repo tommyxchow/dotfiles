@@ -137,6 +137,11 @@ been going wrong, then proposes changes and waits. Also repo-local.
   the repo runs itself. Ours stay because they are the only copies that work in
   all four harnesses and read a repo's own rules first.
 
+- **`tc@chow` stays in the marketplace.** claude.ai sessions install this repo
+  as a marketplace and cannot run the installer, so the plugin is the only way
+  they get the first-party skills. Dropping it was proposed once as a
+  simplification and rejected for that reason; don't propose it again.
+
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`
   instead of running the installer. After changing `.claude-plugin/marketplace.json`
