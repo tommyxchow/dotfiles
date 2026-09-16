@@ -100,3 +100,5 @@ I couldn't confirm Cursor's current plan-mode behavior from its docs; the change
 ```
 
 Do not edit until the user picks. Do not push.
+
+A proposal the user rejects gets written down: when applying the accepted ones, add the rejected one and its why as a gotcha in the repo `CLAUDE.md`, so the next audit does not raise it again.
