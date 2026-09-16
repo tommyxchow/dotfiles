@@ -12,7 +12,7 @@ Run it when a notably better model ships, when the same pain recurs across sever
 
 - `.claude/CLAUDE.md`: the global instructions every harness loads.
 - `plugins/tc/skills/*/SKILL.md`: the first-party skills and their `references/`.
-- `opencode/commands/*.md`, `opencode/cli.json`, `.claude/settings.json`, `grok/config.toml`: harness config.
+- `opencode/cli.json`, `.claude/settings.json`, `grok/config.toml`: harness config.
 - `README.md`, `.claude/README.md`, `CLAUDE.md`, `docs/`: the docs that describe all of the above.
 
 Read the requested surfaces first. A content-focused audit can skip local machine diagnostics and usage data; do not treat an infrequently used machine as evidence about the user's normal workflow.

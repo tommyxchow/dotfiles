@@ -133,11 +133,6 @@ for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   prune_stale "$HOME/.config/opencode/skills/$name"
   link "plugins/tc/skills/$name" "$HOME/.claude/skills/$name"
 done
-for cmd in "$DOTFILES"/opencode/commands/*.md; do
-  [ -f "$cmd" ] || continue
-  name="$(basename "$cmd")"
-  link "opencode/commands/$name" "$HOME/.config/opencode/commands/$name"
-done
 rmdir "$HOME/.agents/skills" 2>/dev/null || true
 rmdir "$HOME/.agents" 2>/dev/null || true
 

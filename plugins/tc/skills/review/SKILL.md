@@ -1,5 +1,7 @@
 ---
 name: review
+metadata:
+  opencode/slash: "true"
 description: 'Finds concrete defects and missing behavior in code changes, verified and ranked worst first. Use for review, code review, review the diff, is this correct, or double check the code. Reports only unless the request says fix; "review and pass", with or without final, means this reports and pass then applies the confirmed findings. PR readiness questions go to pr; shape cleanup to polish; final cleanup to pass; factual claims to vet. Default scope is dirty work plus session edits; `branch` is committed changes only, `all` includes pending work, and `pr <number|url>` reviews the published PR. `quick` is one read of the essentials and never counts as the final review; `deep` or `deeper` is the expensive tier: fan-out whatever the size, one hop wider, every high or medium finding reproduced.'
 argument-hint: "[quick | deep] [staged | unstaged | branch | all | pr <number|url>] [fix] [<focus>]"
 ---

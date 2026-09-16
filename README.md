@@ -42,7 +42,6 @@ copy. `*.bak` is gitignored.
 | `.claude/CLAUDE.md` | `~/.config/opencode/AGENTS.md` (OpenCode 2 user-global instructions) |
 | `CLAUDE.md` | `AGENTS.md` in this repo (OpenCode 2 project instructions; installer-only) |
 | `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode 2 reads this path too) |
-| `opencode/commands/*.md` | `~/.config/opencode/commands/{name}` |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
 | `plugins/tc/skills/statusline-install/statusline-command.sh` | `~/.claude/statusline-command.sh` |
 
@@ -89,7 +88,9 @@ project `AGENTS.md` walking up from the working directory. It does not load
 `~/.claude/skills`.
 
 Slash from any repo after the installer has run. Details live in the skill
-files.
+files. In OpenCode 2 the slash works because each skill sets
+`metadata: opencode/slash: "true"`; without it a skill is only reachable
+through `/skills` there.
 
 | Slash | When |
 |-------|------|

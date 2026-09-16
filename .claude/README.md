@@ -35,9 +35,7 @@ strips coding instructions. `outputStyle` is unset in `settings.json`.
 The installer links first-party skills into `~/.claude/skills`. Claude, Cursor,
 Grok, and OpenCode 2 all read that path. The official `gh` and `herdr` skills also live
 there via `gh skill install` (resync installs or updates them); do not copy
-them into `plugins/tc/skills`. `opencode/commands` adds `/vet`, `/tldr`,
-`/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, `/pass`, `/pr`, and `/cleanup` wrappers without duplicating the
-skill instructions. What must never be installed twice is listed in the root
+them into `plugins/tc/skills`. What must never be installed twice is listed in the root
 `CLAUDE.md`. OpenCode 2 does not load
 Claude marketplace plugins, so `ek` remains Claude Code-only and
 upstream-managed. Machine catch-up is a repo playbook (`docs/resync.md`).
@@ -127,8 +125,9 @@ discovery with the inspector inside an active Grok session; the standalone
 
 This setup is OpenCode 2; the binary is `opencode`. The installer links
 `~/.config/opencode/AGENTS.md` to `CLAUDE.md` here. OpenCode 2 does not read
-`~/.claude/CLAUDE.md`. Skills still come from `~/.claude/skills`. Slash commands
-are the stubs in `opencode/commands`.
+`~/.claude/CLAUDE.md`. Skills still come from `~/.claude/skills`, and each first-party skill sets
+`metadata: opencode/slash: "true"` so typing its name as a slash command
+runs it.
 
 ## Auditing config
 

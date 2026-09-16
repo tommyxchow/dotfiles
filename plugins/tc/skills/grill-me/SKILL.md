@@ -1,5 +1,7 @@
 ---
 name: grill-me
+metadata:
+  opencode/slash: "true"
 description: A relentless interview that stress-tests a plan, design, or decision before any code gets written. Maps the open decisions as a tree, asks one round of them at a time through the harness's question tool with a recommended answer on each, and looks up its own facts rather than asking. Run it when a plan leaves a real choice open, when the user says grill me, or when a described idea is too thin to build from. Ends with the plan restated as settled plus a numbered acceptance checklist, never with code.
 argument-hint: "[<plan, design, or decision to stress-test>]"
 ---

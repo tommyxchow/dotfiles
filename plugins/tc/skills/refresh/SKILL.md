@@ -1,5 +1,7 @@
 ---
 name: refresh
+metadata:
+  opencode/slash: "true"
 description: Occasional repo catch-up — bump to the latest versions this stack can honestly take, apply migrations, flag must-upgrades and security advisories, and vet AGENTS.md against current vendor docs. Use when the user says "refresh", "reaudit", "resync" (this product repo), "upgrade everything", "any packages we can upgrade", "catch this repo up", "outdated packages", "gonna do another release", "security audit", "dependabot", or asks to migrate to the latest stack. Distinct from the dotfiles machine playbook (docs/resync.md), polish (shape of working code), vet (claim checking), and pass (commits a finished slice).
 argument-hint: "[optimal | full | minimal | audit | packages | docs] [custom instructions]"
 ---

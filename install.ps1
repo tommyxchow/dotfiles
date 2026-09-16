@@ -78,9 +78,6 @@ Get-ChildItem (Join-Path $dotfiles "plugins/tc/skills") -Directory -ErrorAction 
     Prune-Stale "$HOME/.config/opencode/skills/$name"
     $links += @{ Source = "plugins/tc/skills/$name"; Target = "$HOME/.claude/skills/$name" }
 }
-Get-ChildItem (Join-Path $dotfiles "opencode/commands") -Filter "*.md" -File -ErrorAction SilentlyContinue | ForEach-Object {
-    $links += @{ Source = "opencode/commands/$($_.Name)"; Target = "$HOME/.config/opencode/commands/$($_.Name)" }
-}
 foreach ($emptyDir in @("$HOME/.agents/skills", "$HOME/.agents")) {
     if ((Test-Path $emptyDir) -and -not (Get-ChildItem $emptyDir -Force -ErrorAction SilentlyContinue)) {
         Remove-Item $emptyDir -Force

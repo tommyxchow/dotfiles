@@ -1,5 +1,7 @@
 ---
 name: tdd
+metadata:
+  opencode/slash: "true"
 description: 'Builds new behavior and fixes bugs one failing test at a time. Use for tdd, test first, red green, or the build workflow when behavior can be asserted. State the cases, observe the relevant failure, then implement the smallest passing change. Skip for exploration with no settled behavior, config, docs, styling, and mechanical edits. Not an existing-code coverage sweep, cleanup (polish), or defect hunt (review).'
 argument-hint: "[<behavior to build or bug to fix>] [cases: <the cases you want>]"
 ---

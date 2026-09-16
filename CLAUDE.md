@@ -98,10 +98,11 @@ been going wrong, then proposes changes and waits. Also repo-local.
   when the file goes over.
 
 - **The installer links first-party skills into `~/.claude/skills`.** Claude,
-  Cursor, Grok, and OpenCode 2 all read that path, and `opencode/commands`
-  provides the `/vet`, `/tldr`, `/polish`, `/review`, `/tdd`, `/grill-me`,
-  `/refresh`, `/pass`, `/pr`, and `/cleanup` wrappers. Do not also copy those
-  skills into `~/.config/opencode/skills`, do not enable `tc@chow` on a machine
+  Cursor, Grok, and OpenCode 2 all read that path. OpenCode 2 only treats a
+  typed `/vet` as that skill when its frontmatter carries
+  `metadata: opencode/slash: "true"`, so every first-party skill sets it; a
+  new skill without it is reachable there only through `/skills`. Do not copy
+  those skills into `~/.config/opencode/skills`, do not enable `tc@chow` on a machine
   that ran the installer (same files via the marketplace cache, so both would
   load), and do not install `mattpocock-skills` from the official marketplace
   (its `grill-me` collides with ours).
@@ -115,9 +116,10 @@ been going wrong, then proposes changes and waits. Also repo-local.
 
 - **Don't list harness-shipped review, cleanup, or audit skills** here or in a
   skill body; they arrive and get renamed release to release. Two cases cover
-  it. A **name collision**, like Cursor's built-in `review`: precedence is
-  undocumented and theirs is slash-only, so asking in words still reaches ours
-  while typing `/review` there is ambiguous. A **different name for stronger
+  it. A **name collision**, like the built-in `review` in Cursor and OpenCode 2:
+  Cursor's precedence is undocumented and OpenCode 2 runs its own command
+  before a same-named skill, so asking in words still reaches ours while
+  typing `/review` there is theirs or ambiguous. A **different name for stronger
   tooling**, like a deeper cloud review only I can start: `.claude/CLAUDE.md`
   already says to point at it, and the `review` skill already defers to tooling
   the repo runs itself. Ours stay because they are the only copies that work in

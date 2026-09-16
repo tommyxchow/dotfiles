@@ -1,5 +1,7 @@
 ---
 name: pr
+metadata:
+  opencode/slash: "true"
 description: 'Owns draft PR creation, updates, review feedback, and restacking. Use for PR requests and PR readiness: "is this ready?", "final review", and "close out the PR" check and report only; `pr ready` or "mark it ready" checks and flips the draft. `rebase` restacks an identified stack. Without a PR, use the global Git rules to choose a direct commit or PR. Not a summary (tldr pr), standalone code review (review), or slice cleanup (pass). Never merges.'
 argument-hint: "[check | ready | rebase | reviews | <focus or pasted feedback>]"
 ---
