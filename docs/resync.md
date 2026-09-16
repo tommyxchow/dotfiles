@@ -122,23 +122,27 @@ so upgrades there have to route through Git Bash. This machine does that with an
 `opencode` function in `Microsoft.PowerShell_profile.ps1`, which this repo does
 not track.
 
-## Official gh skill
+## Third-party skills
 
-If `gh` is on PATH, `~/.claude/skills/gh` should exist and is not a first-party
-link. Missing: `gh skill install cli/cli gh --agent claude-code --scope user`.
-Present: `gh skill update gh`. One copy in `~/.claude/skills`. Do not also
-install it for cursor, opencode, or grok.
+Two skills in `~/.claude/skills` come from other repos through `gh skill`, not
+the installer: `gh` from `cli/cli` and `herdr` from `herdrdev/herdr`. Both are
+user scope, Claude Code agent only; Cursor, Grok, and OpenCode 2 read that same
+folder, so do not install them again for those agents.
 
-## Herdr skill and hook
+If `gh` is on PATH, refresh the pair with `gh skill update`. `gh skill list`
+shows what is installed; install a missing one with
+`gh skill install cli/cli gh --agent claude-code --scope user` or
+`gh skill install herdrdev/herdr herdr --agent claude-code --scope user`. Skip
+herdr when the binary is not on PATH.
+
+The herdr skill tracks the latest tag, and the installed binary is the authority
+for command syntax, so a version gap between them is fine. A copy that `gh skill
+list` shows with no source was written by hand from `herdr --skill`; delete it
+and reinstall through gh so updates reach it.
+
+## Herdr pane hook
 
 Skip this section if `herdr` is not on PATH.
-
-Herdr owns two surfaces and they refresh separately. The skill at
-`~/.claude/skills/herdr/SKILL.md` is not a first-party link, and the integration
-installer never writes it, so rewrite it from the binary every time:
-`herdr --skill > ~/.claude/skills/herdr/SKILL.md`. Do not diff the two first.
-The binary prints LF and the installed file is CRLF, so a raw diff calls every
-line changed even when the content is identical.
 
 The pane hook is the other surface, and it is per agent rather than per machine.
 Run `herdr integration status --outdated-only` and reinstall whatever it lists

@@ -139,13 +139,13 @@ been going wrong, then proposes changes and waits. Also repo-local.
 - **`ek@chow` is upstream-only.** Never vendor, copy, or edit its skill files here.
   Refresh it with `/plugin update ek@chow`.
 
-- **The official `gh` skill lives in `~/.claude/skills/gh` via `gh skill
-  install`, not in this repo.** Do not vendor it into `plugins/tc/skills`.
-  Resync installs or updates it. One copy in `~/.claude/skills`; do not also
-  install it for cursor, opencode, or grok.
+- **The `gh` and `herdr` skills live in `~/.claude/skills` via `gh skill
+  install`, not in this repo.** Do not vendor either into `plugins/tc/skills`.
+  Resync installs or updates them with `gh skill update`. One copy in
+  `~/.claude/skills`; do not also install them for cursor, opencode, or grok.
 
-- **Herdr owns its skill and its pane hook; never vendor either into
-  `plugins/tc/skills`.** `herdr integration install claude` rewrites the `hooks`
+- **Herdr owns its pane hook; never vendor it here either.**
+  `herdr integration install claude` rewrites the `hooks`
   entry in `.claude/settings.json` to an absolute machine path. The committed
   entry is a portable `$HOME` form that already covers both platforms, so
   restore it after any reinstall or that path ships to every machine. How the

@@ -119,9 +119,9 @@ The installer also writes `~/.claude/statusline-command.sh` from
 `/tc:statusline-install`. Re-run the installer after editing that skill.
 
 First-party skills are live links into `~/.claude/skills`. The official `gh`
-skill is installed there by resync (`gh skill install`), not linked from this
-repo. The `herdr` skill lands there the same way, printed by `herdr --skill`,
-alongside a pane hook from `herdr integration install claude`. `tc@chow` stays
+and `herdr` skills are installed there by resync through `gh skill install`
+and refreshed with `gh skill update`, not linked from this repo. Herdr's pane
+hook comes from `herdr integration install claude`. `tc@chow` stays
 in the marketplace catalog for machines that only install the plugin; `ek`,
 `improve`, `typescript-lsp`, and `frontend-design` stay marketplace plugins.
 What must never be installed twice is listed in `CLAUDE.md`.

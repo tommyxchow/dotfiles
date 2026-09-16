@@ -33,9 +33,9 @@ rules out of `CLAUDE.md` into a style: Cursor and Grok Build would lose them, an
 strips coding instructions. `outputStyle` is unset in `settings.json`.
 
 The installer links first-party skills into `~/.claude/skills`. Claude, Cursor,
-Grok, and OpenCode 2 all read that path. The official `gh` skill also lives there
-via `gh skill install` (resync installs or updates it); do not copy it into
-`plugins/tc/skills`. `opencode/commands` adds `/vet`, `/tldr`,
+Grok, and OpenCode 2 all read that path. The official `gh` and `herdr` skills also live
+there via `gh skill install` (resync installs or updates them); do not copy
+them into `plugins/tc/skills`. `opencode/commands` adds `/vet`, `/tldr`,
 `/polish`, `/review`, `/tdd`, `/grill-me`, `/refresh`, `/pass`, `/pr`, and `/cleanup` wrappers without duplicating the
 skill instructions. What must never be installed twice is listed in the root
 `CLAUDE.md`. OpenCode 2 does not load
