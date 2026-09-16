@@ -3,7 +3,7 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5-1",
+  "model": "claude-fable-5-1[1m]",
   "hooks": {
     "SessionStart": [
       {
@@ -41,6 +41,11 @@
     "enabled": true
   },
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "medium"
+    }
+  },
   "advisorModel": "fable",
   "showClearContextOnPlanAccept": true,
   "tui": "fullscreen",
