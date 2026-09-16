@@ -88,6 +88,18 @@ been going wrong, then proposes changes and waits. Also repo-local.
   wait until the changes reach the permanent checkout, then install there.
   Installing from a worktree redirects the machine's live links into it.
 
+- **Harness response-style defaults conflict, so `.claude/CLAUDE.md` overrides
+  them rather than assuming them.** Claude Code's Default is not the short
+  style, Concise is opt-in, other harnesses still push brevity, and Grok Build
+  asks for complete sentences over identifiers. The `IMPORTANT: readable beats
+  brief` line exists so a terse default does not win; don't prune it because
+  the harness you are testing in already reads fine. Don't move the shared
+  Communication rules into a Claude Code output style either: styles are
+  Claude-only, so Cursor and Grok Build would lose them, and
+  `keep-coding-instructions` defaults to false, so a style that forgets the
+  flag strips coding instructions. `outputStyle` stays unset in
+  `.claude/settings.json`.
+
 - **`.claude/CLAUDE.web.md` is the web-chat twin of `.claude/CLAUDE.md`.** Nothing
   loads it: paste it by hand into claude.ai (Settings > Instructions for Claude)
   and grok.com (Customize Grok). When a Communication or External writing rule changes in
@@ -129,14 +141,12 @@ been going wrong, then proposes changes and waits. Also repo-local.
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`
   instead of running the installer. After changing `.claude-plugin/marketplace.json`
   or `plugins/tc/`: push, then `/plugin marketplace update chow`,
-  `/plugin update ek@chow`, `/reload-plugins`. Local `vet` / `tldr` / `polish` /
-  `review` / `tdd` / `grill-me` / `refresh` / `pass` / `pr` / `cleanup` edits are live
-  through
-  `~/.claude/skills` with no push.
+  `/plugin update ek@chow`, `/reload-plugins`. Local edits to any skill under
+  `plugins/tc/skills` are live through `~/.claude/skills` with no push.
 
 - **Catalog entries for plugins in other repos need `source: url` with an `https://`
   URL, never `source: github`.** This does not apply to `extraKnownMarketplaces`, where
-  `source: github` is correct and must stay. See `.claude/README.md` for why.
+  `source: github` is correct and must stay. See the Plugins section of `README.md` for why.
 
 - **`ek@chow` is upstream-only.** Never vendor, copy, or edit its skill files here.
   Refresh it with `/plugin update ek@chow`.

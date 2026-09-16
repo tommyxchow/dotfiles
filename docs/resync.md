@@ -29,7 +29,7 @@ From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new c
 
 `./install.sh` on every platform, from Git Bash on Windows.
 
-It links configs, first-party skills, and the statusline script, prunes links from older layouts, and copies Cursor's local `tc` plugin. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode 2 pick up instructions and `vet` / `tldr` / `polish` / `review` / `tdd` / `grill-me` / `refresh` / `pass` / `pr` / `cleanup` on a new machine.
+It links configs, first-party skills, and the statusline script, prunes links from older layouts, and copies Cursor's local `tc` plugin. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode 2 pick up the instructions and every skill under `plugins/tc/skills` on a new machine.
 
 On Windows, symlink creation needs Developer Mode (or an elevated shell). If a link comes out dead, fix the mode and re-run the installer rather than replacing links with copies.
 
@@ -186,7 +186,7 @@ survives and only a real version bump puts claude on the outdated list.
 
 Nothing here is vendored. Every skill in `plugins/tc/skills` is written in this
 repo, so there is no upstream file to diff. Credits for borrowed ideas live in
-`.claude/README.md`. Never copy Emil's files in; `ek@chow` is a marketplace
+`README.md`. Never copy Emil's files in; `ek@chow` is a marketplace
 plugin and its update already ran. Do not install `mattpocock-skills` from the
 marketplace either: its `grill-me` would collide with ours.
 

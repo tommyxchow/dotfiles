@@ -13,7 +13,7 @@ Run it when a notably better model ships, when the same pain recurs across sever
 - `.claude/CLAUDE.md`: the global instructions every harness loads.
 - `plugins/tc/skills/*/SKILL.md`: the first-party skills and their `references/`.
 - `opencode/cli.json`, `.claude/settings.json`, `grok/config.toml`: harness config.
-- `README.md`, `.claude/README.md`, `CLAUDE.md`, `docs/`: the docs that describe all of the above.
+- `README.md`, `CLAUDE.md`, `docs/`: the docs that describe all of the above.
 
 Read the requested surfaces first. A content-focused audit can skip local machine diagnostics and usage data; do not treat an infrequently used machine as evidence about the user's normal workflow.
 
@@ -55,7 +55,7 @@ Turn each pattern into a proposal aimed at where it belongs: a first-party skill
 
 - Skill descriptions resolve ambiguous phrases consistently by intent and state. Shared words are fine; a PR readiness question and approval to mark ready must lead to different actions.
 - Global rules own approval, completion, and communication. Skill bodies implement them without competing definitions or repeated routing tables.
-- `README.md`, `.claude/README.md`, and `docs/resync.md` name every skill and command in the tree, and nothing that isn't.
+- `README.md` names every skill in the tree, and nothing that isn't.
 - Every skill description is under the 1024-character spec cap (`./install.sh` prints this).
 - Skill bodies don't rely on Claude-only frontmatter for behavior that has to hold in every harness; the text says it too.
 

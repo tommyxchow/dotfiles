@@ -25,7 +25,10 @@ is repo-local, not a global skill.
 
 The installer is idempotent. An existing real file at a target gets moved to `.bak`
 first, and the backup is deleted again if it turns out to be byte-identical to the repo
-copy. `*.bak` is gitignored.
+copy. `*.bak` is gitignored. Links from older layouts are swept on every run: in
+the folders the installer manages, a link that points into this repo but was
+not made on this run is removed, and so is a dangling link left by a deleted
+dotfiles checkout.
 
 ## What gets linked
 
@@ -57,36 +60,45 @@ Windows Terminal settings are not linked (profiles and GUIDs are machine-local).
 OpenCode 2 still has no Windows keybind section. Use the same WT `sendInput`
 CSI-u pattern as [V1's Shift+Enter note](https://opencode.ai/docs/keybinds/#windows-terminal).
 `unbound` is not enough. OpenCode does not publish these strings; they use
-that same encoding (`\u001b[13;2u` for Shift+Enter). Leave Ctrl+Shift+Tab
+that same encoding (`[13;2u` for Shift+Enter). Leave Ctrl+Shift+Tab
 on WT. Store path:
 `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`.
 
 | Chord | Sequence | Why |
 | --- | --- | --- |
-| Ctrl+Tab | `\u001b[9;5u` | WT next-tab; Tab has no Ctrl byte |
-| Ctrl+Backspace | `\u001b[127;5u` | WT sends plain Backspace |
-| Ctrl+Shift+Z | `\u001b[122;6u` | same `0x1a` as Ctrl+Z |
-| Ctrl+M | `\u001b[109;5u` | same Enter as ASCII CR; Move session / new worktree |
-| Ctrl+Shift+T | `\u001b[116;6u` | WT new tab; reopen session tab |
+| Ctrl+Tab | `[9;5u` | WT next-tab; Tab has no Ctrl byte |
+| Ctrl+Backspace | `[127;5u` | WT sends plain Backspace |
+| Ctrl+Shift+Z | `[122;6u` | same `0x1a` as Ctrl+Z |
+| Ctrl+M | `[109;5u` | same Enter as ASCII CR; Move session / new worktree |
+| Ctrl+Shift+T | `[116;6u` | WT new tab; reopen session tab |
 
-Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatibility,
-so it does not need a separate instructions link. Its own settings live in
-`grok/config.toml` here, non-default keys only. Because Grok writes runtime state
-back into `~/.grok/config.toml`, that file is never symlinked: the installer seeds it
-from the repo copy on new machines and patches just those keys afterwards.
-The installer also seeds `~/.grok/lsp.json` from `grok/lsp.json` when missing (rewriting
-the Windows `.cmd` shim on that platform) and warns if `typescript-language-server`
-is not on PATH.
+## What does not get linked
 
-This setup is OpenCode 2 ([V2 docs](https://opencode.ai/v2/docs/)). The binary
-is `opencode`, with `opencode2` left as a back-compat shim.
-It reads user-global instructions from `~/.config/opencode/AGENTS.md` and
-project `AGENTS.md` walking up from the working directory. It does not load
-`CLAUDE.md`. The installer links those `AGENTS.md` paths to the shared
-`.claude/CLAUDE.md` and this repo's `CLAUDE.md`. Skills still come from
-`~/.claude/skills`.
+`.claude-plugin/marketplace.json` is catalog-only. `plugins/tc/` is the source
+for the skill links above and for `tc@chow` on machines that only install the
+plugin. Nothing else reads the marketplace file locally.
 
-Slash from any repo after the installer has run. Details live in the skill
+`.claude/CLAUDE.web.md` is the web-chat version of the global instructions for
+claude.ai and grok.com. The installer never touches it; paste it by hand.
+Mirror Communication and External writing changes there when they apply to chat.
+
+`~/.grok/config.toml` is seeded from `grok/config.toml` and then patched, never
+linked; see Grok Build below. `~/.cursor/mcp.json` stays outside the installer.
+
+## Instructions
+
+`.claude/CLAUDE.md` is the one global instruction file. Claude Code links it,
+OpenCode 2 reads it through the `AGENTS.md` link, Grok Build reads it through
+its Claude Code compatibility, and Cursor gets the installer's copy. Anything
+specific to this repo belongs in the root `CLAUDE.md`, which also carries the
+gotchas for editing any of this. `.claude/settings.json` holds Claude Code
+permissions, sandbox, model and effort, plugins, statusline, and marketplaces.
+
+## Skills
+
+First-party skills are the directories under `plugins/tc/skills`, live links into
+`~/.claude/skills` that Claude, Cursor, Grok, and OpenCode 2 all read. Slash any
+of them from any repo after the installer has run. Details live in the skill
 files. In OpenCode 2 the slash works because each skill sets
 `metadata: opencode/slash: "true"`; without it a skill is only reachable
 through `/skills` there.
@@ -115,39 +127,124 @@ plan and build. Switching models or sessions carries the approved plan forward
 without another approval round. The global `.claude/CLAUDE.md` "How a task runs"
 section owns those rules; slash commands are shortcuts.
 
+The official `gh` and `herdr` skills are installed into the same folder by
+resync through `gh skill install` and refreshed with `gh skill update`, not
+linked from this repo. Herdr's pane hook comes from
+`herdr integration install claude`. What must never be installed twice is
+listed in `CLAUDE.md`.
+
 The installer also links the Claude Code statusline script, so a new machine
 needs nothing else for it and edits to the script are live. The design behind
 it is in `docs/statusline.md`.
 
-First-party skills are live links into `~/.claude/skills`. The official `gh`
-and `herdr` skills are installed there by resync through `gh skill install`
-and refreshed with `gh skill update`, not linked from this repo. Herdr's pane
-hook comes from `herdr integration install claude`. `tc@chow` stays
-in the marketplace catalog for machines that only install the plugin; `ek`,
-`improve`, `typescript-lsp`, and `frontend-design` stay marketplace plugins.
-What must never be installed twice is listed in `CLAUDE.md`.
+## Harnesses
 
-## Cursor
+### Claude Code
+
+The installer links instructions, skills, and the statusline. Marketplace
+plugins still need `claude plugin install` when Claude Code is on the machine;
+`extraKnownMarketplaces` and `enabledPlugins` in `settings.json` declare them,
+but `enabledPlugins` alone does not install anything. Install each, then
+`/reload-plugins`. Skip `tc@chow` on a machine that ran the installer, since
+those skills are already linked:
+
+```bash
+claude plugin install ek@chow --scope user
+claude plugin install improve@improve --scope user
+claude plugin install typescript-lsp@claude-plugins-official --scope user
+claude plugin install frontend-design@claude-plugins-official --scope user
+```
+
+Use the CLI over the interactive `/plugin` menu here: the menu installs to
+**project** scope, which pins the plugin to one repo, while `enabledPlugins`
+lives in user-scope `settings.json` and enables it everywhere. That mismatch
+shows up as "enabled but missing" in every other repo. Check the `/plugin`
+**Errors** tab afterwards; `typescript-lsp` reports `Executable not found in
+$PATH` until `typescript-language-server` is installed. Saying **resync** in
+this repo does all of this.
+
+### Cursor
 
 The installer links editor settings and writes the local `tc` plugin above.
 Enable **Rules, Skills, Subagents → Include third-party Plugins, Skills, and
 other configs** so Cursor also loads installed Claude plugins and skills. Cursor
 does not run Claude's marketplace install, so install those plugins in Claude
-Code first. `~/.cursor/mcp.json` stays outside the installer.
+Code first.
 
-## What does not get linked
+### Grok Build
 
-`.claude-plugin/marketplace.json` is catalog-only. `plugins/tc/` is the source
-for the skill links above and for `tc@chow` on machines that only install the
-plugin. Nothing else reads the marketplace file locally.
+Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatibility,
+so it does not need a separate instructions link. Confirm effective discovery
+with the inspector inside an active Grok session; the standalone `grok inspect`
+command may report a different instruction list. Its own settings live in
+`grok/config.toml` here, non-default keys only. Because Grok writes runtime state
+back into `~/.grok/config.toml`, that file is never symlinked: the installer seeds it
+from the repo copy on new machines and patches just those keys afterwards.
+The installer also seeds `~/.grok/lsp.json` from `grok/lsp.json` when missing (rewriting
+the Windows `.cmd` shim on that platform) and warns if `typescript-language-server`
+is not on PATH.
 
-`.claude/CLAUDE.web.md` is the web-chat version of the global instructions for
-claude.ai and grok.com. The installer never touches it; paste it by hand.
+### OpenCode 2
 
-## Claude Code still needs the marketplace step
+This setup is OpenCode 2 ([V2 docs](https://opencode.ai/v2/docs/)). The binary
+is `opencode`, with `opencode2` left as a back-compat shim.
+It reads user-global instructions from `~/.config/opencode/AGENTS.md` and
+project `AGENTS.md` walking up from the working directory. It does not load
+`CLAUDE.md`. The installer links those `AGENTS.md` paths to the shared
+`.claude/CLAUDE.md` and this repo's `CLAUDE.md`. Skills still come from
+`~/.claude/skills`. OpenCode 2 does not load Claude marketplace plugins, so
+`ek` is Claude Code-only.
 
-The installer links skills and the statusline. Marketplace plugins (`ek`,
-`improve`, `typescript-lsp`, `frontend-design`) still need `claude plugin install`
-when Claude Code is on the machine. Cursor, Grok, and OpenCode 2 get first-party
-skills from the installer alone. Saying **resync** in this repo does both. See
-[`.claude/README.md`](.claude/README.md) for the declared plugins.
+## Plugins
+
+Personal plugins ship from the `chow` marketplace in this same repo. Third-party
+plugins are declared as separate marketplaces in `.claude/settings.json`.
+
+| Path | Purpose |
+|------|---------|
+| `.claude-plugin/marketplace.json` | Marketplace catalog (`chow`) |
+| `plugins/tc/` | Personal plugin skills |
+| `ek` (git url source) | [emilkowalski/skills](https://github.com/emilkowalski/skills), fetched at install time, not vendored here |
+
+### `chow` (this repo)
+
+| Plugin | Source | Skills |
+|--------|--------|--------|
+| `tc@chow` | `./plugins/tc` | The same skill directories. Marketplace packaging for machines that never ran the installer, including claude.ai. |
+| `ek@chow` | `emilkowalski/skills` (git url) | Whatever is in upstream `skills/` (not vendored here) |
+
+Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.
+
+`ek` uses a `url` plugin source with `strict: false` so Claude Code installs Emil's upstream `skills/` tree directly. Upstream has no `plugin.json`, so this catalog entry is the only place the name lives. Do not copy those files into this repo or install them via `skills.sh` / `npx skills`.
+
+**Do not "simplify" this to a `github` source.** `/plugin install` builds an SSH clone URL (`git@github.com:owner/repo.git`) for `source: github` and has no HTTPS fallback, so it dies with `Permission denied (publickey)` on any machine without a GitHub SSH key ([#47088](https://github.com/anthropics/claude-code/issues/47088), among several dupes). `source: url` with an explicit `https://` URL clones anonymously and needs no keys. `/plugin marketplace add` *does* have the HTTPS fallback, which is why the `chow` and `improve` marketplaces resolve fine either way.
+
+Caveat: `strict: false` means the marketplace entry is the *entire* definition. The upstream repo has no `plugin.json` today; if Emil adds one that declares components, that's a conflict and the plugin fails to load. Switch the entry to `strict: true` (or drop the field) if that happens.
+
+### Other marketplaces (`extraKnownMarketplaces`)
+
+| Plugin | Marketplace repo | Notes |
+|--------|------------------|-------|
+| `improve@improve` | [shadcn/improve](https://github.com/shadcn/improve) | Codebase audit / planning skill |
+
+### Official marketplace (`claude-plugins-official`)
+
+| Plugin | Notes |
+|--------|-------|
+| `typescript-lsp` | Enables Claude Code's built-in LSP tool for TS/JS. Requires `typescript-language-server` + `typescript` on PATH. |
+| `frontend-design` | Distinctive frontend design guidance for new or substantially redesigned UI. |
+
+### Maintenance
+
+- **Installing and enabling are separate**, and so are their files: `enabledPlugins` here declares what should load, while install records live in `~/.claude/plugins/installed_plugins.json` (runtime state, not committed). A plugin can be enabled and not installed, or installed and not enabled. `claude plugin list` shows the truth.
+- `/plugin marketplace update` refreshes the catalog only; `/plugin update <plugin>@<marketplace>` is what updates an installed plugin. To refresh Emil's upstream skills: `/plugin update ek@chow`.
+- No plugin here pins a `version`, so each resolves to its source's latest commit SHA. Pushing is what publishes; no version bump needed.
+- `autoUpdate: true` is set on `chow` only, so `ek@chow` refreshes after a push
+  (random delay up to 10 min), then Claude prompts for `/reload-plugins`. First-party
+  skills on this machine do not wait on that: they are installer links.
+- `improve` deliberately has **no** `autoUpdate`. Third-party marketplaces default to off because a plugin executes arbitrary code with your user privileges; auto-updating a repo you don't control runs new code unreviewed. Update it by hand with `/plugin update improve@improve`.
+
+## Credits
+
+- [emilkowalski/skills](https://github.com/emilkowalski/skills) - © Emil Kowalski, MIT. Referenced by `ek@chow`; not modified in this repo.
+- [mattpocock/skills](https://github.com/mattpocock/skills) - © 2026 Matt Pocock, MIT. Nothing here is a copy of his files. `grill-me` is written from scratch and keeps his design-tree and frontier framing. `tdd` is also from scratch, with its seam idea and its anti-patterns adapted from that repo's `tdd`, plus the red-before-green gates from [obra/superpowers](https://github.com/obra/superpowers) and the find-the-repo's-test-command rule from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills).
