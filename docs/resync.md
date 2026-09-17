@@ -29,7 +29,7 @@ From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new c
 
 `./install.sh` on every platform, from Git Bash on Windows.
 
-It links configs, first-party skills, and the statusline script, prunes links from older layouts, and copies Cursor's local `tc` plugin. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode 2 pick up the instructions and every skill under `plugins/tc/skills` on a new machine.
+It links configs, first-party skills, and the statusline script, prunes links from older layouts, copies Cursor's local `tc` plugin, and links the herdr worktree bootstrap plugin when herdr is on PATH and its server is running. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode 2 pick up the instructions and every skill under `plugins/tc/skills` on a new machine.
 
 On Windows, symlink creation needs Developer Mode (or an elevated shell). If a link comes out dead, fix the mode and re-run the installer rather than replacing links with copies.
 
@@ -163,6 +163,14 @@ OpenCode 2 refuses to load while status still reports `current`; on those, skip
 it. Pane detection recognizes `opencode.exe` without any integration, so
 skipping only loses working/idle/blocked reporting and session restore. Delete
 this paragraph once the integration has installed from a newer build.
+
+The worktree bootstrap plugin under `herdr/plugins` is the third herdr surface.
+It runs on every worktree herdr creates, copies the gitignored env files from
+the main checkout, and installs from the lockfile it finds. The installer links
+it through `herdr plugin link`, which needs the server up, so a `SKIP` line
+there means start herdr and re-run the installer. `herdr plugin list --json`
+shows it registered and `herdr plugin log list` shows its last runs with exit
+codes, which is where to look when a new worktree came up without its env.
 
 Then check `git diff .claude/settings.json`. Installing the claude integration
 replaces the committed portable hook command with an absolute path into this

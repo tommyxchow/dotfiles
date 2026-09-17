@@ -1,0 +1,10 @@
+id = "tc.worktree-bootstrap"
+name = "Worktree bootstrap"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+description = "Copy env files and install deps into a new worktree"
+platforms = ["linux", "macos", "windows"]
+
+[[events]]
+on = "worktree.created"
+command = ["node", "bootstrap.mjs"]

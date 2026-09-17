@@ -45,6 +45,7 @@ dotfiles checkout.
 | `CLAUDE.md` | `AGENTS.md` in this repo (OpenCode 2 project instructions; installer-only) |
 | `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode 2 reads this path too) |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
+| `herdr/plugins/worktree-bootstrap` | herdr plugin `tc.worktree-bootstrap`, linked through the running herdr server |
 | `.claude/statusline-command.sh` | `~/.claude/statusline-command.sh` (design notes in `docs/statusline.md`) |
 
 Cursor supports symlinked local plugins, but its rule file needs frontmatter
@@ -195,6 +196,22 @@ project `AGENTS.md` walking up from the working directory. It does not load
 `.claude/CLAUDE.md` and this repo's `CLAUDE.md`. Skills still come from
 `~/.claude/skills`. OpenCode 2 does not load Claude marketplace plugins, so
 `ek` is Claude Code-only.
+
+### Herdr
+
+Worktrees start from herdr, not from a harness. New worktree on a repo's
+sidebar row makes a real git worktree under `~/.herdr/worktrees/<repo>/<branch>`
+and opens it as a child workspace, so the agent, a shell, and a dev server all
+sit in the same checkout and show their git state together. The
+`tc.worktree-bootstrap` plugin the installer links runs on that event: it copies
+the gitignored `.env*` files from the main checkout and installs from the
+lockfile it finds, then posts a notification. Launch the harness in that
+workspace once the notification lands. When the branch is merged, Delete
+worktree checkout on the child row removes the folder.
+
+The plugin only knows lockfiles, not projects. A repo that needs other secrets
+copied, a database seeded, or a port picked says so in its own agent
+instructions, and the agent does that part.
 
 ## Plugins
 

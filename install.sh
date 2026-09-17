@@ -119,6 +119,30 @@ for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   link "plugins/tc/skills/$name" "$HOME/.claude/skills/$name"
 done
 
+# Herdr runs a linked plugin from the repo path, so this is a link too, only
+# registered through the running herdr server instead of the filesystem.
+link_herdr_plugin() {
+  local id="tc.worktree-bootstrap"
+  local path="$DOTFILES/herdr/plugins/worktree-bootstrap"
+  if ! command -v herdr >/dev/null 2>&1; then
+    printf "  SKIP  herdr plugin %s (herdr not on PATH)
+" "$id"
+    return
+  fi
+  [ "$WINDOWS" = 1 ] && path="$(cygpath -w "$path")"
+  if herdr plugin list --json 2>/dev/null | grep -q "\"plugin_id\":\"$id\""; then
+    printf "  OK    herdr plugin %s
+" "$id"
+  elif herdr plugin link "$path" >/dev/null 2>&1; then
+    printf "  LINK  herdr plugin %s -> herdr/plugins/worktree-bootstrap
+" "$id"
+  else
+    printf "  SKIP  herdr plugin %s (start herdr, then re-run or: herdr plugin link %s)
+" "$id" "$path"
+  fi
+}
+link_herdr_plugin
+
 # Links from older layouts: in the folders this installer manages, anything
 # that points into this repo but was not linked above, plus dangling links
 # left by a deleted dotfiles checkout. Links to anything else are not ours.
