@@ -119,13 +119,15 @@ through `/skills` there.
 
 `/tldr` summarizes.
 
-The skills chain during a task: plan where needed, build with `tdd` where it fits,
-and close slices with `pass`. Both direct commits and PRs use the same final
-acceptance, verification, and review requirements. `pr` publishes the evidence
-when a PR is warranted; having a plan does not require one. The same model can
-plan and build. Switching models or sessions carries the approved plan forward
-without another approval round. The global `.claude/CLAUDE.md` "How a task runs"
-section owns those rules; slash commands are shortcuts.
+The skills chain during a task: plan where needed, build with `tdd` where it
+fits, drive the result where a user would meet it, and close slices with `pass`.
+Both direct commits and PRs use the same final acceptance, verification, and
+review requirements. `pr` publishes the evidence when a PR is warranted; having
+a plan does not require one. Saying `ship it` does: it runs the whole chain
+through to a draft PR. The same model can plan and build. Switching models or
+sessions carries the approved plan forward without another approval round. The
+global `.claude/CLAUDE.md` "How a task runs" section owns those rules; slash
+commands are shortcuts.
 
 The official `gh` and `herdr` skills are installed into the same folder by
 resync through `gh skill install` and refreshed with `gh skill update`, not
