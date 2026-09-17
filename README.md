@@ -106,7 +106,7 @@ through `/skills` there.
 
 | Slash | When |
 |-------|------|
-| `/vet` | A claim, version, known issue, or "is this still true". Not "is this code correct". Reports, then waits. `quick` is one claim, one page. |
+| `/vet` | A claim, version, known issue, or "is this still true". Not "is this code correct". Reports, then waits. `quick` is a few claims, a page each. |
 | `/tdd` | Build new behavior test first: name the cases, red, then the smallest code that passes. |
 | `/polish` | Shape of code you already wrote. `quick` is inline and removal-only. |
 | `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. `quick` is one read; `deep` fans out and reproduces findings. |
