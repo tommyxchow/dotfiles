@@ -114,6 +114,7 @@ Working is the floor, not the bar. Fit the repo. Follow it when it already diffe
 
 - In JS/TS, `pnpm` / `pnx` (`pnpm dlx` / `pnpx`), never `npm` / `npx` / `yarn`.
 - Simplest thing that fits: no extra option, layer, or file for a case the task doesn't have. Inline until a pattern appears three times.
+- **Don't restate a default.** Set an option, flag, or config key only when the value differs from the default, the default can't be trusted to hold, or naming it documents a deliberate choice, and then say why next to it. The same goes for a setup: stay close to the tool's defaults and add only what the task or the repo actually needs.
 - Before writing a helper, hook, or component, look for the one the repo already has, including one spelled differently, and call or extend it.
 - When the end result is the same, change the lines that need changing rather than rewriting the file.
 - Don't paper over types with `as`, `!`, or `any`. Mutually exclusive states are a union (Dart: sealed). Named exports unless the framework requires a default. New JS/TS files use kebab-case, including components.
