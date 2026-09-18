@@ -191,3 +191,14 @@ been going wrong, then proposes changes and waits. Also repo-local.
   global file looks out of place. Rejected: three of the product repos are
   Next.js, globals are the source of truth, and the security line guards a bug
   class weaker models still write. Don't propose the move again.
+
+- **Three lines in `.claude/CLAUDE.md` look like duplicates and are not.**
+  The Communication hatch ("Break any of these rules...") is not a copy of
+  the preamble: the preamble asks for a why, and for a wording deviation that
+  why is the meta commentary the sound-like-a-person line bans. "Never write
+  that the UI works without having driven it" is not a copy of
+  never-claim-on-faith: with browser UAT declined and tests green, a model
+  would otherwise argue tests are evidence. And the subagents line stays even
+  though Claude Code's Agent tool now says not to spawn unless asked; that
+  note is about cost on the plan, and the file overrides harness defaults.
+  Decided 2026-09-17.
