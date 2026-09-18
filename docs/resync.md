@@ -165,8 +165,8 @@ skipping only loses working/idle/blocked reporting and session restore. Delete
 this paragraph once the integration has installed from a newer build.
 
 The worktree bootstrap plugin under `herdr/plugins` is the third herdr surface.
-It runs on every worktree herdr creates, copies the gitignored env files from
-the main checkout, and installs from the lockfile it finds. The installer links
+It runs on every worktree herdr creates and copies the gitignored env files
+from the main checkout; dependencies install on first need. The installer links
 it through `herdr plugin link`, which needs the server up, so a `SKIP` line
 there means start herdr and re-run the installer. `herdr plugin list --json`
 shows it registered and `herdr plugin log list` shows its last runs with exit

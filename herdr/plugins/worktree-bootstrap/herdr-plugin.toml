@@ -1,8 +1,8 @@
 id = "tc.worktree-bootstrap"
 name = "Worktree bootstrap"
-version = "0.1.0"
+version = "0.2.0"
 min_herdr_version = "0.9.0"
-description = "Copy env files and install deps into a new worktree"
+description = "Copy env files into a new worktree"
 platforms = ["linux", "macos", "windows"]
 
 [[events]]

@@ -1,6 +1,7 @@
 // Runs on herdr's worktree.created event. Copies the gitignored env files from
-// the main checkout into the new worktree and installs dependencies from the
-// lockfile it finds there, then reports through a herdr notification.
+// the main checkout into the new worktree, then reports through a herdr
+// notification. It does not install dependencies: the agent installs on first
+// need, so a monorepo does not pay for a full install on every worktree.
 import { spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -8,16 +9,9 @@ import { dirname, join } from "node:path";
 const event = JSON.parse(process.env.HERDR_PLUGIN_EVENT_JSON).data;
 const worktree = event.worktree.path;
 const repoRoot = event.workspace.worktree.repo_root;
-const windows = process.platform === "win32";
 
 function run(command, args, cwd) {
-  // On Windows pnpm and flutter are .cmd shims, which Node only runs through a
-  // shell. Every token here is a constant, and cwd goes through the option, so
-  // joining them is safe. git is an .exe and needs no shell anywhere.
-  const viaShell = windows && command !== "git";
-  const result = viaShell
-    ? spawnSync([command, ...args].join(" "), { cwd, encoding: "utf8", shell: true })
-    : spawnSync(command, args, { cwd, encoding: "utf8" });
+  const result = spawnSync(command, args, { cwd, encoding: "utf8" });
   if (result.error) throw new Error(`${command}: ${result.error.message}`);
   if (result.status !== 0) {
     throw new Error(`${command} ${args.join(" ")} failed: ${result.stderr.trim() || result.stdout.trim()}`);
@@ -39,29 +33,14 @@ function copyEnvFiles() {
   return copied;
 }
 
-function installDeps() {
-  if (existsSync(join(worktree, "pnpm-lock.yaml"))) {
-    run("pnpm", ["install", "--frozen-lockfile"], worktree);
-    return "pnpm install";
-  }
-  if (existsSync(join(worktree, "pubspec.lock"))) {
-    run("flutter", ["pub", "get"], worktree);
-    return "flutter pub get";
-  }
-  return null;
-}
-
 function notify(title, body, sound) {
   spawnSync(process.env.HERDR_BIN_PATH, ["notification", "show", title, "--body", body, "--sound", sound], { encoding: "utf8" });
 }
 
 try {
   const copied = copyEnvFiles();
-  const install = installDeps();
-  const parts = [];
-  if (copied.length) parts.push(`copied ${copied.join(", ")}`);
-  if (install) parts.push(install);
-  notify(`Worktree ready: ${event.worktree.branch}`, parts.join("; ") || "nothing to bootstrap", "done");
+  const body = copied.length ? `copied ${copied.join(", ")}` : "no env files to copy";
+  notify(`Worktree ready: ${event.worktree.branch}`, body, "done");
 } catch (error) {
   notify(`Worktree bootstrap failed: ${event.worktree.branch}`, error.message, "request");
   console.error(error.message);
