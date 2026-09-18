@@ -205,9 +205,11 @@ and opens it as a child workspace, so the agent, a shell, and a dev server all
 sit in the same checkout and show their git state together. The
 `tc.worktree-bootstrap` plugin the installer links runs on that event: it copies
 the gitignored `.env*` files from the main checkout and posts a notification.
-It does not install dependencies; the agent installs on first need, so a
-monorepo does not pay for a full install per worktree. Launch the harness in
-that workspace once the notification lands. When the branch is merged, Delete
+It installs dependencies only in a pnpm repo that sets `virtualStoreType: global`
+in `pnpm-workspace.yaml`, pnpm's own recipe for worktrees: with that on, the
+worktree's `node_modules` is symlinks into one shared store and the install
+takes seconds even in a monorepo. Everywhere else the agent installs on first
+need. Launch the harness in that workspace once the notification lands. When the branch is merged, Delete
 worktree checkout on the child row removes the folder.
 
 The plugin only knows env files, not projects. A repo that needs other secrets
