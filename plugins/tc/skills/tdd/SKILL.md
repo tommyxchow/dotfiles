@@ -49,12 +49,12 @@ Never write the implementation first and backfill the tests around it. If the co
 
 ## 4. What makes a test worth keeping
 
-Follow the testing rules under global Working preferences for coverage, meaningful failures, outcomes over wording or wiring, independently checked expectations (including reviewed snapshots), dependencies, isolation, and retries. Four more on top of those:
+Follow the testing rules under global Working preferences for coverage and level, meaningful failures, outcomes over wording or wiring, readability, independently checked expectations (including reviewed snapshots), dependencies, speed and determinism, isolation, and retries. Four more on top of those:
 
 - **Assert what the caller can see**: the return value, the rendered output, the response body, the row that got written.
 - **Name the case, not the function.** "rejects an expired token", not "test login".
 - **Mock a boundary, not the behavior under test.** An owned vendor wrapper or intercepted network request can isolate a test. Mocking an app module is not by itself a reason to restructure; check whether it hides the behavior this test should exercise before moving the boundary.
-- **One reason to fail per test.** Two assertions about the same behavior are fine; two behaviors are two tests. Duplication between tests is fine, since a test should read top to bottom without chasing a helper.
+- **One reason to fail per test.** Two assertions about the same behavior are fine; two behaviors are two tests.
 
 ## 5. Close
 
