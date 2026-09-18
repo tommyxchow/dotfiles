@@ -185,3 +185,9 @@ been going wrong, then proposes changes and waits. Also repo-local.
   key too; afterwards check `git diff .claude/settings.json` and put the key
   back by editing the JSON, never with `git checkout`, which would also discard
   any other pending settings change.
+
+- **The two Next.js lines stay in `.claude/CLAUDE.md`.** The 2026-09-17 audit
+  proposed moving them to next-template's AGENTS.md, since a stack rule in a
+  global file looks out of place. Rejected: three of the product repos are
+  Next.js, globals are the source of truth, and the security line guards a bug
+  class weaker models still write. Don't propose the move again.
