@@ -217,9 +217,9 @@ first install with the store on about 20 seconds, and every worktree after that
 about 3 seconds through the plugin. The catch is Turbopack, which refuses to
 compile files outside the project root, and with the store on `node_modules`
 resolves into the pnpm store under the user's profile. `next dev` needs
-`turbopack.root` set to a folder above both the worktrees and the store, which
-on this machine is the home folder. Without that, the dev server 500s on every
-page. `tsc` is unaffected. Repos that pin pnpm below 11.23 spell the setting
+`turbopack.root` set to a folder above both the worktrees and the store, in
+practice the home folder. Without that, the home page 500s. `tsc` is
+unaffected. Repos that pin pnpm below 11.23 spell the setting
 `enableGlobalVirtualStore: true`. When the branch is merged, Delete
 worktree checkout on the child row removes the folder.
 
