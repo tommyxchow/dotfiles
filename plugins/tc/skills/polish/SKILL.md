@@ -2,7 +2,7 @@
 name: polish
 metadata:
   opencode/slash: "true"
-description: 'Behavior-preserving cleanup using existing format/lint tools and four lenses: reuse, quality, efficiency, altitude. Tuned for React/TS, with non-React checks usable elsewhere. Use for polish, dry clean, make this less hacky, or reduce duplication; `quick` is inline, removal-shaped cleanups only. Correctness goes to review; slice completion to pass; PR readiness to pr. Default scope is dirty work plus session edits, including after commit; all includes the branch and pending work. Never installs tools.'
+description: 'Behavior-preserving cleanup using existing format/lint tools and four lenses: reuse, quality, efficiency, altitude. Tuned for React/TS, with non-React checks usable elsewhere. Use for polish, clean up the code, code cleanup, dry clean, make this less hacky, or reduce duplication; a bare cleanup with no code named is repo hygiene (cleanup), not this; `quick` is inline, removal-shaped cleanups only. Correctness goes to review; slice completion to pass; PR readiness to pr. Default scope is dirty work plus session edits, including after commit; all includes the branch and pending work. Never installs tools.'
 argument-hint: "[quick] [staged | unstaged | branch | all | <focus>]"
 ---
 
