@@ -52,7 +52,7 @@ claude plugin marketplace update chow
 claude plugin update ek@chow
 ```
 
-Skip `tc@chow`. First-party skills are installer links into `~/.claude/skills`. Enabling the plugin loads a second cached copy.
+Skip `tc@chow`. First-party skills are installer links into `~/.claude/skills`. Enabling the plugin loads a second cached copy, and so does installing it on claude.ai, which Claude Code syncs down to `~/.claude/plugins/synced`.
 
 Official plugins (`typescript-lsp`, `frontend-design`) have no `autoUpdate`. Install if missing; do not invent extra official plugins.
 
@@ -62,7 +62,7 @@ If `claude` is missing, say so in the report and continue.
 
 ## Dedupe
 
-**First-party skills:** every directory under `plugins/tc/skills/` must be a symlink in `~/.claude/skills`. If `tc@chow` is installed or enabled, uninstall it `--scope user` (needs `claude`). Snapshot `enabledPlugins` first; restore any key the uninstall punched (it must not resurrect `tc@chow`).
+**First-party skills:** every directory under `plugins/tc/skills/` must be a symlink in `~/.claude/skills`. If `tc@chow` is installed or enabled, uninstall it `--scope user` (needs `claude`). Snapshot `enabledPlugins` first; restore any key the uninstall punched (it must not resurrect `tc@chow`). If `~/.claude/plugins/synced/*/tc` exists, the plugin is installed on claude.ai; that cannot be undone from here, so report it and leave the sync settings alone. claude.ai's own skills under `~/.claude/skills/synced` are expected.
 
 **Cursor:** `~/.cursor/plugins/local/tc/rules/global.mdc` must match `.claude/CLAUDE.md` plus `alwaysApply: true` and no `description`. Delete `~/.cursor/plugins/cache/chow/tc` if it exists. Do not paste `CLAUDE.md` into User Rules. Third-party import should stay on so Cursor reads `~/.claude/skills`.
 

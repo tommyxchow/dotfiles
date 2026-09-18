@@ -244,7 +244,7 @@ from `claude-plugins-official`, which needs no declaration.
 
 | Plugin | Source | Skills |
 |--------|--------|--------|
-| `tc@chow` | `./plugins/tc` | The same skill directories. Marketplace packaging for machines that never ran the installer, including claude.ai. |
+| `tc@chow` | `./plugins/tc` | The same skill directories. Marketplace packaging for machines that never ran the installer. Not installed on claude.ai, since Claude Code would sync that copy back down next to the links. |
 | `ek@chow` | `emilkowalski/skills` (git url) | Whatever is in upstream `skills/` (not vendored here) |
 
 Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.

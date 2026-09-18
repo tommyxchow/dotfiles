@@ -115,9 +115,9 @@ been going wrong, then proposes changes and waits. Also repo-local.
   `metadata: opencode/slash: "true"`, so every first-party skill sets it; a
   new skill without it is reachable there only through `/skills`. Do not copy
   those skills into `~/.config/opencode/skills`, do not enable `tc@chow` on a machine
-  that ran the installer (same files via the marketplace cache, so both would
-  load), and do not install `mattpocock-skills` from the official marketplace
-  (its `grill-me` collides with ours).
+  that ran the installer or install it on claude.ai (account sync brings that
+  copy down too, so both would load), and do not install `mattpocock-skills`
+  from the official marketplace (its `grill-me` collides with ours).
 
 - **Keep shared skills portable Agent Skills** (`name` and `description`
   required). Claude-only `context` / `agent` / `background` are fine where a
@@ -137,10 +137,16 @@ been going wrong, then proposes changes and waits. Also repo-local.
   the repo runs itself. Ours stay because they are the only copies that work in
   all four harnesses and read a repo's own rules first.
 
-- **`tc@chow` stays in the marketplace.** claude.ai sessions install this repo
-  as a marketplace and cannot run the installer, so the plugin is the only way
-  they get the first-party skills. Dropping it was proposed once as a
-  simplification and rejected for that reason; don't propose it again.
+- **`tc` stays in the marketplace catalog; do not install it on claude.ai.**
+  The catalog entry serves machines that install the plugin instead of running
+  the installer, so keep it. On claude.ai the plugin only surfaces in chat, it
+  does not update itself from GitHub (a snapshot there still served a retired
+  skill two days after the pushes), and Claude Code syncs every claude.ai
+  plugin down to `~/.claude/plugins/synced`, so every terminal session loads a
+  second, stale copy of the skills as `tc:` entries. If `tc:`-prefixed skills
+  or `tc@synced` show up, the plugin is installed on claude.ai; uninstall it
+  there rather than adding a local override. claude.ai's own skills (docx,
+  pptx, xlsx, and the rest) sync the same way and stay on purpose.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`
