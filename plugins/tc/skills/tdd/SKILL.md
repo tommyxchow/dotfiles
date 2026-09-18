@@ -16,7 +16,7 @@ Grow the feature and tests together. Watching a test fail for the right reason p
 
 Decide first and say which way in one sentence. Don't ask.
 
-- **It fits** when the change has an observable result: a function or module with inputs and outputs, business rules, a parser or format, an API route, a bug with a reproduction. A bug fix always starts here, because the regression test is the proof the fix works.
+- **It fits** when the change has an observable result: a function or module with inputs and outputs, business rules, a parser or format, an API route, a bug with a reproduction. A bug fix starts here whenever its behavior can be asserted, because the regression test is the proof the fix works.
 - **It doesn't fit** when there is nothing to assert yet: exploration where the shape is still unknown, config, docs, copy, styling and visual layout, a change with no behavior change (a rename, a moved file), a throwaway script. Say so and build it normally, with the repo's usual tests after. Size is not the test: a one-line permission fix has behavior and fits.
 - **It half fits** more often than either. Take the part with observable behavior through the loop and build the rest normally. A form's validation rules are testable; which shade of grey the error text is, is not.
 
@@ -26,7 +26,7 @@ Never write a test at a boundary you chose silently.
 
 - **If the plan has an acceptance checklist**, that is the list: one or more cases per criterion, in the criterion's words. Add the edges it didn't mention, and say which ones you added.
 - **If the user gave cases**, those are the list. Add the edges they didn't mention, and say which ones you added.
-- **If neither, derive them**: the happy path, the edges most likely to break (empty, one, many, the boundary value, the error path), and for a bug, the exact failure reported.
+- **If neither, derive them**: the happy path, the sad paths a user can hit, the edges most likely to break (empty, one, many, the boundary value), with realistic data, and for a bug, the exact failure reported.
 - **Changing code that has no tests**: pin its current behavior first with a characterization test (assert what it does today, even the odd parts), then start the loop for the change. Otherwise you can't tell a deliberate change from an accident.
 - **Say where you'll test them.** The function, the module's public surface, the route's response, what the component renders. Pick the outermost boundary that still fails for one clear reason, because a test bound to internals breaks on every refactor and proves nothing about behavior.
 - **Then start.** State the list and the boundary in a few lines and go. Stop and ask only when the boundary is a real design decision, such as inventing a new module seam to make something testable.
@@ -49,9 +49,9 @@ Never write the implementation first and backfill the tests around it. If the co
 
 ## 4. What makes a test worth keeping
 
-Follow the testing rules under global Working preferences for meaningful failures, independently checked expectations (including reviewed snapshots), dependencies, isolation, and retries. Four more on top of those:
+Follow the testing rules under global Working preferences for coverage, meaningful failures, outcomes over wording or wiring, independently checked expectations (including reviewed snapshots), dependencies, isolation, and retries. Four more on top of those:
 
-- **Assert what the caller can see**: the return value, the rendered output, the response body, the row that got written. Not which internal functions were called, and not how many times.
+- **Assert what the caller can see**: the return value, the rendered output, the response body, the row that got written.
 - **Name the case, not the function.** "rejects an expired token", not "test login".
 - **Mock a boundary, not the behavior under test.** An owned vendor wrapper or intercepted network request can isolate a test. Mocking an app module is not by itself a reason to restructure; check whether it hides the behavior this test should exercise before moving the boundary.
 - **One reason to fail per test.** Two assertions about the same behavior are fine; two behaviors are two tests. Duplication between tests is fine, since a test should read top to bottom without chasing a helper.

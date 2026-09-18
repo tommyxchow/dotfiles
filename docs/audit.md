@@ -88,7 +88,7 @@ Write it in the global Communication voice, then stop and wait; the user picks w
 Four proposals, and the one that matters is that Claude Code now ships a plan file every session, so the "keep the checklist in the harness plan file" line can point at it instead of describing it.
 
 Drop
-- The Next.js `error.tsx` line in the global file: the repo template's AGENTS.md already carries it and it went stale once.
+- The Codex approval-prompt line in the global file: Codex is no longer managed here, so nothing reads it.
 
 Change
 - grill-me still asks in text on Grok Build; its question tool landed in the last release, so the fallback branch can go.

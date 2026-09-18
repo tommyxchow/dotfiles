@@ -135,7 +135,7 @@ Global External writing voice, sized to the change. A repo PR template wins on o
 3. **Acceptance criteria, when the ledger has more than one item.** The ledger from section 1, one line per item with its evidence or its "unverified" reason. UAT-feedback and discovered items keep their tags. Dropped items say dropped.
 4. **Test plan.** What ran (the check, the test counts) and the numbered click path for UAT, starting from the preview URL when there is one, otherwise `pnpm dev` and a route.
 5. **Screenshots.** Before and after for anything visual; folded past two.
-6. **Risk and rollback.** Only when the change is shared: a schema, an API, auth, money, a deploy others depend on. One sentence each for what could go wrong and how to back it out.
+6. **Risk and rollback.** Only when the change is risky: a migration, a backfill, auth, money, or a shape another client or deploy still reads. One sentence each for what could go wrong and how to back it out.
 7. **Decisions and follow-ups.** Cases the plan missed: what was built beyond the ticket and the one-line why, then what the ticket implied that this PR deliberately leaves, with an issue link when one exists.
 8. **Stack.** `Stacked on #N` and `Depends on #M` when they apply.
 
