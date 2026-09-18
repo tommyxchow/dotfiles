@@ -27,10 +27,13 @@ function run(command, args, cwd) {
 }
 
 function copyEnvFiles() {
-  const listed = run("git", ["-C", repoRoot, "ls-files", "--others", "--ignored", "--exclude-standard", "-z", "--", ":(glob)**/.env*"]);
+  // --directory collapses ignored folders like node_modules into one entry
+  // instead of walking every file inside them, which is seconds on a web repo.
+  // An env file inside an ignored folder is build output, not a secret to copy.
+  const listed = run("git", ["-C", repoRoot, "ls-files", "--others", "--ignored", "--exclude-standard", "--directory", "-z", "--", ":(glob)**/.env*"]);
   const copied = [];
   for (const rel of listed.split("\0").filter(Boolean)) {
-    if (rel.split("/").includes("node_modules")) continue;
+    if (rel.endsWith("/")) continue;
     const dest = join(worktree, rel);
     if (existsSync(dest)) continue;
     mkdirSync(dirname(dest), { recursive: true });

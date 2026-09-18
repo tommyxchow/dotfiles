@@ -209,7 +209,18 @@ It installs dependencies only in a pnpm repo that sets `virtualStoreType: global
 in `pnpm-workspace.yaml`, pnpm's own recipe for worktrees: with that on, the
 worktree's `node_modules` is symlinks into one shared store and the install
 takes seconds even in a monorepo. Everywhere else the agent installs on first
-need. Launch the harness in that workspace once the notification lands. When the branch is merged, Delete
+need. Launch the harness in that workspace once the notification lands.
+
+The global store is opt-in per repo and pnpm calls it experimental. Measured on
+tommychow.com (Next.js 16): a plain worktree install takes about 16 seconds, the
+first install with the store on about 20 seconds, and every worktree after that
+about 3 seconds through the plugin. The catch is Turbopack, which refuses to
+compile files outside the project root, and with the store on `node_modules`
+resolves into the pnpm store under the user's profile. `next dev` needs
+`turbopack.root` set to a folder above both the worktrees and the store, which
+on this machine is the home folder. Without that, the dev server 500s on every
+page. `tsc` is unaffected. Repos that pin pnpm below 11.23 spell the setting
+`enableGlobalVirtualStore: true`. When the branch is merged, Delete
 worktree checkout on the child row removes the folder.
 
 The plugin only knows env files, not projects. A repo that needs other secrets
