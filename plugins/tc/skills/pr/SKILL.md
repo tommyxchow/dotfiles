@@ -129,7 +129,7 @@ Global External writing voice, sized to the change. A repo PR template wins on o
    |---|---|---|---|
    | Invoice permissions (`src/lib/invoices/*`) | Viewer role blocked at the action and the data layer | 3 files, +120 / −14 | Read closely |
    | Invoice edit page | Edit control hidden for viewers, error state added | 2 files, +48 / −6 | Read, quick |
-   | Tests | 6 new cases for the permission matrix | 2 files, +140 | Skim |
+   | Tests | 6 new cases for the permission matrix | 2 files, +140 | Read |
    | Generated types, lockfile | Regenerated after the schema change | 2 files, +410 / −380 | Skip |
 
 3. **Acceptance criteria, when the ledger has more than one item.** The ledger from section 1, one line per item with its evidence or its "unverified" reason. UAT-feedback and discovered items keep their tags. Dropped items say dropped.

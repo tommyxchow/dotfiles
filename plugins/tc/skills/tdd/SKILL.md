@@ -58,8 +58,8 @@ Follow the testing rules under global Working preferences for coverage and level
 
 ## 5. Close
 
-Say which cases are covered and which you deliberately left out, then run the repo's full check once. Name each test against its acceptance criterion when there is a checklist, since `pr` reads that as the criterion's evidence. Reshaping the code you just wrote is `polish`. Hunting defects in it is `review`. Neither runs here.
+Say which cases are covered and which you deliberately left out, then run the repo's full check once. Quote each test's first failure line, since a red step nobody saw proves nothing. Name each test against its acceptance criterion when there is a checklist, since `pr` reads that as the criterion's evidence. Reshaping the code you just wrote is `polish`. Hunting defects in it is `review`. Neither runs here.
 
 ```
-Built the retry backoff with cases for the initial delay, doubling, the cap, and non-retryable errors. Each test failed first for its own reason before the code went in. For jitter, controlled random inputs at the low and high ends verify the permitted delay range without depending on a seed or real time.
+Built the retry backoff with cases for the initial delay, doubling, the cap, and non-retryable errors. Each test failed first for its own reason before the code went in, for example `expected 200, received 100` on the doubling case. For jitter, controlled random inputs at the low and high ends verify the permitted delay range without depending on a seed or real time.
 ```
