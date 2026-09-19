@@ -122,12 +122,14 @@ Working is the floor, not the bar. Fit the repo. Follow it when it already diffe
 
 - In JS/TS, `pnpm` / `pnx` (`pnpm dlx` / `pnpx`), never `npm` / `npx` / `yarn`.
 - Simplest thing that fits: no extra option, layer, or file for a case the task doesn't have. Inline until a pattern appears three times.
+- Flat and direct. Early returns and lookup tables beat deep nesting, and a plain function beats a class, factory, or registry with one use. A wrapper that only forwards to one call is noise; call the thing.
 - **Don't restate a default.** Set an option, flag, or config key only when the value differs from the default, the default can't be trusted to hold, or naming it documents a deliberate choice, and then say why next to it. The same goes for a setup: stay close to the tool's defaults and add only what the task or the repo actually needs.
 - Before writing a helper, hook, or component, look for the one the repo already has, including one spelled differently, and call or extend it.
 - When the end result is the same, change the lines that need changing rather than rewriting the file.
 - Don't paper over types with `as`, `!`, or `any`. Mutually exclusive states are a union (Dart: sealed). Named exports unless the framework requires a default. New JS/TS files use kebab-case, including components.
 - Write for the reviewer who sees only this hunk cold in a diff. A plain five-line version beats a clever one-liner, names say what the thing is, and code is never shortened to save lines or tokens. I rarely read the code, so when I do it has to read at a glance.
-- Validate external input at the boundary with the repo's validator, then trust the types. Prefer Zod when choosing a TS validator. Security stays on the server. Never interpolate untrusted input into a shell command, query, filesystem path, or outbound URL, and no secrets in `PUBLIC` env vars or the client.
+- Comment the non-obvious why (a constraint, a quirk, an intent), never what the code already says, and most functions need no comment at all. `// loop over users`, a docblock that repeats the signature, and section dividers are noise. `// Stripe sends amounts in cents` earns its line. No leftover task crumbs.
+- Validate external input at the boundary with the repo's validator, then trust the types. Prefer Zod when choosing a TS validator. Security stays on the server. Never interpolate untrusted input into a shell command, query, filesystem path, or outbound URL, and no secrets in `PUBLIC` env vars or the client. Don't hand-roll auth, sessions, or crypto; use what the platform or repo already has.
 - Every mutation is idempotent or guarded against a double submit. Retries, double clicks, and a refreshed form are the normal case.
 - Error messages name what failed and for what. The user sees the plain version; the log gets the detail. Never log secrets, tokens, or PII.
 - Never swallow an error: catch it to add context or show the user something, otherwise let it reach the boundary and the reporter. An empty `catch` is a finding.
