@@ -119,29 +119,31 @@ for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   link "plugins/tc/skills/$name" "$HOME/.claude/skills/$name"
 done
 
-# Herdr runs a linked plugin from the repo path, so this is a link too, only
-# registered through the running herdr server instead of the filesystem.
-link_herdr_plugin() {
-  local id="tc.worktree-bootstrap"
-  local path="$DOTFILES/herdr/plugins/worktree-bootstrap"
-  if ! command -v herdr >/dev/null 2>&1; then
-    printf "  SKIP  herdr plugin %s (herdr not on PATH)
-" "$id"
-    return
-  fi
-  [ "$WINDOWS" = 1 ] && path="$(cygpath -w "$path")"
-  if herdr plugin list --json 2>/dev/null | grep -q "\"plugin_id\":\"$id\""; then
-    printf "  OK    herdr plugin %s
-" "$id"
-  elif herdr plugin link "$path" >/dev/null 2>&1; then
-    printf "  LINK  herdr plugin %s -> herdr/plugins/worktree-bootstrap
-" "$id"
-  else
-    printf "  SKIP  herdr plugin %s (start herdr, then re-run or: herdr plugin link %s)
-" "$id" "$path"
-  fi
+# Herdr runs a linked plugin from the repo path, so these are links too, only
+# registered through the running herdr server instead of the filesystem. Every
+# folder under herdr/plugins is one plugin, named by the id in its manifest.
+link_herdr_plugins() {
+  local dir name id path
+  for dir in "$DOTFILES"/herdr/plugins/*/; do
+    [ -f "$dir/herdr-plugin.toml" ] || continue
+    name="$(basename "$dir")"
+    id="$(awk -F'"' '/^id[[:space:]]*=/ { print $2; exit }' "$dir/herdr-plugin.toml")"
+    path="${dir%/}"
+    if ! command -v herdr >/dev/null 2>&1; then
+      printf "  SKIP  herdr plugin %s (herdr not on PATH)\n" "$id"
+      continue
+    fi
+    [ "$WINDOWS" = 1 ] && path="$(cygpath -w "$path")"
+    if herdr plugin list --json 2>/dev/null | grep -q "\"plugin_id\":\"$id\""; then
+      printf "  OK    herdr plugin %s\n" "$id"
+    elif herdr plugin link "$path" >/dev/null 2>&1; then
+      printf "  LINK  herdr plugin %s -> herdr/plugins/%s\n" "$id" "$name"
+    else
+      printf "  SKIP  herdr plugin %s (start herdr, then re-run or: herdr plugin link %s)\n" "$id" "$path"
+    fi
+  done
 }
-link_herdr_plugin
+link_herdr_plugins
 
 # Links from older layouts: in the folders this installer manages, anything
 # that points into this repo but was not linked above, plus dangling links

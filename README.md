@@ -46,6 +46,7 @@ dotfiles checkout.
 | `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode 2 reads this path too) |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
 | `herdr/plugins/worktree-bootstrap` | herdr plugin `tc.worktree-bootstrap`, linked through the running herdr server |
+| `herdr/plugins/pr-badge` | herdr plugin `tc.pr-badge`, linked the same way |
 | `.claude/statusline-command.sh` | `~/.claude/statusline-command.sh` (design notes in `docs/statusline.md`) |
 
 Cursor supports symlinked local plugins, but its rule file needs frontmatter
@@ -234,9 +235,16 @@ split, so the sidebar says what each one is doing and a label like `dev :3001`
 says which port is taken. Tab names are lowercase slugs of at most 16
 characters, because the sidebar clips longer ones. Agents rename a tab only when
 its label is a number or such a slug, so a name typed by hand stays. They leave
-their own agent name alone, since it shows which harness is running. After a long run they send a herdr notification,
-because herdr's own alerts skip the tab that is open. Both rules are in
-`.claude/CLAUDE.md`.
+their own agent name alone, since it shows which harness is running. After a
+long run they send a herdr notification, because herdr's own alerts skip the tab
+that is open. Both rules are in `.claude/CLAUDE.md`.
+
+The `tc.pr-badge` plugin fills two sidebar values for every git workspace: the
+branch's pull request, like `#12 draft`, with a ✗ when a check failed, and the
+count of uncommitted files, like `±3`. It refreshes when herdr starts, when an
+agent in that workspace settles, when the workspace gets focus, and through its
+refresh action. The pull request comes from `gh`, so without `gh` signed in only
+the file count shows.
 
 Herdr's `config.toml` stays machine-local, since it names the shell for that
 OS. `docs/resync.md` lists the settings this setup expects in it.

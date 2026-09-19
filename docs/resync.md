@@ -175,11 +175,16 @@ this paragraph once the integration has installed from a newer build.
 The worktree bootstrap plugin under `herdr/plugins` is the third herdr surface.
 It runs on every worktree herdr creates, copies the gitignored env files from
 the main checkout, and runs `pnpm install` only when the repo has pnpm's global
-virtual store on; everywhere else dependencies install on first need. The installer links
-it through `herdr plugin link`, which needs the server up, so a `SKIP` line
-there means start herdr and re-run the installer. `herdr plugin list --json`
-shows it registered and `herdr plugin log list` shows its last runs with exit
-codes, which is where to look when a new worktree came up without its env.
+virtual store on; everywhere else dependencies install on first need. The
+`tc.pr-badge` plugin sits next to it and fills two sidebar values per git
+workspace: the branch's pull request and its count of uncommitted files. It
+runs on herdr start, when an agent settles, when a workspace gets focus, and
+through `herdr plugin action invoke tc.pr-badge.refresh`. The installer links
+every folder under `herdr/plugins` through `herdr plugin link`, which needs the
+server up, so a `SKIP` line there means start herdr and re-run the installer.
+`herdr plugin list --json` shows them registered and `herdr plugin log list`
+shows their last runs with exit codes and output, which is where to look when a
+new worktree came up without its env or a badge is missing.
 
 Then check `git diff .claude/settings.json`. Installing the claude integration
 replaces the committed portable hook command with an absolute path into this
@@ -207,11 +212,15 @@ survives and only a real version bump puts claude on the outdated list.
 Skip this section if `herdr` is not on PATH.
 
 Herdr's `config.toml` is machine-local; `herdr --help` prints its path. This
-setup expects three settings in it. The global rules have agents send a
+setup expects four settings in it. The global rules have agents send a
 notification after a long run, and `system` is the delivery that shows outside
 the herdr window. The Claude entry puts each session's title in the sidebar. It
 replaces `rows` rather than adding to it, so its first and last rows repeat
-whatever `[ui.sidebar.agents] rows` holds on that machine.
+whatever `[ui.sidebar.agents] rows` holds on that machine. The spaces rows are
+herdr's defaults plus the `$pr` and `$dirty` slots the `tc.pr-badge` plugin
+fills; a slot shows nothing until a value is reported. The first matching rule
+wins, so the failed-check rule comes first, and an inline table has to stay on
+one line.
 
 ```toml
 [ui.toast]
@@ -225,6 +234,12 @@ claude = [
   ["state_icon", "machine", "workspace", "tab"],
   ["terminal_title_stripped"],
   ["agent"],
+]
+
+[ui.sidebar.spaces]
+rows = [
+  ["state_icon", "workspace"],
+  ["branch", "git_status", { token = "$pr", rules = [{ contains = "✗", fg = "#f38ba8" }, { contains = "approved", fg = "#a6e3a1" }, { contains = "merged", dim = true }, { contains = "closed", dim = true }] }, { token = "$dirty", fg = "#f9e2af" }],
 ]
 ```
 

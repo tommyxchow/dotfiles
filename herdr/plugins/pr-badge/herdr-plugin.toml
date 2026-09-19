@@ -1,0 +1,28 @@
+id = "tc.pr-badge"
+name = "PR badge"
+# herdr requires version; the plugin is a live link, so it is never bumped.
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+description = "Show each workspace's pull request state and uncommitted files in the sidebar"
+platforms = ["linux", "macos", "windows"]
+
+[[startup]]
+command = ["node", "badge.mjs", "all"]
+
+[[actions]]
+id = "refresh"
+title = "Refresh PR badges"
+command = ["node", "badge.mjs", "all"]
+
+# An agent settling is when work was just committed or a PR opened.
+[[events]]
+on = "pane.agent_status_changed"
+command = ["node", "badge.mjs", "event"]
+
+[[events]]
+on = "workspace.focused"
+command = ["node", "badge.mjs", "event"]
+
+[[events]]
+on = "worktree.opened"
+command = ["node", "badge.mjs", "event"]
