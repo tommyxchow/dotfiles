@@ -228,6 +228,23 @@ copied, a database seeded, a port picked, or dependencies installed before
 anything else says so in its own agent instructions, and the agent does that
 part.
 
+Inside herdr, agents name their tab after the task and label the panes they
+split, so the sidebar says what each one is doing and a label like `dev :3001`
+says which port is taken. Tab names are lowercase slugs of at most 16
+characters, because the sidebar clips longer ones. Agents rename a tab only when
+its label is a number or such a slug, so a name typed by hand stays. They leave
+their own agent name alone, since it shows which harness is running. After a long run they send a herdr notification,
+because herdr's own alerts skip the tab that is open. Both rules are in
+`.claude/CLAUDE.md`.
+
+Herdr's `config.toml` stays machine-local, since it names the shell for that
+OS. `docs/resync.md` lists the settings this setup expects in it.
+
+Per herdr's docs, Claude panes reopen after a server restart: the pane hook
+reports each session's id and herdr resumes it with `claude --resume`. Anything
+else a pane was running, like a dev server, does not survive a restart. A plain
+`herdr update` leaves the server running, so panes keep going.
+
 ## Plugins
 
 Personal plugins ship from the `chow` marketplace in this same repo, declared in

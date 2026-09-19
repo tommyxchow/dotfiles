@@ -148,13 +148,21 @@ refuses to swap itself from inside one. The channel is preview, because
 integration fixes ship in preview builds well before a stable tag; `herdr
 channel show` confirms it and `herdr channel set preview` restores it.
 
+A plain `herdr update` swaps the client and leaves the running server on the old
+build, which `herdr status` reports as `server_binary_stale: yes`. Leave it: the
+server picks up the new build the next time herdr restarts, and a restart ends
+whatever the panes are running. Report it and let the user pick the moment.
+Never stop the server from inside a session.
+
 The pane hook is the other surface, and it is per agent rather than per machine.
 Run `herdr integration status --outdated-only` and reinstall whatever it lists
 with `herdr integration install <agent>`. Keep that set to claude, codex, cursor,
 grok, and opencode. Two of those write into files this repo tracks: claude into
 `.claude/settings.json`, opencode into `opencode/cli.json` through the
 `~/.config/opencode/cli.json` link. Read both diffs after installing. The rest
-are self-contained in their own config directories and need no cleanup.
+are self-contained in their own config directories and need no cleanup. When a
+pane shows the wrong state, `herdr agent explain <pane>` says which rule decided
+it.
 
 The opencode integration only works from a build that ships its OpenCode 2
 plugin, which installs as `herdr-opencode/tui.js` under the config directory.
@@ -193,6 +201,35 @@ the bad case: the command exits 0 and the hook silently never runs.
 Reinstalls stay occasional. `herdr integration status` reads the version marker
 in the script file and ignores the settings entry, so the portable command
 survives and only a real version bump puts claude on the outdated list.
+
+## Herdr config
+
+Skip this section if `herdr` is not on PATH.
+
+Herdr's `config.toml` is machine-local; `herdr --help` prints its path. This
+setup expects three settings in it. The global rules have agents send a
+notification after a long run, and `system` is the delivery that shows outside
+the herdr window. The Claude entry puts each session's title in the sidebar. It
+replaces `rows` rather than adding to it, so its first and last rows repeat
+whatever `[ui.sidebar.agents] rows` holds on that machine.
+
+```toml
+[ui.toast]
+delivery = "system"
+
+[ui]
+show_agent_labels_on_pane_borders = true
+
+[ui.sidebar.agents.rows_by_agent]
+claude = [
+  ["state_icon", "machine", "workspace", "tab"],
+  ["terminal_title_stripped"],
+  ["agent"],
+]
+```
+
+After an edit, `herdr config check` validates the file and `herdr server
+reload-config` applies it.
 
 ## Skill sources
 
