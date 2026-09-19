@@ -49,7 +49,6 @@
       "effortLevel": "high"
     }
   },
-  "advisorModel": "fable",
   "showClearContextOnPlanAccept": true,
   "tui": "fullscreen",
   "remoteControlAtStartup": true,
