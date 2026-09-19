@@ -114,7 +114,7 @@ through `/skills` there.
 | `/pr` | Prepare the task, review its complete final diff, and publish a draft with acceptance evidence. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
-| `/cleanup` | Repo hygiene: dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
+| `/cleanup` | Repo hygiene: finished and dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
 | **audit** (this repo) | This **setup**. Follow `docs/audit.md`: re-examine the instructions and skills against current harnesses and recent pain, then propose. |
 
@@ -220,8 +220,9 @@ resolves into the pnpm store under the user's profile. `next dev` needs
 `turbopack.root` set to a folder above both the worktrees and the store, in
 practice the home folder. Without that, the home page 500s. `tsc` is
 unaffected. Repos that pin pnpm below 11.23 spell the setting
-`enableGlobalVirtualStore: true`. When the branch is merged, Delete
-worktree checkout on the child row removes the folder.
+`enableGlobalVirtualStore: true`. When the branch is merged, `cleanup` lists
+the worktree and, once approved, removes it through herdr, which closes the
+child row too. Delete worktree checkout on that row does the same by hand.
 
 The plugin only knows env files, not projects. A repo that needs other secrets
 copied, a database seeded, a port picked, or dependencies installed before

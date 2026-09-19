@@ -147,7 +147,7 @@ Follow the project's design language. Don't show success until the work succeede
 ## Git
 
 - Prefer squash merges for PRs unless the repo requires another strategy.
-- **Ask first for repo cleanup deletions.** Show exact branches, worktree registrations, and remote-tracking refs with the evidence and side effects, then let me select what to remove. A general cleanup request or `apply` is not approval of an unseen list. Recheck before acting; changed targets need fresh approval.
+- **Ask first for repo cleanup deletions.** Show exact branches, worktree folders and registrations, and remote-tracking refs with the evidence and side effects, then let me select what to remove. A general cleanup request or `apply` is not approval of an unseen list. Recheck before acting; changed targets need fresh approval.
 - **Change ownership is per hunk.** Commit only this task's changes, never `git add -A` or `.`. Inspect the staged diff before committing. In mixed files, stage only this task's hunks and preserve unrelated edits, including any already staged. Ask only when ownership or separation is unclear.
 - Conventional Commits: `type(scope): subject` in lowercase, no trailing period. `!` before `:` for breaking.
 - The subject says what changed in plain words. The body is the snapshot a later human or agent needs: each distinct change and why, what it replaces, enough to skip the diff. Skip the body when the subject already is that snapshot. Never a tour of the hunks or of how you got there, and don't pad.
