@@ -187,13 +187,18 @@ shows their last runs with exit codes and output, which is where to look when a
 new worktree came up without its env or a badge is missing.
 
 Then check `git diff .claude/settings.json`. Installing the claude integration
-replaces the committed portable hook command with an absolute path into this
-machine's home directory, which does not belong in a public repo and is dead on
-the other platform.
+writes a hook command with an absolute path into this machine's home directory,
+which does not belong in a public repo and is dead on the other platform. Older
+builds replaced the committed portable command with it. Current builds leave
+the committed entry alone and append a second `SessionStart` entry, so until
+that entry is removed the hook also runs twice.
 
-Restore the committed form with `git checkout -- .claude/settings.json`, after
-setting aside any other pending settings edit that command would discard along
-with it. The committed command already covers both platforms. Herdr writes
+Restore the committed form. When the hook is the only pending change,
+`git checkout -- .claude/settings.json` does it. When another settings edit is
+pending, delete the added entry by editing the JSON so that edit survives.
+Herdr's entry only matches `startup`, `resume`, `clear`, `compact`, and `fork`;
+the committed `*` matcher already covers those, so keep `*`. The committed
+command already covers both platforms. Herdr writes
 `hooks/herdr-agent-state.ps1` and a `powershell -NoProfile -ExecutionPolicy
 Bypass -File` command on Windows, and `hooks/herdr-agent-state.sh` with `bash
 '<path>' session` everywhere else, which is exactly what the committed dispatch

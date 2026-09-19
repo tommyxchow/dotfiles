@@ -168,8 +168,9 @@ been going wrong, then proposes changes and waits. Also repo-local.
   `~/.claude/skills`; do not also install them for cursor, opencode, or grok.
 
 - **Herdr owns its pane hook; never vendor it here either.**
-  `herdr integration install claude` rewrites the `hooks`
-  entry in `.claude/settings.json` to an absolute machine path. The committed
+  `herdr integration install claude` writes an absolute machine path into the
+  `hooks` section of `.claude/settings.json`, replacing the committed entry on
+  older builds and appending a second one on current builds. The committed
   entry is a portable `$HOME` form that already covers both platforms, so
   restore it after any reinstall or that path ships to every machine. The
   opencode integration writes into `opencode/cli.json` the same way. How the
