@@ -12,7 +12,7 @@ Each rebase needs the old parent tip that bounds the child's own commits. Use a 
 2. Rebase bottom-up, one branch at a time: `git rebase --onto <parent's new tip> <parent's recorded old tip> <branch>`. The lowest branch rebases onto `origin/<newbase>`.
 3. Run each rebase from the worktree that has that branch checked out, since git refuses to touch a branch another worktree holds.
 4. Conflicts you can resolve mechanically (the parent's own hunks reappearing), resolve. Anything that needs a judgment call: stop with the conflicting files named and wait.
-5. Run the repo's full check, then `git push --force-with-lease` every branch that moved, to your own branches only and never to one someone else pushes to.
+5. Run the repo's full check, then `git push --force-with-lease` every branch that moved, to your own branches only and never to one someone else pushes to. Then watch CI on each moved PR as Open step 7 of `pr` says.
 6. Say which branches moved and onto what, and name any you could not move.
 
 `rebase.updateRefs` is on in this setup, so every rebase already moves the refs inside the range it replays. That is harmless per branch and is not a way to move a whole stack: it never reaches a branch sitting above the range, and it skips a branch another worktree holds without a word, still exiting 0.

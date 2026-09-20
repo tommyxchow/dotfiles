@@ -29,7 +29,7 @@ From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new c
 
 `./install.sh` on every platform, from Git Bash on Windows.
 
-It links configs, first-party skills, and the statusline script, prunes links from older layouts, copies Cursor's local `tc` plugin, and links the herdr worktree bootstrap plugin when herdr is on PATH and its server is running. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode 2 pick up the instructions and every skill under `plugins/tc/skills` on a new machine.
+It links configs, first-party skills, the statusline script, and `bin/wait-for` into `~/.local/bin`, prunes links from older layouts, copies Cursor's local `tc` plugin, and links the herdr worktree bootstrap plugin when herdr is on PATH and its server is running. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode 2 pick up the instructions and every skill under `plugins/tc/skills` on a new machine.
 
 On Windows, symlink creation needs Developer Mode (or an elevated shell). If a link comes out dead, fix the mode and re-run the installer rather than replacing links with copies.
 
@@ -276,5 +276,6 @@ What changed, anything still broken, and what the user must do.
 - Cursor: **Developer: Reload Window** after the local plugin rewrite.
 - Grok / OpenCode 2: links are updated on disk. Reload or start a new session if it has not loaded the revised instructions; link presence alone does not prove that.
 - Claude Code: `/reload-plugins` if marketplace plugins changed.
+- If the installer warned that `~/.local/bin` is not on PATH, add the export line it prints to your shell profile; `wait-for` doesn't resolve until then.
 
 Do not commit. Do not push.

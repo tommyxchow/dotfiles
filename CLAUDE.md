@@ -208,7 +208,10 @@ been going wrong, then proposes changes and waits. Also repo-local.
   file. A `gh`-based scoreboard script: the audit's PR retro asks the same
   question in words, and a script here goes stale. A plan-time check of open
   branches for file overlap: one branch and worktree per ticket, phases
-  stacked on top, so overlap is rare and resolved at merge by hand.
+  stacked on top, so overlap is rare and resolved at merge by hand. The
+  `tc/` branch prefix: dropped the same day for the ticket-id-or-phrase rule
+  in the global Git section, so a prefix for sidebar grouping or anything
+  else is not coming back.
 
 - **Three lines in `.claude/CLAUDE.md` look like duplicates and are not.**
   The Communication hatch ("Break any of these rules...") is not a copy of

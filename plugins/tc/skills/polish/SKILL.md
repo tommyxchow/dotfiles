@@ -8,7 +8,7 @@ argument-hint: "[quick] [staged | unstaged | branch | all | <focus>]"
 
 # Polish — autofix then judgment cleanup
 
-Improve the **shape** of working code: scope, existing formatter/linter prep, four lenses, then apply and verify high-confidence cleanups. A discovered correctness defect goes to the owning build workflow or a review finding; never disguise a behavior change as polish.
+Improve the **shape** of working code: scope, existing formatter/linter prep, four lenses, then apply and verify high-confidence cleanups. A discovered correctness defect goes to `tdd` as a review finding; never disguise a behavior change as polish.
 
 Tuned for React + TypeScript (Next.js, Expo, Vite, etc.) with **Prettier + ESLint**. Portable: when the tools are missing, skip autofix and don't invent formatting findings. **Never install** packages or use `npx`/`pnpm dlx`/`npm exec` to fetch tools for polish — only already-installed local binaries (e.g. `pnpm exec prettier` / `node_modules/.bin`).
 
