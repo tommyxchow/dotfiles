@@ -144,7 +144,7 @@ Numbers go in whenever they are cheap and change how the reader reads: sizes, te
 
 ## Report
 
-Follow the global Communication and Session flow rules. Open with the PR's state and URL. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. Use ledger counts when they help explain a substantial checklist; omit routine step narration.
+Follow the global Communication and Session flow rules. Open with the PR's state and URL. A check that is red or still pending gets the checks tab link, `<pr url>/checks`, next to its name so the user lands on the failing job in one click; a green run needs no link. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. Use ledger counts when they help explain a substantial checklist; omit routine step narration.
 
 ```
 Draft PR opened: https://github.com/org/app/pull/412. Viewers can no longer edit invoices, at the button and at the server.
