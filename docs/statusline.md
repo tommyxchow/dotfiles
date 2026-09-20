@@ -11,7 +11,7 @@ notes behind the script.
 
 ```
 healthy   frosty main | Opus 4.8 1M xhigh | ctx 34% | 5h 24% · 7d 42%
-worktree  frosty:my-feature tc/add-auth | Opus 4.8 1M xhigh | ctx 34% | 5h 24% · 7d 42%
+worktree  frosty:my-feature feat/add-auth | Opus 4.8 1M xhigh | ctx 34% | 5h 24% · 7d 42%
 stressed  frosty main | Opus 4.8 1M xhigh | ctx 79% | 5h out 1h48m · 7d 88% 4d6h | $1.42
 ```
 
@@ -29,13 +29,13 @@ something wants attention, so it's findable without reading the line.
 
 - **`frosty main`** — where you are, then the branch a tier down in gray. Shows
   the project alone if not in a repo; whole segment is dropped if there's no dir.
-- Inside a **worktree** it becomes **`frosty:my-feature tc/thing`**: repo bound
+- Inside a **worktree** it becomes **`frosty:my-feature feat/thing`**: repo bound
   to the worktree by a gray `:`, branch still held off by the space. The dir
   basename in a worktree is the worktree, not the repo, so without the prefix a
   worktree would look like an unrelated project.
 - **Two rules keep the three names apart.** The branch is never joined with
   punctuation, because branch names carry their own slashes and a path-style
-  joiner (`frosty/my-feature@tc/thing`) puts two kinds of slash in one token so
+  joiner (`frosty/my-feature@feat/thing`) puts two kinds of slash in one token so
   neither reads. And the repo binds with `:` rather than `/`, so the only `/`
   left on the segment is the branch's own.
 - The repo comes from `workspace.repo.name` (the `origin` remote), falling back
@@ -73,7 +73,7 @@ something wants attention, so it's findable without reading the line.
   Nothing in the payload exposes credit balance or whether extra usage is even
   enabled, so the statusline can't say more than this.
 - **Names are clipped with `…`** — 20 chars for the project and worktree, 24 for
-  the branch. A `tc/`-prefixed branch is easily long enough to wrap the line, and
+  the branch. A ticket-id branch is easily long enough to wrap the line, and
   wrapping is far worse than losing the tail of a name you already know.
 - **`$1.42`** — `cost.total_cost_usd`, the client-side session estimate (not the
   real bill), two decimals, gray. `/clear` resets it to $0; a rate-limit window

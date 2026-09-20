@@ -138,7 +138,7 @@ seven_in=$(reset_in "$seven_reset")
 #
 # Two rules keep the three names apart. The branch is separated by a space and a
 # tier drop, never by a joiner: branch names carry their own slashes
-# (tc/add-auth), so anything path-shaped puts two kinds of slash in one token and
+# (feat/add-auth), so anything path-shaped puts two kinds of slash in one token and
 # neither reads. And the repo binds to the worktree with ":" rather than "/", so
 # the only "/" left on the segment is the branch's own.
 # The worktree only becomes a suffix when there's a name to prefix it with. With
