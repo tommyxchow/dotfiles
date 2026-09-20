@@ -26,7 +26,7 @@ Report counts and evidence before proposing deletions. A clean repo needs only o
 
 List the folder and its branch as one item, removed in that order. State the side effect: ignored files go with the folder, such as env copies, dependencies, and build output. Name any ignored env file that differs from the main checkout's copy, since that edit exists nowhere else.
 
-After approval, run `git worktree remove <path>` without `--force`. Inside a herdr pane, check `herdr worktree list --cwd <repo>` first; without `--cwd` herdr lists the workspace the user has open, which may be another repo. When it shows the folder open as a workspace, run `herdr worktree remove --workspace <id>` instead, which runs the same git command and closes that workspace. A refusal, which git gives for modified files, untracked files, or submodules, means keep the worktree and report why.
+After approval, run `git worktree remove <path>` without `--force`. Inside a herdr pane, check `herdr worktree list --cwd <repo>` first; without `--cwd` herdr lists the workspace the user has open, which may be another repo. When it shows the folder open as a workspace, run `herdr worktree remove --workspace <id>` instead, which runs the same git command and closes that workspace. The primary workspace stays open; closing it while linked worktrees are still open needs `herdr workspace close <id> --group`, which is the user's call, not cleanup's. A refusal, which git gives for modified files, untracked files, or submodules, means keep the worktree and report why.
 
 **Dead registrations.** Propose only registrations for genuinely deleted worktrees. A missing path can be a moved folder or unavailable network/removable storage; keep uncertain or locked entries and explain `repair` or `lock` where appropriate.
 
@@ -63,5 +63,5 @@ Never drop stashes, explicitly expire or delete reflogs, or touch working files,
 Follow the global Communication and Session flow rules. After execution, say what actually ran, what was removed, and what was kept or failed.
 
 ```
-One finished worktree and one branch are candidates. The worktree at `~/.herdr/worktrees/app/tc-new-nav` is clean and no pane is running in it, and its branch `tc/new-nav` at <sha> matches the head of merged PR #12, whose merge commit is in `origin/main`. Removing it deletes the folder with its env copies and `node_modules`, closes its herdr workspace, then force-deletes the branch. `fix/login` at <sha> is an ancestor of `origin/main`. Both branch deletions remove their reflogs. Nothing has been deleted. Which would you like to remove?
+One finished worktree and one branch are candidates. The worktree at `~/.herdr/worktrees/app/new-nav` is clean and no pane is running in it, and its branch `new-nav` at <sha> matches the head of merged PR #12, whose merge commit is in `origin/main`. Removing it deletes the folder with its env copies and `node_modules`, closes its herdr workspace, then force-deletes the branch. `fix/login` at <sha> is an ancestor of `origin/main`. Both branch deletions remove their reflogs. Nothing has been deleted. Which would you like to remove?
 ```

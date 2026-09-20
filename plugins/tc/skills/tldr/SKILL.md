@@ -37,7 +37,7 @@ Drop any section that doesn't apply; trivial inputs get a one-line direct answer
 
 ## Worked example
 
-User: `/tldr` after a few exchanges debugging an SSR hydration mismatch on `tc/dark-mode`.
+User: `/tldr` after a few exchanges debugging an SSR hydration mismatch on `dark-mode`.
 
 ```
 TL;DR

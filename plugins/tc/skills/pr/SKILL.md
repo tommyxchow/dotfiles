@@ -52,6 +52,7 @@ In order:
 4. **Finish.** Close through `pass`, which applies the confirmed findings with a regression test where testable; substantive edits made since that review get reviewed; rerun affected evidence and the full check if invalidated, then commit fixes. Don't restart polish on unchanged files. Inspect the task's complete final diff and staged ownership before publishing; squash unpushed fix-and-follow-up commits under the global Git rules.
 5. **Push.** `git push -u origin <branch>` under the global task-scoped permission. Stacked: the base is the parent branch, not the default branch.
 6. **Create.** `gh pr create --draft --base <base> --title "<type(scope): subject>" --body-file <tmp>` with the body in section 6. Title follows Conventional Commits; add the ticket key where the repo's recent PR titles do. Solo repos still get a draft, because the body is where the evidence lives.
+7. **Watch CI.** Run `gh pr checks <number> --watch --fail-fast` in the background with a deadline, since a run can outlast a tool call, and act as soon as it returns. Exit 0 is green. Exit 8 means still pending at the deadline, which is not green; say so. On a failure, read the failed job's log with `gh run view <run-id> --log-failed`, fix through the normal loop, and push once; a second red on the same check is the global debugging budget's stop. The text `no checks reported on the '<branch>' branch` means the repo has no CI, which the report says instead of claiming green. Then, in a repo with push-triggered review bots, wait up to about ten minutes for the first bot review, run Update once, and notify; no bots means no wait, and a bot that has not posted by then is noted in the report. `gh run` needs a normal `gh auth login`, not a fine-grained token.
 
 Run this once near the end, not per slice; in repos with push-triggered review bots, each push also starts another review round.
 
@@ -99,7 +100,7 @@ Run this once near the end, not per slice; in repos with push-triggered review b
 6. **Close the loop on GitHub.** Say up front which threads `viewerCanResolve` rules out. Reply under the user's account on every thread you fixed or declined, explaining the outcome and why. Skip a duplicate only when the last comment is your own reply and already explains the current outcome. Confirm that reply exists before resolving the thread; if posting fails, leave it open and report the failure. Then resolve threads that meet the bar in step 3: `resolveReviewThread(input:{threadId:$id})`, several per mutation with aliases. If GraphQL or permissions fail partway, report which threads actually resolved: aliased mutations apply in order, so the ones before the failure already landed and cannot be taken back.
 7. **Learn.** If a thread class recurred, or a bot found something `review` should have caught, propose one line for that repo's `AGENTS.md` review section in the report. Propose, don't apply: that file is team-shared and outside the ticket.
 
-Don't kick bots to re-review, don't wait on them, don't detect which bot posted. If a review arrives later, the user says `pr` again.
+Don't kick bots to re-review, and don't detect which bot posted. After a push, wait for the first bot review only as Open step 7 says, about ten minutes; a review that arrives later means the user says `pr` again.
 
 ## 4. Check readiness or mark ready
 
@@ -108,7 +109,7 @@ Both modes use the same evidence. `check` reports findings without applying fixe
 - Local `HEAD` matches the remote PR head, no pending task edits remain, and the body reflects that head. A local check with dirty task files does not prove the published PR. In `check`, report the mismatch; in `ready`, finish and push the task through Update first.
 - Every ledger item is proven, exercised, or unverified with a reason the user has accepted.
 - No unresolved actionable threads, checked with the complete thread and comment lookup in section 3. Apply that section's resolution policy: human pushback or judgment threads with an outcome reply may stay open when no implementation work or user decision remains outstanding.
-- The repo's full check is green on this head; `gh pr checks` shows required checks passing or pending, none failing. A repo with no check of its own says so and counts as unverified, never as a pass.
+- The repo's full check is green on this head, and `gh pr checks` shows required checks passing. Pending is not green. A repo with no check of its own says so and counts as unverified, never as a pass.
 - The whole PR diff has been reviewed on this head. Reuse an equivalent complete review from Open or Update; otherwise run `review pr <number>`. Apply the global mechanical/docs/config/instruction-only skip. In `check`, report findings; in `ready`, confirmed findings go through Update, then restart this check. Per-push reviews of separate pieces do not replace a whole-diff review.
 - The PR is stacked only on parents that are merged or themselves ready, and says so.
 

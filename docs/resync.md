@@ -123,21 +123,28 @@ not track.
 
 ## Third-party skills
 
-Two skills in `~/.claude/skills` come from other repos through `gh skill`, not
-the installer: `gh` from `cli/cli` and `herdr` from `herdrdev/herdr`. Both are
-user scope, Claude Code agent only; Cursor, Grok, and OpenCode 2 read that same
-folder, so do not install them again for those agents.
+Two skills in `~/.claude/skills` come from other places than the installer:
+`gh` from `cli/cli` through `gh skill`, and `herdr` from the herdr binary. Both
+are user scope, Claude Code agent only; Cursor, Grok, and OpenCode 2 read that
+same folder, so do not install them again for those agents.
 
-If `gh` is on PATH, refresh the pair with `gh skill update`. `gh skill list`
-shows what is installed; install a missing one with
-`gh skill install cli/cli gh --agent claude-code --scope user` or
-`gh skill install herdrdev/herdr herdr --agent claude-code --scope user`. Skip
-herdr when the binary is not on PATH.
+If `gh` is on PATH, refresh its skill with `gh skill update`. `gh skill list`
+shows what is installed; install it when missing with
+`gh skill install cli/cli gh --agent claude-code --scope user`.
 
-The herdr skill tracks the latest tag, and the installed binary is the authority
-for command syntax, so a version gap between them is fine. A copy that `gh skill
-list` shows with no source was written by hand from `herdr --skill`; delete it
-and reinstall through gh so updates reach it.
+The herdr skill is the copy bundled with the installed binary, which herdr's
+docs say to reinstall after every upgrade, so write it after the `herdr update`
+in the next section:
+
+```bash
+mkdir -p ~/.claude/skills/herdr && herdr --skill > ~/.claude/skills/herdr/SKILL.md
+```
+
+Skip it when the binary is not on PATH. An older copy that `gh skill list`
+shows as installed from `herdrdev/herdr` tracks the latest tag rather than the
+binary; delete `~/.claude/skills/herdr` and write the bundled one. If `gh skill
+list` still lists it afterwards, remove it with the subcommand `gh skill --help`
+names for that, since the name is not confirmed here.
 
 ## Herdr pane hook
 
