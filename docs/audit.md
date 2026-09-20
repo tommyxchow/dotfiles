@@ -66,7 +66,7 @@ Turn each pattern into a proposal aimed at where it belongs: a first-party skill
 
 For a workflow revision, test the changed decisions in disposable fixtures before calling it finished. This is part of the approved revision, not permission to edit during the audit or a new gate for ordinary coding tasks.
 
-Use fresh-context subagents when available, with only the revised instructions, relevant skills, fixture, and task prompt. Use the user's selected planning/build models if the harness exposes that choice; otherwise report which coverage was unavailable. Same-model planning and building is a normal case, not a missing handoff. Keep trials in temporary repositories, mock forge/network effects, and never push or change a real PR. No new test dependency is needed.
+Use fresh-context subagents when available, with only the revised instructions, relevant skills, fixture, and task prompt. Tell each subagent to read the revised global file from its path first: a subagent's context carries the global file as it was when the parent session started, so a revised file on disk is not what it sees unless it reads it. Skills load fresh from `~/.claude/skills` and need no such step. Use the user's selected planning/build models if the harness exposes that choice; otherwise report which coverage was unavailable. Same-model planning and building is a normal case, not a missing handoff. Keep trials in temporary repositories, mock forge/network effects, and never push or change a real PR. No new test dependency is needed.
 
 Judge the actions and final artifacts against expectations chosen before the run. Do not give workers the expected answer or merely ask them to explain the rules. Exercise the relevant cases:
 
