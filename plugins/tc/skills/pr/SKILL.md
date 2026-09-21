@@ -3,14 +3,14 @@ name: pr
 metadata:
   opencode/slash: "true"
 description: 'Owns draft PR creation, updates, review feedback, and restacking. Use for PR requests and PR readiness: "is this ready?", "final review", and "close out the PR" check and report only; `pr ready` or "mark it ready" checks and flips the draft. `rebase` restacks an identified stack. Without a PR, use the global Git rules to choose a direct commit or PR. Not a summary (tldr pr), standalone code review (review), or slice cleanup (pass). Never merges.'
-argument-hint: "[check | ready | rebase | reviews | <focus or pasted feedback>]"
+argument-hint: "[check | ready | rebase | <focus or pasted feedback>]"
 ---
 
 # PR
 
 Publishes and maintains the task's acceptance evidence in a PR. Read the repo's PR template, `AGENTS.md`, `CONTRIBUTING.md`, and review config first; their requirements win over the defaults here.
 
-`$ARGUMENTS`: an optional mode first (`check`, `ready`, `rebase`, `reviews`), then focus text or pasted feedback. Bare `pr` decides by state.
+`$ARGUMENTS`: an optional mode first (`check`, `ready`, `rebase`), then focus text or pasted feedback. Bare `pr` decides by state.
 
 Follow the global completion and Git rules. `check` is report-only: no code fixes, commits, pushes, PR edits, thread replies or resolutions, or ready flip. Only explicit `ready` approval permits the flip; this skill never merges.
 
@@ -40,18 +40,19 @@ Include the relevant UI states, keyboard path, and mutation failure paths from t
 
 **Feedback and scope changes.** A pasted PM or reviewer note becomes numbered items tagged "UAT feedback," one per distinct point, screenshots read for the points the text left out. Each ends fixed with evidence, declined with a one-line reason to relay, or one question back with a recommended reading when a screenshot is ambiguous. A criterion the user drops mid-build stays in the ledger marked dropped, so nothing disappears silently. A case the plan missed enters the ledger tagged "discovered," with its evidence when built or as a follow-up when deferred under the global rule.
 
-**Browser UAT follows the global opt-in rule.** If opted in, drive the preview or localhost for each visual criterion. Otherwise mark each as "covered by tests, not driven in a browser" or "unverified," according to the evidence, and include its click path. A missing or failed browser blocks that evidence, not independent checks or fixes. Prefer a PR preview only after its deployed commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head); a preview of the previous push is not evidence for this one.
+**Browser UAT follows the global opt-in rule.** If opted in, cite the drive each slice already did under the global verify rule, and re-drive only what a slice couldn't reach or what a matching preview now shows. Otherwise mark each as "covered by tests, not driven in a browser" or "unverified," according to the evidence, and include its click path. A missing or failed browser blocks that evidence, not independent checks or fixes. Prefer a PR preview only after its deployed commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head); a preview of the previous push is not evidence for this one.
 
 ## 2. Open
 
 In order:
 
 1. **Ledger.** Section 1 on the whole checklist. Anything unverified that a test or a run could settle cheaply gets settled now.
-2. **Pass.** Follow `pass` on this task's changes, reusing valid work already done. It prepares and commits the slice; it does not replace the final correctness review.
-3. **Review the final task.** `review all` against the intended base, including committed, pending, and untracked task changes, with the ledger as intent. Use a fresh-context subagent when available, inline otherwise. Reuse an equivalent review of this final diff if one already ran. Apply the global mechanical/docs/config/instruction-only skip. It reports only; likely findings stay reported. Say which mode ran.
+2. **Pass.** Follow `pass` on this task's changes, reusing valid work already done; skip it when the last slice already closed through `pass` on this exact tree. It prepares and commits the slice; it does not replace the final correctness review.
+3. **Review the final task.** `review all` against the intended base, including committed, pending, and untracked task changes, with the ledger as intent. Use a fresh-context subagent when `review`'s own size gate says so, inline otherwise. Reuse an equivalent review of this final diff if one already ran. Apply the global mechanical/docs/config/instruction-only skip. It reports only; likely findings stay reported. Say which mode ran.
 4. **Finish.** Close through `pass`, which applies the confirmed findings with a regression test where testable; substantive edits made since that review get reviewed; rerun affected evidence and the full check if invalidated, then commit fixes. Don't restart polish on unchanged files. Inspect the task's complete final diff and staged ownership before publishing; squash unpushed fix-and-follow-up commits under the global Git rules.
 5. **Push.** `git push -u origin <branch>` under the global task-scoped permission. Stacked: the base is the parent branch, not the default branch.
 6. **Create.** `gh pr create --draft --base <base> --title "<type(scope): subject>" --body-file <tmp>` with the body in section 6. Title follows Conventional Commits; add the ticket key where the repo's recent PR titles do. Solo repos still get a draft, because the body is where the evidence lives.
+7. **Watch CI.** Run `gh pr checks <number> --watch --fail-fast` in the background with a deadline, since a run can outlast a tool call, and act as soon as it returns. The deadline is the repo's usual CI time from its AGENTS.md, otherwise twenty minutes. Exit 0 is green. Under `--watch` the command returns only once nothing is pending, so a deadline that fires first means still pending, which is not green: report it with the checks link and stop the watch. On a failure, read the failed job's log with `gh run view <run-id> --log-failed`, reproduce it locally, fix through the normal loop, and push once. A second red on the same check is the global debugging budget's same-failure-twice stop, reached after one push because each CI round costs minutes: the pushed head stays, the ledger carries the red check with its checks link, and the global notification rule fires. The text `no checks reported on the '<branch>' branch` means the repo has no CI, which the report says instead of claiming green. Then, in a repo with review bots (its review config names one, or a recent PR carries a bot review), poll `gh pr view <number> --json reviews,comments` in the background under a ten-minute deadline until the first bot review lands, then run Update once and notify; no bots means no wait, and a bot that has not posted by then is noted in the report. The bot wait happens once per `pr` run.
 
 Run this once near the end, not per slice; in repos with push-triggered review bots, each push also starts another review round.
 
@@ -95,11 +96,11 @@ Run this once near the end, not per slice; in repos with push-triggered review b
 
    Resolve bot threads you fixed or declined. Resolve a human thread when the fix is mechanical or you are sure it is done; leave it open when the reply is pushback or a judgment call so they see it. Threads waiting for the user's decision stay open. A new reviewer reply puts the thread back in play.
 4. **Triage before touching code.** Work the open ledger items and the threads as one list, and dedupe anything describing the same root cause. For each: trace or reproduce the scenario the way `review` does. Then one of **fix** (real, in scope), **decline** (wrong, already handled, or out of the ticket's scope, with the evidence), or **ask** (the fix would change agreed scope or the reviewers want conflicting things). Ask items go to the user as one consolidated question, not one by one.
-5. **Fix in one batch.** Root cause, not the line the bot pointed at; regression test where testable; check related in-scope paths for the same mistake. Close the batch through `pass`, then follow the global completion rule on the changed code, reusing unaffected evidence. One commit, `fix(<scope>): address review` with the threads' subjects in the body. One push, then refresh the body against that head, not one push per comment.
+5. **Fix in one batch.** Root cause, not the line the bot pointed at; regression test where testable; check related in-scope paths for the same mistake. Close the batch through `pass`, then follow the global completion rule on the changed code, reusing unaffected evidence. One commit, `fix(<scope>): address review` with the threads' subjects in the body. One push, then refresh the body against that head, not one push per comment, then watch CI as Open step 7 says, with no second bot wait.
 6. **Close the loop on GitHub.** Say up front which threads `viewerCanResolve` rules out. Reply under the user's account on every thread you fixed or declined, explaining the outcome and why. Skip a duplicate only when the last comment is your own reply and already explains the current outcome. Confirm that reply exists before resolving the thread; if posting fails, leave it open and report the failure. Then resolve threads that meet the bar in step 3: `resolveReviewThread(input:{threadId:$id})`, several per mutation with aliases. If GraphQL or permissions fail partway, report which threads actually resolved: aliased mutations apply in order, so the ones before the failure already landed and cannot be taken back.
 7. **Learn.** If a thread class recurred, or a bot found something `review` should have caught, propose one line for that repo's `AGENTS.md` review section in the report. Propose, don't apply: that file is team-shared and outside the ticket.
 
-Don't kick bots to re-review, don't wait on them, don't detect which bot posted. If a review arrives later, the user says `pr` again.
+Don't kick bots to re-review, and don't detect which bot posted. The bot wait is Open step 7's, once per `pr` run; a review that arrives later means the user says `pr` again.
 
 ## 4. Check readiness or mark ready
 
@@ -108,7 +109,7 @@ Both modes use the same evidence. `check` reports findings without applying fixe
 - Local `HEAD` matches the remote PR head, no pending task edits remain, and the body reflects that head. A local check with dirty task files does not prove the published PR. In `check`, report the mismatch; in `ready`, finish and push the task through Update first.
 - Every ledger item is proven, exercised, or unverified with a reason the user has accepted.
 - No unresolved actionable threads, checked with the complete thread and comment lookup in section 3. Apply that section's resolution policy: human pushback or judgment threads with an outcome reply may stay open when no implementation work or user decision remains outstanding.
-- The repo's full check is green on this head; `gh pr checks` shows required checks passing or pending, none failing. A repo with no check of its own says so and counts as unverified, never as a pass.
+- The repo's full check is green on this head, and `gh pr checks` shows required checks passing. Pending is not green. A repo with no check of its own says so and counts as unverified, never as a pass.
 - The whole PR diff has been reviewed on this head. Reuse an equivalent complete review from Open or Update; otherwise run `review pr <number>`. Apply the global mechanical/docs/config/instruction-only skip. In `check`, report findings; in `ready`, confirmed findings go through Update, then restart this check. Per-push reviews of separate pieces do not replace a whole-diff review.
 - The PR is stacked only on parents that are merged or themselves ready, and says so.
 
@@ -143,7 +144,7 @@ Numbers go in whenever they are cheap and change how the reader reads: sizes, te
 
 ## Report
 
-Follow the global Communication and Session flow rules. Open with the PR's state and URL. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. Use ledger counts when they help explain a substantial checklist; omit routine step narration.
+Follow the global Communication and Session flow rules. Open with the PR's state and URL. A check that is red or still pending gets the checks tab link, `<pr url>/checks`, next to its name so the user lands on the failing job in one click; a green run needs no link. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. Use ledger counts when they help explain a substantial checklist; omit routine step narration. Under `ship it`, this report is the finish the global notification rule names.
 
 ```
 Draft PR opened: https://github.com/org/app/pull/412. Viewers can no longer edit invoices, at the button and at the server.

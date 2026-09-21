@@ -132,10 +132,12 @@ been going wrong, then proposes changes and waits. Also repo-local.
   Cursor's precedence is undocumented and OpenCode 2 runs its own command
   before a same-named skill, so asking in words still reaches ours while
   typing `/review` there is theirs or ambiguous. A **different name for stronger
-  tooling**, like a deeper cloud review only I can start: `.claude/CLAUDE.md`
-  already says to point at it, and the `review` skill already defers to tooling
-  the repo runs itself. Ours stay because they are the only copies that work in
-  all four harnesses and read a repo's own rules first.
+  tooling**, like a paid cloud review: `.claude/CLAUDE.md` says ours run unless
+  I name the built-in or it does something ours can't, and the `review` skill
+  defers to tooling the repo itself configures. Ours stay because they are the
+  only copies that work in all four harnesses and read a repo's own rules
+  first. Decided 2026-09-20: the cloud review can be started from a script, but
+  it bills per run, so no session starts it unasked.
 
 - **`tc` stays in the marketplace catalog; do not install it on claude.ai.**
   The catalog entry serves machines that install the plugin instead of running
@@ -162,9 +164,10 @@ been going wrong, then proposes changes and waits. Also repo-local.
 - **`ek@chow` is upstream-only.** Never vendor, copy, or edit its skill files here.
   Refresh it with `/plugin update ek@chow`.
 
-- **The `gh` and `herdr` skills live in `~/.claude/skills` via `gh skill
-  install`, not in this repo.** Do not vendor either into `plugins/tc/skills`.
-  Resync installs or updates them with `gh skill update`. One copy in
+- **The `gh` and `herdr` skills live in `~/.claude/skills`, not in this
+  repo.** `gh` comes from `gh skill install` and `herdr` from `herdr --skill`,
+  the copy bundled with the installed binary, which resync rewrites after each
+  `herdr update`. Do not vendor either into `plugins/tc/skills`. One copy in
   `~/.claude/skills`; do not also install them for cursor, opencode, or grok.
 
 - **Herdr owns its pane hook; never vendor it here either.**
@@ -192,6 +195,23 @@ been going wrong, then proposes changes and waits. Also repo-local.
   global file looks out of place. Rejected: three of the product repos are
   Next.js, globals are the source of truth, and the security line guards a bug
   class weaker models still write. Don't propose the move again.
+
+- **The `[1m]` suffix on `model` in `.claude/settings.json` is deliberate.**
+  aa79cc1 dropped it and a later slash-command write-back put it back; on
+  2026-09-20 I chose to keep it, since I compact by hand and accept the cost.
+  Don't propose dropping it again, and don't read its reappearance as a
+  write-back to discard.
+
+- **Rejected on 2026-09-20, don't propose again.** Loading the herdr rules
+  only inside herdr through a hook: hooks are Claude-only, so Cursor, Grok,
+  and OpenCode 2 would lose them, and a rule only fires from an always-loaded
+  file. A `gh`-based scoreboard script: the audit's PR retro asks the same
+  question in words, and a script here goes stale. A plan-time check of open
+  branches for file overlap: one branch and worktree per ticket, phases
+  stacked on top, so overlap is rare and resolved at merge by hand. The
+  `tc/` branch prefix: dropped the same day for the ticket-id-or-phrase rule
+  in the global Git section, so a prefix for sidebar grouping or anything
+  else is not coming back.
 
 - **Three lines in `.claude/CLAUDE.md` look like duplicates and are not.**
   The Communication hatch ("Break any of these rules...") is not a copy of

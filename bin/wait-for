@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# wait-for <url> [deadline-seconds=60] [pid]
+# Exits 0 the moment the URL answers (any HTTP status, a 404 counts), 1 at the
+# deadline, 2 if the pid died first, 69 without curl. Replaces "sleep and hope" while a dev
+# server or a tunnel comes up.
+url=$1 deadline=${2:-60} pid=${3:-}
+if [[ -z $url || ! $deadline =~ ^[0-9]+$ || -n $pid && ! $pid =~ ^[0-9]+$ ]]; then
+  echo "usage: wait-for <url> [deadline-seconds=60] [pid]" >&2
+  exit 64
+fi
+command -v curl >/dev/null || { echo "wait-for: curl not found" >&2; exit 69; }
+while (( SECONDS < deadline )); do
+  curl -s -o /dev/null --max-time 2 "$url" && { echo "up after ${SECONDS}s"; exit 0; }
+  [[ -n $pid ]] && ! kill -0 "$pid" 2>/dev/null && { echo "process $pid died after ${SECONDS}s"; exit 2; }
+  sleep 0.5
+done
+echo "not up after ${deadline}s"; exit 1

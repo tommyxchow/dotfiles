@@ -45,6 +45,7 @@ dotfiles checkout.
 | `CLAUDE.md` | `AGENTS.md` in this repo (OpenCode 2 project instructions; installer-only) |
 | `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode 2 reads this path too) |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
+| `bin/wait-for` | `~/.local/bin/wait-for` (agents wait on a URL with a deadline; the installer warns when that folder is not on PATH) |
 | `herdr/plugins/worktree-bootstrap` | herdr plugin `tc.worktree-bootstrap`, linked through the running herdr server |
 | `herdr/plugins/pr-badge` | herdr plugin `tc.pr-badge`, linked the same way |
 | `.claude/statusline-command.sh` | `~/.claude/statusline-command.sh` (design notes in `docs/statusline.md`) |
@@ -112,7 +113,7 @@ through `/skills` there.
 | `/polish` | Shape of code you already wrote. `quick` is inline and removal-only. |
 | `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. `quick` is one read; `deep` fans out and reproduces findings. |
 | `/pass` | Slice is done: apply this session's confirmed review findings, vet, leftovers, polish if code-shaped, slice-ready, then the commit. `quick` trims vet and polish. |
-| `/pr` | Prepare the task, review its complete final diff, and publish a draft with acceptance evidence. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
+| `/pr` | Prepare the task, review its complete final diff, publish a draft with acceptance evidence, then watch its CI to green. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
 | `/cleanup` | Repo hygiene: finished and dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
@@ -131,9 +132,10 @@ sessions carries the approved plan forward without another approval round. The
 global `.claude/CLAUDE.md` "How a task runs" section owns those rules; slash
 commands are shortcuts.
 
-The official `gh` and `herdr` skills are installed into the same folder by
-resync through `gh skill install` and refreshed with `gh skill update`, not
-linked from this repo. Herdr's pane hook comes from
+The official `gh` skill is installed into the same folder by resync through
+`gh skill install` and refreshed with `gh skill update`; the `herdr` skill is
+written there from `herdr --skill`, the copy bundled with the installed binary.
+Neither is linked from this repo. Herdr's Claude integration comes from
 `herdr integration install claude`. What must never be installed twice is
 listed in `CLAUDE.md`.
 
@@ -233,11 +235,14 @@ part.
 Inside herdr, agents name their tab after the task and label the panes they
 split, so the sidebar says what each one is doing and a label like `dev :3001`
 says which port is taken. Tab names are lowercase slugs of at most 16
-characters, because the sidebar clips longer ones. Agents rename a tab only when
-its label is a number or such a slug, so a name typed by hand stays. They leave
-their own agent name alone, since it shows which harness is running. After a
-long run they send a herdr notification, because herdr's own alerts skip the tab
-that is open. Both rules are in `.claude/CLAUDE.md`.
+characters, which is what fits in the sidebar at its usual width here, not a
+herdr limit. Agents rename a tab only when its label is a number or such a
+slug, so a name typed by hand stays. They leave their own agent name alone,
+since it shows which harness is running. A fresh session or a helper agent is
+started through `herdr agent start` and prompted with `herdr agent prompt`,
+and every wait on a pane carries a timeout. After a long run they send a herdr
+notification, because herdr's own alerts skip the tab that is open. All of
+this is in `.claude/CLAUDE.md`.
 
 The `tc.pr-badge` plugin fills two sidebar values for every git workspace: the
 branch's pull request, like `#12 draft`, with a ✗ when a check failed, and the
@@ -249,10 +254,12 @@ the file count shows.
 Herdr's `config.toml` stays machine-local, since it names the shell for that
 OS. `docs/resync.md` lists the settings this setup expects in it.
 
-Per herdr's docs, Claude panes reopen after a server restart: the pane hook
-reports each session's id and herdr resumes it with `claude --resume`. Anything
-else a pane was running, like a dev server, does not survive a restart. A plain
-`herdr update` leaves the server running, so panes keep going.
+Per herdr's docs, Claude panes reopen after a server restart: the Claude
+integration reports each session's id and herdr resumes it with
+`claude --resume`. Anything else a pane was running, like a dev server, does
+not survive a restart. A plain `herdr update` leaves a compatible server
+running, so panes keep going; a release that changes the protocol needs a
+restart, and herdr's status says which.
 
 ## Plugins
 

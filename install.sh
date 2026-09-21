@@ -113,6 +113,15 @@ link ".claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
 link "CLAUDE.md"               "$DOTFILES/AGENTS.md"
 link "opencode/cli.json"       "$HOME/.config/opencode/cli.json"
 
+# Agent helpers on PATH. ~/.local/bin is on PATH by default on most Linux
+# shells and on none of macOS zsh or Git Bash, so warn with the line to add
+# rather than editing a shell profile this repo does not own.
+link "bin/wait-for"            "$HOME/.local/bin/wait-for"
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) printf "  OK    ~/.local/bin on PATH\n" ;;
+  *) printf "  WARN  ~/.local/bin not on PATH; add export PATH=\"\$HOME/.local/bin:\$PATH\" to your shell profile so wait-for resolves\n" ;;
+esac
+
 for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   [ -d "$skill_dir" ] || continue
   name="$(basename "$skill_dir")"
