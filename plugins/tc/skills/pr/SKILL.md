@@ -40,13 +40,13 @@ Include the relevant UI states, keyboard path, and mutation failure paths from t
 
 **Feedback and scope changes.** A pasted PM or reviewer note becomes numbered items tagged "UAT feedback," one per distinct point, screenshots read for the points the text left out. Each ends fixed with evidence, declined with a one-line reason to relay, or one question back with a recommended reading when a screenshot is ambiguous. A criterion the user drops mid-build stays in the ledger marked dropped, so nothing disappears silently. A case the plan missed enters the ledger tagged "discovered," with its evidence when built or as a follow-up when deferred under the global rule.
 
-**Shared-screen UAT follows the global rule.** It stays off until `uat`. Then drive the change on the shared screen, including a phone or the web target, and cite that drive. When a ledger exists, that is the shared-screen criteria still marked not driven. Re-drive only what a slice couldn't reach or what a matching preview now shows. Otherwise mark each as "covered by tests, not driven" or "unverified," according to the evidence, and include its click path. A missing or failed browser or device blocks that evidence, not independent checks or fixes. Prefer a PR preview only after its deployed commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head); a preview of the previous push is not evidence for this one.
+**Browser and device UAT follows the global rule.** It stays off until `uat`. Then drive the change in the browser or on the device, including a phone or the web target, and cite that drive. When a ledger exists, that is the browser and device criteria still marked not driven. Re-drive only what a slice couldn't reach or what a matching preview now shows. Otherwise mark each as "covered by tests, not driven" or "unverified," according to the evidence, and include its click path. A missing or failed browser or device blocks that evidence, not independent checks or fixes. Prefer a PR preview only after its deployed commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head); a preview of the previous push is not evidence for this one.
 
 ## 2. Open
 
 In order:
 
-1. **Ledger.** Section 1 on the whole checklist. Anything unverified that a process-local test or run could settle cheaply gets settled now. A shared screen stays for `uat`.
+1. **Ledger.** Section 1 on the whole checklist. Anything unverified that a process-local test or run could settle cheaply gets settled now. A browser or device stays for `uat`.
 2. **Pass.** Follow `pass` on this task's changes, reusing valid work already done; skip it when the last slice already closed through `pass` on this exact tree. It prepares and commits the slice; it does not replace the final correctness review.
 3. **Review the final task.** `review all` against the intended base, including committed, pending, and untracked task changes, with the ledger as intent. Use a fresh-context subagent when `review`'s own size gate says so, inline otherwise. Reuse an equivalent review of this final diff if one already ran. Apply the global mechanical/docs/config/instruction-only skip. It reports only; likely findings stay reported. Say which mode ran.
 4. **Finish.** Close through `pass`, which applies the confirmed findings with a test for the corrected behavior where testable; substantive edits made since that review get reviewed; rerun affected evidence and the full check if invalidated, then commit fixes. Don't restart polish on unchanged files. Inspect the task's complete final diff and staged ownership before publishing; squash unpushed fix-and-follow-up commits under the global Git rules.
@@ -149,7 +149,7 @@ Follow the global Communication and Session flow rules. Open with the PR's state
 ```
 Draft PR opened: https://github.com/org/app/pull/412. Viewers can no longer edit invoices, at the button and at the server.
 
-All six criteria are proven by tests; the two visual ones were also driven against the preview at this head, screenshots in the body. Review in a fresh subagent found a missing ownership check on the duplicate route, fixed with a test for that ownership check. The final diff is reviewed and the full check passes.
+All six criteria are proven by tests; the two visual ones are covered by tests and not driven, until `uat`. Review in a fresh subagent found a missing ownership check on the duplicate route, fixed with a test for that ownership check. The final diff is reviewed and the full check passes.
 
 Nothing else outstanding. Say `pr ready` when your UAT is done.
 ```
