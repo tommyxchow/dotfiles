@@ -16,7 +16,7 @@ Grow the feature and tests together. Watching a test fail for the right reason p
 
 Decide first and say which way in one sentence. Don't ask.
 
-- **It fits** when the change has an observable result: a function or module with inputs and outputs, business rules, a parser or format, an API route, a bug with a reproduction. A bug fix starts here whenever its behavior can be asserted, because the regression test is the proof the fix works.
+- **It fits** when the change has an observable result: a function or module with inputs and outputs, business rules, a parser or format, an API route, a bug with a reproduction. A bug fix starts here whenever its behavior can be asserted, because the test for the corrected behavior is the proof the fix works.
 - **It doesn't fit** when there is nothing to assert yet: exploration where the shape is still unknown, config, docs, copy, styling and visual layout, a change with no behavior change (a rename, a moved file), a throwaway script. Say so and build it normally, with the repo's usual tests after. Size is not the test: a one-line permission fix has behavior and fits.
 - **It half fits** more often than either. Take the part with observable behavior through the loop and build the rest normally. A form's validation rules are testable; which shade of grey the error text is, is not.
 
@@ -45,7 +45,7 @@ One case at a time, all the way through, then the next:
 4. **Run it again and see green.**
 5. **Next case.**
 
-Never write the implementation first and backfill the tests around it. If the code for a case already exists and a test already covers it, the loop is over for that case; don't add a second test that recomputes what the code does.
+Never write the implementation first and backfill the tests around it. If the code for a case already exists and a test already covers it, the loop is over for that case; don't add a second test that recomputes what the code does. When a later decision replaces a case you already tested, fix or delete that test under the global final-behavior rule.
 
 ## 4. What makes a test worth keeping
 
