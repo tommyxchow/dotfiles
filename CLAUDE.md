@@ -45,7 +45,7 @@ been going wrong, then proposes changes and waits. Also repo-local.
 ## Gotchas
 
 - **Don't add `permissions.deny` or `autoMode` rules for destructive commands.**
-  Auto mode already ships ~70 soft blocks, and they are better than anything
+  Auto mode already ships a long list of soft blocks, and they are better than anything
   written here: one rule names `rm -rf`, `git reset --hard`, `git clean -fd[x]`,
   `git restore .` and `git stash drop` plus the PowerShell, Python and Node
   spellings, another names force pushing and remote-history rewrites. Run
@@ -63,7 +63,7 @@ been going wrong, then proposes changes and waits. Also repo-local.
   does not load `~/.claude/CLAUDE.md`, so the link is what actually feeds it.
   In this repo the installer also links
   `AGENTS.md` to this file so OpenCode 2 sees these gotchas. Cursor does support
-  symlinked local plugins now, but `rules/global.mdc` needs `alwaysApply: true`
+  symlinked local plugins, but `rules/global.mdc` needs `alwaysApply: true`
   frontmatter that `.claude/CLAUDE.md` doesn't carry, so the installer still
   copies it into `~/.cursor/plugins/local/tc/rules/global.mdc`. That
   copy is stale until you re-run `./install.sh` after editing that file,
@@ -136,8 +136,8 @@ been going wrong, then proposes changes and waits. Also repo-local.
   I name the built-in or it does something ours can't, and the `review` skill
   defers to tooling the repo itself configures. Ours stay because they are the
   only copies that work in all four harnesses and read a repo's own rules
-  first. Decided 2026-09-20: the cloud review can be started from a script, but
-  it bills per run, so no session starts it unasked.
+  first. The cloud review can be started from a script, but it bills per run,
+  so no session starts it unasked.
 
 - **`tc` stays in the marketplace catalog; do not install it on claude.ai.**
   The catalog entry serves machines that install the plugin instead of running
@@ -190,40 +190,37 @@ been going wrong, then proposes changes and waits. Also repo-local.
   back by editing the JSON, never with `git checkout`, which would also discard
   any other pending settings change.
 
-- **The two Next.js lines stay in `.claude/CLAUDE.md`.** The 2026-09-17 audit
-  proposed moving them to next-template's AGENTS.md, since a stack rule in a
+- **The two Next.js lines stay in `.claude/CLAUDE.md`.** An audit proposed
+  moving them to next-template's AGENTS.md, since a stack rule in a
   global file looks out of place. Rejected: three of the product repos are
   Next.js, globals are the source of truth, and the security line guards a bug
   class weaker models still write. Don't propose the move again.
 
-- **`model` is the plain `opus` alias, and effort stays at each model's
-  default.** Chosen 2026-09-22 when Opus 5.5 shipped: the alias follows the
-  newest Opus, and 1M context is standard for it on every plan, so the old
-  `[1m]` suffix is no longer needed. A `modelSettings` block or a top-level
-  `effortLevel` that reappears is a `/effort` or `/model` write-back; discard
-  it unless I say to keep that level. A stray top-level `effortLevel` does
-  more harm here than elsewhere: inside this checkout this file is also
-  project settings, and a project-level `effortLevel` overrides every model,
-  including Opus 5.5's lower default.
+- **Models are set by alias, and effort stays at each model's default.**
+  `model` is `opus` and `advisorModel` is `fable`. Aliases follow the newest
+  release of each family, so a new model needs no edit here. Pin a version or
+  add a suffix like `[1m]` only when the model docs say the bare alias falls
+  short. A `modelSettings` block or a top-level `effortLevel` that reappears is
+  a `/effort` or `/model` write-back; discard it unless I say to keep that
+  level. A stray top-level `effortLevel` does more harm here than elsewhere:
+  inside this checkout this file is also project settings, and a
+  project-level `effortLevel` overrides every model's own default.
 
-- **Rejected on 2026-09-20, don't propose again.** Loading the herdr rules
+- **Rejected, don't propose again.** Loading the herdr rules
   only inside herdr through a hook: hooks are Claude-only, so Cursor, Grok,
   and OpenCode 2 would lose them, and a rule only fires from an always-loaded
   file. A `gh`-based scoreboard script: the audit's PR retro asks the same
   question in words, and a script here goes stale. A plan-time check of open
   branches for file overlap: one branch and worktree per ticket, phases
   stacked on top, so overlap is rare and resolved at merge by hand. The `tc/`
-  branch prefix stays dropped. It was a sidebar grouping trick. On 2026-09-21
-  the global Git section went back to the ticket id in the tracker's own
-  case, or `<github-login>/kebab-phrase` with no ticket. Don't bring `tc/`
-  back.
-
-- **Rejected on 2026-09-22, don't propose again.** A rule naming the early
-  stops Anthropic's Opus 5.5 prompting guide lists (a summary that announces
-  the next step, an offer to continue, and the rest), globally or under
-  `ship it`. The per-step progress-update rules were dropped the same day for
-  the same reason: how often a model reports and where it ends a turn is left
-  to each model's default.
+  branch prefix stays dropped. It was a sidebar grouping trick; the global Git
+  section uses the ticket id in the tracker's own case, or
+  `<github-login>/kebab-phrase` with no ticket. A rule naming a model's
+  early-stop habits, like the list in Anthropic's prompting guides (a summary
+  that announces the next step, an offer to continue, and the rest), globally
+  or under `ship it`, and any rule setting how often to post progress updates:
+  how often a model reports and where it ends a turn is left to each model's
+  default.
 
 - **Three lines in `.claude/CLAUDE.md` look like duplicates and are not.**
   The Communication hatch ("Break any of these rules...") is not a copy of
@@ -232,7 +229,6 @@ been going wrong, then proposes changes and waits. Also repo-local.
   write that the UI works without having driven it" is not a copy of "Never
   claim something works without having checked it": with the screen check not
   requested and tests green, a model would otherwise argue tests are evidence.
-  And the subagents line stays even
-  though Claude Code's Agent tool now says not to spawn unless asked; that
-  note is about cost on the plan, and the file overrides harness defaults.
-  Decided 2026-09-17.
+  And the subagents line stays even though Claude Code's Agent tool says not
+  to spawn unless asked; that note is about cost on the plan, and the file
+  overrides harness defaults.
