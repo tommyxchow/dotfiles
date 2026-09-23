@@ -26,7 +26,7 @@ Build the pool, the set of files this run covers, by following [references/scope
 2. Note what the framework or compiler already owns (React Compiler memoization, typed routes, caches).
 3. Detect **Prettier + ESLint** from their config and/or the package.json deps. Also note any `format` / `lint` / `check` scripts.
 4. Confirm the **runnable local binaries** (e.g. `pnpm exec prettier --version`, `pnpm exec eslint --version`, or `node_modules/.bin/*`). A config without a binary means that tool is absent, so skip it. Never install anything to enable autofix.
-5. Pick the gate, the check Phase 3 runs after applying cleanups. Prefer the repo's own full check. If there is none, use lint + tests, and if those are missing too, say so. Don't invent a gate.
+5. Pick the gate, the check Phase 3 runs after applying cleanups. Prefer the local check from the global instructions. If the repo has none of its parts, say so. Don't invent a gate.
 6. Note paths that a CLI or generator owns (e.g. prettierignored `ui/`). Skip them unless the diff intentionally owns them.
 7. If the pool spans several repos, repeat detection and Phase 0.5 **per repo**. A repo with no tools skips autofix.
 
@@ -103,5 +103,5 @@ Make the smallest correct edit. Respect Chesterton's Fence, meaning don't remove
 **Summary.** Write it in the global Communication voice: a few full sentences, answer first. Say what autofix touched, what you cleaned up and why it is safe, what you left alone and why, and anything correctness-shaped that belongs in code review. If nothing was worth changing, say the code was already clean and stop.
 
 ```
-Autofix reformatted three files. I removed the unused draft state in the editor and swapped a hand-rolled date formatter for the existing helper; both keep behavior identical and the full check passes. I left the two similar upload handlers duplicated because they are likely to diverge. One thing for code review: the retry loop in the uploader never gives up.
+Autofix reformatted three files. I removed the unused draft state in the editor and swapped a hand-rolled date formatter for the existing helper; both keep behavior identical and the local check passes. I left the two similar upload handlers duplicated because they are likely to diverge. One thing for code review: the retry loop in the uploader never gives up.
 ```

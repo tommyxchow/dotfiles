@@ -35,7 +35,7 @@ If testing a case means reaching inside the thing under test, treat that as a si
 
 ## 3. The loop
 
-Find the repo's own test command before the first run by checking the package manifest's scripts, the test config, CI, and the Makefile. Don't assume `npm test`. If the repo has no test setup at all, don't pick one, because a test framework is a new dependency and that is the user's call, not a side effect of building a feature. Send a notification asking that question, keep building with the checks the repo does have, and mark the untested criteria unverified in the ledger. Run the narrowest target that covers the case, a single file or a single test name, and save the full suite for the end.
+Find the repo's own test command before the first run by checking the package manifest's scripts, the test config, CI, and the Makefile. Don't assume `npm test`. If the repo has no test setup at all, don't pick one, because a test framework is a new dependency and that is the user's call, not a side effect of building a feature. Send a notification asking that question, keep building with the checks the repo does have, and mark the untested criteria unverified in the ledger. Run the narrowest target that covers the case, a single file or a single test name, and save the local check for the end.
 
 Take one case all the way through before starting the next:
 
@@ -58,7 +58,7 @@ Follow the testing rules under global Working preferences for coverage and level
 
 ## 5. Close
 
-Say which cases are covered and which you deliberately left out, then run the repo's full check once. Quote each test's first failure line, since a red step nobody saw proves nothing. When there is a checklist, name each test against its acceptance criterion, since `pr` reads that as the criterion's evidence. Reshaping the code you just wrote is `polish`. Hunting defects in it is `review`. Neither runs here.
+Say which cases are covered and which you deliberately left out, then run the local check once. Quote each test's first failure line, since a red step nobody saw proves nothing. When there is a checklist, name each test against its acceptance criterion, since `pr` reads that as the criterion's evidence. Reshaping the code you just wrote is `polish`. Hunting defects in it is `review`. Neither runs here.
 
 ```
 Built the retry backoff with cases for the initial delay, doubling, the cap, and non-retryable errors. Each test failed first for its own reason before the code went in, for example `expected 200, received 100` on the doubling case. For jitter, controlled random inputs at the low and high ends verify the permitted delay range without depending on a seed or real time.

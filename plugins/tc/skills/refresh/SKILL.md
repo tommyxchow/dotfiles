@@ -58,7 +58,7 @@ A mode or custom instruction passed in the arguments is the answer, so don't pro
 - Don't take a canary, RC, or any dist-tag other than `latest` unless the user asked for it.
 - Don't rewrite AGENTS or README to use a CLI that the pinned version doesn't ship. Match `packageManager` / the SDK pin.
 - Don't add `allowBuilds` entries, which allow a new postinstall, unless the user agreed ([pnpm supply chain](https://pnpm.io/supply-chain-security)).
-- Verify with the repo's own full check (see stacks.md for this stack) plus any extra jobs in the default CI workflow. Don't invent a gate the repo doesn't have. If the gate is already red, say so before bumping.
+- Verify with the local check (see stacks.md for this stack), and let CI run the whole suite and any extra jobs in the default CI workflow. A bump changes no source file, so the affected tests are the ones that exercise the bumped package. Don't invent a gate the repo doesn't have. If the gate is already red, say so before bumping.
 - Don't add `audit.ignore` / `ignored_advisories` entries unless the user has read the GHSA. Don't use `pnpm audit --ignore-unfixable`.
 - Don't break a hold to quiet the audit. Being outdated is not the same as being vulnerable.
 
@@ -117,5 +117,5 @@ The gate and any extra CI jobs must be green. If the gate was already red before
 Write it in the global Communication voice: full sentences, answer first. If a bump changes what the app does, that is the first sentence. Then give the Must items, then what landed, then the holds and majors you skipped and why, then moderate-and-below advisories as a single count unless one is reachable from production code. Don't recap the steps.
 
 ```
-Everything on the current major is now up to date and the full check passes. One Must: the image library had a high-severity advisory, fixed by its patch release. Next stayed on its current minor and the React packages moved together. I skipped the ESLint major because AGENTS.md holds it. Four moderate advisories remain, all dev-only.
+Everything on the current major is now up to date, and the local check and CI both pass. One Must: the image library had a high-severity advisory, fixed by its patch release. Next stayed on its current minor and the React packages moved together. I skipped the ESLint major because AGENTS.md holds it. Four moderate advisories remain, all dev-only.
 ```
