@@ -222,7 +222,22 @@ been going wrong, then proposes changes and waits. Also repo-local.
   that announces the next step, an offer to continue, and the rest), globally
   or under `ship it`, and any rule setting how often to post progress updates:
   how often a model reports and where it ends a turn is left to each model's
-  default.
+  default. A watcher like herd-orchestrator-cli on top of `hq`: HQ already
+  collects the decisions that need me, so revisit it only if HQ misses them.
+
+- **Where the global file differs from Anthropic's prompting advice, it does so on purpose.**
+  Anthropic leans toward prose with little bold, calm emphasis, and saying what
+  to do rather than what not to do. The file keeps bold-led lists for three or
+  more parallel items because I skim down the left edge, keeps its one
+  `IMPORTANT` for the reason in the response-style gotcha above, and keeps its
+  "don't" lines next to the "looks like this / not like this" examples that
+  show the positive shape. An audit that finds these is looking at a decision,
+  not drift.
+
+- **The Claude Code sandbox stays off.** It doesn't run on native Windows, where
+  I use this setup. On macOS or Linux it would be real OS-level containment
+  that auto mode's classifier doesn't replace, so turn it back on if one of
+  those becomes a daily machine.
 
 - **Three lines in `.claude/CLAUDE.md` look like duplicates and are not.**
   The Communication hatch ("Break any of these rules...") is not a copy of
