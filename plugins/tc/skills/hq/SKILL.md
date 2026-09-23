@@ -2,7 +2,7 @@
 name: hq
 metadata:
   opencode/slash: "true"
-description: Runs this session as HQ, a coordinator inside herdr that dispatches tasks to worker agents in their own worktrees, waits on them, relays their questions, and reports status, while the workers do the building. Use when the user says hq, "you're HQ", "be the coordinator", "dispatch these", "hand this to a worker", or "manage my sessions", and for status questions inside an HQ session. Needs a herdr pane. Not for a single helper like a reviewer inside one task, which the global herdr rules already cover. Never edits a worker's code, approves on the user's behalf, merges, or deletes worktrees.
+description: Runs this session as HQ, a coordinator inside herdr that dispatches tasks to worker agents in their own worktrees, waits on them, relays their questions, and reports status, while the workers do the building. Use when the user says hq, "you're HQ", "be the coordinator", "dispatch these", "hand this to a worker", or "manage my sessions", and for status questions inside an HQ session. Needs a herdr pane. Not for a single helper like a reviewer inside one task, which the global herdr rules already cover. Never edits a worker's code, approves on the user's behalf, merges unless the user says to in this session, or deletes worktrees.
 argument-hint: "[<tasks to dispatch> | status]"
 ---
 
@@ -34,7 +34,7 @@ Update the board when you dispatch, when a worker settles, and when I answer som
 ## Dispatch a task
 
 1. **Pick the repo and the branch** by the global Git rules: the ticket id, or the GitHub username and a short phrase.
-2. **Create the worktree** from that repo's main checkout with `herdr worktree create --cwd <repo> --branch <branch> --label <slug> --no-focus`. It returns the worktree's workspace and its first pane.
+2. **Create the worktree** from that repo's main checkout with `herdr worktree create --cwd <repo> --branch <branch> --label <slug> --no-focus`. It returns the worktree's workspace and its first pane. A worker that will only discuss or research, and won't write to the repo, skips the worktree and gets a new tab with `herdr tab create --cwd <repo> --label <slug> --no-focus` instead, using the pane that tab opens with.
 3. **Start the worker** in that pane with `herdr agent start <slug> --kind <kind> --pane <pane-id>`. Name it with the same short slug as the label, like `nav-flicker`, so the sidebar and the board match. Use your own harness and model unless I name another one.
 4. **Hand it the task** with `herdr agent prompt`: the task in my words, the ticket or link, and `ship it` only if I said it. Leave the conventions out, because the worker loads the same global instructions you do.
 5. **Add its line** to the board and start its wait, the way the next section describes for any worker you just sent input to.
@@ -55,11 +55,14 @@ Read only the recent screen, never a worker's whole transcript. The worker's clo
 
 A blocked worker is showing a question card, a permission prompt, or a question in text. Read the screen before doing anything.
 
+- **A plan waiting for approval** comes to me as its goal and acceptance checklist in a few lines, with the plan file's path for the full text. When I approve, pick the approve option on the worker's card; when I ask for changes, send them as my words.
 - **Answer it yourself only when the answer is already settled**: by something I said in this session, by the plan I approved, or by the global instructions. Answer a text question with `herdr agent prompt`. For a question card, read which option is which, then pick one with `herdr agent send-keys`.
 - **Everything else comes to me**: approving a plan, marking a PR ready, merging, a push that needs asking, a deletion, a new dependency, a tool permission prompt, and anything that changes scope. Pass on the worker's question and its recommended option word for word, then pass my answer back to the worker, quoted as mine.
 - **Never approve in my place**, and never present your own guess as my answer. The worker treats whatever arrives in its prompt as my decision, so you are the only thing standing between a guess and an approval.
 
 When several workers need me at once, ask in one round, one titled question per worker, so I can answer them together.
+
+Before you send my answer, read the worker again and check it is still waiting on that same question. I sometimes click into a worker and answer it there myself; when I have, drop the question rather than answering twice.
 
 ## Status
 
@@ -71,8 +74,14 @@ Two need you. nav-flicker has a plan ready for approval, and skins-search asks w
 
 Workers send their own herdr notifications when they stop or finish, so don't repeat those.
 
+When a worker's report says it handed its next slice to a fresh session, move its board line to the new agent's name and wait on that agent instead.
+
 ## Finishing a task
 
+**Marking ready and merging happen when I say so here.** When I say to mark a PR ready, send the worker `pr ready` quoted as my words, since that runs its readiness check before the flip. When I say to merge, check the PR's CI is green and it is out of draft, then merge it yourself with `gh pr merge`, squashing unless the repo requires another strategy. A merge needs no worker context, and the approval is mine in this session. Never merge a PR I haven't named.
+
 When a worker's PR merges or I drop the task, remove its line from the board and tell me the worktree is ready for the `cleanup` skill. Don't close the worker's pane, stop the agent, or delete its worktree or branch yourself; those follow the global approval rules.
+
+This skill relies on a background wait that wakes you when it returns. If this harness can't run one, say so on the first dispatch: I'll then rely on the workers' own herdr notifications and ask you for status.
 
 When this HQ session itself runs long, say so. The board is what lets a fresh HQ take over without losing a worker.
