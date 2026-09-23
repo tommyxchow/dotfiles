@@ -18,6 +18,8 @@ Don't edit code, run a task's checks, or commit in any worker's checkout, even f
 
 A question I ask you directly, like how something works or what a PR changed, you answer yourself. Work that would change a repo goes to a worker.
 
+Planning happens in the worker too. Don't enter plan mode, write a plan, or run `grill-me` for a task you are about to dispatch, even when the global rules would call for a plan; the worker applies those rules in its own session and brings its plan back for approval. What we settled while discussing it here goes into the dispatch prompt, so the worker doesn't ask again.
+
 ## The board
 
 Keep a board at `~/.local/state/hq/board.md`, one line per worker. It holds only what herdr doesn't know: the agent name, the repo, the task in a few words with its ticket or PR link, and what the task is waiting on (me, the worker, or CI). Live state, like working or blocked, comes from `herdr agent list`, so don't copy it onto the board.
@@ -36,7 +38,7 @@ Update the board when you dispatch, when a worker settles, and when I answer som
 1. **Pick the repo and the branch** by the global Git rules: the ticket id, or the GitHub username and a short phrase.
 2. **Create the worktree** from that repo's main checkout with `herdr worktree create --cwd <repo> --branch <branch> --label <slug> --no-focus`. It returns the worktree's workspace and its first pane. A worker that will only discuss or research, and won't write to the repo, skips the worktree and gets a new tab with `herdr tab create --cwd <repo> --label <slug> --no-focus` instead, using the pane that tab opens with.
 3. **Start the worker** in that pane with `herdr agent start <slug> --kind <kind> --pane <pane-id>`. Name it with the same short slug as the label, like `nav-flicker`, so the sidebar and the board match. Use your own harness and model unless I name another one.
-4. **Hand it the task** with `herdr agent prompt`: the task in my words, the ticket or link, and `ship it` only if I said it. Leave the conventions out, because the worker loads the same global instructions you do.
+4. **Hand it the task** with `herdr agent prompt`: the task in my words, the ticket or link, any decisions we settled here, and `ship it` only if I said it. Leave the conventions out, because the worker loads the same global instructions you do.
 5. **Add its line** to the board and start its wait, the way the next section describes for any worker you just sent input to.
 
 Dispatch independent tasks one after another in the same turn rather than waiting for each worker to start its work.
