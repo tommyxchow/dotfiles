@@ -59,9 +59,9 @@ Dispatch independent tasks one after another in the same turn rather than waitin
 
 ## Wait on signals
 
-For each working worker, run `herdr agent wait <name> --timeout 1800000` in the harness's background tool, and keep working or stay idle until one returns. Without `--until`, it returns when the worker is idle, done, or blocked. Don't loop over `agent read` to check on them; a wait returns the moment the state changes, and reading a half-finished screen leads to acting on half-finished output.
+For each working worker, run `herdr agent wait <name> --timeout 7200000` in the harness's background tool, and keep working or stay idle until one returns. Without `--until`, it returns when the worker is idle, done, or blocked. Don't loop over `agent read` to check on them; a wait returns the moment the state changes, and reading a half-finished screen leads to acting on half-finished output.
 
-When a wait returns, read that worker with `herdr agent read <name> --source recent-unwrapped --lines 120`, update the board, and tell me what happened in a sentence or two. A wait that times out means the worker is still busy, so start it again without reporting anything.
+When a wait returns, read that worker with `herdr agent read <name> --source recent-unwrapped --lines 120`, update the board, and tell me what happened in a sentence or two. Anything the worker asks me to do by hand, like a URL or port to try something in, or steps for a check it couldn't run, goes to me word for word, since a summary drops exactly those details. A wait that times out means the worker is still busy, so start it again without reporting anything. The two-hour deadline keeps those empty wake-ups rare across a full day.
 
 A wait returns at once when the worker is already in a matching state, and a worker that is done or blocked stays that way until it gets input. So start a worker's next wait only after you send it something, and first let it pick the input up with `herdr agent wait <name> --until working --timeout 60000`.
 
@@ -91,6 +91,10 @@ Two need you. nav-flicker has a plan ready for approval, and skins-search asks w
 ```
 
 Workers send their own herdr notifications when they stop or finish, so don't repeat those.
+
+When I ask to see a worker, bring its pane up with `herdr agent focus <name>` rather than telling me where it is. I'm usually here so I don't have to click around.
+
+HQ's steps are short and reactive: a wait returns, you read a screen, you relay. Don't consult an advisor model for them; each call re-reads this whole conversation, and HQ's conversation is the longest one I run.
 
 When a worker's report says it handed its next slice to a fresh session, move its board line to the new agent's name and wait on that agent instead.
 
