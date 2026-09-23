@@ -171,13 +171,12 @@ are self-contained in their own config directories and need no cleanup. When a
 pane shows the wrong state, `herdr agent explain <pane>` says which rule decided
 it.
 
-The opencode integration only works from a build that ships its OpenCode 2
-plugin, which installs as `herdr-opencode/tui.js` under the config directory.
-Builds through preview 2026-09-08 carry only the OpenCode 1 plugin, which
-OpenCode 2 refuses to load while status still reports `current`; on those, skip
-it. Pane detection recognizes `opencode.exe` without any integration, so
-skipping only loses working/idle/blocked reporting and session restore. Delete
-this paragraph once the integration has installed from a newer build.
+OpenCode 2 loads herdr's plugin only through the `"plugins":
+["./herdr-opencode"]` entry the install adds to `opencode/cli.json`. Keep that
+entry: the path is relative to the config directory, so it works on every
+machine. Without it herdr gets no working, idle, or blocked state from OpenCode
+2 and no session to restore, and `herdr integration status` reports opencode
+as `needs repair`.
 
 The worktree bootstrap plugin under `herdr/plugins` is the third herdr surface.
 It runs on every worktree herdr creates, copies the gitignored env files from

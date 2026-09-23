@@ -176,8 +176,10 @@ been going wrong, then proposes changes and waits. Also repo-local.
   older builds and appending a second one on current builds. The committed
   entry is a portable `$HOME` form that already covers both platforms, so
   restore it after any reinstall or that path ships to every machine. The
-  opencode integration writes into `opencode/cli.json` the same way. How the
-  two surfaces refresh, and when to skip one, is in `docs/resync.md`.
+  opencode integration writes into `opencode/cli.json` too, but its
+  `"plugins": ["./herdr-opencode"]` entry is relative and stays committed;
+  without it OpenCode 2 never loads herdr's plugin. How the two surfaces
+  refresh is in `docs/resync.md`.
 
 - **Inside this checkout, user scope and project scope are the same file.**
   Claude Code reads `<project>/.claude/settings.json` as project settings, and

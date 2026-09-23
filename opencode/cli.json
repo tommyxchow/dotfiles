@@ -31,5 +31,6 @@
   },
   "tabs": {
     "enabled": false
-  }
+  },
+  "plugins": ["./herdr-opencode"]
 }
