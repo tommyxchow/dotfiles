@@ -239,7 +239,9 @@ herdr's defaults plus the `$pr` and `$dirty` slots the `tc.pr-badge` plugin
 fills, the PR or default-branch CI state and the uncommitted file count; a slot
 shows nothing until a value is reported. The first matching rule
 wins, so the red rules for a failed check and for requested changes come
-first, then orange for running checks (yellow is the file count's color), and an inline table has to stay on
+first, then orange for running checks (yellow is the file count's color),
+The colors are mid-tones rather than catppuccin's pastels, because a rule takes
+only a fixed hex and the pastels vanish on the light theme; and an inline table has to stay on
 one line.
 
 ```toml
@@ -268,7 +270,7 @@ opencode = [
 [ui.sidebar.spaces]
 rows = [
   ["state_icon", "workspace"],
-  ["branch", "git_status", { token = "$pr", rules = [{ contains = "✗", fg = "#f38ba8" }, { contains = "changes", fg = "#f38ba8" }, { contains = "◌", fg = "#fab387" }, { contains = "approved", fg = "#a6e3a1" }, { contains = "merged", dim = true }, { contains = "closed", dim = true }] }, { token = "$dirty", fg = "#f9e2af" }],
+  ["branch", "git_status", { token = "$pr", rules = [{ contains = "✗", fg = "#e5484d" }, { contains = "changes", fg = "#e5484d" }, { contains = "◌", fg = "#e8762c" }, { contains = "approved", fg = "#3fa34d" }, { contains = "merged", dim = true }, { contains = "closed", dim = true }] }, { token = "$dirty", fg = "#d99a1a" }],
 ]
 ```
 
