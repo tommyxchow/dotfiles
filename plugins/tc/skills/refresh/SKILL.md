@@ -2,113 +2,119 @@
 name: refresh
 metadata:
   opencode/slash: "true"
-description: Occasional repo catch-up — bump to the latest versions this stack can honestly take, apply migrations, flag must-upgrades and security advisories, and vet AGENTS.md against current vendor docs. Use when the user says "refresh", "reaudit", "resync" (this product repo), "upgrade everything", "any packages we can upgrade", "catch this repo up", "outdated packages", "gonna do another release", "security audit", "dependabot", or asks to migrate to the latest stack. Distinct from the dotfiles machine playbook (docs/resync.md), polish (shape of working code), vet (claim checking), and pass (commits a finished slice).
+description: Catches a repo up occasionally. It bumps packages to the latest versions this stack can actually take, applies migrations, flags must-upgrades and security advisories, and vets AGENTS.md against current vendor docs. Use when the user says "refresh", "reaudit", "resync" (this product repo), "upgrade everything", "any packages we can upgrade", "catch this repo up", "outdated packages", "gonna do another release", "security audit", "dependabot", or asks to migrate to the latest stack. It is distinct from the dotfiles machine playbook (docs/resync.md), polish (shape of working code), vet (claim checking), and pass (commits a finished slice).
 argument-hint: "[optimal | full | minimal | audit | packages | docs] [custom instructions]"
 ---
 
 # Refresh
 
-Repo catch-up: latest versions this stack can honestly take, plus migrations, plus a loud call-out for must-upgrades, vulns, deprecations, and things that are severely behind.
+This skill catches a repo up. It moves packages to the latest versions this stack can actually take, applies the migrations those versions need, and calls out prominently any must-upgrades, vulnerabilities, deprecations, and packages that are severely behind.
 
-`$ARGUMENTS`: optional **mode** (first token) then **custom instructions**. Empty = `optimal`. If the first token is not a mode below, the whole argument is custom instructions on `optimal`. A security-audit, Dependabot, or outdated request with no upgrade language means `audit` (report only).
+`$ARGUMENTS` holds an optional **mode** as its first token, followed by **custom instructions**. When it is empty, the mode is `optimal`. If the first token is not one of the modes below, treat the whole argument as custom instructions on `optimal`. A security-audit, Dependabot, or outdated request with no upgrade language means `audit`, which only reports.
 
-Honor `AGENTS.md` holds. `audit` reports and changes nothing. The modes that do change code close the way any other slice does, through `pass`.
+Honor the holds in `AGENTS.md`, meaning the versions the repo deliberately keeps back. `audit` reports and changes nothing. The modes that do change code close the way any other slice does, through `pass`.
 
 ## Collision: machine vs repo
 
-If this workspace **is the dotfiles/chow config repo** (root `install.sh` plus `docs/resync.md`): **stop**. `audit` / `plan` here is the setup audit: follow `docs/audit.md` and change nothing. Any other mode, including bare `/refresh` and "resync", follows `docs/resync.md`, which is pull, installer, plugins, leftover sweep — not packages. In any other repo, "resync" means this skill.
+If this workspace **is the dotfiles/chow config repo**, which you can tell by an `install.sh` at the root plus `docs/resync.md`, **stop**. There, `audit` / `plan` is the setup audit: follow `docs/audit.md` and change nothing. Any other mode, including a bare `/refresh` and "resync", follows `docs/resync.md`, which covers the pull, the installer, plugins, and the leftover sweep rather than packages. In any other repo, "resync" means this skill.
 
 ## Modes
 
 | First token | Meaning |
 |---|---|
-| *(none)* / `optimal` | Current-major latest + required migrations. Holds stay. Majors listed, not applied. **Default. No picker.** |
-| `full` | Optimal plus every major that is not a documented hold. Breaking a hold still needs a question. |
-| `minimal` | Patches, lockfile, security/compat that unblocks the gate or fixes a GHSA. No feature minors, no framework story, no shadcn style. `pnpm update <pkg>` follows the manifest range and can take a minor, so name the patch (`pnpm update foo@1.2.1`) and check the lockfile stayed on the same minor. |
-| `audit` / `plan` | Report only. No edits. |
-| `packages` | Deps + lockfile + verify. Skip docs/UI unless a bump requires it. |
-| `docs` | AGENTS.md / README / CI comments vs vendor docs. Still mention holds that sit on a GHSA. |
+| *(none)* / `optimal` | Take the latest on the current major, plus the required migrations. Holds stay. Majors are listed, not applied. **This is the default, with no picker.** |
+| `full` | Optimal plus every major that is not a documented hold. Breaking a hold still means asking first. |
+| `minimal` | Patches, the lockfile, and security or compatibility fixes that unblock the gate or fix a GHSA. It takes no feature minors, no framework story, and no shadcn style. `pnpm update <pkg>` follows the manifest range and can take a minor, so name the patch (`pnpm update foo@1.2.1`) and check that the lockfile stayed on the same minor. |
+| `audit` / `plan` | Report only, with no edits. |
+| `packages` | Dependencies, the lockfile, and verification. Skip docs and UI unless a bump requires them. |
+| `docs` | Check AGENTS.md, README, and CI comments against vendor docs. Still mention holds that have a GHSA against them. |
 
-Examples: `/refresh full don't touch wrangler` · `/refresh minimal skip shadcn` · `/refresh don't touch wrangler` (optimal + constraint).
+For example: `/refresh full don't touch wrangler`, `/refresh minimal skip shadcn`, or `/refresh don't touch wrangler`, which is optimal plus a constraint.
 
 ### When to ask
 
 Follow the global Session flow rules for question tools and the text fallback, including a clearly marked recommendation. **Don't ask** on a clean Optimal run with no majors and no must-upgrades.
 
-Ask once when:
+Ask once in these cases:
 
-1. No mode given **and** a real major (or a must-upgrade that needs a major) is sitting there: stay Optimal / include that major / Minimal only.
-2. **full** would break an `AGENTS.md` hold. Options + recommendation. Don't silently undo the pin.
-3. A **high/critical** GHSA is only fixable by a hold-break or an override. Show the [advisory](https://github.com/advisories) and wait.
+1. No mode was given **and** a real major, or a must-upgrade that needs a major, is available. Offer to stay on Optimal, to include that major, or to do Minimal only.
+2. **full** would break an `AGENTS.md` hold. Give the options and a recommendation, and don't silently undo the pin.
+3. A **high/critical** GHSA can only be fixed by breaking a hold or adding an override. Show the [advisory](https://github.com/advisories) and wait.
 
-A passed mode or custom instruction is the answer. Don't also prompt.
+A mode or custom instruction passed in the arguments is the answer, so don't prompt on top of it.
 
 ## Hard rules
 
-- **pnpm / pnx** for JS. Never `npm` / `npx` / `yarn` / `npm audit`. Flutter: `flutter` / `dart`.
-- Don't add a dependency, linter, formatter, CI gate, or scanner (Snyk, Socket, osv-scanner, Dependabot config) unless they ask.
-- Never blanket `pnpm update --latest`. Target Apply packages with `pnpm update <pkg…>` ([pnpm update](https://pnpm.io/cli/update)): keeps the range operator, writes the resolved version. Exclude holds (`\!typescript`). An approved major: `pnpm update foo@2`. `catalog:` deps change in `pnpm-workspace.yaml`.
-- Honor **`minimumReleaseAge`** (check the installed default). No exclude for curiosity. **Security:** `pnpm audit --fix=update` may add a targeted exclude for the patched version ([pnpm audit](https://pnpm.io/cli/audit)). Leave it, mention it.
-- Don't stash/reset a dirty tree. Show `git status`; work on top or stop if the dirt is unrelated.
-- **Vet** Must and the framework line against the vendor changelog / [GHSA](https://github.com/advisories), installed version first. For the rest of Apply, the batched `outdated` and `audit` output plus registry metadata settles a routine patch or minor; open a changelog or migration guide only for a major, an advisory, a deprecation, or a package whose API the repo calls directly. Group packages that share an upstream release and reuse anything already vetted this session. The outdated table alone is not settled. Don't changelog Skip rows. Don't load the full `vet` skill unless a claim is disputed. If a bump looks broken or a Must is disputed, search that package's issues; confirm in changelog/releases — don't cite a thread as the spec. Don't assert "latest" or "safe" from memory. No canary / RC / dist-tag except `latest` unless they asked.
-- Don't rewrite AGENTS/README to a CLI the pin doesn't ship. Match `packageManager` / the SDK pin.
-- Don't add `allowBuilds` entries (new postinstall) unless they agreed ([pnpm supply chain](https://pnpm.io/supply-chain-security)).
-- Verify with the repo's own full check (see stacks.md for this stack) plus extra jobs in the default CI workflow. Don't invent a gate the repo doesn't have. If the gate is already red, say so before bumping.
-- Don't add `audit.ignore` / `ignored_advisories` without them reading the GHSA. Don't use `pnpm audit --ignore-unfixable`. Don't break a hold to quiet audit. Outdated ≠ vulnerable.
+- Use **pnpm / pnx** for JS. Never use `npm` / `npx` / `yarn` / `npm audit`. For Flutter, use `flutter` / `dart`.
+- Don't add a dependency, linter, formatter, CI gate, or scanner (Snyk, Socket, osv-scanner, Dependabot config) unless the user asks.
+- Never run a blanket `pnpm update --latest`. Instead, target the Apply packages with `pnpm update <pkg…>` ([pnpm update](https://pnpm.io/cli/update)), which keeps the range operator and writes the resolved version. Exclude holds (`\!typescript`). For an approved major, use `pnpm update foo@2`.
+- `catalog:` dependencies change in `pnpm-workspace.yaml`.
+- Honor **`minimumReleaseAge`**, and check the installed default. Don't add an exclude out of curiosity. **Security:** `pnpm audit --fix=update` may add a targeted exclude for the patched version ([pnpm audit](https://pnpm.io/cli/audit)). Leave that exclude in place and mention it.
+- Don't stash or reset a dirty tree. Show `git status`, then work on top of it, or stop if the uncommitted changes are unrelated.
+- **Vet** the Must items and the framework line against the vendor changelog or [GHSA](https://github.com/advisories), starting from the installed version. Don't assert "latest" or "safe" from memory.
+- For the rest of Apply, the batched `outdated` and `audit` output plus registry metadata settles a routine patch or minor. Open a changelog or migration guide only for a major, an advisory, a deprecation, or a package whose API the repo calls directly. The outdated table alone does not settle anything. Don't read changelogs for Skip rows.
+- Group packages that share an upstream release, and reuse anything already vetted this session.
+- Don't load the full `vet` skill unless a claim is disputed. If a bump looks broken or a Must is disputed, search that package's issues, then confirm in its changelog or releases. Don't cite an issue thread as the spec.
+- Don't take a canary, RC, or any dist-tag other than `latest` unless the user asked for it.
+- Don't rewrite AGENTS or README to use a CLI that the pinned version doesn't ship. Match `packageManager` / the SDK pin.
+- Don't add `allowBuilds` entries, which allow a new postinstall, unless the user agreed ([pnpm supply chain](https://pnpm.io/supply-chain-security)).
+- Verify with the repo's own full check (see stacks.md for this stack) plus any extra jobs in the default CI workflow. Don't invent a gate the repo doesn't have. If the gate is already red, say so before bumping.
+- Don't add `audit.ignore` / `ignored_advisories` entries unless the user has read the GHSA. Don't use `pnpm audit --ignore-unfixable`.
+- Don't break a hold to quiet the audit. Being outdated is not the same as being vulnerable.
 
 ## Flow
 
-Recon first, then audit, classify, apply (unless the mode is `audit` or `plan`), verify, and report.
+Work in this order: recon, audit, classify, apply (unless the mode is `audit` or `plan`), verify, and report.
 
-After detecting the stack, read only that section of [stacks.md](stacks.md). If none match, stop and say so.
+After detecting the stack, read only that stack's section of [stacks.md](stacks.md). If no section matches, stop and say so.
 
 ### 1. Recon
 
-`AGENTS.md` / `CLAUDE.md` / `pubspec.yaml` pins. Package manager, verify script, Node/`packageManager`, explicit holds.
+Read the pins in `AGENTS.md` / `CLAUDE.md` / `pubspec.yaml`. Note the package manager, the verify script, the Node version and `packageManager`, and any explicit holds.
 
 ### 2. Audit
 
-Batch independent CLI (`git status`, outdated, audit, Dependabot if `gh` works). Depth follows mode: `minimal` / `packages` skip `ui:diff` and docs unless a bump requires it; `docs` skips outdated / `ui:diff` (still flag a hold on a GHSA).
+Batch the independent CLI calls: `git status`, outdated, audit, and Dependabot if `gh` works. How deep you go depends on the mode. `minimal` and `packages` skip `ui:diff` and docs unless a bump requires them. `docs` skips outdated and `ui:diff`, but still flags a hold that has a GHSA.
 
-When the tool exists:
+Run each of these when its tool exists:
 
-- **Outdated:** `pnpm outdated` (`-r` in a workspace with packages; `--include-github-actions` when the installed pnpm supports it). Use Wanted vs Latest — don't pass `--compatible` as the only view or majors vanish. `outdated` and `install` can disagree on `minimumReleaseAge`; install is the gate. Confirm on the installed pnpm's changelog/releases. Don't exclude except GHSA. `flutter pub outdated`. Framework stable from the vendor (blog / GitHub releases), not memory.
-- **Security:** `pnpm audit --audit-level high`; glance lower severities so moderate isn't invisible. Prod first, then note if the rest is dev-only. Flutter: `flutter pub get` prints GHSAs ([Dart advisories](https://dart.dev/tools/pub/security-advisories)). `gh api repos/<owner>/<repo>/dependabot/alerts?state=open` when `gh` works — alerts are a signal, the GHSA is the source.
-- **Deprecated:** from `pnpm outdated --format json` (`isDeprecated`) and audit output, not `pnpm view` on the tree. Committed config keys the vendor now flags (Next route exports, Action inputs, in-repo editor settings). Same-major documented replacement is Must. Don't migrate `~` user settings; that's the machine playbook.
-- **Stale:** direct dep two+ minors behind on the same major, or a whole major behind that isn't a hold. Framework several stables behind current. Toolchain pin lagging the SDK (blocks every other upgrade).
-- **Tooling:** `packageManager` vs `pnpm -v`. A new package-manager major is Ask; check the vendor, don't assert RC vs stable from this file. `.nvmrc` / `engines.node` vs `@types/node` major, Actions tags (`vN` → `vN+1` with the same `with:` is Apply on Optimal). Don't run `pnpm update --include-github-actions` unless the repo already pins commit SHAs — that command rewrites tags to hashes. shadcn `ui:diff` (never `shadcn diff`) only if that CLI is in the repo and the mode includes UI. AGENTS.md vs current vendor docs unless mode is `packages` / `minimal`.
+- **Outdated:** Run `pnpm outdated`, adding `-r` in a workspace with packages and `--include-github-actions` when the installed pnpm supports it. Compare Wanted against Latest. Don't pass `--compatible` as the only view, because the majors vanish from it. `outdated` and `install` can disagree on `minimumReleaseAge`, and install is the gate. Confirm this against the installed pnpm's changelog or releases. Don't add an exclude except for a GHSA. For Flutter, run `flutter pub outdated`. Take the framework's current stable from the vendor's blog or GitHub releases, not from memory.
+- **Security:** Run `pnpm audit --audit-level high`, and glance at the lower severities so moderate ones aren't invisible. Check production dependencies first, then note whether the rest is dev-only. For Flutter, `flutter pub get` prints GHSAs ([Dart advisories](https://dart.dev/tools/pub/security-advisories)). Run `gh api repos/<owner>/<repo>/dependabot/alerts?state=open` when `gh` works. Treat the alerts as a signal and the GHSA as the source.
+- **Deprecated:** Find deprecations in `pnpm outdated --format json` (`isDeprecated`) and the audit output, not with `pnpm view` on the tree. Also look for committed config keys the vendor now flags, such as Next route exports, Action inputs, and in-repo editor settings. A documented replacement on the same major is Must. Don't migrate `~` user settings; that belongs to the machine playbook.
+- **Stale:** A direct dependency is stale when it is two or more minors behind on the same major, or a whole major behind and not a hold. A framework is stale when it is several stables behind current. A toolchain pin lagging the SDK is stale too, and it blocks every other upgrade.
+- **Tooling:** Compare `packageManager` against `pnpm -v`. A new package-manager major is Ask; check the vendor rather than asserting RC or stable from this file. Compare `.nvmrc` / `engines.node` against the `@types/node` major. For Actions tags, moving `vN` to `vN+1` with the same `with:` is Apply on Optimal. Don't run `pnpm update --include-github-actions` unless the repo already pins commit SHAs, because that command rewrites tags to hashes. Run shadcn `ui:diff` (never `shadcn diff`) only if that CLI is in the repo and the mode includes UI. Check AGENTS.md against current vendor docs unless the mode is `packages` / `minimal`.
 
 ### 3. Classify
 
-**Must** (alert first; apply in Optimal/Minimal if the fix stays on the current major): high/critical GHSA with a fix; resolved version deprecated; committed config key the vendor replaced on this line; vendor security/patch on the current framework line; pin so stale it blocks the rest of the tree.
+**Must** items get alerted first, and applied in Optimal or Minimal when the fix stays on the current major. They are: a high/critical GHSA with a fix, a resolved version that is deprecated, a committed config key the vendor replaced on this line, a vendor security fix or patch on the current framework line, and a pin so stale it blocks the rest of the tree.
 
-**Apply:** Optimal = current-major latest + Must. Minimal = Must + patches only. Full = Optimal + non-hold majors.
+**Apply** depends on the mode. In Optimal it is the latest on the current major plus Must. In Minimal it is Must plus patches only. In Full it is Optimal plus the majors that aren't holds.
 
-**Ask:** new major (unless `full`); breaking a hold; new dep; shadcn style preset; `pnpm audit --fix` override (writes workspace overrides). A hold that is itself Must stays Ask.
+**Ask** covers a new major (unless the mode is `full`), breaking a hold, a new dependency, a shadcn style preset, and a `pnpm audit --fix` override, since that writes workspace overrides. A hold that is itself Must stays Ask.
 
-**Skip:** unused starter deps they kept; intentional registry forks; secrets in committed config; moderate/low transitives with no fix or no production path (count them, don't pad Apply). Name unfixable GHSAs; don't hide them.
+**Skip** covers unused starter dependencies the user kept, intentional registry forks, secrets in committed config, and moderate or low transitive dependencies with no fix or no production path. Count those transitives rather than padding Apply with them. Name unfixable GHSAs instead of hiding them.
 
 ### 4. Apply
 
-Must first, then the rest. Official order is update, then leftover GHSAs ([pnpm audit](https://pnpm.io/cli/audit)):
+Apply the Must items first, then the rest. The official order is to update first and then handle the GHSAs that are left ([pnpm audit](https://pnpm.io/cli/audit)):
 
-1. Toolchain pin (same major)
-2. Framework + React + react-dom + `@types/react*` + first-party plugins as one unit (`pnpm update`, not `--latest`)
-3. Remaining Apply packages (`pnpm update`, hold exclusions)
-4. Named official migration codemods when the guide lists them — not a kitchen-sink `upgrade latest` (non-TTY agents accept every default: React majors, Turbopack, all recommended codemods)
-5. `pnpm audit --fix=update` for GHSAs still open. Not bare `--fix` (writes `overrides`) unless they agreed.
-6. Generated UI: inspect overwrite, take real supersedes only
-7. AGENTS.md / README: new gotchas, prune stale, record new holds
+1. Update the toolchain pin, staying on the same major.
+2. Update the framework, React, react-dom, `@types/react*`, and first-party plugins as one unit, with `pnpm update`, not `--latest`.
+3. Update the remaining Apply packages with `pnpm update`, excluding holds.
+4. Run the named official migration codemods when the guide lists them. Don't run a catch-all `upgrade latest`, because a non-TTY agent accepts every default: React majors, Turbopack, and all recommended codemods.
+5. Run `pnpm audit --fix=update` for GHSAs that are still open. Don't use bare `--fix`, which writes `overrides`, unless the user agreed.
+6. For generated UI, inspect what an overwrite would change and take only the real supersedes.
+7. Update AGENTS.md / README: add new gotchas, prune stale ones, and record new holds.
 
-Finish what a bump starts: remove APIs, config keys, and docs it superseded. Don't leave old+new dual paths, shims, or eslint-disables. Don't delete unused starter deps or hunt dead files — that's Skip / `polish`.
+Finish what a bump starts by removing the APIs, config keys, and docs it superseded. Don't leave old and new paths side by side, shims, or eslint-disables behind. Don't delete unused starter dependencies or hunt for dead files; that is Skip / `polish` work.
 
 ### 5. Verify
 
-Gate (and extra CI jobs) green. If it was already red before the bump, say so and don't blame the bump. A new failure means fix or revert **that** bump. Re-run the stack's security audit (not a second outdated). Remaining high/critical stay in the report.
+The gate and any extra CI jobs must be green. If the gate was already red before the bump, say so and don't blame the bump. A new failure means you fix or revert **that** bump. Re-run the stack's security audit, but not a second outdated check. Any remaining high or critical advisories stay in the report.
 
 ### 6. Report
 
-Write it in the global Communication voice: full sentences, answer first. If a bump changes what the app does, that is the first sentence. Then the Must items, then what landed, then the holds and majors you skipped and why, then moderate-and-below advisories as a single count unless one is reachable from production code. No recap of the steps.
+Write it in the global Communication voice: full sentences, answer first. If a bump changes what the app does, that is the first sentence. Then give the Must items, then what landed, then the holds and majors you skipped and why, then moderate-and-below advisories as a single count unless one is reachable from production code. Don't recap the steps.
 
 ```
 Everything on the current major is now up to date and the full check passes. One Must: the image library had a high-severity advisory, fixed by its patch release. Next stayed on its current minor and the React packages moved together. I skipped the ESLint major because AGENTS.md holds it. Four moderate advisories remain, all dev-only.
