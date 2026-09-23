@@ -210,7 +210,7 @@ Working code is the minimum, not the goal. Fit the repo, and follow the repo whe
 - Keep code flat and direct. Prefer early returns and lookup tables over deep nesting, and a plain function over a class, factory, or registry with one use.
 - A wrapper that only forwards to one call adds nothing; call the underlying thing directly.
 - **Don't restate a default.** Set an option, flag, or config key only when the value differs from the default, when the default can't be trusted to hold, or when naming it documents a deliberate choice, and then say why next to it.
-- The same goes for a setup: stay close to the tool's defaults and add only what the task or the repo actually needs.
+- A setup follows the same rule: stay close to the tool's defaults and add only what the task or the repo actually needs.
 - Before writing a helper, hook, or component, look for the one the repo already has, including one spelled differently, and call or extend it.
 - When the end result is the same, change the lines that need changing rather than rewriting the file.
 - Don't cover up type problems with `as`, `!`, or `any`. Model mutually exclusive states as a union (in Dart, a sealed class).
@@ -267,7 +267,7 @@ Follow the project's design language. Show success only after the work has succe
 - In a repo that isn't mine, a session outside a worktree is usually questions and discussion, with nothing written yet. A direct request to change code is the answer to that; ask before editing in the main checkout only when the session could be discussion rather than doing.
 - A worktree is a clean checkout of tracked files only, so gitignored ones like `.env` don't come along. In a fresh one, copy the env files over from the main checkout right away, and say so. Herdr's bootstrap plugin already does that for a worktree under `~/.herdr/worktrees`, so look for them before copying again.
 - **Install dependencies on first need, not up front**: the first dev server, type check, test run, or repo check installs them. In a monorepo, install only the package you work in and what it depends on (`pnpm install --filter <pkg>...`).
-- There are two exceptions. A pnpm repo with `virtualStoreType: global` in `pnpm-workspace.yaml` is already installed by the herdr plugin, since that setting makes a worktree install near-instant, so look for `node_modules` first. And a repo whose own instructions say to install first, or say how, wins.
+- Installing on first need has two exceptions. A pnpm repo with `virtualStoreType: global` in `pnpm-workspace.yaml` is already installed by the herdr plugin, since that setting makes a worktree install near-instant, so look for `node_modules` first. And a repo whose own instructions say to install first, or say how, wins.
 - A worktree isolates files but not ports or local databases. Assume other sessions of mine are running in sibling checkouts of the same repo: don't switch branches, stash, or rewrite a ref another session could be using, and give any server or database you start its own port.
 - When I name a parent to stack on, usually partway through, rebase this branch onto it and set the PR's base to it. Most sessions never stack.
 - When a parent merges, `pr rebase` moves the children. It uses plain git, not a stacking tool.

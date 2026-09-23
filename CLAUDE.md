@@ -218,6 +218,13 @@ been going wrong, then proposes changes and waits. Also repo-local.
   case, or `<github-login>/kebab-phrase` with no ticket. Don't bring `tc/`
   back.
 
+- **Rejected on 2026-09-22, don't propose again.** A rule naming the early
+  stops Anthropic's Opus 5.5 prompting guide lists (a summary that announces
+  the next step, an offer to continue, and the rest), globally or under
+  `ship it`. The per-step progress-update rules were dropped the same day for
+  the same reason: how often a model reports and where it ends a turn is left
+  to each model's default.
+
 - **Three lines in `.claude/CLAUDE.md` look like duplicates and are not.**
   The Communication hatch ("Break any of these rules...") is not a copy of
   the preamble: the preamble asks for a why, and for a wording deviation that
