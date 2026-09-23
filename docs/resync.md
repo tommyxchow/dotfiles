@@ -239,10 +239,10 @@ herdr's defaults plus the `$pr` and `$dirty` slots the `tc.pr-badge` plugin
 fills, the PR or default-branch CI state and the uncommitted file count; a slot
 shows nothing until a value is reported. The first matching rule
 wins, so the red rules for a failed check and for requested changes come
-first, then orange for running checks (yellow is the file count's color),
-The colors are mid-tones rather than catppuccin's pastels, because a rule takes
-only a fixed hex and the pastels vanish on the light theme; and an inline table has to stay on
-one line.
+first, then orange for running checks (yellow is the file count's color). An
+inline table has to stay on one line. The colors are mid-tones rather than
+catppuccin's pastels, because a rule takes only a fixed hex and the pastels
+vanish on the light theme.
 
 ```toml
 [theme]
