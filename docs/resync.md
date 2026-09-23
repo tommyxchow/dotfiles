@@ -223,7 +223,9 @@ survives and only a real version bump puts claude on the outdated list.
 Skip this section if `herdr` is not on PATH.
 
 Herdr's `config.toml` is machine-local; `herdr --help` prints its path. This
-setup expects five settings in it. The global rules have agents send a
+setup expects six settings in it. Its theme follows the terminal's light or
+dark mode, like Claude Code's `theme: auto`; picking a theme by hand in herdr's
+Settings turns `auto_switch` back off. The global rules have agents send a
 notification after a long run, and `system` is the delivery that shows outside
 the herdr window. The Claude entry puts each session's title in the sidebar. It
 replaces `rows` rather than adding to it, so its first and last rows repeat
@@ -241,6 +243,10 @@ first, then orange for running checks (yellow is the file count's color), and an
 one line.
 
 ```toml
+[theme]
+name = "catppuccin"
+auto_switch = true
+
 [ui.toast]
 delivery = "system"
 
