@@ -223,16 +223,19 @@ survives and only a real version bump puts claude on the outdated list.
 Skip this section if `herdr` is not on PATH.
 
 Herdr's `config.toml` is machine-local; `herdr --help` prints its path. This
-setup expects four settings in it. The global rules have agents send a
+setup expects five settings in it. The global rules have agents send a
 notification after a long run, and `system` is the delivery that shows outside
 the herdr window. The Claude entry puts each session's title in the sidebar. It
 replaces `rows` rather than adding to it, so its first and last rows repeat
 whatever `[ui.sidebar.agents] rows` holds on that machine. A fresh session
 titles itself "Claude Code", which only repeats the agent row under it, so the
 title row hides until the session has a real title; `hide` needs herdr 0.9.1 or
-newer. The spaces rows are
+newer. The OpenCode entry does the same for OpenCode 2, whose title reads
+`OC | <session title>`; the prefix is OpenCode's and no herdr rule can strip it.
+The spaces rows are
 herdr's defaults plus the `$pr` and `$dirty` slots the `tc.pr-badge` plugin
-fills; a slot shows nothing until a value is reported. The first matching rule
+fills, the PR or default-branch CI state and the uncommitted file count; a slot
+shows nothing until a value is reported. The first matching rule
 wins, so the failed-check rule comes first, and an inline table has to stay on
 one line.
 
@@ -247,6 +250,11 @@ show_agent_labels_on_pane_borders = true
 claude = [
   ["state_icon", "machine", "workspace", "tab"],
   [{ token = "terminal_title_stripped", rules = [{ equals = "Claude Code", hide = true }] }],
+  ["agent"],
+]
+opencode = [
+  ["state_icon", "machine", "workspace", "tab"],
+  ["terminal_title_stripped"],
   ["agent"],
 ]
 

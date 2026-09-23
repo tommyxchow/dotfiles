@@ -246,8 +246,9 @@ notification, because herdr's own alerts skip the tab that is open. All of
 this is in `.claude/CLAUDE.md`.
 
 The `tc.pr-badge` plugin fills two sidebar values for every git workspace: the
-branch's pull request, like `#12 draft`, with a ✗ when a check failed, and the
-count of uncommitted files, like `±3`. It refreshes when herdr starts, when an
+branch's pull request with its CI, like `#12 draft ◌` while checks run, `✓` once
+they pass, or `✗` when one failed; `CI ✓` and the like on the default branch,
+which has no pull request; and the count of uncommitted files, like `±3`. It refreshes when herdr starts, when an
 agent in that workspace settles, when the workspace gets focus, and through its
 refresh action. The pull request comes from `gh`, so without `gh` signed in only
 the file count shows.

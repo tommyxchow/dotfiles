@@ -1,5 +1,6 @@
 // Fills two sidebar values for each git workspace: `pr`, the state of the
-// branch's pull request, and `dirty`, how many files are uncommitted. Herdr runs
+// branch's pull request and its CI (or just the CI on the default branch, which
+// has no pull request), and `dirty`, how many files are uncommitted. Herdr runs
 // it with "all" on start and from the refresh action, and with "event" when an
 // agent settles or a workspace gets focus. The values show through the `$pr`
 // and `$dirty` slots in herdr's sidebar config.
@@ -17,6 +18,8 @@ const SOURCE = "tc-pr-badge";
 const THROTTLE_MS = 10_000;
 const SETTLED = new Set(["idle", "done"]);
 const FAILED_CHECKS = new Set(["FAILURE", "ERROR", "TIMED_OUT", "STARTUP_FAILURE", "ACTION_REQUIRED"]);
+// Commit statuses have only a state; check runs have a status and a conclusion.
+const PENDING_STATES = new Set(["PENDING", "EXPECTED"]);
 
 function run(command, args, cwd) {
   const result = spawnSync(command, args, { cwd, encoding: "utf8" });
@@ -36,12 +39,30 @@ function prState(pr) {
   return "open";
 }
 
+// The worst state across a set of checks: ✗ when any failed, ◌ while any is
+// still running, ✓ when all passed, and null when there are none.
+function ciMark(checks) {
+  if (checks.length === 0) return null;
+  if (checks.some((check) => FAILED_CHECKS.has(check.conclusion ?? check.state))) return "✗";
+  const running = checks.some((check) => (check.status ? check.status !== "COMPLETED" : PENDING_STATES.has(check.state)));
+  return running ? "◌" : "✓";
+}
+
 // Short on purpose: the sidebar clips long values. A PR number under 10000 keeps
 // the longest badge, "#1234 approved ✗", at 16 characters.
 export function formatBadge(pr) {
-  const checks = pr.statusCheckRollup ?? [];
-  const failed = checks.some((check) => FAILED_CHECKS.has(check.conclusion ?? check.state));
-  return `#${pr.number} ${prState(pr)}${failed ? " ✗" : ""}`;
+  const state = prState(pr);
+  // CI on a merged or closed PR is history, not something to act on.
+  const mark = state === "merged" || state === "closed" ? null : ciMark(pr.statusCheckRollup ?? []);
+  return mark ? `#${pr.number} ${state} ${mark}` : `#${pr.number} ${state}`;
+}
+
+// gh run list reports lowercase values and an empty conclusion while a run is
+// going, so this maps them onto the check-run shape ciMark reads.
+export function runsBadge(runs) {
+  const checks = runs.map((run) => ({ status: run.status.toUpperCase(), conclusion: (run.conclusion ?? "").toUpperCase() || null }));
+  const mark = ciMark(checks);
+  return mark ? `CI ${mark}` : null;
 }
 
 function defaultBranch(checkout) {
@@ -51,10 +72,19 @@ function defaultBranch(checkout) {
   return result.stdout.trim().replace(/^origin\//, "");
 }
 
-// Returns the badge text, or null when the branch can have no pull request.
+// The default branch has no pull request, so its badge is the CI of the checked-out
+// commit. Nothing shows before that commit is pushed or in a repo without CI.
+function defaultBranchBadge(checkout) {
+  const sha = run("git", ["-C", checkout, "rev-parse", "HEAD"]);
+  const found = run("gh", ["run", "list", "--commit", sha, "--limit", "20", "--json", "status,conclusion"], checkout);
+  return runsBadge(JSON.parse(found));
+}
+
+// Returns the badge text, or null for a detached HEAD or a branch with no pull request.
 function prBadge(checkout) {
   const branch = run("git", ["-C", checkout, "branch", "--show-current"]);
-  if (!branch || branch === "main" || branch === "master" || branch === defaultBranch(checkout)) return null;
+  if (!branch) return null;
+  if (branch === "main" || branch === "master" || branch === defaultBranch(checkout)) return defaultBranchBadge(checkout);
   const fields = "number,state,isDraft,reviewDecision,statusCheckRollup";
   // gh reads the repository from its working directory, so run it in the checkout.
   const found = run("gh", ["pr", "list", "--head", branch, "--state", "all", "--limit", "1", "--json", fields], checkout);
@@ -76,9 +106,21 @@ function report(workspaceId, values) {
   run(herdr, args);
 }
 
+// Herdr records the checkout only on workspaces it created as worktrees, so a
+// plain repo workspace falls back to its first pane's folder. Null when that
+// folder is not inside a git checkout.
+function checkoutOf(workspace) {
+  if (workspace.worktree?.checkout_path) return workspace.worktree.checkout_path;
+  const { panes } = JSON.parse(run(herdr, ["pane", "list", "--workspace", workspace.workspace_id])).result;
+  const cwd = panes[0]?.cwd;
+  if (!cwd) return null;
+  const result = spawnSync("git", ["-C", cwd, "rev-parse", "--show-toplevel"], { encoding: "utf8" });
+  return result.status === 0 ? result.stdout.trim() : null;
+}
+
 function refresh(workspaceId) {
   const workspace = JSON.parse(run(herdr, ["workspace", "get", workspaceId])).result.workspace;
-  const checkout = workspace.worktree?.checkout_path;
+  const checkout = checkoutOf(workspace);
   if (!checkout) return; // not a git checkout, so there is nothing to show
   const values = { dirty: dirtyMarker(checkout) };
   try {
@@ -137,7 +179,7 @@ function main(mode) {
   if (file) writeFileSync(file, JSON.stringify({ ...lastRefresh, [workspaceId]: Date.now() }));
 }
 
-// Guarded so formatBadge can be imported and checked without running anything.
+// Guarded so the badge formatters can be imported and checked without running anything.
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   try {
     main(process.argv[2]);
