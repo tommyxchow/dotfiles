@@ -39,7 +39,7 @@ Build the pool, the set of files this run covers, by following [references/scope
 - Prefer derived state or event handlers over effect+setState when the two are equivalent.
 - Don't default to `useMemo` / `useCallback` / `memo` when React Compiler is on.
 - Prefer semantic tokens and `cn`-style helpers when the repo has them.
-- Make only behavior-identical changes. Correctness problems go to code review.
+- Make only behavior-identical changes. Correctness problems are reported as review findings for `tdd`.
 - **No Prettier and no ESLint:** formatting, import order, and class order stay **out of scope**. Add at most one note in the summary suggesting the repo consider adopting them, and don't hand-fix style.
 - **Outside React/TS** (Dart/Flutter, etc.): skip the React-specific taste (Compiler, `useMemo`, JSX nesting, `import type`). Still run the reuse, dead-code, and altitude checks. Don't invent dartfmt.
 
@@ -63,9 +63,9 @@ Size from the pool file set, not `git diff` (see the post-commit case in `refere
 3. Don't let unfixable ESLint findings abort polish. Read the logs yourself instead of dumping them on the user.
 4. **Refresh pool:** inspect the post-autofix diff for ownership and scope. Undo only autofix-owned changes outside the pool. Re-read touched untracked and Source-B paths when they are in scope.
 5. Drop a file from lens scope only when it **had a dirty diff** that became purely mechanical (format, import-order, or class-order changes only). Pool files with no git diff stay (see the post-commit case in `references/scope.md`), and the lenses review current file contents.
-6. For leftover ESLint findings, a safe behavior-identical fix may go in Phase 3, a correctness finding gets noted for code review, and pure style is ignored.
+6. For leftover ESLint findings, a safe behavior-identical fix may go in Phase 3, a correctness finding is reported as a review finding for `tdd`, and pure style is ignored.
 
-Keep the numbers for the summary: how many files autofix touched, and what happened to each leftover lint finding (fixed, skipped, or sent to code review).
+Keep the numbers for the summary: how many files autofix touched, and what happened to each leftover lint finding (fixed, skipped, or reported for `tdd`).
 
 ## Phase 1 — Four lenses (parallel, read-only)
 
@@ -100,8 +100,8 @@ Make the smallest correct edit. Respect Chesterton's Fence, meaning don't remove
 2. After applying, read the resulting diff with fresh eyes and revert polish-owned scope creep.
 3. Run recon's gate. If you applied nothing and this same tree already passed that gate this session, such as the run `tdd` just finished, cite that result instead of running it twice. Anything you applied means the gate runs, unless the caller passed `skip check`; then report the gate as skipped at the user's request and say what would have run. If a polish cleanup caused a new failure, revert **that** cleanup and continue with the others. If there is no gate, say so.
 
-**Summary.** Write it in the global Communication voice: a few full sentences, answer first. Say what autofix touched, what you cleaned up and why it is safe, what you left alone and why, and anything correctness-shaped that belongs in code review. If nothing was worth changing, say the code was already clean and stop.
+**Summary.** Write it in the global Communication voice: a few full sentences, answer first. Say what autofix touched, what you cleaned up and why it is safe, what you left alone and why, and any correctness finding, reported for `tdd` rather than fixed. If nothing was worth changing, say the code was already clean and stop.
 
 ```
-Autofix reformatted three files. I removed the unused draft state in the editor and swapped a hand-rolled date formatter for the existing helper; both keep behavior identical and the local check passes. I left the two similar upload handlers duplicated because they are likely to diverge. One thing for code review: the retry loop in the uploader never gives up.
+Autofix reformatted three files. I removed the unused draft state in the editor and swapped a hand-rolled date formatter for the existing helper; both keep behavior identical and the local check passes. I left the two similar upload handlers duplicated because they are likely to diverge. One correctness finding for `tdd`: the retry loop in the uploader never gives up.
 ```

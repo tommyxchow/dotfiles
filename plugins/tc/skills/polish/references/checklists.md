@@ -71,14 +71,14 @@ These rules keep the review from being too eager:
 7. **Nested conditionals**: nesting 3+ deep. Use guards, early returns, or a lookup table.
 8. **Unnecessary comments**: a comment that narrates *what*, a docblock that repeats the signature, section dividers, and leftover notes about the task. Keep comments that give a non-obvious *why*.
 9. **Dead code**: unreachable, unused, or commented-out orphans from this change; an old path left beside its replacement; compatibility re-exports for callers in this repo. Skip unused imports if the linter already fixes them.
-10. **Type escapes**: casual `any` / `as` / `!` where a real type or narrowing works. Deep type design goes to code review.
+10. **Type escapes**: casual `any` / `as` / `!` where a real type or narrowing works. Deep type design goes to `review`.
 11. **Convention drift**: code that ignores the patterns found in recon (naming, errors, layout). Name the existing example it should match.
 12. **Guards for impossible cases**: null checks on non-nullable values, a try/catch that only rethrows or swallows, and "just in case" fallbacks. Delete them and trust the types.
 13. **Pass-through wrapper**: a function whose body is one call to another with the same arguments. Call the callee directly.
 14. **Placeholder names**: `data`, `result`, `temp`, `item2`, `processData`, or a new `utils`/`helpers` file. Name it for what it is, or move it beside its one caller.
 15. **Needlessly dense or clever code**: a chained one-liner, nested ternary, or bitwise trick where a plain few lines with named steps would read at a glance; single-letter or abbreviated names outside a tiny loop; code compressed to save lines rather than to say something. The goal is code a reviewer can read when seeing only this hunk, so expand it. Length added this way is not a finding.
 
-Correctness-shaped checks stay in code review.
+Correctness-shaped checks are review findings for `tdd` (see Restraint).
 
 ---
 

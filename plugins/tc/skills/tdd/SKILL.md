@@ -41,7 +41,7 @@ Take one case all the way through before starting the next:
 
 1. **Write one failing test** for one case.
 2. **Run it and read the failure.** It has to fail for the reason the case describes. A failure from a typo, a missing import, or a broken fixture doesn't count as red, so fix it and run again. A test that passes before the code exists usually means the test asserts nothing, so fix the test. If instead the behavior already exists and no other test covers it, keep the test and say so. It is acceptance evidence for that criterion, not a red-green step.
-3. **Write the smallest code that passes.** Don't add extra cases, speculative branches, or handling for a case you haven't written a test for yet.
+3. **Write the smallest general code that passes.** It has to work for every valid input the case describes, not only the test's, so never branch on the test's specific inputs or return its expected value. The test checks the behavior; it doesn't define it. Don't add extra cases, speculative branches, or handling for a case you haven't written a test for yet.
 4. **Run it again and see green.**
 5. **Move to the next case.**
 
