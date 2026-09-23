@@ -36,6 +36,17 @@ Key each line by agent name, never by pane ID, because herdr gives a pane a new 
 
 Update the board when you dispatch, when a worker settles, and when I answer something. Read it again before every status report and whenever you resume after a long gap, instead of trusting your memory of the conversation. A fresh HQ session should be able to pick up from the board and `herdr agent list` alone.
 
+## Pick up on start
+
+When HQ mode turns on, take stock before doing anything else, because sessions I started by hand, or workers from an earlier HQ, may already be running.
+
+1. **Read the board** if it exists, and run `herdr agent list`. Leave out your own pane, which is `HERDR_PANE_ID`.
+2. **Take over every other live agent.** One that is on the board keeps its line. For one that isn't, work out what it is on from its terminal title, its folder, the branch there, and a short `herdr agent read <pane-id> --source recent-unwrapped --lines 60`. If it has no name, give it a slug for its task with `herdr agent rename <pane-id> <slug>`, so you can reach it after its pane moves. Then add its line.
+3. **Settle the board lines whose agent is gone.** Check the task's PR with `gh pr view`, report what happened, and remove the line or mark it waiting on me.
+4. **Report what you found** in one short message: each session in a sentence, the ones waiting on me first. Then start waits on the working ones and handle the blocked ones as below.
+
+I may leave some sessions out, like one I use for something outside my repos. Keep a line for each of those marked "not tracked", so a later HQ doesn't take it over again, and don't wait on it or read it again.
+
 ## Dispatch a task
 
 1. **Pick the repo and the branch** by the global Git rules: the ticket id, or the GitHub username and a short phrase.
