@@ -3,7 +3,7 @@ name = "PR badge"
 # herdr requires version; the plugin is a live link, so it is never bumped.
 version = "0.1.0"
 min_herdr_version = "0.9.0"
-description = "Show each workspace's pull request state and uncommitted files in the sidebar"
+description = "Show each workspace's pull request and CI state and uncommitted files in the sidebar"
 platforms = ["linux", "macos", "windows"]
 
 [[startup]]

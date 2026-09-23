@@ -29,7 +29,7 @@ From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new c
 
 `./install.sh` on every platform, from Git Bash on Windows.
 
-It links configs, first-party skills, the statusline script, and `bin/wait-for` into `~/.local/bin`, prunes links from older layouts, copies Cursor's local `tc` plugin, and links the herdr worktree bootstrap plugin when herdr is on PATH and its server is running. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode 2 pick up the instructions and every skill under `plugins/tc/skills` on a new machine.
+It links configs, first-party skills, the statusline script, and `bin/wait-for` into `~/.local/bin`, prunes links from older layouts, copies Cursor's local `tc` plugin, and links the herdr plugins (worktree bootstrap and PR badge) when herdr is on PATH and its server is running. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and patches only that file's non-default keys on re-runs — Grok writes runtime state into it, so it is never symlinked. Same for `~/.grok/lsp.json` (seed if missing, warn if `typescript-language-server` is not on PATH; never overwrite an existing file). Re-running is safe. This is the step that makes Claude / Cursor / Grok / OpenCode 2 pick up the instructions and every skill under `plugins/tc/skills` on a new machine.
 
 On Windows, symlink creation needs Developer Mode (or an elevated shell). If a link comes out dead, fix the mode and re-run the installer rather than replacing links with copies.
 
@@ -236,8 +236,8 @@ The spaces rows are
 herdr's defaults plus the `$pr` and `$dirty` slots the `tc.pr-badge` plugin
 fills, the PR or default-branch CI state and the uncommitted file count; a slot
 shows nothing until a value is reported. The first matching rule
-wins, so the failed-check rule comes first and the running-checks rule
-(orange, since yellow is the file count's color) second, and an inline table has to stay on
+wins, so the red rules for a failed check and for requested changes come
+first, then orange for running checks (yellow is the file count's color), and an inline table has to stay on
 one line.
 
 ```toml
@@ -262,7 +262,7 @@ opencode = [
 [ui.sidebar.spaces]
 rows = [
   ["state_icon", "workspace"],
-  ["branch", "git_status", { token = "$pr", rules = [{ contains = "✗", fg = "#f38ba8" }, { contains = "◌", fg = "#fab387" }, { contains = "approved", fg = "#a6e3a1" }, { contains = "merged", dim = true }, { contains = "closed", dim = true }] }, { token = "$dirty", fg = "#f9e2af" }],
+  ["branch", "git_status", { token = "$pr", rules = [{ contains = "✗", fg = "#f38ba8" }, { contains = "changes", fg = "#f38ba8" }, { contains = "◌", fg = "#fab387" }, { contains = "approved", fg = "#a6e3a1" }, { contains = "merged", dim = true }, { contains = "closed", dim = true }] }, { token = "$dirty", fg = "#f9e2af" }],
 ]
 ```
 
