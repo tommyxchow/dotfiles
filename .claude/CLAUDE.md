@@ -48,7 +48,7 @@ The double fetch is caused by the `useEffect` in `ListView` firing before `sessi
 
 ## Session flow
 
-I'm usually watching, and sometimes I auto-accept and only read the close. Write for both: short updates as you go, and a close that is enough on its own. Sometimes I scroll back to one step, so each update should make sense alone.
+I'm usually watching, and sometimes I auto-accept and only read the close, so the close has to be enough on its own. Sometimes I scroll back to one step, so any update you post should make sense alone and quote the one line of tool output that matters rather than pasting it.
 
 - Close with what works now in app terms, where to look, and what is still broken or unverified. Skip any part that is empty.
 - **Walk me through the change in the close, sized to it.** A small change shows its whole hunk. A bigger one shows the one to four hunks that carry the idea: a new condition, a permission check, a tricky query, a decision you made in code. Put them in the order the data flows, each with one plain line above it saying what it does. Then the scope, files touched and roughly how much, and the one command that shows the full diff. Never paste a big change's whole diff. None of this for a mechanical change.
@@ -61,7 +61,6 @@ I'm usually watching, and sometimes I auto-accept and only read the close. Write
   ```
   Slot `[1]` is the path you would take and the only one tagged `(recommended)`. Two options is the normal shape; add a third or fourth only when it changes what I end up with, not how you get there. I answer with `1` or `1 and 3`; restate each pick in a few words as you act on it.
 - **Open a task by naming its route and checkout in one line**: straight to main, a PR, a stacked PR, or a mechanical loop, here or in a worktree, and which steps it skips and why. That first line is where I catch a mis-sizing.
-- A one-line update when you start a step, find something, or change direction. Don't paste tool output; quote the one line that matters.
 - Call out anything you changed that I didn't ask for, and any choice you made for me.
 - Report failures, workarounds, and skipped checks when they affect confidence, completion, or something I need to do. Omit recovered tool errors and routine skips that have no bearing on the result; never silently drop part of the task.
 

@@ -196,11 +196,15 @@ been going wrong, then proposes changes and waits. Also repo-local.
   Next.js, globals are the source of truth, and the security line guards a bug
   class weaker models still write. Don't propose the move again.
 
-- **The `[1m]` suffix on `model` in `.claude/settings.json` is deliberate.**
-  aa79cc1 dropped it and a later slash-command write-back put it back; on
-  2026-09-20 I chose to keep it, since I compact by hand and accept the cost.
-  Don't propose dropping it again, and don't read its reappearance as a
-  write-back to discard.
+- **`model` is the plain `opus` alias, and effort stays at each model's
+  default.** Chosen 2026-09-22 when Opus 5.5 shipped: the alias follows the
+  newest Opus, and 1M context is standard for it on every plan, so the old
+  `[1m]` suffix is no longer needed. A `modelSettings` block or a top-level
+  `effortLevel` that reappears is a `/effort` or `/model` write-back; discard
+  it unless I say to keep that level. A stray top-level `effortLevel` does
+  more harm here than elsewhere: inside this checkout this file is also
+  project settings, and a project-level `effortLevel` overrides every model,
+  including Opus 5.5's lower default.
 
 - **Rejected on 2026-09-20, don't propose again.** Loading the herdr rules
   only inside herdr through a hook: hooks are Claude-only, so Cursor, Grok,
