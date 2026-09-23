@@ -181,6 +181,11 @@ been going wrong, then proposes changes and waits. Also repo-local.
   without it OpenCode 2 never loads herdr's plugin. How the two surfaces
   refresh is in `docs/resync.md`.
 
+- **OpenCode 2 replaces the `cli.json` link when it saves a setting.** A
+  toggle in its UI, like turning tabs on, writes a regular file over the
+  installer's link. The installer's `BAK` line for that path is the sign:
+  copy the backup's new settings into `opencode/cli.json` and rerun it.
+
 - **Inside this checkout, user scope and project scope are the same file.**
   Claude Code reads `<project>/.claude/settings.json` as project settings, and
   here that is the file `~/.claude/settings.json` links to. So a session run in
