@@ -2,7 +2,7 @@
 name: refresh
 metadata:
   opencode/slash: "true"
-description: Catches a repo up occasionally. It bumps packages to the latest versions this stack can actually take, applies migrations, flags must-upgrades and security advisories, and vets AGENTS.md against current vendor docs. Use when the user says "refresh", "reaudit", "resync" (this product repo), "upgrade everything", "any packages we can upgrade", "catch this repo up", "outdated packages", "gonna do another release", "security audit", "dependabot", or asks to migrate to the latest stack. It is distinct from the dotfiles machine playbook (docs/resync.md), polish (shape of working code), vet (claim checking), and pass (commits a finished slice).
+description: Catches a repo up occasionally. It bumps packages to the latest versions this stack can actually take, applies migrations, flags must-upgrades and security advisories, and vets AGENTS.md against current vendor docs. Use when the user types /refresh or says "refresh this repo", "refresh the packages", "upgrade everything", "any packages we can upgrade", "catch this repo up", "outdated packages", "security audit", "dependabot", or asks to migrate to the latest stack. It is distinct from the dotfiles machine playbook (docs/resync.md), polish (shape of working code), vet (claim checking), and pass (commits a finished slice).
 argument-hint: "[optimal | full | minimal | audit | packages | docs] [custom instructions]"
 ---
 
@@ -16,7 +16,7 @@ Honor the holds in `AGENTS.md`, meaning the versions the repo deliberately keeps
 
 ## Collision: machine vs repo
 
-If this workspace **is the dotfiles/chow config repo**, which you can tell by an `install.sh` at the root plus `docs/resync.md`, **stop**. There, `audit` / `plan` is the setup audit: follow `docs/audit.md` and change nothing. Any other mode, including a bare `/refresh` and "resync", follows `docs/resync.md`, which covers the pull, the installer, plugins, and the leftover sweep rather than packages. In any other repo, "resync" means this skill.
+If this workspace **is the dotfiles/chow config repo**, which you can tell by an `install.sh` at the root plus `docs/resync.md`, **stop**. There, `audit` / `plan` is the setup audit: follow `docs/audit.md` and change nothing. Any other mode, including a bare `/refresh`, follows `docs/resync.md`, which covers the pull, the installer, plugins, and the leftover sweep rather than packages. Elsewhere, "resync" or "sync" means pull the latest changes, not this skill.
 
 ## Modes
 

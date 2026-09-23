@@ -29,11 +29,11 @@ work-only tool.
 
 ## Resync
 
-When I say resync, update, sync this machine, or catch this machine up: read
+When I say resync, update this machine, sync this machine, or catch this machine up: read
 `docs/resync.md` and follow it. That playbook is repo-local, not a global skill.
 
 Refreshing a **product** repo (packages, framework migrations, shadcn) is the
-`refresh` skill, including when I say resync in that repo.
+`refresh` skill. There, resync means only a `git pull`.
 
 ## Audit
 
