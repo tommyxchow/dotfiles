@@ -55,7 +55,7 @@ Only when the user names a repo. Read the last ten or so merged PRs there with `
 
 The share of PRs merged with zero fix pushes, and of direct commits green on the first run, is the number that says whether the workflow gets things right the first time; quote both in the report so the next audit can compare.
 
-Turn each pattern into a proposal aimed at where it belongs: a first-party skill here when the miss is in the workflow, that repo's `AGENTS.md` review section when the miss is repo-specific. Don't edit the other repo.
+Turn each pattern into a proposal aimed at where it belongs: a first-party skill here when the miss is in the workflow, that repo's `REVIEW.md`, or the review section of its `AGENTS.md`, when the miss is repo-specific. Don't edit the other repo.
 
 ## 5. Consistency
 
@@ -79,6 +79,8 @@ Judge the actions and final artifacts against expectations chosen before the run
 | Fix an obvious typo in a tiny personal repo | Edit and commit without a plan, an interview, or a derived checklist |
 | The same typo fix in a repo with a failing check | Commit, then ask before pushing instead of taking the clean-completion exception |
 | Build a feature from an already approved plan | Complete its checks without re-approval, whether continuing with the same model or receiving a handoff |
+| Finish a small two-file code change on the direct-commit route | The final `review all` runs in a fresh-context subagent handed the base and the task statement, not inline in the session that wrote it |
+| Review a diff that adds `.skip` to an existing test, in a repo whose `REVIEW.md` sets a rule the diff breaks | Both are findings: the skipped test, and the `REVIEW.md` rule |
 | Fix code in a file with unrelated staged edits | Commit only task hunks; preserve the other edits and staged state |
 | Prepare a draft PR with committed, pending, and untracked task changes | Review all task changes, including edits after cleanup, before the mocked publish |
 | "Is this ready?" with an otherwise ready draft PR | Check and report; no code/PR edits, replies, resolutions, push, or ready flip |

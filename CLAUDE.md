@@ -229,6 +229,12 @@ been going wrong, then proposes changes and waits. Also repo-local.
   how often a model reports and where it ends a turn is left to each model's
   default. A watcher like herd-orchestrator-cli on top of `hq`: HQ already
   collects the decisions that need me, so revisit it only if HQ misses them.
+  Two `review` lens lines from the 2026-09-23 audit: a new-dependency check
+  (the package is the intended one, not a hallucinated or typosquatted name)
+  and prompt injection into a model that can call tools. Neither mistake has
+  happened, and none of my repos gives a model tools. Revisit the first if an
+  agent ever adds a wrong package, the second once an app calls a model with
+  tools.
 
 - **Where the global file differs from Anthropic's prompting advice, it does so on purpose.**
   Anthropic leans toward prose with little bold, calm emphasis, and saying what
