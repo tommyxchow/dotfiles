@@ -95,7 +95,7 @@ OpenCode 2 reads it through the `AGENTS.md` link, Grok Build reads it through
 its Claude Code compatibility, and Cursor gets the installer's copy. Anything
 specific to this repo belongs in the root `CLAUDE.md`, which also carries the
 gotchas for editing any of this. `.claude/settings.json` holds Claude Code
-permissions, sandbox, model and effort, plugins, statusline, and marketplaces.
+permissions, model and advisor, theme, plugins, statusline, and marketplaces.
 
 ## Skills
 

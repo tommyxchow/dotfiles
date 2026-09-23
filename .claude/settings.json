@@ -37,11 +37,9 @@
       "autoUpdate": true
     }
   },
-  "sandbox": {
-    "enabled": true
-  },
   "advisorModel": "fable",
   "showClearContextOnPlanAccept": true,
+  "theme": "auto",
   "tui": "fullscreen",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
