@@ -53,10 +53,12 @@ Read only the recent screen, never a worker's whole transcript. The worker's clo
 
 ## Blocked workers
 
-A blocked worker is showing a question card, a permission prompt, or a question in text. Read the screen before doing anything.
+A worker is blocked when it shows a question card, a plan waiting for approval, or a permission prompt. A worker that asked in text has simply finished its turn. Read the screen before doing anything.
 
-- **A plan waiting for approval** comes to me as its goal and acceptance checklist in a few lines, with the plan file's path for the full text. When I approve, pick the approve option on the worker's card; when I ask for changes, send them as my words.
-- **Answer it yourself only when the answer is already settled**: by something I said in this session, by the plan I approved, or by the global instructions. Answer a text question with `herdr agent prompt`. For a question card, read which option is which, then pick one with `herdr agent send-keys`.
+How to send an answer depends on which of those it is, because `herdr agent prompt` refuses a worker that is waiting at a card. When the answer is one of the card's options, read which option is which and pick it with `herdr agent send-keys`. When the answer is anything else, like changes to a plan, press `esc` with `send-keys` to close the card, wait for the worker to settle with `herdr agent wait <name> --until idle --until done --timeout 30000`, then send the words with `herdr agent prompt`. A worker that asked in text gets its answer through `agent prompt` directly.
+
+- **A plan waiting for approval** comes to me as its goal and acceptance checklist in a few lines, with the plan file's path for the full text. When I approve, pick the approve option; when I ask for changes, send them as my words.
+- **Answer it yourself only when the answer is already settled**: by something I said in this session, by the plan I approved, or by the global instructions.
 - **Everything else comes to me**: approving a plan, marking a PR ready, merging, a push that needs asking, a deletion, a new dependency, a tool permission prompt, and anything that changes scope. Pass on the worker's question and its recommended option word for word, then pass my answer back to the worker, quoted as mine.
 - **Never approve in my place**, and never present your own guess as my answer. The worker treats whatever arrives in its prompt as my decision, so you are the only thing standing between a guess and an approval.
 
