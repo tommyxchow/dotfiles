@@ -236,7 +236,8 @@ The spaces rows are
 herdr's defaults plus the `$pr` and `$dirty` slots the `tc.pr-badge` plugin
 fills, the PR or default-branch CI state and the uncommitted file count; a slot
 shows nothing until a value is reported. The first matching rule
-wins, so the failed-check rule comes first, and an inline table has to stay on
+wins, so the failed-check rule comes first and the running-checks rule
+(orange, since yellow is the file count's color) second, and an inline table has to stay on
 one line.
 
 ```toml
@@ -261,7 +262,7 @@ opencode = [
 [ui.sidebar.spaces]
 rows = [
   ["state_icon", "workspace"],
-  ["branch", "git_status", { token = "$pr", rules = [{ contains = "✗", fg = "#f38ba8" }, { contains = "approved", fg = "#a6e3a1" }, { contains = "merged", dim = true }, { contains = "closed", dim = true }] }, { token = "$dirty", fg = "#f9e2af" }],
+  ["branch", "git_status", { token = "$pr", rules = [{ contains = "✗", fg = "#f38ba8" }, { contains = "◌", fg = "#fab387" }, { contains = "approved", fg = "#a6e3a1" }, { contains = "merged", dim = true }, { contains = "closed", dim = true }] }, { token = "$dirty", fg = "#f9e2af" }],
 ]
 ```
 
