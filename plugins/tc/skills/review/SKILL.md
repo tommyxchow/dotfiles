@@ -12,7 +12,7 @@ Find real defects, meaning something a user, an attacker, or the next deploy wou
 
 `$ARGUMENTS` takes an optional depth first (`quick`, or `deep` / `deeper` for the expensive tier), then an optional scope keyword (`staged`, `unstaged`, `branch`, `all`, `pr <number|url>`), then an optional `fix`, and then focus text. A bare `review` uses the default scope and reports only.
 
-**The final task review runs in a fresh context.** When this review is the one the global completion rule asks for, run it in a fresh-context subagent whatever the diff's size, because the session that wrote the code reads it as it meant it, not as it is. Hand the subagent the base, the scope, the acceptance checklist or task statement, and this skill's path, not the conversation. The size gate below then applies inside it. Where the harness has no subagents, run it inline and say so in the report.
+**The final task review runs in a fresh context.** When this review is the one the global completion rule asks for, run it in a fresh-context subagent whatever the diff's size, because the session that wrote the code reads it as it meant it, not as it is. Hand the subagent the base, the scope, the acceptance checklist or task statement, and this skill's path, not the conversation. The size gate below then applies inside it. A subagent started for this review is that fresh context, so it reviews directly instead of starting another. Where the harness has no subagents, run it inline and say so in the report.
 
 ## 1. Recon, kept cheap
 
