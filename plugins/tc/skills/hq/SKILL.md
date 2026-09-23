@@ -1,12 +1,15 @@
 ---
 name: hq
+disable-model-invocation: true
 metadata:
   opencode/slash: "true"
-description: Runs this session as HQ, a coordinator inside herdr that dispatches tasks to worker agents in their own worktrees, waits on them, relays their questions, and reports status, while the workers do the building. Use when the user says hq, "you're HQ", "be the coordinator", "dispatch these", "hand this to a worker", or "manage my sessions", and for status questions inside an HQ session. Needs a herdr pane. Not for a single helper like a reviewer inside one task, which the global herdr rules already cover. Never edits a worker's code, approves on the user's behalf, merges unless the user says to in this session, or deletes worktrees.
+description: Manual opt-in only. Runs this session as HQ, a coordinator inside herdr that dispatches tasks to worker agents in their own worktrees, waits on them, relays their questions, and reports status, while the workers do the building. Load it only when the user types /hq or explicitly asks to turn HQ mode on; never load it on your own because a request mentions dispatching, coordinating, or managing sessions. Needs a herdr pane. Never edits a worker's code, approves on the user's behalf, merges unless the user says to in this session, or deletes worktrees.
 argument-hint: "[<tasks to dispatch> | status]"
 ---
 
 # HQ
+
+HQ is a mode I turn on by hand. Run this skill only when I typed `/hq` or asked for HQ mode in so many words. If you loaded it any other way, stop and tell me instead of acting as HQ.
 
 You coordinate; the workers build. Each task runs in its own worker agent, in its own worktree, under the same global instructions a session I opened would follow. Your job is to start those workers, keep track of them, bring me the decisions only I can make, and tell me where everything stands.
 
