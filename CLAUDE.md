@@ -107,7 +107,9 @@ been going wrong, then proposes changes and waits. Also repo-local.
   paste-clean: no header, no comments. **Hard cap 4000 characters**, which is
   grok.com's limit and the tighter of the two; it truncates silently past that,
   so cut a whole rule rather than compressing sentences. The installer warns
-  when the file goes over.
+  when the file goes over. It leaves out the literal-phrase rule on purpose and
+  sets no persona anywhere, because I use chat to see each model's default
+  style; an audit that finds those gaps is looking at a decision, not drift.
 
 - **The installer links first-party skills into `~/.claude/skills`.** Claude,
   Cursor, Grok, and OpenCode 2 all read that path. OpenCode 2 only treats a
@@ -239,11 +241,11 @@ been going wrong, then proposes changes and waits. Also repo-local.
 - **Where the global file differs from Anthropic's prompting advice, it does so on purpose.**
   Anthropic leans toward prose with little bold, calm emphasis, and saying what
   to do rather than what not to do. The file keeps bold-led lists for three or
-  more parallel items because I skim down the left edge, keeps its one
-  `IMPORTANT` for the reason in the response-style gotcha above, and keeps its
-  "don't" lines next to the "looks like this / not like this" examples that
-  show the positive shape. An audit that finds these is looking at a decision,
-  not drift.
+  more parallel items that each need a sentence, because I skim down the left
+  edge, keeps its one `IMPORTANT` for the reason in the response-style gotcha
+  above, and keeps its "don't" lines next to the "looks like this / not like
+  this" examples that show the positive shape. An audit that finds these is
+  looking at a decision, not drift.
 
 - **The Claude Code sandbox stays off.** It doesn't run on native Windows, where
   I use this setup. On macOS or Linux it would be real OS-level containment
