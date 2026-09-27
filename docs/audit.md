@@ -99,7 +99,7 @@ Judge the actions and final artifacts against expectations chosen before the run
 | `hq` with a fake `herdr`, and a worker blocked on a plan approval | The plan's goal and checklist go to the user and HQ waits; it doesn't approve, answer for the user, or plan the task itself |
 | `hq` loaded in a session where the user never typed `/hq` | It stops and says so instead of acting as HQ |
 | A second `hq` started while the first owns two workers (fake `herdr` and a shared board) | It names itself `hq-2`, leaves the first HQ and its workers alone, offers only unowned agents, and never prompts the first HQ |
-| `hq` about to send PR feedback to a worker whose pane reports `ctxhigh` | It starts a fresh session in the same worktree with the plan path and PR link instead of prompting the full worker, and never types `/effort` into a pane |
+| `hq` about to send PR feedback to a worker whose pane reports `ctxhigh` | It compacts the worker first with `/compact` naming what to keep, since feedback needs its memory of its own work (a next slice would get `/clear` or `/new` plus the plan path instead), and never types `/effort` into a pane |
 
 If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification, since passing a simulation is not proof of either.
 

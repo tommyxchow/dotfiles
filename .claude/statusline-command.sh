@@ -12,7 +12,7 @@ if [ -z "$(echo "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0; fi
 # seven_used are percentages *used*, matching the context percentage so every
 # number on the line runs the same direction; five_over and seven_over flag an
 # exhausted window; size is the context window formatted (1M / 200K) and size_raw
-# the same value in tokens, which the context color scales its trip points from;
+# the same value in tokens, which the context red scales its trip point from;
 # project is the dir basename.
 us=$'\037'
 IFS="$us" read -r model used_pct five_used five_over seven_used seven_over effort size size_raw project cur_dir five_reset seven_reset cost repo wt <<EOF
@@ -71,8 +71,8 @@ dot="${muted}·${reset}"
 # Color for a "% used" value, shared by every percentage on the line so a bigger
 # number always means worse and a colored one always means the same thing. A
 # value with room to spare gets no color at all: ink here is reserved for what
-# needs attention. Callers pass their own trip points, since context scales its
-# own to the window's headroom while a rate-limit window only matters near
+# needs attention. Callers pass their own trip points, since context red scales
+# to the window's headroom while a rate-limit window only matters near
 # exhaustion.
 color_used() {
   if [ "$1" -ge "$3" ]; then printf '%s' "$red"
@@ -173,17 +173,17 @@ modelseg="${reset}${model}${reset}"
 [ -n "$meta" ] && modelseg="${modelseg} ${muted}${meta}${reset}"
 
 # Segment 3 — context window used, labeled so the % can't be mistaken for a
-# rate-limit one. The trip points are headroom, not percentage: orange under 70K
-# tokens left, red under 50K, so the same amount of remaining room colors the
-# same on any window. A 200K window resolves to the original 65 and 75, and
-# anything smaller or unreported keeps those rather than scaling past them.
+# rate-limit one. Orange is the soft ceiling of 70%, where starting fresh or
+# compacting pays off before more work; the herdr token below trips at the same
+# point. Red means auto-compact is close, so it trips on room left rather than
+# percentage: under 50K tokens, which is 75% on a 200K window and 95% on 1M.
+# Anything smaller or unreported keeps 75 rather than scaling past it.
 ctxseg=""
 if [ -n "$used_pct" ]; then
   pct=$(printf "%.0f" "$used_pct")
-  ctx_orange=65
+  ctx_orange=70
   ctx_red=75
   if [ -n "$size_raw" ] && [ "$size_raw" -gt 200000 ]; then
-    ctx_orange=$(( 100 - 70000 * 100 / size_raw ))
     ctx_red=$(( 100 - 50000 * 100 / size_raw ))
   fi
   ctxseg="${muted}ctx${reset} $(color_used "$pct" "$ctx_orange" "$ctx_red")${pct}%${reset}"
@@ -192,11 +192,11 @@ fi
 # Inside a herdr pane, publish effort and context as pane tokens, so the
 # sidebar shows them and an hq session reads them from `herdr agent list`; the
 # model itself never sees this line. Context goes out as `ctxhigh` instead of
-# `ctx` once it passes the soft ceiling: 400K tokens used, or the orange trip
-# point above on a smaller window. The sidebar config colors that token, so the
-# threshold lives here in tokens rather than in a percentage rule. The TTL
-# outlives the 60s refresh, so the values vanish soon after Claude exits. It
-# runs in the background because the statusline must never wait on herdr.
+# `ctx` once it reaches the orange point above. The sidebar config can only
+# color a token by name, so the threshold lives here rather than in a sidebar
+# rule. The TTL outlives the 60s refresh, so the values vanish soon after Claude
+# exits. It runs in the background because the statusline must never wait on
+# herdr.
 if [ -n "$HERDR_PANE_ID" ]; then
   herdr_bin="${HERDR_BIN_PATH:-herdr}"
   if command -v "$herdr_bin" >/dev/null 2>&1; then
@@ -207,9 +207,7 @@ if [ -n "$HERDR_PANE_ID" ]; then
     effort_args=(--clear-token effort)
     [ -n "$effort" ] && effort_args=(--token "effort=${effort}")
     if [ -n "$used_pct" ]; then
-      ctx_used=0
-      [ -n "$size_raw" ] && ctx_used=$(( pct * size_raw / 100 ))
-      if [ "$pct" -ge "$ctx_orange" ] || [ "$ctx_used" -ge 400000 ]; then
+      if [ "$pct" -ge "$ctx_orange" ]; then
         ctx_args=(--token "ctxhigh=ctx ${pct}%" --clear-token ctx)
       else
         ctx_args=(--token "ctx=ctx ${pct}%" --clear-token ctxhigh)
