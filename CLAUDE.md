@@ -11,8 +11,8 @@ skill description against the 1024-character spec cap and `.claude/CLAUDE.web.md
 against grok.com's 4000-character limit, reports every link target, and rewrites
 Cursor's copy of the global file. A `WARN` line is a failing check.
 
-It is a gate with side effects, since it repoints the machine's live links. That
-is why it runs from the permanent checkout and never from a worktree.
+It is a gate with side effects, since it repoints the machine's live links, so
+it runs from the permanent checkout and never from a worktree.
 
 It checks mechanics, not judgment. It cannot tell whether a rule is right or
 whether two files now contradict each other, so it never substitutes for the
@@ -38,41 +38,38 @@ Refreshing a **product** repo (packages, framework migrations, shadcn) is the
 ## Audit
 
 When I say audit the setup, meta review, optimize my workflow, or self review:
-read `docs/audit.md` and follow it. It re-examines the global instructions,
-skills, and harness configs against what the harnesses can do now and what has
-been going wrong, then proposes changes and waits. Also repo-local.
+read `docs/audit.md` and follow it. It proposes changes and waits. Also
+repo-local.
 
 ## Gotchas
 
 - **Don't add `permissions.deny` or `autoMode` rules for destructive commands.**
-  Auto mode already ships a long list of soft blocks, and they are better than anything
-  written here: one rule names `rm -rf`, `git reset --hard`, `git clean -fd[x]`,
+  Auto mode already ships soft blocks that are better than anything written
+  here: one rule names `rm -rf`, `git reset --hard`, `git clean -fd[x]`,
   `git restore .` and `git stash drop` plus the PowerShell, Python and Node
-  spellings, another names force pushing and remote-history rewrites. Run
-  `claude auto-mode defaults` and check before concluding something is missing.
+  spellings, another names force pushing and remote-history rewrites. Check
+  `claude auto-mode defaults` before concluding something is missing.
   A `deny` rule matches a literal command prefix, so it covers one spelling and
   nothing else, and `Bash(git push --force*)` would also match
   `--force-with-lease` that restacking needs.
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
   `~/.claude/CLAUDE.md` points to `.claude/CLAUDE.md`.**
-  The repo files are canonical: editing them updates the linked files on disk.
-  Already-running sessions may need a reload or restart to load revised
+  The repo files are canonical: editing them updates the linked files on disk,
+  though running sessions may need a reload or restart to load revised
   instructions. OpenCode 2 reads the global text through
-  `~/.config/opencode/AGENTS.md` (installer link to `.claude/CLAUDE.md`). It
+  `~/.config/opencode/AGENTS.md` (installer link to `.claude/CLAUDE.md`) and
   falls back to `~/.claude/CLAUDE.md` only when that file is missing, so the
-  link is what actually feeds it.
-  In this repo the installer also links
-  `AGENTS.md` to this file so OpenCode 2 sees these gotchas. Cursor does support
-  symlinked local plugins, but `rules/global.mdc` needs `alwaysApply: true`
-  frontmatter that `.claude/CLAUDE.md` doesn't carry, so the installer still
-  copies it into `~/.cursor/plugins/local/tc/rules/global.mdc`. That
-  copy is stale until you re-run `./install.sh` after editing that file,
-  whichever agent or editor made the edit, and then **Developer: Reload
-  Window**. Do not also keep a User Rule with the same text. Cursor's
-  third-party config setting still imports installed Claude plugins and skills.
-  `.claude/CLAUDE.md` contains global instructions, so anything specific to this
-  repo belongs in this file instead.
+  link is what feeds it. In this repo the installer also links `AGENTS.md` to
+  this file so OpenCode 2 sees these gotchas. Cursor supports symlinked local
+  plugins, but `rules/global.mdc` needs `alwaysApply: true` frontmatter that
+  `.claude/CLAUDE.md` doesn't carry, so the installer copies it into
+  `~/.cursor/plugins/local/tc/rules/global.mdc`. That copy is stale until you
+  re-run `./install.sh` after editing that file, whichever agent or editor made
+  the edit, and then **Developer: Reload Window**. Do not also keep a User Rule
+  with the same text. Cursor's third-party config setting still imports
+  installed Claude plugins and skills. `.claude/CLAUDE.md` is global, so
+  anything specific to this repo belongs in this file instead.
 
 - **Slash commands write into the repo through that link.** `/model`, `/effort`,
   and anything else Claude Code saves as a default lands in
@@ -117,18 +114,18 @@ been going wrong, then proposes changes and waits. Also repo-local.
   typed `/vet` as that skill when its frontmatter carries
   `metadata: opencode/slash: "true"`, so every first-party skill sets it; a
   new skill without it is reachable there only through `/skills`. Do not copy
-  those skills into `~/.config/opencode/skills`, do not enable `tc@chow` on a machine
-  that ran the installer or install it on claude.ai (account sync brings that
-  copy down too, so both would load), and do not install `mattpocock-skills`
-  from the official marketplace (its `grill-me` collides with ours).
+  those skills into `~/.config/opencode/skills`, do not enable `tc@chow` on a
+  machine that ran the installer or install it on claude.ai (both copies would
+  load; see the `tc` gotcha below), and do not install `mattpocock-skills` from
+  the official marketplace (its `grill-me` collides with ours).
 
 - **Keep shared skills portable Agent Skills** (`name` and `description`
   required). Claude-only `context` / `agent` / `background` are fine where a
   skill should fork, and `disable-model-invocation` is read by Claude and Cursor
   but not OpenCode 2, which needs `metadata: opencode/autoinvoke: "false"` for
-  the same effect, so a manual-only skill carries both. Whatever such a key enforces has to be written into
-  the skill's own text as well or it only holds where the key is read. Don't put
-  `allowed-tools` on a shared skill.
+  the same effect, so a manual-only skill carries both. Whatever such a key
+  enforces has to be written into the skill's own text as well, or it only
+  holds where the key is read. Don't put `allowed-tools` on a shared skill.
 
 - **Don't list harness-shipped review, cleanup, or audit skills** here or in a
   skill body; they arrive and get renamed release to release. Two cases cover
@@ -145,7 +142,7 @@ been going wrong, then proposes changes and waits. Also repo-local.
 
 - **`tc` stays in the marketplace catalog; do not install it on claude.ai.**
   The catalog entry serves machines that install the plugin instead of running
-  the installer, so keep it. On claude.ai the plugin only surfaces in chat, it
+  the installer. On claude.ai the plugin only surfaces in chat, it
   does not update itself from GitHub (a snapshot there still served a retired
   skill two days after the pushes), and Claude Code syncs every claude.ai
   plugin down to `~/.claude/plugins/synced`, so every terminal session loads a
@@ -161,9 +158,10 @@ been going wrong, then proposes changes and waits. Also repo-local.
   `/plugin update ek@chow`, `/reload-plugins`. Local edits to any skill under
   `plugins/tc/skills` are live through `~/.claude/skills` with no push.
 
-- **Catalog entries for plugins in other repos need `source: url` with an `https://`
-  URL, never `source: github`.** This does not apply to `extraKnownMarketplaces`, where
-  `source: github` is correct and must stay. See the Plugins section of `README.md` for why.
+- **Catalog entries for plugins in other repos need `source: url` with an
+  `https://` URL, never `source: github`.** `extraKnownMarketplaces` is the
+  exception, where `source: github` is correct and must stay. The Plugins
+  section of `README.md` says why.
 
 - **`ek@chow` is upstream-only.** Never vendor, copy, or edit its skill files here.
   Refresh it with `/plugin update ek@chow`.
@@ -171,8 +169,8 @@ been going wrong, then proposes changes and waits. Also repo-local.
 - **The `gh` and `herdr` skills live in `~/.claude/skills`, not in this
   repo.** `gh` comes from `gh skill install` and `herdr` from `herdr --skill`,
   the copy bundled with the installed binary, which resync rewrites after each
-  `herdr update`. Do not vendor either into `plugins/tc/skills`. One copy in
-  `~/.claude/skills`; do not also install them for cursor, opencode, or grok.
+  `herdr update`. Do not vendor either into `plugins/tc/skills`, and do not also
+  install them for cursor, opencode, or grok.
 
 - **Herdr owns its pane hook; never vendor it here either.**
   `herdr integration install claude` writes an absolute machine path into the
@@ -213,11 +211,11 @@ been going wrong, then proposes changes and waits. Also repo-local.
   add a suffix like `[1m]` only when the model docs say the bare alias falls
   short. A `modelSettings` block or a top-level `effortLevel` that reappears is
   a `/effort` or `/model` write-back; discard it unless I say to keep that
-  level. A stray top-level `effortLevel` does more harm here than elsewhere:
-  inside this checkout this file is also project settings, and a
-  project-level `effortLevel` overrides every model's own default. This is
-  about saved settings only: `hq` picks a worker's effort per launch with
-  `--effort`, which lasts one session and writes nothing back.
+  level. A stray top-level `effortLevel` does more harm here than elsewhere: inside this
+  checkout this file is also project settings, and a project-level
+  `effortLevel` overrides every model's own default. This covers saved
+  settings only: `hq` picks a worker's effort per launch with `--effort`,
+  which lasts one session and writes nothing back.
 
 - **Rejected, don't propose again.** Loading the herdr rules
   only inside herdr through a hook: hooks are Claude-only, so Cursor, Grok,
