@@ -3,9 +3,8 @@
 Personal config for git, VS Code, Ghostty, Claude Code, OpenCode 2, Cursor, and Grok Build. The
 installer symlinks files from this repo into their real locations, so edits update
 the linked files immediately. Active sessions may need a reload or restart to use
-revised instructions. Cursor global instructions are copied instead:
-the installer copies `.claude/CLAUDE.md` into a local plugin and adds Cursor's
-`alwaysApply: true` frontmatter.
+revised instructions. The exception is Cursor's global instructions, which the
+installer copies instead (see below the table).
 
 ## Install
 
@@ -20,8 +19,7 @@ Mode** on (Settings > System > For developers); the installer stops with that
 hint when it cannot create symlinks.
 
 On a fresh machine you can also clone, open this repo in Cursor / Grok / OpenCode 2,
-and say **resync**. The repo `CLAUDE.md` points at `docs/resync.md`. That playbook
-is repo-local, not a global skill.
+and say **resync**, which follows `docs/resync.md`.
 
 The installer is idempotent. An existing real file at a target gets moved to `.bak`
 first, and the backup is deleted again if it turns out to be byte-identical to the repo
@@ -50,12 +48,12 @@ dotfiles checkout.
 | `herdr/plugins/pr-badge` | herdr plugin `tc.pr-badge`, linked the same way |
 | `.claude/statusline-command.sh` | `~/.claude/statusline-command.sh` (design notes in `docs/statusline.md`) |
 
-Cursor supports symlinked local plugins, but its rule file needs frontmatter
-that the shared `CLAUDE.md` does not carry. The installer writes a real plugin at
+Cursor's rule file needs `alwaysApply: true` frontmatter that the shared file
+doesn't carry, so the installer writes a real plugin at
 `~/.cursor/plugins/local/tc` whose `rules/global.mdc` is a copy of
-`.claude/CLAUDE.md` with `alwaysApply: true`. Re-run the installer after editing
-that file, then **Developer: Reload Window**. Do not also paste it into User
-Rules or the same text is injected twice.
+`.claude/CLAUDE.md` with that key added. Re-run the installer after editing
+that file, then **Developer: Reload Window**. Don't also paste it into User
+Rules, or the same text is injected twice.
 
 Ghostty is macOS/Linux only, so the installer skips it on Windows.
 
@@ -82,17 +80,16 @@ for the skill links above and for `tc@chow` on machines that only install the
 plugin. Nothing else reads the marketplace file locally.
 
 `.claude/CLAUDE.web.md` is the web-chat version of the global instructions for
-claude.ai and grok.com. The installer never touches it; paste it by hand.
-Mirror Communication and External writing changes there when they apply to chat.
+claude.ai and grok.com. The installer never touches it; paste it by hand. How
+to keep it in step is in `CLAUDE.md`.
 
 `~/.grok/config.toml` is seeded from `grok/config.toml` and then patched, never
 linked; see Grok Build below. `~/.cursor/mcp.json` stays outside the installer.
 
 ## Instructions
 
-`.claude/CLAUDE.md` is the one global instruction file. Claude Code links it,
-OpenCode 2 reads it through the `AGENTS.md` link, Grok Build reads it through
-its Claude Code compatibility, and Cursor gets the installer's copy. Anything
+`.claude/CLAUDE.md` is the one global instruction file; how each harness
+picks it up is under Harnesses below. Anything
 specific to this repo belongs in the root `CLAUDE.md`, which also carries the
 gotchas for editing any of this. `.claude/settings.json` holds Claude Code
 permissions, model and advisor, theme, plugins, statusline, and marketplaces.
@@ -102,9 +99,7 @@ permissions, model and advisor, theme, plugins, statusline, and marketplaces.
 First-party skills are the directories under `plugins/tc/skills`, live links into
 `~/.claude/skills` that Claude, Cursor, Grok, and OpenCode 2 all read. Slash any
 of them from any repo after the installer has run. Details live in the skill
-files. In OpenCode 2 the slash works because each skill sets
-`metadata: opencode/slash: "true"`; without it a skill is only reachable
-through `/skills` there.
+files.
 
 | Slash | When |
 |-------|------|
@@ -113,47 +108,34 @@ through `/skills` there.
 | `/polish` | Shape of code you already wrote. `quick` is inline and removal-only. |
 | `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. `quick` is one read; `deep` fans out and reproduces findings. |
 | `/pass` | Slice is done: apply this session's confirmed review findings, vet, leftovers, polish if code-shaped, slice-ready, then the commit. `quick` trims vet and polish. |
+| **finalize** | The final step, said on demand: the full review in a fresh context, then `pass` applies what it confirmed and commits. With a PR open and pushed, the review goes through `pr check`. "review/pass" in either order means the same. |
 | `/pr` | Prepare the task, review its complete final diff, publish a draft with acceptance evidence, then watch its CI to green. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
-| `/hq` | Manual only. Run this herdr session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Never builds or approves for you, and merges only a PR you name. |
+| `/hq` | Manual only. Run this herdr session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's effort at launch, runs Claude models in Claude Code, and shares one board with any other HQ. Never builds or approves for you, and merges only a PR you name. |
 | `/cleanup` | Repo hygiene: finished and dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
 | **audit** (this repo) | This **setup**. Follow `docs/audit.md`: re-examine the instructions and skills against current harnesses and recent pain, then propose. |
 
 `/tldr` summarizes.
 
-The skills chain during a task: plan where needed, build with `tdd` where it
-fits, drive the result where a user would meet it, and close slices with `pass`.
-Both direct commits and PRs use the same final acceptance, verification, and
-review requirements. `pr` publishes the evidence when a PR is warranted; having
-a plan does not require one. Saying `ship it` does: it runs the whole chain
-through to a draft PR. The same model can plan and build. Switching models or
-sessions carries the approved plan forward without another approval round. The
-global `.claude/CLAUDE.md` "How a task runs" section owns those rules; slash
-commands are shortcuts.
+How the skills chain during a task, including `ship it` and how each step is
+sized to the change, is the "How a task runs" section of `.claude/CLAUDE.md`.
+Slash commands are shortcuts into it.
 
-The official `gh` skill is installed into the same folder by resync through
-`gh skill install` and refreshed with `gh skill update`; the `herdr` skill is
-written there from `herdr --skill`, the copy bundled with the installed binary.
-Neither is linked from this repo. Herdr's Claude integration comes from
-`herdr integration install claude`. What must never be installed twice is
-listed in `CLAUDE.md`.
-
-The installer also links the Claude Code statusline script, so a new machine
-needs nothing else for it and edits to the script are live. The design behind
-it is in `docs/statusline.md`.
+The official `gh` skill and the `herdr` skill sit in the same folder but come
+from their own tools, not this repo. Resync installs and refreshes them, and
+`CLAUDE.md` lists what must never be installed twice.
 
 ## Harnesses
 
 ### Claude Code
 
 The installer links instructions, skills, and the statusline. Marketplace
-plugins still need `claude plugin install` when Claude Code is on the machine;
-`extraKnownMarketplaces` and `enabledPlugins` in `settings.json` declare them,
-but `enabledPlugins` alone does not install anything. Install each, then
-`/reload-plugins`. Skip `tc@chow` on a machine that ran the installer, since
-those skills are already linked:
+plugins still need `claude plugin install`, since `settings.json` only declares
+them (see Maintenance below). Install each, then `/reload-plugins`. Skip
+`tc@chow` on a machine that ran the installer, since those skills are already
+linked:
 
 ```bash
 claude plugin install ek@chow --scope user
@@ -161,10 +143,10 @@ claude plugin install typescript-lsp@claude-plugins-official --scope user
 claude plugin install frontend-design@claude-plugins-official --scope user
 ```
 
-Use the CLI over the interactive `/plugin` menu here: the menu installs to
-**project** scope, which pins the plugin to one repo, while `enabledPlugins`
-lives in user-scope `settings.json` and enables it everywhere. That mismatch
-shows up as "enabled but missing" in every other repo. Check the `/plugin`
+Use the CLI over the interactive `/plugin` menu: the menu installs to
+**project** scope, which pins the plugin to one repo while user-scope
+`enabledPlugins` enables it everywhere, so it shows up as "enabled but
+missing" in every other repo. Check the `/plugin`
 **Errors** tab afterwards; `typescript-lsp` reports `Executable not found in
 $PATH` until `typescript-language-server` is installed. Saying **resync** in
 this repo does all of this.
@@ -183,23 +165,21 @@ Grok Build reads `~/.claude/CLAUDE.md` through its built-in Claude Code compatib
 so it does not need a separate instructions link. Confirm effective discovery
 with the inspector inside an active Grok session; the standalone `grok inspect`
 command may report a different instruction list. Its own settings live in
-`grok/config.toml` here, non-default keys only. Because Grok writes runtime state
-back into `~/.grok/config.toml`, that file is never symlinked: the installer seeds it
-from the repo copy on new machines and patches just those keys afterwards.
-The installer also seeds `~/.grok/lsp.json` from `grok/lsp.json` when missing (rewriting
-the Windows `.cmd` shim on that platform) and warns if `typescript-language-server`
-is not on PATH.
+`grok/config.toml` here, non-default keys only. Grok writes runtime state back
+into `~/.grok/config.toml`, which is why the installer seeds and patches that
+file instead of linking it. It also seeds `~/.grok/lsp.json` from
+`grok/lsp.json` when missing, rewriting the Windows `.cmd` shim on that
+platform.
 
 ### OpenCode 2
 
 This setup is OpenCode 2 ([V2 docs](https://opencode.ai/v2/docs/)). The binary
 is `opencode`, with `opencode2` left as a back-compat shim.
 It reads user-global instructions from `~/.config/opencode/AGENTS.md` and
-project `AGENTS.md` walking up from the working directory. It does not load
-`CLAUDE.md`. The installer links those `AGENTS.md` paths to the shared
-`.claude/CLAUDE.md` and this repo's `CLAUDE.md`. Skills still come from
-`~/.claude/skills`. OpenCode 2 does not load Claude marketplace plugins, so
-`ek` is Claude Code-only.
+project `AGENTS.md` walking up from the working directory; the installer links
+those to the shared `.claude/CLAUDE.md` and this repo's `CLAUDE.md`. Skills
+come from `~/.claude/skills`. OpenCode 2 does not load Claude marketplace
+plugins, so `ek` is Claude Code-only.
 
 ### Herdr
 
@@ -233,25 +213,17 @@ copied, a database seeded, a port picked, or dependencies installed before
 anything else says so in its own agent instructions, and the agent does that
 part.
 
-Inside herdr, agents name their tab after the task and label the panes they
-split, so the sidebar says what each one is doing and a label like `dev :3001`
-says which port is taken. Tab names are lowercase slugs of at most 16
-characters, which is what fits in the sidebar at its usual width here, not a
-herdr limit. Agents rename a tab only when its label is a number or such a
-slug, so a name typed by hand stays. They leave their own agent name alone,
-since it shows which harness is running. A fresh session or a helper agent is
-started through `herdr agent start` and prompted with `herdr agent prompt`,
-and every wait on a pane carries a timeout. After a long run they send a herdr
-notification, because herdr's own alerts skip the tab that is open. All of
-this is in `.claude/CLAUDE.md`.
+Inside herdr, agents name their tabs and label the panes they split (like
+`dev :3001` for a port), start fresh sessions and helpers through
+`herdr agent start`, and send a herdr notification after a long run. The rules
+are in `.claude/CLAUDE.md`.
 
 The `tc.pr-badge` plugin fills two sidebar values for every git workspace: the
 branch's pull request with its CI, like `#12 draft ◌` while checks run, `✓` once
 they pass, or `✗` when one failed; `CI ✓` and the like on the default branch,
-which has no pull request; and the count of uncommitted files, like `±3`. It refreshes when herdr starts, when an
-agent in that workspace settles, when the workspace gets focus, and through its
-refresh action. The pull request comes from `gh`, so without `gh` signed in only
-the file count shows.
+which has no pull request; and the count of uncommitted files, like `±3`. The
+pull request comes from `gh`, so without `gh` signed in only the file count
+shows. When it refreshes and how to debug it are in `docs/resync.md`.
 
 Herdr's `config.toml` stays machine-local, since it names the shell for that
 OS. `docs/resync.md` lists the settings this setup expects in it.

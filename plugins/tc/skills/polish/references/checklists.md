@@ -1,6 +1,6 @@
 # Polish review checklists
 
-This file has one section per review lens, plus the shared **Finding format** and **Restraint** sections. A review subagent reads its own lens section plus those two shared sections.
+One section per review lens, plus the shared **Finding format** and **Restraint** sections. A review subagent reads its own lens section and both shared sections.
 
 ## Contents
 - [Finding format](#finding-format)
@@ -26,17 +26,15 @@ severity | confidence | file:line | finding | cost | proposed fix
 - **cost**: what is duplicated, wasted, or harder to maintain, not "could be cleaner."
 - **proposed fix**: the smaller equivalent, named specifically.
 
-A clean result is valid, so don't manufacture findings to fill the table. Don't stop reading because you already have 8 rows.
+A clean result is valid, so don't manufacture findings to fill the table.
 
 ## Restraint
 
-These rules keep the review from being too eager:
-
 - **Quality only — not bugs.** If any lens finds a correctness defect, return its concrete failure scenario as a review finding for `tdd`. Don't apply its fix as a behavior-preserving cleanup.
 - **Preserve behavior.** The same inputs must produce the same outputs, side effects, ordering, and errors. If a test must change, it is not a cleanup.
-- **Defer to the toolchain.** Something Prettier/ESLint already handles, or that Phase 0.5 just fixed, is not a finding. That covers spacing/quotes/semis, import order/style, class sort/wrap/whitespace/shorthand nits, unused imports ESLint fixes, and mechanical `import type` ESLint fixes. Spend the review on judgment (reuse, altitude, design-shaped duplication) rather than arguing again with the linter/formatter. If neither tool is runnable in the repo, formatting and import order stay out of scope entirely, so don't hand-fix style.
+- **Defer to the toolchain.** Something Prettier/ESLint already handles, or that Phase 0.5 just fixed, is not a finding. That covers spacing/quotes/semis, import order/style, class sort/wrap/whitespace/shorthand nits, and the unused imports and mechanical `import type` changes ESLint fixes. Spend the review on judgment (reuse, altitude, design-shaped duplication). If neither tool is runnable in the repo, formatting and import order stay out of scope entirely, so don't hand-fix style.
 - **No speculative abstraction.** Don't propose YAGNI generalizations (building for needs the code doesn't have) or defensive layers for impossible cases.
-- **Deletion beats restructuring.** Removing code (dead code, unused params, redundant state) is the safest, highest-value cleanup class. Method-level restructuring is where cleanups most often make code worse, so require more of extract/move/split findings than of removals before proposing them.
+- **Deletion beats restructuring.** Removing code (dead code, unused params, redundant state) is the safest, highest-value cleanup class. Method-level restructuring is where cleanups most often make code worse, so hold extract/move/split findings to a higher bar than removals.
 - **Rule of three for dedupe.** Unify copies only when they encode the same knowledge and the helper has an obvious name. Two similar-looking blocks that could diverge stay duplicated, because duplication is cheaper than the wrong abstraction. A helper that needs boolean flags to serve its callers is the wrong abstraction.
 - **Never split for length alone.** Long but linear code reads fine. Extract only at a real seam: a nameable concept with a second caller, or a genuine test/ownership boundary.
 - **Chesterton's Fence.** Give an unexplained oddity `low` confidence, and don't claim it is removable.
@@ -50,10 +48,9 @@ These rules keep the review from being too eager:
 **Owns:** new code that re-implements something the codebase already has.
 **Out of scope:** internal complexity with no existing equivalent goes to Quality. Novel hot paths go to Efficiency, but still report pure duplicates here.
 
-1. **Existing utility/helper**: shared/util or adjacent modules already do this. Call that instead.
-2. **Duplicate function**: a new function is equivalent to an existing one. Call the existing one.
-3. **Inline logic with a utility**: hand-rolled path/env/clone/merge/guard logic where an established helper exists. Use the helper.
-4. **Semantic duplicate**: same intent as existing code, different implementation, so it does not read as a copy. Examples are a second date formatter with different steps, a second retry loop with its own backoff, or a permission rule spelled a new way. Search by what the code does, not by how it looks. Two implementations of one rule drift, and only one of them gets the next fix.
+1. **Existing utility or duplicate function**: new code does what an existing function, or a helper in shared/util or an adjacent module, already does. Call the existing one.
+2. **Inline logic with a utility**: hand-rolled path/env/clone/merge/guard logic where an established helper exists. Use the helper.
+3. **Semantic duplicate**: same intent as existing code, different implementation, so it does not read as a copy. Examples are a second date formatter with different steps, a second retry loop with its own backoff, or a permission rule spelled a new way. Search by what the code does, not by how it looks. Two implementations of one rule drift, and only one of them gets the next fix.
 
 ---
 
@@ -77,8 +74,6 @@ These rules keep the review from being too eager:
 13. **Pass-through wrapper**: a function whose body is one call to another with the same arguments. Call the callee directly.
 14. **Placeholder names**: `data`, `result`, `temp`, `item2`, `processData`, or a new `utils`/`helpers` file. Name it for what it is, or move it beside its one caller.
 15. **Needlessly dense or clever code**: a chained one-liner, nested ternary, or bitwise trick where a plain few lines with named steps would read at a glance; single-letter or abbreviated names outside a tiny loop; code compressed to save lines rather than to say something. The goal is code a reviewer can read when seeing only this hunk, so expand it. Length added this way is not a finding.
-
-Correctness-shaped checks are review findings for `tdd` (see Restraint).
 
 ---
 

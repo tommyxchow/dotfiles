@@ -16,7 +16,7 @@ Keep interviewing until no branch of the plan is left unexamined. Finding the qu
 
 Each decision leads to the further decisions that depend on it. The **frontier** is every decision whose prerequisites are already settled, meaning the ones you can ask now without guessing at an answer you haven't heard yet.
 
-Ask the whole frontier in one round. A question whose answer depends on another question still open in this round belongs to the next round, not this one. Each round the user answers moves the frontier forward and makes askable the decisions that were waiting on those answers.
+Ask the whole frontier in one round. A question whose answer depends on another question still open in this round belongs to the next round. Each round the user answers moves the frontier forward and makes askable the decisions that were waiting on those answers.
 
 ## What earns a question
 
@@ -36,7 +36,7 @@ When a file, a command, or the docs can answer a question, it is not a question 
 
 ## How long
 
-Size the interview to the plan. Two or three real decisions make one round, and one round can be the whole session. Don't invent rounds to look thorough, and don't ask about anything the plan already answers.
+Size the interview to the plan. Two or three real decisions make one round, and one round can be the whole session. Don't invent rounds to look thorough.
 
 ## Done
 

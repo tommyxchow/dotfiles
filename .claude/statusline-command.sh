@@ -189,6 +189,37 @@ if [ -n "$used_pct" ]; then
   ctxseg="${muted}ctx${reset} $(color_used "$pct" "$ctx_orange" "$ctx_red")${pct}%${reset}"
 fi
 
+# Inside a herdr pane, publish effort and context as pane tokens, so the
+# sidebar shows them and an hq session reads them from `herdr agent list`; the
+# model itself never sees this line. Context goes out as `ctxhigh` instead of
+# `ctx` once it passes the soft ceiling: 400K tokens used, or the orange trip
+# point above on a smaller window. The sidebar config colors that token, so the
+# threshold lives here in tokens rather than in a percentage rule. The TTL
+# outlives the 60s refresh, so the values vanish soon after Claude exits. It
+# runs in the background because the statusline must never wait on herdr.
+if [ -n "$HERDR_PANE_ID" ]; then
+  herdr_bin="${HERDR_BIN_PATH:-herdr}"
+  if command -v "$herdr_bin" >/dev/null 2>&1; then
+    # A session with no context number yet, like one just after /clear,
+    # clears both so an older value doesn't linger until its TTL runs out.
+    ctx_args=(--clear-token ctx --clear-token ctxhigh)
+    # A model with no effort setting clears the token rather than sending an empty value.
+    effort_args=(--clear-token effort)
+    [ -n "$effort" ] && effort_args=(--token "effort=${effort}")
+    if [ -n "$used_pct" ]; then
+      ctx_used=0
+      [ -n "$size_raw" ] && ctx_used=$(( pct * size_raw / 100 ))
+      if [ "$pct" -ge "$ctx_orange" ] || [ "$ctx_used" -ge 400000 ]; then
+        ctx_args=(--token "ctxhigh=ctx ${pct}%" --clear-token ctx)
+      else
+        ctx_args=(--token "ctx=ctx ${pct}%" --clear-token ctxhigh)
+      fi
+    fi
+    "$herdr_bin" pane report-metadata "$HERDR_PANE_ID" --source tc.statusline \
+      "${effort_args[@]}" "${ctx_args[@]}" --ttl-ms 180000 >/dev/null 2>&1 &
+  fi
+fi
+
 # Segment 4 — rate-limit usage: 5h · 7d (dot only between two present windows)
 usage=""
 for w in "$(win_seg 5h "$five_used" "$five_over" "$five_in")" "$(win_seg 7d "$seven_used" "$seven_over" "$seven_in")"; do

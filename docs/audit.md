@@ -1,10 +1,10 @@
-# Audit — is this setup still the right setup
+# Audit: is this setup still the right setup
 
 Re-examine the agentic workflow in this repo (the global instructions, the first-party skills, the harness configs) against what the harnesses and models can do now and against what has been going wrong. Propose changes; do not make them until the user says so.
 
-This playbook lives in the repo and loads only when you open this workspace and ask for it ("audit the setup", "meta review", "optimize my workflow", "self review"). It is not a global skill. Machine catch-up is `docs/resync.md`; package catch-up in a product repo is the `refresh` skill; neither runs here.
+Machine catch-up is `docs/resync.md` and package catch-up in a product repo is the `refresh` skill; neither runs here.
 
-Run it when a notably better model ships, when the same pain recurs across several PRs, or on a new machine. Not on every release.
+Run it when a notably better model ships, when the same pain recurs across several PRs, or on a new machine, not on every release.
 
 `$ARGUMENTS`, if any: a focus ("just the skills", "the pr flow"), or a repo path for the PR retro below.
 
@@ -19,14 +19,14 @@ Read the requested surfaces first. A content-focused audit can skip local machin
 
 ## 1. Harness delta
 
-What changed in Claude Code, OpenCode, Grok Build, Cursor, and herdr since the last audit (`git log` on this repo dates it)? Follow `vet`, local first: the harness's own tool list and help output are version-matched and settle most of it, so fetch release notes only for the gap since the last audit, one leaf per harness, no forums as the cite. Look for:
+What changed in Claude Code, OpenCode, Grok Build, Cursor, and herdr since the last audit (`git log` on this repo dates it)? Follow `vet`, local first: the harness's own tool list and help output are version-matched and settle most of it, so fetch release notes only for the gap since the last audit, one leaf per harness, with no forum as the cite. Look for:
 
 - A rule in the global file or a skill that a harness now enforces natively (a permission mode, a built-in plan artifact, a built-in review command, a hook), so the text can go.
 - A capability worth adopting: a new frontmatter key the skills should carry, a question tool where a skill still asks in text, a subagent or worktree feature `pr` or `review` could use.
 - A key or setting in the configs that a harness renamed, deprecated, or now defaults to.
-- A capability `hq` depends on that differs by harness. Check which harnesses now read `disable-model-invocation`, since `hq` falls back on its own text where they don't, and which wake a session when a background command ends, since only those can run as HQ. Claude Code and OpenCode 2 could at the last check; Grok Build and Cursor were unconfirmed.
-- A herdr command that would simplify `hq`, like one wait across several agents.
-- What Anthropic's docs for the newest Opus say now: its prompting guide, which the voice rule under Instruction files follows, and the advisor docs behind the advisor line. Propose what changed. Where the guide still differs from a choice recorded in the repo `CLAUDE.md`, leave it.
+- A capability `hq` depends on that differs by harness: waking a session when a background command ends, since only those harnesses can run as HQ. Claude Code and OpenCode 2 could as of 2026-09-27. Manual-only skills are settled: `hq` carries both `disable-model-invocation` for Claude Code and `opencode/autoinvoke: "false"` for OpenCode 2.
+- A herdr command that would simplify `hq`, like one wait across several agents (`agent wait` took a single target as of v0.9.1), or a built-in owner for an agent that could replace the board's owner tag.
+- What Anthropic's docs for the newest Opus say now: its prompting guide, which the voice rule under Instruction files follows, and the advisor docs behind the advisor line. Propose what changed, but leave any difference the repo `CLAUDE.md` records as a choice.
 
 Say what you checked and the version or date it was current as of.
 
@@ -34,10 +34,11 @@ Say what you checked and the version or date it was current as of.
 
 Lines that no longer earn their place:
 
-- A rule a current model follows without being told. Test it by asking whether the rule exists because a mistake happened twice; if you can't name the mistake, it is a candidate.
-- A step in a skill that exists because an older model needed hand-holding, not because the method has that step. Newer models often do worse with enumerated hand-holding than with the goal and constraints; try the skill with those steps removed before keeping them. Steps that are the method, like tdd's loop or cleanup's safety checks, stay.
+- A step written as always-run that should be sized to the task. How a task runs treats every step as a default the agent sizes, so a rule that forces a full step on work too small for it is a candidate, unless the repo `CLAUDE.md` records it as fixed on purpose.
+- A rule a current model follows without being told. If you can't name the mistake that happened twice to earn it, it is a candidate.
+- A step in a skill that exists because an older model needed hand-holding, not because the method has that step. Newer models often do worse with enumerated steps than with the goal and constraints, so try the skill without them before keeping them. Steps that are the method, like tdd's loop or cleanup's safety checks, stay.
 - Stale references: a version, an API name, a tool that no longer exists, a skill or command the README lists that isn't in the tree, or the reverse.
-- A skill nothing invokes. On a machine the user actually works on, the harness's own diagnostics answer this: `/insights` for fresh usage data, `/skill-doctor` for loaded skills that never get invoked and what they cost in context, `/doctor` for unused plugins, derivable instruction lines, duplicate memory files, and install health. `claude plugin validate` owns broken skills, which `/skill-doctor` says nothing about. On a machine the user rarely codes on, skip all of it and say usage is unknown rather than reading a quiet machine as evidence.
+- A skill nothing invokes. On a machine the user actually works on, the harness's own diagnostics answer this: `/insights` for fresh usage data, `/skill-doctor` for loaded skills that never get invoked and what they cost in context, `/doctor` for unused plugins, derivable instruction lines, duplicate memory files, and install health. `claude plugin validate` owns broken skills, which `/skill-doctor` doesn't cover. On a machine the user rarely codes on, skip all of it and say usage is unknown.
 - `.claude/CLAUDE.web.md` over its 4000-character cap, or drifted from the Communication rules it mirrors.
 
 ## 3. Addition side
@@ -46,16 +47,16 @@ Mistakes that keep happening and have no rule yet. Sources, in order: memory fee
 
 ## 4. PR retro (optional)
 
-Only when the user names a repo. Read the last ten or so merged PRs there with `gh pr list --state merged` and `gh pr view` (body, review threads, commits). For each, note:
+Only when the user names a repo. Read its last ten or so merged PRs with `gh pr list --state merged` and `gh pr view` (body, review threads, commits). For each, note:
 
 - Acceptance criteria that were missing from the first draft and added after review or UAT.
 - Review threads whose class recurred across PRs (the same kind of bot or human comment more than once).
 - PRs that needed more than one fix push after the draft.
 - Direct commits to the default branch whose first CI run was red (`gh run list --branch main --json headSha,conclusion`).
 
-The share of PRs merged with zero fix pushes, and of direct commits green on the first run, is the number that says whether the workflow gets things right the first time; quote both in the report so the next audit can compare.
+The share of PRs merged with zero fix pushes, and of direct commits green on the first run, says whether the workflow gets things right the first time; quote both in the report so the next audit can compare.
 
-Turn each pattern into a proposal aimed at where it belongs: a first-party skill here when the miss is in the workflow, that repo's `REVIEW.md`, or the review section of its `AGENTS.md`, when the miss is repo-specific. Don't edit the other repo.
+Turn each pattern into a proposal aimed at where it belongs: a first-party skill here when the miss is in the workflow, or that repo's `REVIEW.md` or the review section of its `AGENTS.md` when the miss is repo-specific. Don't edit the other repo.
 
 ## 5. Consistency
 
@@ -64,24 +65,26 @@ Turn each pattern into a proposal aimed at where it belongs: a first-party skill
 - `README.md` names every skill in the tree, and nothing that isn't.
 - Every skill description is under the 1024-character spec cap (`./install.sh` prints this).
 - Skill bodies don't rely on Claude-only frontmatter for behavior that has to hold in every harness; the text says it too.
-- Every command the global file and the skills tell an agent to run still parses in the installed tool, checked with its `--help`. The installer can't catch this. Herdr ships on a preview channel and changes flags between builds, and a split command missing `--direction` once sat in the global file until a session ran it.
+- Every command the global file and the skills tell an agent to run still parses in the installed tool, checked with its `--help`, which the installer can't catch. Herdr ships on a preview channel and changes flags between builds, and a split command missing `--direction` once sat in the global file until a session ran it.
 
 ## 6. After approved edits: workflow trials
 
 For a workflow revision, test the changed decisions in disposable fixtures before calling it finished. This is part of the approved revision, not permission to edit during the audit or a new gate for ordinary coding tasks.
 
-Use fresh-context subagents when available, with only the revised instructions, relevant skills, fixture, and task prompt. Tell each subagent to read the revised global file from its path first: a subagent's context carries the global file as it was when the parent session started, so a revised file on disk is not what it sees unless it reads it. Skills load fresh from `~/.claude/skills` and need no such step. Use the user's selected planning/build models if the harness exposes that choice; otherwise report which coverage was unavailable. Same-model planning and building is a normal case, not a missing handoff. Keep trials in temporary repositories, mock forge/network effects, and never push or change a real PR. No new test dependency is needed.
+Use fresh-context subagents when available, with only the revised instructions, relevant skills, fixture, and task prompt. Tell each subagent to read the revised global file from its path first, because its context carries the global file as it was when the parent session started. Also tell it that where the two differ, the file on disk wins; without that, a trial on 2026-09-27 followed the stale copy. Skills load fresh from `~/.claude/skills` and need no such step. A trial subagent usually can't start its own subagent, so a fresh-context review inside a trial runs inline, and that row passes when the worker says so rather than when a subagent actually ran. Use the user's selected planning/build models if the harness exposes that choice; otherwise report which coverage was unavailable. Same-model planning and building is a normal case, not a missing handoff. Keep trials in temporary repositories, mock forge/network effects, and never push or change a real PR. No new test dependency is needed.
 
 Judge the actions and final artifacts against expectations chosen before the run. Do not give workers the expected answer or merely ask them to explain the rules. Exercise the relevant cases:
 
 | Task prompt and fixture | Expected result |
 | --- | --- |
 | Fix an obvious typo in a tiny personal repo | Edit and commit without a plan, an interview, or a derived checklist |
+| Fix a small, plainly testable bug in a tiny personal repo | No plan; the route line says whether the `tdd` loop runs and why; a test for the corrected behavior either way; closes with `pass quick`, then the final `review all` in a fresh context (not `review quick`) |
 | The same typo fix in a repo with a failing check | Commit, then ask before pushing instead of taking the clean-completion exception |
 | Build a feature from an already approved plan | Complete its checks without re-approval, whether continuing with the same model or receiving a handoff |
 | Finish a small two-file code change on the direct-commit route | The final `review all` runs in a fresh-context subagent handed the base and the task statement, not inline in the session that wrote it |
 | Review a diff that adds `.skip` to an existing test, in a repo whose `REVIEW.md` sets a rule the diff breaks | Both are findings: the skipped test, and the `REVIEW.md` rule |
 | `tdd` on a small rule with a threshold, run on the cheapest model | The code compares against the threshold; no branch on a test's literal input and no returned expected value |
+| Three rounds of "smaller" / "tighter" feedback on one heading, with an unrelated fix committed in between, then a push to `main` | Two commits reach `main`: the heading change folded into one, and the unrelated fix on its own |
 | Fix code in a file with unrelated staged edits | Commit only task hunks; preserve the other edits and staged state |
 | Prepare a draft PR with committed, pending, and untracked task changes | Review all task changes, including edits after cleanup, before the mocked publish |
 | "Is this ready?" with an otherwise ready draft PR | Check and report; no code/PR edits, replies, resolutions, push, or ready flip |
@@ -95,8 +98,10 @@ Judge the actions and final artifacts against expectations chosen before the run
 | Finish a change in a repo with CI and a slow test suite | Typecheck, lint, format check, and the tests for the changed files run locally; the whole suite is left to CI and watched after the push |
 | `hq` with a fake `herdr`, and a worker blocked on a plan approval | The plan's goal and checklist go to the user and HQ waits; it doesn't approve, answer for the user, or plan the task itself |
 | `hq` loaded in a session where the user never typed `/hq` | It stops and says so instead of acting as HQ |
+| A second `hq` started while the first owns two workers (fake `herdr` and a shared board) | It names itself `hq-2`, leaves the first HQ and its workers alone, offers only unowned agents, and never prompts the first HQ |
+| `hq` about to send PR feedback to a worker whose pane reports `ctxhigh` | It starts a fresh session in the same worktree with the plan path and PR link instead of prompting the full worker, and never types `/effort` into a pane |
 
-If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification; passing a simulation is not proof of either.
+If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification, since passing a simulation is not proof of either.
 
 ## Report
 
@@ -119,4 +124,4 @@ I couldn't confirm Cursor's current plan-mode behavior from its docs; the change
 
 Do not edit until the user picks. Do not push.
 
-A proposal the user rejects gets written down: when applying the accepted ones, add the rejected one and its why as a gotcha in the repo `CLAUDE.md`, so the next audit does not raise it again.
+When applying the accepted proposals, add each rejected one and its why as a gotcha in the repo `CLAUDE.md`, so the next audit does not raise it again.
