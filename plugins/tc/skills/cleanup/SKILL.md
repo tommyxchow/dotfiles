@@ -10,13 +10,13 @@ argument-hint: "[<repo path>] [apply]"
 
 Clean up a repo that has collected months of dead refs and finished worktrees.
 
-`$ARGUMENTS` holds an optional repo path, which defaults to the current repo, and the word `apply` to request cleanup. With `apply` or without it, the run starts with a read-only survey and uses the approval flow in section 5.
+`$ARGUMENTS` holds an optional repo path, which defaults to the current repo, and the word `apply` to request cleanup. With or without `apply`, the run starts with a read-only survey and uses the approval flow in section 5.
 
 ## 1. Survey first
 
 Identify the repository, the remote, the default branch, and the matching local and remote-tracking refs separately. Use the remote's advertised HEAD (`git ls-remote --symref <remote> HEAD`) when it is available. A cached remote HEAD is only provisional. When the default or the remote is ambiguous, ask rather than guess `main` or `master`. When there is no remote, use an explicitly established local default and report only local ancestry evidence.
 
-Count the following without changing anything: worktrees and their registrations (`git worktree list --porcelain` and `git worktree prune --dry-run --verbose`), each linked worktree's branch, lock, and `git -C <path> status --porcelain`, branches merged into the identified default ref, missing upstreams, stashes, and loose objects (`git count-objects -v`). Record the candidate refs and their full tip SHAs. Cached refs may be stale. A missing tracking ref alone does not prove the branch was deleted on the remote. Read remote refs and forge metadata where they are available, but don't fetch or prune during the survey.
+Without changing anything, count worktrees and their registrations (`git worktree list --porcelain` and `git worktree prune --dry-run --verbose`), each linked worktree's branch, lock, and `git -C <path> status --porcelain`, branches merged into the identified default ref, missing upstreams, stashes, and loose objects (`git count-objects -v`). Record the candidate refs and their full tip SHAs. Cached refs may be stale. A missing tracking ref alone does not prove the branch was deleted on the remote. Read remote refs and forge metadata where they are available, but don't fetch or prune during the survey.
 
 Report the counts and evidence before proposing any deletions. For a clean repo, one sentence is enough.
 
@@ -38,7 +38,7 @@ Pruning removes administrative files, not just a display entry. It is also a bat
 
 ## 3. Branches, where the care goes
 
-Never propose deleting the default branch, the current branch, a branch checked out in a worktree that is staying, or a branch the user asked to keep. Classify a branch whose worktree is a section 2 candidate the same way, and list it with that worktree as one item. Classify each branch by its evidence:
+Never propose deleting the default branch, the current branch, a branch checked out in a worktree that is staying, or a branch the user asked to keep. Classify a branch whose worktree is a section 2 candidate the same way. Classify each branch by its evidence:
 
 - **Ancestor of the default ref.** Establish this explicitly with `git merge-base --is-ancestor <tip> <default-ref>`. Use `git branch -d` only after approval. Its own check uses the branch's upstream, or HEAD when there is no upstream, which is not necessarily the default. If it refuses, keep the branch and report why. Don't escalate to `-D` automatically.
 - **Upstream gone, but not an ancestor.** A squash merge is one possible explanation, not proof. Use the repo's forge tool to verify the source repository and branch, the merged state, a PR head SHA equal to the current local tip, and a merge-result commit reachable from the intended default ref. A merged PR with the same name is not enough, because the branch may have new commits or its name may have been reused. Only exact, complete evidence makes the branch a candidate for `-D`, and only with explicit approval.
