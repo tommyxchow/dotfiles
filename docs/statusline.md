@@ -53,10 +53,9 @@ something wants attention, so it's findable without reading the line.
   `max`; Ultracode reports as `xhigh`). The display name's built-in
   `(… context)` suffix is stripped so the size isn't stated twice.
 - **`ctx 34%`**: context window used, labeled so it can't be confused with a
-  rate-limit percentage. Colored on the room left rather than the percentage
-  (see Color thresholds): orange under 70K tokens of headroom, red under 50K. On
-  a 200K window that is exactly the familiar 65 and 75; on a 1M window it holds
-  off until 93 and 95, because auto-compact there fires far later.
+  rate-limit percentage. Orange at 70%, the soft ceiling hq and the herdr
+  sidebar also use, and red under 50K tokens of room, which is 75% on a 200K
+  window and 95% on a 1M one (see Color thresholds).
 - **`5h 24% · 7d 42%`**: 5-hour and 7-day rate-limit windows **used**.
   Uncolored below 75, orange at 75, red at 90. Pro/Max only, and only after the
   first API response of a session.
@@ -136,16 +135,17 @@ idle, showing whatever was true at the last message. 60s keeps them honest.
 
 ## Color thresholds
 
-Only the rate-limit scale trips on the percentage it prints. Context trips on
-the tokens behind it, because its deadline is auto-compact and Claude Code derives that trigger
-from the window minus reserved output, never from a fixed percentage. 50K of
-room is the same amount of work whether the window is 200K or 1M, while 75%
-used is 50K on one and 250K on the other.
+Context gives each color one meaning. Orange is the soft ceiling, a
+percentage, because it tracks how full the conversation is and matches the
+herdr token below. Red is auto-compact's deadline, which Claude Code derives
+from the window minus reserved output rather than a fixed percentage, so red
+trips on the tokens left: 50K of room is the same amount of work on any
+window, while 75% used is 50K on a 200K window and 250K on a 1M one.
 
 |        | Context        | Rate-limit window   |
 | ------ | -------------- | ------------------- |
 | low    | none           | none                |
-| orange | under 70K left | 75%+ used           |
+| orange | 70%+ used      | 75%+ used           |
 | red    | under 50K left | 90%+ used, or `out` |
 
 "None" is the terminal's default foreground, not a gray: uncolored values stay
