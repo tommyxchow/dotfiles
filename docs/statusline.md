@@ -40,7 +40,7 @@ something wants attention, so it's findable without reading the line.
 - The repo comes from `workspace.repo.name` (the `origin` remote), falling back
   to the dir basename, then dropping out entirely when there's no origin and the
   basename is already the worktree name. The worktree name is `worktree.name`
-  (present only in a Claude worktree session) falling back to
+  (present only in a Claude Code worktree session) falling back to
   `workspace.git_worktree` (populated for any worktree, Claude's included, so it
   only means "made by hand" once `worktree.name` has come back empty).
 - A `--worktree` session names its branch `worktree-<name>`, which would print
@@ -87,7 +87,7 @@ something wants attention, so it's findable without reading the line.
 Inside a herdr pane the script also reports two pane tokens with `herdr pane
 report-metadata`: `effort`, and the context as `ctx 34%`. The model never sees
 its own statusline, so this is how an `hq` session reads a worker's context and
-effort, and how the herdr sidebar shows them next to each Claude agent.
+effort, and how the herdr sidebar shows them next to each Claude Code agent.
 
 Context goes out under one of two names. It is `ctxhigh` once the session
 passes a soft ceiling of 70% of its window, and `ctx` below that; the sidebar
@@ -100,7 +100,7 @@ runs out.
 
 The report runs in the background with a three-minute TTL. The statusline
 never waits on herdr, and the tokens disappear shortly after Claude exits
-because nothing refreshes them. OpenCode has no statusline hook, so its panes
+because nothing refreshes them. OpenCode 2 has no statusline hook, so its panes
 report nothing; its own context readout sits at the bottom right of its screen.
 
 ## Requirements (cross-platform)
@@ -179,4 +179,4 @@ and the gray tier already separate place from branch, so the hue did nothing
 the layout didn't, and without it a colored token on this line always means
 attention, with no exceptions.
 
-Codes: gray `\033[90m`, orange `\033[38;5;208m`, red `#BB6A7A`.
+Codes: gray `\033[90m`, orange `\033[38;5;208m`, red `\033[38;2;187;106;122m`.

@@ -18,8 +18,8 @@ Same command everywhere. On Windows run it from Git Bash with **Developer
 Mode** on (Settings > System > For developers); the installer stops with that
 hint when it cannot create symlinks.
 
-On a fresh machine you can also clone, open this repo in Cursor / Grok / OpenCode 2,
-and say **resync**, which follows `docs/resync.md`.
+On a fresh machine you can also clone, open this repo in Cursor, Grok Build, or
+OpenCode 2, and say **resync**, which follows `docs/resync.md`.
 
 The installer is idempotent. An existing real file at a target gets moved to `.bak`
 first, and the backup is deleted again if it turns out to be byte-identical to the repo
@@ -42,7 +42,7 @@ dotfiles checkout.
 | `.claude/CLAUDE.md` | `~/.config/opencode/AGENTS.md` (OpenCode 2 user-global instructions) |
 | `.claude/references/` | `~/.claude/references` (situational rules the global file tells agents to read) |
 | `CLAUDE.md` | `AGENTS.md` in this repo (OpenCode 2 project instructions; installer-only) |
-| `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode 2 reads this path too) |
+| `plugins/tc/skills/*` | `~/.claude/skills/<name>` (OpenCode 2 reads this path too) |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
 | `bin/wait-for` | `~/.local/bin/wait-for` (agents wait on a URL with a deadline; the installer warns when that folder is not on PATH) |
 | `herdr/plugins/worktree-bootstrap` | herdr plugin `tc.worktree-bootstrap`, linked through the running herdr server |
@@ -61,7 +61,7 @@ Ghostty is macOS/Linux only, so the installer skips it on Windows.
 Windows Terminal settings are not linked (profiles and GUIDs are machine-local).
 OpenCode 2 still has no Windows keybind section. Use the same WT `sendInput`
 CSI-u pattern as [V1's Shift+Enter note](https://opencode.ai/docs/keybinds/#windows-terminal).
-`unbound` is not enough. OpenCode does not publish these strings; they use
+`unbound` is not enough. OpenCode 2 does not publish these strings; they use
 that same encoding (`[13;2u` for Shift+Enter). Leave Ctrl+Shift+Tab
 on WT. Store path:
 `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`.
@@ -100,10 +100,10 @@ permissions, model and advisor, theme, plugins, statusline, and marketplaces.
 
 ## Skills
 
-First-party skills are the directories under `plugins/tc/skills`, live links into
-`~/.claude/skills` that Claude, Cursor, Grok, and OpenCode 2 all read. Slash any
-of them from any repo after the installer has run. Details live in the skill
-files.
+First-party skills are the directories under `plugins/tc/skills`, live links
+into `~/.claude/skills` that Claude Code, Cursor, Grok Build, and OpenCode 2 all
+read. Slash any of them from any repo after the installer has run. Details live
+in the skill files.
 
 | Slash | When |
 |-------|------|
@@ -118,10 +118,9 @@ files.
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
 | `/hq` | Manual only. Run this herdr session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's effort at launch, runs Claude models in Claude Code, and shares one board with any other HQ. Never builds or approves for you, and merges only a PR you name. |
 | `/cleanup` | Repo hygiene: finished and dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
+| `/tldr` | A skimmable summary, answer first. Bare is the last few messages; it also takes a topic, file, URL, pasted text, `changes`, `pr` with a number or URL, or `session`. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
 | **audit** (this repo) | This **setup**. Follow `docs/audit.md`: re-examine the instructions and skills against current harnesses and recent pain, then propose. |
-
-`/tldr` summarizes.
 
 How the skills chain during a task, including `ship it` and how each step is
 sized to the change, is the "How a task runs" section of `.claude/CLAUDE.md`.
@@ -238,7 +237,7 @@ shows. When it refreshes and how to debug it are in `docs/resync.md`.
 Herdr's `config.toml` stays machine-local, since it names the shell for that
 OS. `docs/resync.md` lists the settings this setup expects in it.
 
-Per herdr's docs, Claude panes reopen after a server restart: the Claude
+Per herdr's docs, Claude Code panes reopen after a server restart: the Claude
 integration reports each session's id and herdr resumes it with
 `claude --resume`. Anything else a pane was running, like a dev server, does
 not survive a restart. A plain `herdr update` leaves a compatible server
@@ -254,7 +253,7 @@ from `claude-plugins-official`, which needs no declaration.
 | Path | Purpose |
 |------|---------|
 | `.claude-plugin/marketplace.json` | Marketplace catalog (`chow`) |
-| `plugins/tc/` | Personal plugin skills |
+| `plugins/tc/` | Personal agent skills for planning, building, reviewing, and shipping |
 | `ek` (git url source) | [emilkowalski/skills](https://github.com/emilkowalski/skills), fetched at install time, not vendored here |
 
 ### `chow` (this repo)
@@ -264,13 +263,27 @@ from `claude-plugins-official`, which needs no declaration.
 | `tc@chow` | `./plugins/tc` | The same skill directories. Marketplace packaging for machines that never ran the installer. Not installed on claude.ai, since Claude Code would sync that copy back down next to the links. |
 | `ek@chow` | `emilkowalski/skills` (git url) | Whatever is in upstream `skills/` (not vendored here) |
 
-Plugin names are owner initials (`tc`, `ek`) because the name prefixes every skill at the call site: `/ek:improve-animations`.
+Plugin names are owner initials (`tc`, `ek`) because the name prefixes every
+skill at the call site: `/ek:improve-animations`.
 
-`ek` uses a `url` plugin source with `strict: false` so Claude Code installs Emil's upstream `skills/` tree directly. Upstream has no `plugin.json`, so this catalog entry is the only place the name lives. Do not copy those files into this repo or install them via `skills.sh` / `npx skills`.
+`ek` uses a `url` plugin source with `strict: false` so Claude Code installs
+Emil's upstream `skills/` tree directly. Upstream has no `plugin.json`, so this
+catalog entry is the only place the name lives. Do not copy those files into
+this repo or install them via `skills.sh` / `npx skills`.
 
-**Do not "simplify" this to a `github` source.** `/plugin install` builds an SSH clone URL (`git@github.com:owner/repo.git`) for `source: github` and has no HTTPS fallback, so it dies with `Permission denied (publickey)` on any machine without a GitHub SSH key ([#47088](https://github.com/anthropics/claude-code/issues/47088), among several dupes). `source: url` with an explicit `https://` URL clones anonymously and needs no keys. `/plugin marketplace add` *does* have the HTTPS fallback, which is why the `chow` marketplace resolves fine either way.
+**Do not "simplify" this to a `github` source.** `/plugin install` builds an SSH
+clone URL (`git@github.com:owner/repo.git`) for `source: github` and has no
+HTTPS fallback, so it dies with `Permission denied (publickey)` on any machine
+without a GitHub SSH key
+([#47088](https://github.com/anthropics/claude-code/issues/47088), among several
+dupes). `source: url` with an explicit `https://` URL clones anonymously and
+needs no keys. `/plugin marketplace add` *does* have the HTTPS fallback, which
+is why the `chow` marketplace resolves fine either way.
 
-Caveat: `strict: false` means the marketplace entry is the *entire* definition. The upstream repo has no `plugin.json` today; if Emil adds one that declares components, that's a conflict and the plugin fails to load. Switch the entry to `strict: true` (or drop the field) if that happens.
+Caveat: `strict: false` means the marketplace entry is the *entire* definition.
+The upstream repo has no `plugin.json` today; if Emil adds one that declares
+components, that's a conflict and the plugin fails to load. Switch the entry to
+`strict: true` (or drop the field) if that happens.
 
 ### Official marketplace (`claude-plugins-official`)
 
@@ -281,12 +294,20 @@ Caveat: `strict: false` means the marketplace entry is the *entire* definition. 
 
 ### Maintenance
 
-- **Installing and enabling are separate**, and so are their files: `enabledPlugins` here declares what should load, while install records live in `~/.claude/plugins/installed_plugins.json` (runtime state, not committed). A plugin can be enabled and not installed, or installed and not enabled. `claude plugin list` shows the truth.
-- `/plugin marketplace update` refreshes the catalog only; `/plugin update <plugin>@<marketplace>` is what updates an installed plugin. To refresh Emil's upstream skills: `/plugin update ek@chow`.
-- No plugin here pins a `version`, so each resolves to its source's latest commit SHA. Pushing is what publishes; no version bump needed.
+- **Installing and enabling are separate**, and so are their files:
+  `enabledPlugins` here declares what should load, while install records live in
+  `~/.claude/plugins/installed_plugins.json` (runtime state, not committed). A
+  plugin can be enabled and not installed, or installed and not enabled.
+  `claude plugin list` shows the truth.
+- `/plugin marketplace update` refreshes the catalog only;
+  `/plugin update <plugin>@<marketplace>` is what updates an installed plugin.
+  To refresh Emil's upstream skills: `/plugin update ek@chow`.
+- No plugin here pins a `version`, so each resolves to its source's latest
+  commit SHA. Pushing is what publishes; no version bump needed.
 - `autoUpdate: true` is set on `chow` only, so `ek@chow` refreshes after a push
-  (random delay up to 10 min), then Claude prompts for `/reload-plugins`. First-party
-  skills on this machine do not wait on that: they are installer links.
+  (random delay up to 10 min), then Claude Code prompts for `/reload-plugins`.
+  First-party skills on this machine do not wait on that: they are installer
+  links.
 
 ## Credits
 

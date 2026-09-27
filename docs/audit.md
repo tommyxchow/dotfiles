@@ -6,7 +6,7 @@ Machine catch-up is `docs/resync.md` and package catch-up in a product repo is t
 
 Run it when a notably better model ships, when the same pain recurs across several PRs, or on a new machine, not on every release.
 
-`$ARGUMENTS`, if any: a focus ("just the skills", "the pr flow"), or a repo path for the PR retro below.
+If the user named a focus ("just the skills", "the pr flow"), audit that; if they gave a repo path, use it for the PR retro below.
 
 ## What you are auditing
 
@@ -19,7 +19,7 @@ Read the requested surfaces first. A content-focused audit can skip local machin
 
 ## 1. Harness delta
 
-What changed in Claude Code, OpenCode, Grok Build, Cursor, and herdr since the last audit (`git log` on this repo dates it)? Follow `vet`, local first: the harness's own tool list and help output are version-matched and settle most of it, so fetch release notes only for the gap since the last audit, one leaf per harness, with no forum as the cite. Look for:
+What changed in Claude Code, OpenCode 2, Grok Build, Cursor, and herdr since the last audit (`git log` on this repo dates it)? Follow `vet`, local first: the harness's own tool list and help output are version-matched and settle most of it, so fetch release notes only for the gap since the last audit, one leaf per harness, with no forum as the cite. Look for:
 
 - A rule in the global file or a skill that a harness now enforces natively (a permission mode, a built-in plan artifact, a built-in review command, a hook), so the text can go.
 - A capability worth adopting: a new frontmatter key the skills should carry, a question tool where a skill still asks in text, a subagent or worktree feature `pr` or `review` could use.
@@ -64,7 +64,7 @@ Turn each pattern into a proposal aimed at where it belongs: a first-party skill
 - Global rules own approval, completion, and communication. Skill bodies implement them without competing definitions or repeated routing tables.
 - `README.md` names every skill in the tree, and nothing that isn't.
 - Every skill description is under the 1024-character spec cap (`./install.sh` prints this).
-- Skill bodies don't rely on Claude-only frontmatter for behavior that has to hold in every harness; the text says it too.
+- Skill bodies don't rely on Claude Code-only frontmatter for behavior that has to hold in every harness; the text says it too.
 - Every command the global file and the skills tell an agent to run still parses in the installed tool, checked with its `--help`, which the installer can't catch. Herdr ships on a preview channel and changes flags between builds, and a split command missing `--direction` once sat in the global file until a session ran it.
 
 ## 6. After approved edits: workflow trials

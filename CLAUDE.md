@@ -98,20 +98,21 @@ repo-local.
   flag strips coding instructions. `outputStyle` stays unset in
   `.claude/settings.json`.
 
-- **`.claude/CLAUDE.web.md` is the web-chat twin of `.claude/CLAUDE.md`.** Nothing
-  loads it: paste it by hand into claude.ai (Settings > Instructions for Claude)
-  and grok.com (Customize Grok). When a Communication or External writing rule changes in
-  `.claude/CLAUDE.md`, mirror it there if it applies to chat. Keep the file
-  paste-clean: no header, no comments. **Hard cap 4000 characters**, which is
-  grok.com's limit and the tighter of the two; it truncates silently past that,
-  so cut a whole rule rather than compressing sentences. The installer warns
-  when the file goes over. It leaves out the literal-phrase rule on purpose and
-  sets no persona anywhere, because I use chat to see each model's default
-  style; an audit that finds those gaps is looking at a decision, not drift.
+- **`.claude/CLAUDE.web.md` is the web-chat twin of `.claude/CLAUDE.md`.**
+  Nothing loads it: paste it by hand into claude.ai (Settings > Instructions
+  for Claude) and grok.com (Customize Grok). When a Communication or External
+  writing rule changes in `.claude/CLAUDE.md`, mirror it there if it applies to
+  chat. Keep the file paste-clean: no header, no comments. **Hard cap 4000
+  characters**, which is grok.com's limit and the tighter of the two; it
+  truncates silently past that, so cut a whole rule rather than compressing
+  sentences. The installer warns when the file goes over. It leaves out the
+  literal-phrase rule on purpose and sets no persona anywhere, because I use
+  chat to see each model's default style; an audit that finds those gaps is
+  looking at a decision, not drift.
 
-- **The installer links first-party skills into `~/.claude/skills`.** Claude,
-  Cursor, Grok, and OpenCode 2 all read that path. OpenCode 2 only treats a
-  typed `/vet` as that skill when its frontmatter carries
+- **The installer links first-party skills into `~/.claude/skills`.** Claude
+  Code, Cursor, Grok Build, and OpenCode 2 all read that path. OpenCode 2 only
+  treats a typed `/vet` as that skill when its frontmatter carries
   `metadata: opencode/slash: "true"`, so every first-party skill sets it; a
   new skill without it is reachable there only through `/skills`. Do not copy
   those skills into `~/.config/opencode/skills`, do not enable `tc@chow` on a
@@ -120,12 +121,13 @@ repo-local.
   the official marketplace (its `grill-me` collides with ours).
 
 - **Keep shared skills portable Agent Skills** (`name` and `description`
-  required). Claude-only `context` / `agent` / `background` are fine where a
-  skill should fork, and `disable-model-invocation` is read by Claude and Cursor
-  but not OpenCode 2, which needs `metadata: opencode/autoinvoke: "false"` for
-  the same effect, so a manual-only skill carries both. Whatever such a key
-  enforces has to be written into the skill's own text as well, or it only
-  holds where the key is read. Don't put `allowed-tools` on a shared skill.
+  required). Claude Code-only `context` / `agent` / `background` are fine where
+  a skill should fork, and `disable-model-invocation` is read by Claude and
+  Cursor but not OpenCode 2, which needs `metadata: opencode/autoinvoke:
+  "false"` for the same effect, so a manual-only skill carries both. Whatever
+  such a key enforces has to be written into the skill's own text as well, or
+  it only holds where the key is read. Don't put `allowed-tools` on a shared
+  skill.
 
 - **Don't list harness-shipped review, cleanup, or audit skills** here or in a
   skill body; they arrive and get renamed release to release. Two cases cover
@@ -144,7 +146,7 @@ repo-local.
 
 - **`tc` stays in the marketplace catalog; do not install it on claude.ai.**
   The catalog entry serves machines that install the plugin instead of running
-  the installer. On claude.ai the plugin only surfaces in chat, it
+  the installer. On claude.ai the plugin only surfaces in chat; it
   does not update itself from GitHub (a snapshot there still served a retired
   skill two days after the pushes), and Claude Code syncs every claude.ai
   plugin down to `~/.claude/plugins/synced`, so every terminal session loads a
@@ -216,15 +218,15 @@ repo-local.
   add a suffix like `[1m]` only when the model docs say the bare alias falls
   short. A `modelSettings` block or a top-level `effortLevel` that reappears is
   a `/effort` or `/model` write-back; discard it unless I say to keep that
-  level. A stray top-level `effortLevel` does more harm here than elsewhere: inside this
-  checkout this file is also project settings, and a project-level
+  level. A stray top-level `effortLevel` does more harm here than elsewhere:
+  inside this checkout this file is also project settings, and a project-level
   `effortLevel` overrides every model's own default. This covers saved
   settings only: `hq` picks a worker's effort per launch with `--effort`,
   which lasts one session and writes nothing back.
 
 - **Rejected, don't propose again.** Loading the herdr rules
-  only inside herdr through a hook: hooks are Claude-only, so Cursor, Grok,
-  and OpenCode 2 would lose them. They now live in
+  only inside herdr through a hook: hooks are Claude Code-only, so Cursor, Grok
+  Build, and OpenCode 2 would lose them. They now live in
   `.claude/references/herdr.md`, which an always-loaded line tells the agent
   to read on its first turn in a herdr pane, and that works in every harness.
   Moving the whole coding workflow into an on-demand skill (2026-09-27):
@@ -251,7 +253,7 @@ repo-local.
   happened, and none of my repos gives a model tools. Revisit the first if an
   agent ever adds a wrong package, the second once an app calls a model with
   tools.
-  From the 2026-09-27 hq review: renaming `hq`, which stays. An OpenCode
+  From the 2026-09-27 hq review: renaming `hq`, which stays. An OpenCode 2
   plugin that reports context to herdr: HQ reads OpenCode's own on-screen
   readout instead, and the plugin was more machinery than that gap needs.
   Making the fresh-context final review a judgment call like the other
