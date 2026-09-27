@@ -125,8 +125,9 @@ through `/skills` there.
 
 The skills chain during a task: plan where needed, build with `tdd` where it
 fits, drive the result where a user would meet it, and close slices with `pass`.
-A change small enough to skip the plan also skips the `tdd` loop and closes
-with `pass quick`, though it still gets its tests and the full final review.
+Every step is a default the agent sizes to the task: a small change runs
+`tdd` only when a failing test first pays off and usually closes with
+`pass quick`, though it still gets its tests and the full final review.
 Both direct commits and PRs use the same final acceptance, verification, and
 review requirements. `pr` publishes the evidence when a PR is warranted; having
 a plan does not require one. Saying `ship it` does: it runs the whole chain
