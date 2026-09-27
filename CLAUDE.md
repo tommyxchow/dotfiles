@@ -59,8 +59,8 @@ repo-local.
   though running sessions may need a reload or restart to load revised
   instructions. OpenCode 2 reads the global text through
   `~/.config/opencode/AGENTS.md` (installer link to `.claude/CLAUDE.md`) and
-  falls back to `~/.claude/CLAUDE.md` only when that file is missing, so the
-  link is what feeds it. In this repo the installer also links `AGENTS.md` to
+  never reads a `CLAUDE.md` (checked in the v2.0.18 binary), so the link is
+  the only thing that feeds it. In this repo the installer also links `AGENTS.md` to
   this file so OpenCode 2 sees these gotchas. Cursor supports symlinked local
   plugins, but `rules/global.mdc` needs `alwaysApply: true` frontmatter that
   `.claude/CLAUDE.md` doesn't carry, so the installer copies it into
