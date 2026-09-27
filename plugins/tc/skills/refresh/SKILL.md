@@ -8,11 +8,11 @@ argument-hint: "[optimal | full | minimal | audit | packages | docs] [custom ins
 
 # Refresh
 
-This skill catches a repo up. It moves packages to the latest versions this stack can actually take, applies the migrations those versions need, and calls out prominently any must-upgrades, vulnerabilities, deprecations, and packages that are severely behind.
+This skill catches a repo up. It moves packages to the latest versions this stack can take, applies the migrations they need, and prominently calls out must-upgrades, vulnerabilities, deprecations, and packages that are severely behind.
 
 `$ARGUMENTS` holds an optional **mode** as its first token, followed by **custom instructions**. When it is empty, the mode is `optimal`. If the first token is not one of the modes below, treat the whole argument as custom instructions on `optimal`. A security-audit, Dependabot, or outdated request with no upgrade language means `audit`, which only reports.
 
-Honor the holds in `AGENTS.md`, meaning the versions the repo deliberately keeps back. `audit` reports and changes nothing. The modes that do change code close the way any other slice does, through `pass`.
+Honor the `AGENTS.md` holds, the versions the repo deliberately keeps back. `audit` reports and changes nothing. Modes that change code close through `pass`, like any other slice.
 
 ## Collision: machine vs repo
 
@@ -47,9 +47,9 @@ A mode or custom instruction passed in the arguments is the answer, so don't pro
 
 - Use **pnpm / pnx** for JS. Never use `npm` / `npx` / `yarn` / `npm audit`. For Flutter, use `flutter` / `dart`.
 - Don't add a dependency, linter, formatter, CI gate, or scanner (Snyk, Socket, osv-scanner, Dependabot config) unless the user asks.
-- Never run a blanket `pnpm update --latest`. Instead, target the Apply packages with `pnpm update <pkg…>` ([pnpm update](https://pnpm.io/cli/update)), which keeps the range operator and writes the resolved version. Exclude holds (`\!typescript`). For an approved major, use `pnpm update foo@2`.
+- Never run a blanket `pnpm update --latest`. Target the Apply packages with `pnpm update <pkg…>` ([pnpm update](https://pnpm.io/cli/update)), which keeps the range operator and writes the resolved version. Exclude holds (`\!typescript`). For an approved major, use `pnpm update foo@2`.
 - `catalog:` dependencies change in `pnpm-workspace.yaml`.
-- Honor **`minimumReleaseAge`**, and check the installed default. Don't add an exclude out of curiosity. **Security:** `pnpm audit --fix=update` may add a targeted exclude for the patched version ([pnpm audit](https://pnpm.io/cli/audit)). Leave that exclude in place and mention it.
+- Honor **`minimumReleaseAge`**, and check the installed default. Don't add an exclude except for a GHSA. **Security:** `pnpm audit --fix=update` may add a targeted exclude for the patched version ([pnpm audit](https://pnpm.io/cli/audit)). Leave that exclude in place and mention it.
 - Don't stash or reset a dirty tree. Show `git status`, then work on top of it, or stop if the uncommitted changes are unrelated.
 - **Vet** the Must items and the framework line against the vendor changelog or [GHSA](https://github.com/advisories), starting from the installed version. Don't assert "latest" or "safe" from memory.
 - For the rest of Apply, the batched `outdated` and `audit` output plus registry metadata settles a routine patch or minor. Open a changelog or migration guide only for a major, an advisory, a deprecation, or a package whose API the repo calls directly. The outdated table alone does not settle anything. Don't read changelogs for Skip rows.
@@ -58,7 +58,7 @@ A mode or custom instruction passed in the arguments is the answer, so don't pro
 - Don't take a canary, RC, or any dist-tag other than `latest` unless the user asked for it.
 - Don't rewrite AGENTS or README to use a CLI that the pinned version doesn't ship. Match `packageManager` / the SDK pin.
 - Don't add `allowBuilds` entries, which allow a new postinstall, unless the user agreed ([pnpm supply chain](https://pnpm.io/supply-chain-security)).
-- Verify with the local check (see stacks.md for this stack), and let CI run the whole suite and any extra jobs in the default CI workflow. A bump changes no source file, so the affected tests are the ones that exercise the bumped package. Don't invent a gate the repo doesn't have. If the gate is already red, say so before bumping.
+- Verify with the local check (see stacks.md for this stack), and let CI run the whole suite and any extra jobs in the default CI workflow. A bump changes no source file, so the affected tests are the ones that exercise the bumped package. If the gate is already red, say so before bumping.
 - Don't add `audit.ignore` / `ignored_advisories` entries unless the user has read the GHSA. Don't use `pnpm audit --ignore-unfixable`.
 - Don't break a hold to quiet the audit. Being outdated is not the same as being vulnerable.
 
@@ -74,11 +74,11 @@ Read the pins in `AGENTS.md` / `CLAUDE.md` / `pubspec.yaml`. Note the package ma
 
 ### 2. Audit
 
-Batch the independent CLI calls: `git status`, outdated, audit, and Dependabot if `gh` works. How deep you go depends on the mode. `minimal` and `packages` skip `ui:diff` and docs unless a bump requires them. `docs` skips outdated and `ui:diff`, but still flags a hold that has a GHSA.
+Batch the independent CLI calls: `git status`, outdated, audit, and Dependabot if `gh` works. `minimal` and `packages` skip `ui:diff` and docs unless a bump requires them. `docs` skips outdated and `ui:diff`, but still flags a hold that has a GHSA.
 
 Run each of these when its tool exists:
 
-- **Outdated:** Run `pnpm outdated`, adding `-r` in a workspace with packages and `--include-github-actions` when the installed pnpm supports it. Compare Wanted against Latest. Don't pass `--compatible` as the only view, because the majors vanish from it. `outdated` and `install` can disagree on `minimumReleaseAge`, and install is the gate. Confirm this against the installed pnpm's changelog or releases. Don't add an exclude except for a GHSA. For Flutter, run `flutter pub outdated`. Take the framework's current stable from the vendor's blog or GitHub releases, not from memory.
+- **Outdated:** Run `pnpm outdated`, adding `-r` in a workspace with packages and `--include-github-actions` when the installed pnpm supports it. Compare Wanted against Latest. Don't pass `--compatible` as the only view, because the majors vanish from it. `outdated` and `install` can disagree on `minimumReleaseAge`, and install is the gate. Confirm this against the installed pnpm's changelog or releases. For Flutter, run `flutter pub outdated`. Take the framework's current stable from the vendor's blog or GitHub releases, not from memory.
 - **Security:** Run `pnpm audit --audit-level high`, and glance at the lower severities so moderate ones aren't invisible. Check production dependencies first, then note whether the rest is dev-only. For Flutter, `flutter pub get` prints GHSAs ([Dart advisories](https://dart.dev/tools/pub/security-advisories)). Run `gh api repos/<owner>/<repo>/dependabot/alerts?state=open` when `gh` works. Treat the alerts as a signal and the GHSA as the source.
 - **Deprecated:** Find deprecations in `pnpm outdated --format json` (`isDeprecated`) and the audit output, not with `pnpm view` on the tree. Also look for committed config keys the vendor now flags, such as Next route exports, Action inputs, and in-repo editor settings. A documented replacement on the same major is Must. Don't migrate `~` user settings; that belongs to the machine playbook.
 - **Stale:** A direct dependency is stale when it is two or more minors behind on the same major, or a whole major behind and not a hold. A framework is stale when it is several stables behind current. A toolchain pin lagging the SDK is stale too, and it blocks every other upgrade.
