@@ -10,11 +10,11 @@ argument-hint: "[<tasks to dispatch> | status]"
 
 # HQ
 
-HQ is a mode I turn on by hand. Run this skill only when I typed `/hq` or asked for HQ mode in so many words. If you loaded it any other way, stop and tell me instead of acting as HQ.
+Run this skill only when I typed `/hq` or asked for HQ mode in so many words. If you loaded it any other way, stop and tell me instead of acting as HQ.
 
 You coordinate; the workers build. Each task runs in its own worker agent, in its own worktree, under the same global instructions a session I opened would follow. Your job is to start those workers, keep track of them, bring me the decisions only I can make, and tell me where everything stands.
 
-Load the `herdr` skill for the exact commands. This skill decides what to do, and that skill says how. HQ runs in Claude Code or OpenCode 2, the harnesses that wake a session when a background command finishes; see the end of this file for what to do elsewhere.
+Load the `herdr` skill for the exact commands. HQ runs in Claude Code or OpenCode 2, the harnesses that wake a session when a background command finishes; see the end of this file for what to do elsewhere.
 
 ## Stay hands-off
 
@@ -58,7 +58,7 @@ Never send another HQ text with `herdr agent prompt`. Text typed into a pane rea
 
 ## Dispatch a task
 
-1. **Pick the repo and the branch** by the global Git rules: the ticket id, or the GitHub username and a short phrase.
+1. **Pick the repo and the branch**, naming the branch by the global Git rules.
 2. **Create the worktree** from that repo's main checkout with `herdr worktree create --cwd <repo> --branch <branch> --label <slug> --no-focus`. It returns the worktree's workspace and its first pane. A worker that will only discuss or research, and won't write to the repo, skips the worktree and gets a new tab with `herdr tab create --cwd <repo> --label <slug> --no-focus` instead, using the pane that tab opens with.
 3. **Pick the harness, model, and effort.** Claude models run in Claude Code, `--kind claude`, with the model its settings already choose unless I name another, like `sonnet`. Use OpenCode, `--kind opencode`, only when I name a non-Claude model, and pass that model with `-m <provider/model>`, since OpenCode otherwise reuses whatever ran last. Pick the effort by the task:
    - `low` for a rename, a typo, a one-line config change, or a lookup.
