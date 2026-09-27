@@ -203,6 +203,9 @@ if [ -n "$HERDR_PANE_ID" ]; then
     # A session with no context number yet, like one just after /clear,
     # clears both so an older value doesn't linger until its TTL runs out.
     ctx_args=(--clear-token ctx --clear-token ctxhigh)
+    # A model with no effort setting clears the token rather than sending an empty value.
+    effort_args=(--clear-token effort)
+    [ -n "$effort" ] && effort_args=(--token "effort=${effort}")
     if [ -n "$used_pct" ]; then
       ctx_used=0
       [ -n "$size_raw" ] && ctx_used=$(( pct * size_raw / 100 ))
@@ -213,7 +216,7 @@ if [ -n "$HERDR_PANE_ID" ]; then
       fi
     fi
     "$herdr_bin" pane report-metadata "$HERDR_PANE_ID" --source tc.statusline \
-      --token "effort=${effort}" "${ctx_args[@]}" --ttl-ms 180000 >/dev/null 2>&1 &
+      "${effort_args[@]}" "${ctx_args[@]}" --ttl-ms 180000 >/dev/null 2>&1 &
   fi
 fi
 

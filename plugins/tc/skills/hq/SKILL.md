@@ -67,7 +67,7 @@ Never send another HQ text with `herdr agent prompt`. Text typed into a pane rea
    - `xhigh` for deep research, or a problem that beat a worker at a lower level.
    - `max` only when I ask for it, since it tends to overthink.
 4. **Start the worker** in that pane with `herdr agent start <slug> --kind <kind> --pane <pane-id>`, adding `-- --effort <level>` for a Claude worker off the default and `-- --model <alias>` when I named a Claude model (both go after one `--`), or `-- -m <provider/model>` for OpenCode. Name it with the same short slug as the label, like `nav-flicker`, so the sidebar and the board match.
-5. **Hand it the task** with `herdr agent prompt`: the task in my words, the ticket or link, any decisions we settled here, and `ship it` only if I said it. Leave the conventions out, because the worker loads the same global instructions you do.
+5. **Hand it the task** with `herdr agent prompt`: the task in my words, the ticket or link, any decisions we settled here, `ship it` only if I said it, and its effort when it isn't the default, so a handoff to a fresh session keeps it. Leave the conventions out, because the worker loads the same global instructions you do.
 6. **Add its line** to the board and start its wait, the way the next section describes for any worker you just sent input to. Tell me what you dispatched in one line each, with the effort and why when it isn't the default, so I can change it.
 
 Dispatch independent tasks one after another in the same turn rather than waiting for each worker to start its work.

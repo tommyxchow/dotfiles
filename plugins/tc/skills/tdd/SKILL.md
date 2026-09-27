@@ -17,7 +17,7 @@ Build the feature and its tests together. Watching a test fail for the right rea
 Decide this first and say which way in one sentence. Don't ask.
 
 - **It fits** when the change has an observable result: a function or module with inputs and outputs, business rules, a parser or format, an API route, a bug with a reproduction. A bug fix starts here whenever its behavior can be asserted, because the test for the corrected behavior is the proof that the fix works.
-- **It doesn't fit** when there is nothing to assert yet: exploration where the shape is still unknown, config, docs, copy, styling and visual layout, a change with no behavior change (a rename, a moved file), a throwaway script. Say so, build it normally, and add the repo's usual tests afterward. The size of the change doesn't decide it. A one-line permission fix has behavior, so it fits.
+- **It doesn't fit** when there is nothing to assert yet: exploration where the shape is still unknown, config, docs, copy, styling and visual layout, a change with no behavior change (a rename, a moved file), a throwaway script. Say so, build it normally, and add the repo's usual tests afterward. The size of the change doesn't decide fit. A one-line permission fix has behavior, so it fits; whether a small unplanned change is worth the loop is the global sizing rule's call, and its test for the corrected behavior is written either way.
 - **It half fits** more often than either. Take the part with observable behavior through the loop and build the rest normally. For example, a form's validation rules are testable, but which shade of grey the error text is, is not.
 
 ## 2. Name the cases before the first test

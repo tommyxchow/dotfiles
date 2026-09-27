@@ -18,7 +18,7 @@ Follow the global completion and Git rules. `check` only reports. It makes no co
 
 Look before acting. Run `gh pr view --json number,isDraft,baseRefName,headRefOid,url,mergeStateStatus,reviewDecision`, then `git status`, and check whether the plan's acceptance checklist has items without evidence. Only "no pull requests found" means there is no PR. Any other failure is a failed lookup, so say so and stop rather than opening a second PR on top of one you couldn't see.
 
-- **`check`, "is this ready", "final review", or "close out the PR"**: check readiness (section 4) and report only. When there is no PR, report that rather than opening one.
+- **`check`, "is this ready", "final review", or "close out the PR"**: check readiness (section 4) and report only. When there is no PR, report that rather than opening one; a "final review" then goes to `review all` instead.
 - **`ready` or "mark it ready"**: check readiness and mark ready (section 4). When there is no PR, report that rather than opening one.
 - **Explicit `rebase`, "restack", or "sync the stack"**: run Restack (section 5), then Update when a PR exists. Identify the stack branches before acting, and ask if the intended stack is unclear.
 - **No PR yet, an open/create request or bare `pr`**: run Open (section 2).

@@ -2,7 +2,7 @@
 name: pass
 metadata:
   opencode/slash: "true"
-description: 'Closes and commits a finished slice: apply the confirmed findings of a review that ran this session, vet stale-sensitive choices, remove leftovers, polish code, and run the repo check. Use for quick pass, final pass, final double check, close this out, plug the gaps, or pass on its own, not mid-sentence. `quick` keeps the findings and the local check and trims vet and polish to essentials. `finalize` is the final step: the full review in a fresh context first (it reports; `pr check` when a PR is open), then this; "review and pass", "review/pass", or "pass/review", with or without final, mean the same. PR readiness goes to pr; correctness to review; code shape to polish; current facts to vet; packages to refresh. A bare status check uses known results and git status. Never pushes or substitutes for the final task review.'
+description: 'Closes and commits a finished slice: apply the confirmed findings of a review that ran this session, vet stale-sensitive choices, remove leftovers, polish code, and run the repo check. Use for quick pass, final pass, final double check, close this out, plug the gaps, or pass on its own, not mid-sentence. `quick` keeps the findings and the local check and trims vet and polish to essentials. `finalize` is the final step: the full review in a fresh context first (it reports; `pr check` when a PR is open and pushed), then this; "review and pass", "review/pass", or "pass/review", with or without final, mean the same. PR readiness goes to pr; correctness to review; code shape to polish; current facts to vet; packages to refresh. A bare status check uses known results and git status. Never pushes or substitutes for the final task review.'
 argument-hint: "[quick] [skip polish | skip check | <focus>]"
 ---
 
@@ -11,6 +11,8 @@ argument-hint: "[quick] [skip polish | skip check | <focus>]"
 Prepares and commits a finished slice. The global completion rule is responsible for acceptance and the final correctness review. A pass applies what that review confirmed and supplies cleanup and check evidence; it is not proof that the whole task is complete.
 
 `$ARGUMENTS` can hold an optional `quick`, an optional `skip polish` / `skip check`, and then any extra focus. `quick` is the lighter run marked in the steps, not a skip: the findings and the local check stay.
+
+Under `finalize`, or review and pass in either order, the review skill's final review runs first as its last section says, and these steps then apply what it confirmed; the "don't run a review here" lines below mean inside the pass steps, not that one.
 
 Decide which steps run first, then load only what they need. Read [../vet/SKILL.md](../vet/SKILL.md) only when step 2 runs. Read [../polish/SKILL.md](../polish/SKILL.md) only when step 4 runs.
 
