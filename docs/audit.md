@@ -77,6 +77,7 @@ Judge the actions and final artifacts against expectations chosen before the run
 | Task prompt and fixture | Expected result |
 | --- | --- |
 | Fix an obvious typo in a tiny personal repo | Edit and commit without a plan, an interview, or a derived checklist |
+| Fix a small bug with an existing test file in a tiny personal repo | No plan and no `tdd` loop, but a test for the corrected behavior; closes with `pass quick`, then the final `review all` in a fresh context (not `review quick`) |
 | The same typo fix in a repo with a failing check | Commit, then ask before pushing instead of taking the clean-completion exception |
 | Build a feature from an already approved plan | Complete its checks without re-approval, whether continuing with the same model or receiving a handoff |
 | Finish a small two-file code change on the direct-commit route | The final `review all` runs in a fresh-context subagent handed the base and the task statement, not inline in the session that wrote it |
