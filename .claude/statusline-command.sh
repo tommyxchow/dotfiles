@@ -192,10 +192,10 @@ fi
 # Inside a herdr pane, publish effort and context as pane tokens, so the
 # sidebar shows them and an hq session reads them from `herdr agent list`; the
 # model itself never sees this line. Context goes out as `ctxhigh` instead of
-# `ctx` once it passes the soft ceiling of 60%, where I usually compact or start
-# fresh. The sidebar config colors that token, so the threshold lives here
-# rather than in a sidebar rule. The TTL
-# outlives the 60s refresh, so the values vanish soon after Claude exits. It
+# `ctx` once it passes the soft ceiling of 70%, which still leaves room for one
+# more round of work before auto-compact on a 200K window. The sidebar config
+# colors that token, so the threshold lives here rather than in a sidebar rule.
+# The TTL outlives the 60s refresh, so the values vanish soon after Claude exits. It
 # runs in the background because the statusline must never wait on herdr.
 if [ -n "$HERDR_PANE_ID" ]; then
   herdr_bin="${HERDR_BIN_PATH:-herdr}"
@@ -207,7 +207,7 @@ if [ -n "$HERDR_PANE_ID" ]; then
     effort_args=(--clear-token effort)
     [ -n "$effort" ] && effort_args=(--token "effort=${effort}")
     if [ -n "$used_pct" ]; then
-      if [ "$pct" -ge 60 ]; then
+      if [ "$pct" -ge 70 ]; then
         ctx_args=(--token "ctxhigh=ctx ${pct}%" --clear-token ctx)
       else
         ctx_args=(--token "ctx=ctx ${pct}%" --clear-token ctxhigh)

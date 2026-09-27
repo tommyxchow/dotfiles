@@ -91,11 +91,13 @@ its own statusline, so this is how an `hq` session reads a worker's context and
 effort, and how the herdr sidebar shows them next to each Claude agent.
 
 Context goes out under one of two names. It is `ctxhigh` once the session
-passes a soft ceiling of 60% of its window, and `ctx` below that; the sidebar
-colors `ctxhigh`. 60% is where I usually compact or start fresh, since
-Anthropic documents that quality drops as context fills but publishes no
-threshold. It sits well before auto-compact, since it marks where a fresh
-session or a `/compact` starts paying off, not where the window runs out.
+passes a soft ceiling of 70% of its window, and `ctx` below that; the sidebar
+colors `ctxhigh`. Anthropic documents that quality drops as context fills but
+publishes no threshold, so 70% is a judgment call: it keeps a worker's context
+one round longer than 60%, and unlike 80% it still leaves a 200K window about
+60K tokens, enough for one more round of work before auto-compact. It marks
+where a fresh session or a `/compact` starts paying off, not where the window
+runs out.
 
 The report runs in the background with a three-minute TTL. The statusline
 never waits on herdr, and the tokens disappear shortly after Claude exits
