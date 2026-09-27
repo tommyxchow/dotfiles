@@ -32,7 +32,7 @@ This skill covers single-session and ad-hoc summaries, not week-scale rollups ac
 
 Drop any section that doesn't apply. Trivial inputs, like a one-line acknowledgment or a typo fix, get a one-line direct answer with no template.
 
-- **Recent exchange or session**: open with a TL;DR of where things stand in app terms, then the decisions made (each with its one-line why), open questions / next steps, and files touched if any. Build the narrative from your conversation memory, but take concrete artifacts (file paths, branch names, ticket IDs, tools invoked) from your tool-use history, not from recall. If the exchange included code edits the user wasn't watching, cross-check the story against `git status` / `git diff` before telling it, because what the chat says can stop matching the working tree. State the end state (works, broken, unverified) explicitly.
+- **Recent exchange or session**: open with a TL;DR of where things stand in app terms, then the decisions made (each with its one-line why), open questions / next steps, and a file only where the reader has to go. Build the narrative from your conversation memory, but take concrete artifacts (file paths, branch names, ticket IDs, tools invoked) from your tool-use history, not from recall. If the exchange included code edits the user wasn't watching, cross-check the story against `git status` / `git diff` before telling it, because what the chat says can stop matching the working tree. State the end state (works, broken, unverified) explicitly.
 - **Recommendation / substantive answer**: give the pick first, then why it wins, then what to skip / tradeoffs. If you recommend A over B, say what B is good for and why A wins here.
 - **Document, article, or pasted text**: give a one-to-three-sentence thesis, then the key points, then details only when the source has nuance worth preserving.
 - **Changes or a PR**: say what it changes and why in 1-3 sentences, in app terms rather than file names. Then give the risk areas worst-first, what to review first, and anything broken or unverified. Mention tests only if they exist in the diff, and never invent coverage. Read the diff before summarizing, rather than summarizing a diff from its description.
@@ -42,21 +42,9 @@ Drop any section that doesn't apply. Trivial inputs, like a one-line acknowledgm
 User: `/tldr` after a few exchanges debugging an SSR hydration mismatch on `dark-mode`.
 
 ```
-TL;DR
-Dark mode no longer flashes light on first paint. The html class
-differed between server and client; suppressHydrationWarning was
-cheaper than blocking paint.
+Dark mode no longer flashes light on first paint. The `<html>` class differed between the server and the client, and `suppressHydrationWarning` was a cheaper fix than blocking paint.
 
-Decisions made
-- suppressHydrationWarning on <html>: simplest fix; the DOM truly
-  does differ between server and client by design.
-- Rejected blocking paint via inline <head> script: 30ms FCP cost
-  doesn't justify the cleaner DOM.
+The warning is suppressed on `<html>` only, because the DOM really does differ there by design. An inline `<head>` script that blocks paint would keep the DOM cleaner, but its 30ms first-paint cost isn't worth it.
 
-Open questions / next steps
-- Verify lighthouse score didn't regress.
-- Designer review on dark-mode token mappings still pending.
-
-Files touched
-- src/app/layout.tsx
+Two things are still open: checking that the Lighthouse score didn't regress, and the designer's review of the dark-mode token mappings.
 ```

@@ -1,4 +1,5 @@
-# Grok Build — settings that differ from built-in defaults only.
+# Grok Build: settings that differ from built-in defaults, plus any default
+# pinned on purpose so an upstream change can't flip it silently.
 # Grok writes runtime state (marketplace bookkeeping, pinned sessions, banner
 # acks) back into ~/.grok/config.toml, so the installer seeds that file from
 # here on new machines and patches just these keys afterwards. It is never
@@ -9,7 +10,7 @@ enabled = true # default: false
 
 [features]
 lsp_tools = true # default: false
-two_pass_compaction = true # default: true since 1.0.21; kept in case it flips back
+two_pass_compaction = true # default: true since 1.0.21; pinned in case it flips back
 
 [ui]
 theme = "auto" # default: GrokNight

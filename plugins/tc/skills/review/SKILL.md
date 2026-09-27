@@ -12,7 +12,7 @@ Find real defects, meaning something a user, an attacker, or the next deploy wou
 
 `$ARGUMENTS` takes an optional depth first (`quick`, or `deep` / `deeper` for the expensive tier), then an optional scope keyword (`staged`, `unstaged`, `branch`, `all`, `pr <number|url>`), then an optional `fix`, and then focus text. A bare `review` uses the default scope and reports only.
 
-**The final task review runs in a fresh context.** When the global completion rule calls for this review, run it in a fresh-context subagent whatever the diff's size, because the session that wrote the code reads it as it meant it, not as it is. Hand the subagent the base, the scope, the acceptance checklist or task statement, and this skill's path, not the conversation. The size gate below then applies inside it. A subagent started for this review is that fresh context, so it reviews directly instead of starting another. Where the harness has no subagents, run it inline and say so in the report.
+**The final task review runs in a fresh context.** When the global completion rule calls for this review, run it in a fresh-context subagent whatever the diff's size, because the session that wrote the code reads it as it meant it, not as it is. Hand the subagent the base, the scope, the task's own files or commits, the acceptance checklist or task statement, and this skill's path, not the conversation, and tell it that it is the final task review. It can't tell the task's changes from another session's without that list. The size gate below then applies inside it. A subagent started for this review is that fresh context, so it reviews directly instead of starting another. Where the harness has no subagents, run it inline and say so in the report.
 
 ## 1. Recon, kept cheap
 
@@ -61,7 +61,7 @@ Remove duplicates, rank the findings worst first by severity and then confidence
 ❌ 2 issues, worst first.
 
 - **Anyone can delete another user's photo** in the photo delete route. The handler checks that a session exists but never that the photo belongs to that user, so any signed-in user can delete any photo by id. Look the photo up and compare its owner to the session user before deleting.
-- **The upload progress bar sticks at 99 % after a retry** in the uploader hook. On retry the byte counter keeps the failed attempt's bytes, so the total passes the file size and the bar is clamped. Reset the counter when a retry starts. Traced, not run.
+- **The upload progress bar sticks at 99% after a retry** in the uploader hook. On retry the byte counter keeps the failed attempt's bytes, so the total passes the file size and the bar is clamped. Reset the counter when a retry starts. Traced, not run.
 
 The repo's PR checklist in CONTRIBUTING.md also asks for a changelog line, and this change has none.
 ```

@@ -4,7 +4,7 @@ disable-model-invocation: true
 metadata:
   opencode/slash: "true"
   opencode/autoinvoke: "false"
-description: Manual opt-in only. Runs this session as HQ, a coordinator inside herdr that dispatches tasks to worker agents in their own worktrees, waits on them, relays their questions, and reports status, while the workers do the building. Several HQs can run at once, each owning its own workers. Load it only when the user types /hq or explicitly asks to turn HQ mode on; never load it on your own because a request mentions dispatching, coordinating, or managing sessions. Needs a herdr pane in Claude Code or OpenCode 2. Never edits a worker's code, approves on the user's behalf, merges unless the user says to in this session, or deletes worktrees.
+description: 'Manual opt-in only. Runs this session as HQ, a coordinator inside herdr that dispatches tasks to worker agents in their own worktrees, waits on them, relays their questions, and reports status, while the workers do the building. Several HQs can run at once, each owning its own workers. Load it only when the user types /hq or explicitly asks to turn HQ mode on; never load it on your own because a request mentions dispatching, coordinating, or managing sessions. Needs a herdr pane in Claude Code or OpenCode 2. Never edits a worker''s code, approves on the user''s behalf, merges unless the user says to in this session, or deletes worktrees.'
 argument-hint: "[<tasks to dispatch> | status]"
 ---
 
@@ -42,7 +42,7 @@ Edit only your own lines, and read the file again right before each edit, since 
 When HQ mode turns on, take stock before doing anything else, because sessions I started by hand, workers from an earlier HQ, and other HQs may already be running.
 
 1. **Read the board** if it exists, and run `herdr agent list`. Leave out your own pane.
-2. **Name yourself** `hq`, or the first of `hq-2`, `hq-3`, and so on that no live agent has, with `herdr agent rename "$HERDR_PANE_ID" <name>`. That name is your owner tag on the board. Name your tab the same way, following the global herdr rules. Lines that already carry your new name belong to an earlier HQ that is gone, so treat them like any other line whose owner is gone.
+2. **Name yourself** `hq`, or the first of `hq-2`, `hq-3`, and so on that no live agent has, with `herdr agent rename "$HERDR_PANE_ID" <name>`. That name is your owner tag on the board. Name your tab the same way, following the naming rules in `~/.claude/references/herdr.md`. Lines that already carry your new name belong to an earlier HQ that is gone, so treat them like any other line whose owner is gone.
 3. **Leave other HQs' work alone.** An agent named `hq` or `hq-<n>` is another HQ, and a board line whose owner is another live HQ belongs to it. Don't read, wait on, or answer for either.
 4. **Offer the rest.** List the live agents with no line, and the lines whose owner is gone, in one short message: each in a sentence, what it is on and what it waits on, the ones waiting on me first. Work that out from the board line, or for an agent with no line from its terminal title, its folder, the branch there, and a short `herdr agent read <pane-id> --source recent-unwrapped --lines 60`. Ask which ones I want you to take; with no other HQ running, taking all of them is the recommended answer.
 5. **Adopt what I pick.** Give an agent with no name the next free worker name, as dispatch step 4 describes, with `herdr agent rename <pane-id> <name>`, so you can reach it after its pane moves. Write each line with you as the owner, then start waits on the working ones and handle the blocked ones as below.
@@ -60,7 +60,7 @@ Never send another HQ text with `herdr agent prompt`. Text typed into a pane rea
 
 1. **Pick the repo and the branch**, naming the branch by the global Git rules.
 2. **Create the worktree** from that repo's main checkout with `herdr worktree create --cwd <repo> --branch <branch> --label <slug> --no-focus`. It returns the worktree's workspace and its first pane. A worker that will only discuss or research, and won't write to the repo, skips the worktree and gets a new tab with `herdr tab create --cwd <repo> --label <slug> --no-focus` instead, using the pane that tab opens with.
-3. **Pick the harness, model, and effort.** Claude models run in Claude Code, `--kind claude`, with the model its settings already choose unless I name another, like `sonnet`. Use OpenCode, `--kind opencode`, only when I name a non-Claude model, and pass that model with `-m <provider/model>`, since OpenCode otherwise reuses whatever ran last. Pick the effort by the task:
+3. **Pick the harness, model, and effort.** Claude models run in Claude Code, `--kind claude`, with the model its settings already choose unless I name another, like `sonnet`. Use OpenCode 2, `--kind opencode`, only when I name a non-Claude model, and pass that model with `-m <provider/model>`, since OpenCode otherwise reuses whatever ran last. Pick the effort by the task:
    - `low` for a rename, a typo, a one-line config change, or a lookup.
    - The model's default for most building, a bug with a clear repro, and PR feedback. Pass no flag for it.
    - `high` for an unclear cause, a change that cuts across the codebase, or auth, money, and migrations.

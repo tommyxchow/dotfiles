@@ -1,45 +1,88 @@
 # Resync: pull, install, then clean leftovers
 
-Make **this machine** match the canonical layout in the dotfiles repo. Also check whether copied skills have drifted from upstream, but do not apply that here. This is not a docs rewrite or a plugin redesign, and it never runs the `refresh` skill, which is for packages in a product repo.
+Make **this machine** match the canonical layout in the dotfiles repo. Also
+check whether copied skills have drifted from upstream, but do not apply that
+here. This is not a docs rewrite or a plugin redesign, and it never runs the
+`refresh` skill, which is for packages in a product repo.
 
-Harnesses: **Claude Code** and **OpenCode 2** are the daily CLIs, **Grok Build** is occasional, and **Cursor** is the desktop editor, which never runs inside herdr. The installer is enough for instructions and first-party skills on all of those. Marketplace plugins (`ek`, `frontend-design`, `typescript-lsp`) need the `claude` CLI; skip that section if it is not installed.
+Harnesses: **Claude Code** and **OpenCode 2** are the daily CLIs, **Grok Build**
+is occasional, and **Cursor** is the desktop editor, which never runs inside
+herdr. The installer is enough for instructions and first-party skills on all of
+those. Marketplace plugins (`ek`, `frontend-design`, `typescript-lsp`) need the
+`claude` CLI; skip that section if it is not installed.
 
-Flow: **find repo → pull or clone → installer → marketplace plugins (if `claude`) → dedupe → leftover sweep → vendored skills → report.**
+Flow: **find repo → pull or clone → installer → marketplace plugins (if
+`claude`) → dedupe → leftover sweep → vendored skills → report.**
 
-The installer is the mechanical source of truth (`install.sh`). Do not reimplement its links. This file is the judgment pass around it.
+The installer is the mechanical source of truth (`install.sh`). Do not
+reimplement its links. This file is the judgment pass around it.
 
 ## Find the repo
 
-Prefer the current workspace if it is this repo (root `install.sh` plus `.claude/CLAUDE.md`). Else `~/dev/dotfiles`. If neither exists, clone `https://github.com/tommyxchow/dotfiles.git` to `~/dev/dotfiles` and continue from there. Do not search the whole disk.
+Prefer the current workspace if it is this repo (root `install.sh` plus
+`.claude/CLAUDE.md`). Else `~/dev/dotfiles`. If neither exists, clone
+`https://github.com/tommyxchow/dotfiles.git` to `~/dev/dotfiles` and continue
+from there. Do not search the whole disk.
 
-Never install from a linked worktree of this repo. You are in one when `git rev-parse --path-format=absolute --git-common-dir` and `--git-dir` differ; don't compare `--git-common-dir` to `.git`, which is already `../.git` one directory down. The installer links absolute paths into whatever checkout it runs from, so deleting that worktree later leaves this machine's config pointing at a missing folder. `--git-common-dir` names the main checkout to use instead.
+Never install from a linked worktree of this repo. You are in one when
+`git rev-parse --path-format=absolute --git-common-dir` and `--git-dir` differ;
+don't compare `--git-common-dir` to `.git`, which is already `../.git` one
+directory down. The installer links absolute paths into whatever checkout it
+runs from, so deleting that worktree later leaves this machine's config pointing
+at a missing folder. `--git-common-dir` names the main checkout to use instead.
 
 ## Pull
 
-From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new clone.
+From the repo: `git fetch` then `git pull --ff-only`. Skip pull on a brand-new
+clone.
 
-- Dirty or diverged: show `git status` / `git log` and **stop**. Do not stash, reset, or force unless the user says so.
-- After a fast-forward, the repo files are canonical. Ignore stale local copies of `enabledPlugins` from before the pull.
+- Dirty or diverged: show `git status` / `git log` and **stop**. Do not stash,
+  reset, or force unless the user says so.
+- After a fast-forward, the repo files are canonical. Ignore stale local copies
+  of `enabledPlugins` from before the pull.
 
 ## Installer
 
 `./install.sh` on every platform, from Git Bash on Windows.
 
-It links configs, first-party skills, the statusline script, and `bin/wait-for` into `~/.local/bin`, prunes links from older layouts, copies Cursor's local `tc` plugin, and links the herdr plugins (worktree bootstrap and PR badge) when herdr is on PATH and its server is running. The `gh` and `herdr` skills are not installer links; see Third-party skills below. It also seeds `~/.grok/config.toml` from `grok/config.toml` on new machines and on re-runs patches only that file's non-default keys, because Grok writes runtime state into it, so it is never symlinked. It seeds `~/.grok/lsp.json` the same way but never overwrites an existing one, and warns if `typescript-language-server` is not on PATH. Re-running is safe. This is the step that makes Claude, Cursor, Grok, and OpenCode 2 pick up the instructions and every skill under `plugins/tc/skills` on a new machine.
+It links configs, first-party skills, the statusline script, and `bin/wait-for`
+into `~/.local/bin`, prunes links from older layouts, copies Cursor's local `tc`
+plugin, and links the herdr plugins (worktree bootstrap and PR badge) when herdr
+is on PATH and its server is running. The `gh` and `herdr` skills are not
+installer links; see Third-party skills below. It also seeds
+`~/.grok/config.toml` from `grok/config.toml` on new machines and on re-runs
+patches only that file's non-default keys, because Grok writes runtime state
+into it, so it is never symlinked. It seeds `~/.grok/lsp.json` the same way but
+never overwrites an existing one, and warns if `typescript-language-server` is
+not on PATH. Re-running is safe. This is the step that makes Claude Code,
+Cursor, Grok Build, and OpenCode 2 pick up the instructions and every skill
+under `plugins/tc/skills` on a new machine.
 
-On Windows, symlink creation needs Developer Mode (or an elevated shell). If a link comes out dead, fix the mode and re-run the installer rather than replacing links with copies.
+On Windows, symlink creation needs Developer Mode (or an elevated shell). If a
+link comes out dead, fix the mode and re-run the installer rather than replacing
+links with copies.
 
 ## Marketplace plugins
 
-Only if `claude` is on PATH. Cursor and Grok import these from Claude's plugin cache; OpenCode 2 does not. A Cursor-only or OpenCode 2-only machine still gets first-party skills from the installer.
+Only if `claude` is on PATH. Cursor and Grok Build import these from Claude
+Code's plugin cache; OpenCode 2 does not. A Cursor-only or OpenCode 2-only
+machine still gets first-party skills from the installer.
 
-Read `.claude/settings.json` `enabledPlugins` **after** the pull. That list is what should be installed at **user** scope. `enabledPlugins` does not install; `claude plugin list` is the truth.
+Read `.claude/settings.json` `enabledPlugins` **after** the pull. That list is
+what should be installed at **user** scope. `enabledPlugins` does not install;
+`claude plugin list` is the truth.
 
-For each enabled plugin that is missing at user scope:
+For each plugin in `enabledPlugins` that is missing at user scope, including
+`ek@chow`, which is listed as `false`:
 
 ```bash
 claude plugin install <name> --scope user
 ```
+
+Installing enables a plugin, so after installing `ek@chow` run
+`claude plugin disable ek@chow --scope user` and check that
+`git diff .claude/settings.json` is clean. It stays installed and current, off
+until UI work turns it on.
 
 Then update the ones that do not come from this working tree:
 
@@ -48,9 +91,12 @@ claude plugin marketplace update chow
 claude plugin update ek@chow
 ```
 
-Skip `tc@chow`. First-party skills are installer links into `~/.claude/skills`. Enabling the plugin loads a second cached copy, and so does installing it on claude.ai, which Claude Code syncs down to `~/.claude/plugins/synced`.
+Skip `tc@chow`. First-party skills are installer links into `~/.claude/skills`.
+Enabling the plugin loads a second cached copy, and so does installing it on
+claude.ai, which Claude Code syncs down to `~/.claude/plugins/synced`.
 
-Official plugins (`typescript-lsp`, `frontend-design`) have no `autoUpdate`. Install if missing; do not invent extra official plugins.
+Official plugins (`typescript-lsp`, `frontend-design`) have no `autoUpdate`.
+Install if missing; do not invent extra official plugins.
 
 Use the CLI, since the interactive `/plugin` menu installs to **project** scope.
 
@@ -58,36 +104,98 @@ If `claude` is missing, say so in the report and continue.
 
 ## Dedupe
 
-**First-party skills:** every directory under `plugins/tc/skills/` must be a symlink in `~/.claude/skills`. If `tc@chow` is installed or enabled, uninstall it `--scope user` (needs `claude`). Snapshot `enabledPlugins` first; restore any key the uninstall punched (it must not resurrect `tc@chow`). If `~/.claude/plugins/synced/*/tc` exists, the plugin is installed on claude.ai; that cannot be undone from here, so report it and leave the sync settings alone. claude.ai's own skills under `~/.claude/skills/synced` are expected.
+**First-party skills:** every directory under `plugins/tc/skills/` must be a
+symlink in `~/.claude/skills`. If `tc@chow` is installed or enabled, uninstall
+it `--scope user` (needs `claude`). Snapshot `enabledPlugins` first; restore any
+key the uninstall punched (it must not resurrect `tc@chow`). If
+`~/.claude/plugins/synced/*/tc` exists, the plugin is installed on claude.ai;
+that cannot be undone from here, so report it and leave the sync settings alone.
+claude.ai's own skills under `~/.claude/skills/synced` are expected.
 
-**Cursor:** `~/.cursor/plugins/local/tc/rules/global.mdc` must match `.claude/CLAUDE.md` plus `alwaysApply: true` and no `description`. Delete `~/.cursor/plugins/cache/chow/tc` if it exists. Do not paste `CLAUDE.md` into User Rules. Third-party import should stay on so Cursor reads `~/.claude/skills`.
+**Cursor:** `~/.cursor/plugins/local/tc/rules/global.mdc` must match
+`.claude/CLAUDE.md` plus `alwaysApply: true` and no `description`. Delete
+`~/.cursor/plugins/cache/chow/tc` if it exists. Do not paste `CLAUDE.md` into
+User Rules. Third-party import should stay on so Cursor reads
+`~/.claude/skills`.
 
-**Grok:** `~/.grok/config.toml` must carry the non-default keys from `grok/config.toml`; re-run the installer if they drifted. Everything else in that file is Grok-owned runtime state, so do not manage it. `~/.grok/lsp.json` should exist; warn if `typescript-language-server` is missing from PATH. No extra links: Grok reads `~/.claude/CLAUDE.md` and `~/.claude/skills` through Claude compatibility.
+**Grok Build:** `~/.grok/config.toml` must carry the non-default keys from
+`grok/config.toml`; re-run the installer if they drifted. Everything else in
+that file is Grok-owned runtime state, so do not manage it. `~/.grok/lsp.json`
+should exist; warn if `typescript-language-server` is missing from PATH. No
+extra links: Grok reads `~/.claude/CLAUDE.md` and `~/.claude/skills` through
+Claude Code compatibility.
 
-**OpenCode 2:** `~/.config/opencode/AGENTS.md` must be a symlink to `.claude/CLAUDE.md`. In this repo, root `AGENTS.md` must be a symlink to `CLAUDE.md` (installer-created, gitignored), since OpenCode 2 reads `CLAUDE.md` only where no `AGENTS.md` exists. It already reads `~/.claude/skills`, so do not also link first-party skills into `~/.config/opencode/skills` or link `~/.agents/skills`. Typed slash commands come from each skill's `metadata: opencode/slash: "true"`, not from command stubs; the installer sweep removes any leftover links in `~/.config/opencode/commands` that point into this repo. `~/.config/opencode/cli.json` is the TUI/keybinds file from `opencode/cli.json`. On Windows, apply the WT sendInput chords from the README; they are not linked.
+**OpenCode 2:** `~/.config/opencode/AGENTS.md` must be a symlink to
+`.claude/CLAUDE.md`. In this repo, root `AGENTS.md` must be a symlink to
+`CLAUDE.md` (installer-created, gitignored), since OpenCode 2 reads only
+`AGENTS.md` and never `CLAUDE.md`. It already reads `~/.claude/skills`, so do
+not also link first-party skills into `~/.config/opencode/skills` or link
+`~/.agents/skills`. Skills are reached through its `/skills` picker; v2.0.18
+ignores the skills' `opencode/slash` key, so on a newer build, check whether a
+typed `/vet` reaches the skill. There are no command stubs; the installer sweep
+removes any leftover links in `~/.config/opencode/commands` that point into this
+repo. `~/.config/opencode/cli.json` is the TUI/keybinds file from
+`opencode/cli.json`. On Windows, apply the WT sendInput chords from the README;
+they are not linked.
 
-**Project-scope leftovers:** only if `claude` exists. `claude plugin list` plus `~/.claude/plugins/installed_plugins.json`. User scope is the only scope that should exist, so uninstall `--scope project` every project-scope record, running each uninstall from its `projectPath`. When that path is this repo, the uninstall edits `.claude/settings.json` here, which is also the user-scope file: restore any `enabledPlugins` key it removed by editing the JSON, not with `git checkout`. Both scopes share one cache directory, so confirm `claude plugin list` still shows the user-scope entry afterwards and reinstall `--scope user` if it vanished.
+**Project-scope leftovers:** only if `claude` exists. `claude plugin list` plus
+`~/.claude/plugins/installed_plugins.json`. User scope is the only scope that
+should exist, so uninstall `--scope project` every project-scope record, running
+each uninstall from its `projectPath`. When that path is this repo, the
+uninstall edits `.claude/settings.json` here, which is also the user-scope file:
+restore any `enabledPlugins` key it removed by editing the JSON, not with
+`git checkout`. Both scopes share one cache directory, so confirm
+`claude plugin list` still shows the user-scope entry afterwards and reinstall
+`--scope user` if it vanished.
 
-Candidate repos are the sibling project folders of wherever "Find the repo" found this repo, for example everything next to `~/dev/dotfiles`. Other repos may still **enable** uninstalled plugins in their own `.claude/settings.json`. Remove those leftover `enabledPlugins` keys (or the whole object if it is only leftovers). Leave hooks, permissions, and MCP config. `settings.local.json` Skill() allows for gone plugins can go too. Do not commit those repos unless asked.
+Candidate repos are the sibling project folders of wherever "Find the repo"
+found this repo, for example everything next to `~/dev/dotfiles`. Other repos
+may still **enable** uninstalled plugins in their own `.claude/settings.json`.
+Remove those leftover `enabledPlugins` keys (or the whole object if it is only
+leftovers). Leave hooks, permissions, and MCP config. `settings.local.json`
+Skill() allows for gone plugins can go too. Do not commit those repos unless
+asked.
 
 ## Leftover sweep
 
 Delete only what is clearly leftover from an older layout:
 
-- Dangling symlinks under `~/.claude`, `~/.agents`, `~/.config/opencode` that pointed at this repo
-- The leftover `~/.codex/AGENTS.md` symlink (we no longer manage Codex; leave the rest of `~/.codex` alone)
-- Any installer target that is a link whose target no longer exists. Check every path the installer prints, not only the roots above (Windows can produce dead links when Developer Mode is off)
-- Identical `.bak` next to installer targets (the installer already drops those; remove a remaining `.bak` only when it is a pre-link leftover and the live file is the symlink)
-- Plugin cache dirs under `~/.claude/plugins/cache` for plugins **not** in `installed_plugins.json` (skip this if there is no Claude plugin cache)
-- Empty `~/.agents` / `~/.agents/skills` / `~/.config/opencode/skills` after pruning
+- Dangling symlinks under `~/.claude`, `~/.agents`, `~/.config/opencode` that
+  pointed at this repo
+- The leftover `~/.codex/AGENTS.md` symlink (we no longer manage Codex; leave
+  the rest of `~/.codex` alone)
+- Any installer target that is a link whose target no longer exists. Check every
+  path the installer prints, not only the roots above (Windows can produce dead
+  links when Developer Mode is off)
+- Identical `.bak` next to installer targets (the installer already drops those;
+  remove a remaining `.bak` only when it is a pre-link leftover and the live
+  file is the symlink)
+- Plugin cache dirs under `~/.claude/plugins/cache` for plugins **not** in
+  `installed_plugins.json` (skip this if there is no Claude plugin cache)
+- Empty `~/.agents` / `~/.agents/skills` / `~/.config/opencode/skills` after
+  pruning
 
-Do not delete skills in `~/.claude/skills` that are not from this repo. Do not delete the `ek@chow` cache while that plugin is installed.
+Do not delete skills in `~/.claude/skills` that are not from this repo. Do not
+delete the `ek@chow` cache while that plugin is installed.
 
 ## Stale worktrees and branches
 
-Run the `cleanup` skill's read-only survey in each candidate repo (the sibling project folders from "Find the repo"). Show exact candidates and let the user select what to delete before applying anything; resync does not grant deletion approval.
+Run the `cleanup` skill's read-only survey in each candidate repo (the sibling
+project folders from "Find the repo"). Show exact candidates and let the user
+select what to delete before applying anything; resync does not grant deletion
+approval.
 
-No tool cleans everything on its own, so survey rather than assume. Git GC prunes stale worktree registrations only when its conditional automatic run happens. Claude Code periodically cleans eligible subagent and background-session worktrees, not every ordinary worktree session. Cursor has configurable retention-based periodic cleanup. Grok's docs disagree on its worktree GC: the website says it runs only when invoked, while the user guide bundled with the installed build says it also runs on a timer, and neither says whether `worktree.auto_gc` is on by default. Report any Grok cleanup separately; do not run `grok worktree gc --max-age 7d` automatically, since it removes worktree folders by age, without the evidence or the approval the cleanup skill requires.
+No tool cleans everything on its own, so survey rather than assume. Git GC
+prunes stale worktree registrations only when its conditional automatic run
+happens. Claude Code periodically cleans eligible subagent and
+background-session worktrees, not every ordinary worktree session. Cursor has
+configurable retention-based periodic cleanup. Grok Build's docs disagree on its
+worktree GC: the website says it runs only when invoked, while the user guide
+bundled with the installed build says it also runs on a timer, and neither says
+whether `worktree.auto_gc` is on by default. Report any Grok cleanup separately;
+do not run `grok worktree gc --max-age 7d` automatically, since it removes
+worktree folders by age, without the evidence or the approval the cleanup skill
+requires.
 
 ## OpenCode install and channel
 
@@ -120,8 +228,8 @@ not track.
 
 Two skills in `~/.claude/skills` come from somewhere other than the installer:
 `gh` from `cli/cli` through `gh skill`, and `herdr` from the herdr binary. Both
-are user scope, Claude Code agent only; Cursor, Grok, and OpenCode 2 read that
-same folder, so do not install them again for those agents.
+are user scope, Claude Code agent only; Cursor, Grok Build, and OpenCode 2 read
+that same folder, so do not install them again for those agents.
 
 If `gh` is on PATH, refresh its skill with `gh skill update`. `gh skill list`
 shows what is installed; install it when missing with
@@ -137,9 +245,9 @@ mkdir -p ~/.claude/skills/herdr && herdr --skill > ~/.claude/skills/herdr/SKILL.
 
 Skip it when the binary is not on PATH. An older copy that `gh skill list`
 shows as installed from `herdrdev/herdr` tracks the latest tag rather than the
-binary; delete `~/.claude/skills/herdr` and write the bundled one. If `gh skill
-list` still lists it afterwards, remove it with the subcommand `gh skill --help`
-names for that, since the name is not confirmed here.
+binary; delete `~/.claude/skills/herdr` and write the bundled one. `gh skill`
+has no remove command, and `gh skill list` reads the folders themselves, so the
+bundled copy then lists with no source repo.
 
 ## Herdr pane hook
 
@@ -181,7 +289,8 @@ the server up, so a `SKIP` line there means start herdr and re-run the
 installer. `herdr plugin list --json` shows them registered and `herdr plugin
 log list` shows their last runs with exit codes and output, which is where to
 look when a new worktree came up without its env or a badge is missing.
-The badge refreshes when herdr starts, when an agent settles, when a workspace gets focus, and by hand through
+The badge refreshes when herdr starts, when an agent settles, when a workspace
+gets focus, when a new worktree opens, and by hand through
 `herdr plugin action invoke tc.pr-badge.refresh`.
 
 Then check `git diff .claude/settings.json`. Installing the claude integration
@@ -215,24 +324,27 @@ survives and only a real version bump puts claude on the outdated list.
 Skip this section if `herdr` is not on PATH.
 
 Herdr's `config.toml` is machine-local; `herdr --help` prints its path. This
-setup expects six settings in it:
+setup expects five settings in it:
 
 - **Theme** follows the terminal's light or dark mode, like Claude Code's
   `theme: auto`. Picking a theme by hand in herdr's Settings turns
   `auto_switch` back off.
 - **Toast delivery** is `system`, the one that shows outside the herdr window,
   since the global rules have agents send a notification after a long run.
-- **Agent rows** give Claude and OpenCode the same shape: where the agent is,
-  what it is doing, and for Claude how heavy it is. No row names the harness.
-  Claude is the default and carries no mark, and OpenCode 2's own title
+- **Pane border labels** are on, so each pane's border names the harness
+  running in it. Herdr's source labels the border with the harness, not the
+  agent's name, which is why the herdr rules in `.claude/references/herdr.md`
+  say herdr shows an agent's name neither in the sidebar nor on pane borders.
+- **Agent rows** give Claude Code and OpenCode 2 the same shape: where the agent
+  is, what it is doing, and for Claude how heavy it is. No row names the
+  harness. Claude is the default and carries no mark, and OpenCode 2's own title
   already starts with `OC |`, a prefix no herdr rule can strip, so an `agent`
   row would only repeat it. Any other harness falls back to herdr's default
-  rows, which do name it. A fresh Claude session titles itself "Claude Code",
-  so that title row hides until the session has a real title; `hide` needs
-  herdr 0.9.1 or newer. Claude's third row is the effort and context the
-  statusline publishes (see `docs/statusline.md`); the context turns orange as
-  `$ctxhigh` past the soft ceiling. An entry replaces `rows` rather than adding
-  to it.
+  rows, which do name it. A fresh Claude session titles itself "Claude Code", so
+  that title row hides until the session has a real title; `hide` needs herdr
+  0.9.1 or newer. Claude's third row is the effort and context the statusline
+  publishes (see `docs/statusline.md`); the context turns orange as `$ctxhigh`
+  past the soft ceiling. An entry replaces `rows` rather than adding to it.
 - **Spaces rows** are herdr's defaults plus the `$pr` and `$dirty` slots the
   `tc.pr-badge` plugin fills: the PR or default-branch CI state, and the
   uncommitted file count. A slot shows nothing until a value is reported. The
@@ -288,7 +400,7 @@ marketplace, whose `grill-me` would collide with ours.
 What changed, anything still broken, and what the user must do.
 
 - Cursor: **Developer: Reload Window** after the local plugin rewrite.
-- Grok / OpenCode 2: links are updated on disk. Reload or start a new session if it has not loaded the revised instructions; link presence alone does not prove that.
+- Grok Build / OpenCode 2: links are updated on disk. Reload or start a new session if it has not loaded the revised instructions; link presence alone does not prove that.
 - Claude Code: `/reload-plugins` if marketplace plugins changed.
 - If the installer warned that `~/.local/bin` is not on PATH, add the export line it prints to your shell profile; `wait-for` doesn't resolve until then.
 

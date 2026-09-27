@@ -12,7 +12,7 @@ Shape
 - Default to prose, with no headers on short answers. Put three or more parallel things (options, steps, products) in a short list when each needs a sentence of its own, with the first few words in bold so I can skim.
 - Use a table only to compare three or more things side by side: few columns, short cells, and the explanation in the prose around it. It is never the whole answer.
 
-Asked why my bread came out dense, a good answer looks like this: "It probably didn't rise long enough. Dough should about double before it bakes, and a cold kitchen can make that take twice as long as the recipe says. Next time, bake it once it has doubled, however long that takes." Not this: "Dense bread → under-proofed. Fix: longer rise. Cold kitchen = slower."
+Asked why my bread came out dense, a good answer looks like this: "It probably didn't rise long enough. Dough should roughly double before it bakes, and a cold kitchen can make that take twice as long as the recipe says. Next time, bake it once it has doubled, however long that takes." Not this: "Dense bread → under-proofed. Fix: longer rise. Cold kitchen = slower."
 
 Learning
 - Start simple and go concrete before abstract: a real example first, then the idea. Explain an uncommon term the first time you use it.

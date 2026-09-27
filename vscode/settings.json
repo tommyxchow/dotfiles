@@ -30,7 +30,7 @@
     "strings": "on"
   },
 
-  // Dart recommended settings
+  // Dart's recommended settings, shared with Python
   "debug.internalConsoleOptions": "openOnSessionStart",
   "[dart][python]": {
     "editor.rulers": [80],
@@ -65,6 +65,14 @@
   "terminal.integrated.fontSize": 12,
   "terminal.integrated.hideOnLastClosed": false,
   "terminal.integrated.macOptionIsMeta": true,
+  "terminal.integrated.commandsToSkipShell": ["-workbench.action.quickOpen"],
+  "terminal.integrated.suggest.quickSuggestions": {
+    "commands": "on",
+    "arguments": "on",
+    "unknown": "off"
+  },
+  "terminal.integrated.suggest.suggestOnTriggerCharacters": true,
+  "terminal.integrated.minimumContrastRatio": 1,
 
   "git.autofetch": true,
   "git.confirmSync": false,
@@ -73,11 +81,11 @@
   "git.openRepositoryInParentFolders": "always",
 
   "window.dialogStyle": "custom",
+  "window.commandCenter": false,
   "workbench.colorTheme": "Bearded Theme Monokai Black",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.activityBar.location": "top",
   "explorer.fileNesting.enabled": true,
-  "diffEditor.ignoreTrimWhitespace": true,
 
   "claudeCode.preferredLocation": "sidebar",
 
@@ -87,15 +95,6 @@
   "telemetry.telemetryLevel": "off",
   "redhat.telemetry.enabled": false,
   "errorLens.excludePatterns": ["**/*.md"],
-  "terminal.integrated.commandsToSkipShell": ["-workbench.action.quickOpen"],
-  "window.commandCenter": false,
-  "terminal.integrated.suggest.quickSuggestions": {
-    "commands": "on",
-    "arguments": "on",
-    "unknown": "off"
-  },
-  "terminal.integrated.suggest.suggestOnTriggerCharacters": true,
-  "terminal.integrated.minimumContrastRatio": 1,
 
   "chat.disableAIFeatures": true,
   "extensions.ignoreRecommendations": true,

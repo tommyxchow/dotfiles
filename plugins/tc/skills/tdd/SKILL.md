@@ -14,7 +14,7 @@ Build the feature and its tests together. Watching a test fail for the right rea
 
 ## 1. Does the loop fit?
 
-Decide this first and say which way in one sentence. Don't ask.
+Decide this first, then say in a sentence whether you'll write the tests first, and for which part when only some of it fits. Don't ask.
 
 - **It fits** when the change has an observable result: a function or module with inputs and outputs, business rules, a parser or format, an API route, a bug with a reproduction. A bug fix starts here whenever its behavior can be asserted, because the test for the corrected behavior is the proof that the fix works.
 - **It doesn't fit** when there is nothing to assert yet: exploration where the shape is still unknown, config, docs, copy, styling and visual layout, a change with no behavior change (a rename, a moved file), a throwaway script. Say so, build it normally, and add the repo's usual tests afterward. The size of the change doesn't decide fit. A one-line permission fix has behavior, so it fits; whether a small unplanned change is worth the loop is the global sizing rule's call, and its test for the corrected behavior is written either way.
@@ -26,7 +26,7 @@ Decide this first and say which way in one sentence. Don't ask.
 - **If neither, derive them**: the happy path, the sad paths a user can hit, the edges most likely to break (empty, one, many, the boundary value), with realistic data, and for a bug, the exact failure reported.
 - **If you're changing code that has no tests**, pin its current behavior first with a characterization test, which asserts what the code does today, even the odd parts. Then start the loop for the change. Without that test, you can't tell a deliberate change from an accident.
 - **Say where you'll test them.** That might be the function, the module's public surface, the route's response, or what the component renders. Pick the outermost boundary that still fails for one clear reason, because a test bound to internals breaks on every refactor and proves nothing about behavior.
-- **Then start.** State the list and the boundary in a few lines and go. Stop and ask only when the boundary is a real design decision, such as inventing a new module seam to make something testable.
+- **Then start.** Say in a sentence or two which cases you'll cover and where the tests will check the behavior, then go. Stop and ask only when the boundary is a real design decision, such as inventing a new module seam to make something testable.
 
 If testing a case means reaching inside the thing under test, treat that as a signal about the design. Say so, and either restructure the code or move the boundary out.
 
@@ -38,7 +38,7 @@ Take one case all the way through before starting the next:
 
 1. **Write one failing test** for one case.
 2. **Run it and read the failure.** It has to fail for the reason the case describes. A failure from a typo, a missing import, or a broken fixture doesn't count as red, so fix it and run again. A test that passes before the code exists usually means the test asserts nothing, so fix the test. If instead the behavior already exists and no other test covers it, keep the test and say so. It is acceptance evidence for that criterion, not a red-green step.
-3. **Write the smallest general code that passes.** It has to work for every valid input the case describes, not only the test's, so never branch on the test's specific inputs or return its expected value. The test checks the behavior; it doesn't define it. Don't add extra cases, speculative branches, or handling for a case you haven't written a test for yet.
+3. **Write the smallest general code that passes.** It has to work for every valid input the case describes, not only the test's, so don't special-case the test's inputs beyond what the case itself describes, and never return its expected value. The test checks the behavior; it doesn't define it. Don't add extra cases, speculative branches, or handling for a case you haven't written a test for yet.
 4. **Run it again and see green.**
 5. **Move to the next case.**
 

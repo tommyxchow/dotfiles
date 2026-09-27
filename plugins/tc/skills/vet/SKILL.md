@@ -2,16 +2,18 @@
 name: vet
 metadata:
   opencode/slash: "true"
-description: 'Cross-checks a claim against current official docs and primary sources, then answers in a few sentences with the pages that settled it. Stops as soon as the best source answers; a fact the vendor never published is reported as not documented, not hunted. Keeps page fetches out of this window. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, pass ("final double check"), or pr ("final review", "is this ready"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; code correctness is the review skill. `quick` is up to three claims, local docs or one page each, no fan-out, and never the full vet.'
+description: 'Cross-checks a claim against current official docs and primary sources, then answers in a few sentences with the pages that settled it. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". Stops as soon as the best source answers; a fact the vendor never published is reported as not documented, not hunted. Keeps page fetches out of this window. After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, pass ("final double check"), or pr ("final review", "is this ready"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; code correctness is the review skill. `quick` is up to three claims, local docs or one page each, no fan-out, and never the full vet.'
 argument-hint: "[quick] [<claim or topic to verify> | <task to research>]"
 context: fork
 agent: general-purpose
 background: false
 ---
 
+# Vet
+
 vet checks claims against **version-matched local documentation or current primary sources**, cites what settled them, and names what remains uncertain. It is a bounded lookup, not a research project.
 
-Bare `vet` and `vet/research` are the same. `$ARGUMENTS` is an optional `quick` first, then the claim, topic, or forward task.
+Bare `vet` and `research` are the same. `$ARGUMENTS` is an optional `quick` first, then the claim, topic, or forward task.
 
 ## Isolate
 
