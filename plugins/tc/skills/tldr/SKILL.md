@@ -42,21 +42,9 @@ Drop any section that doesn't apply. Trivial inputs, like a one-line acknowledgm
 User: `/tldr` after a few exchanges debugging an SSR hydration mismatch on `dark-mode`.
 
 ```
-TL;DR
-Dark mode no longer flashes light on first paint. The html class
-differed between server and client; suppressHydrationWarning was
-cheaper than blocking paint.
+Dark mode no longer flashes light on first paint. The `<html>` class differed between the server and the client, and `suppressHydrationWarning` was a cheaper fix than blocking paint.
 
-Decisions made
-- suppressHydrationWarning on <html>: simplest fix; the DOM truly
-  does differ between server and client by design.
-- Rejected blocking paint via inline <head> script: 30ms FCP cost
-  doesn't justify the cleaner DOM.
+The warning is suppressed on `<html>` only, because the DOM really does differ there by design. An inline `<head>` script that blocks paint would keep the DOM cleaner, but its 30ms first-paint cost isn't worth it.
 
-Open questions / next steps
-- Verify lighthouse score didn't regress.
-- Designer review on dark-mode token mappings still pending.
-
-Files touched
-- src/app/layout.tsx
+Two things are still open: checking that the Lighthouse score didn't regress, and the designer's review of the dark-mode token mappings.
 ```

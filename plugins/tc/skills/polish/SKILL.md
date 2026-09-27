@@ -6,13 +6,13 @@ description: 'Behavior-preserving cleanup using existing format/lint tools and f
 argument-hint: "[quick] [staged | unstaged | branch | all | <focus>]"
 ---
 
-# Polish — autofix then judgment cleanup
+# Polish
 
 This skill improves the **shape** of working code. It scopes the work, runs the existing formatter and linter as prep, reviews through four lenses, then applies and verifies the high-confidence cleanups. If you discover a correctness defect, send it to `tdd` as a review finding. Never disguise a behavior change as polish.
 
 It is tuned for React + TypeScript (Next.js, Expo, Vite, etc.) with **Prettier + ESLint**, and portable: when the tools are missing, skip autofix and don't invent formatting findings. Use only installed local binaries (e.g. `pnpm exec prettier` / `node_modules/.bin`). **Never install** packages or use `npx`/`pnpm dlx`/`npm exec` to fetch tools for polish.
 
-Format-on-save in the harness is unreliable across Cursor / Claude Code / OpenCode, so batch the autofix first, then spend the lens reviews on judgment.
+Format-on-save in the harness is unreliable across Cursor / Claude Code / OpenCode 2, so batch the autofix first, then spend the lens reviews on judgment.
 
 ## Phase 0 — Scope and recon
 

@@ -9,9 +9,11 @@ agent: general-purpose
 background: false
 ---
 
+# Vet
+
 vet checks claims against **version-matched local documentation or current primary sources**, cites what settled them, and names what remains uncertain. It is a bounded lookup, not a research project.
 
-Bare `vet` and `vet/research` are the same. `$ARGUMENTS` is an optional `quick` first, then the claim, topic, or forward task.
+Bare `vet` and `research` are the same. `$ARGUMENTS` is an optional `quick` first, then the claim, topic, or forward task.
 
 ## Isolate
 

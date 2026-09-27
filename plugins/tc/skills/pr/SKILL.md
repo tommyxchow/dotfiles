@@ -30,7 +30,7 @@ Before acting, run `gh pr view --json number,isDraft,baseRefName,headRefOid,url,
 
 The ledger is the task's list of acceptance criteria, each with its evidence. Use the approved plan's acceptance checklist, or without one, derive the criteria from the agreed task. A small, clear change may have only one criterion, the requested outcome. Ask only if deriving them exposes an unresolved scope or design decision. Keep the ledger in the existing plan artifact until the PR body holds it.
 
-Each criterion ends in exactly one state, and the word "unverified" is allowed:
+Each criterion ends in exactly one of three states:
 
 - **Proven by a test**: record the test name and its last result on this head.
 - **Exercised**: record what was driven and where (preview URL, localhost, browser tool, `curl`), with a screenshot for anything visual.
@@ -40,7 +40,7 @@ Include the relevant UI states, keyboard path, and mutation failure paths from t
 
 **Feedback and scope changes.** Turn a pasted PM or reviewer note into numbered items tagged "UAT feedback," one per distinct point, and read its screenshots for the points the text left out. Each item ends fixed with evidence, declined with a one-line reason to relay, or as one question back with a recommended reading when a screenshot is ambiguous. A criterion the user drops mid-build stays in the ledger marked dropped, so nothing disappears silently. A case the plan missed enters the ledger tagged "discovered," with its evidence when built or as a follow-up when deferred under the global rule.
 
-**Browser and device UAT follows the global rule.** It stays off until `uat`, and a drive under `uat` is cited as evidence. Re-drive only what a slice couldn't reach or what a matching preview now shows. Otherwise mark each as "covered by tests, not driven" or "unverified," according to the evidence, and include its click path. A missing or failed browser or device blocks that evidence, but it doesn't block independent checks or fixes. Prefer a PR preview only after its deployed commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head). A preview of the previous push is not evidence for this one.
+**Browser and device UAT follows the global rule.** It stays off until `uat`, and a drive under `uat` is cited as evidence. Re-drive only what a slice couldn't reach or what a matching preview now shows. Otherwise mark each as "covered by tests, not checked by hand; say `uat` to check it" or "unverified," according to the evidence, and include its click path. A missing or failed browser or device blocks that evidence, but it doesn't block independent checks or fixes. Prefer a PR preview only after its deployed commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head). A preview of the previous push is not evidence for this one.
 
 ## 2. Open
 
@@ -144,12 +144,12 @@ Include numbers whenever they are cheap to get and change how the reader reads t
 
 ## Report
 
-Follow the global Communication and Session flow rules. Open with the PR's state and URL. When a check is red or still pending, put the checks tab link, `<pr url>/checks`, next to its name so the user lands on the failing job in one click. A green run needs no link. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. Use ledger counts when they help explain a substantial checklist, and leave out routine narration of each step. Under `ship it`, this report is the finish the global notification rule names.
+Follow the global Communication and Session flow rules. Open with the PR's state and URL. When a check is red or still pending, put the checks tab link, `<pr url>/checks`, next to its name so the user lands on the failing job in one click. A green run needs no link. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. Say how many criteria are proven when that helps explain a substantial checklist, and leave out routine narration of each step. Under `ship it`, this report is the finish the global notification rule names.
 
 ```
 Draft PR opened: https://github.com/org/app/pull/412. Viewers can no longer edit invoices, at the button and at the server.
 
-All six criteria are proven by tests; the two visual ones are covered by tests and not driven, until `uat`. Review in a fresh subagent found a missing ownership check on the duplicate route, fixed with a test for that ownership check. The final diff is reviewed, the local check passes, and CI is green.
+All six criteria are proven by tests. The two visual ones are covered by tests, not checked by hand; say `uat` to check them. Review in a fresh subagent found a missing ownership check on the duplicate route, fixed with a test for that ownership check. The final diff is reviewed, the local check passes, and CI is green.
 
 Nothing else outstanding. Say `pr ready` when your UAT is done.
 ```

@@ -61,7 +61,7 @@ Remove duplicates, rank the findings worst first by severity and then confidence
 ❌ 2 issues, worst first.
 
 - **Anyone can delete another user's photo** in the photo delete route. The handler checks that a session exists but never that the photo belongs to that user, so any signed-in user can delete any photo by id. Look the photo up and compare its owner to the session user before deleting.
-- **The upload progress bar sticks at 99 % after a retry** in the uploader hook. On retry the byte counter keeps the failed attempt's bytes, so the total passes the file size and the bar is clamped. Reset the counter when a retry starts. Traced, not run.
+- **The upload progress bar sticks at 99% after a retry** in the uploader hook. On retry the byte counter keeps the failed attempt's bytes, so the total passes the file size and the bar is clamped. Reset the counter when a retry starts. Traced, not run.
 
 The repo's PR checklist in CONTRIBUTING.md also asks for a changelog line, and this change has none.
 ```

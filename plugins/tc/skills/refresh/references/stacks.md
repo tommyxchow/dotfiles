@@ -26,7 +26,7 @@ This file is not a command. Refresh reads **one** section of it after it detects
 
 ## Expo / React Native
 
-- An SDK major is Ask unless the mode is `full`. Upgrade one SDK at a time ([Expo upgrade](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough)). Then run `pnpm add expo@^N`, `pnpm exec expo install --fix`, and `pnpm dlx expo-doctor` ([Expo tools](https://docs.expo.dev/develop/tools)). To audit, run `pnpm exec expo install --check`. Never use `npx`. If the repo uses CNG / prebuild, delete the generated `android` / `ios` folders after the SDK bump; they will regenerate.
+- An SDK major is Ask unless the mode is `full`. Upgrade one SDK at a time ([Expo upgrade](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough)). Then run `pnpm add expo@^N`, `pnpm exec expo install --fix`, and `pnx expo-doctor` ([Expo tools](https://docs.expo.dev/develop/tools)). To audit, run `pnpm exec expo install --check`. Never use `npx`. If the repo uses CNG / prebuild, delete the generated `android` / `ios` folders after the SDK bump; they will regenerate.
 - Keep using `pnpm`. Pins that exist to match Expo Go stay held.
 
 ## Other JS
