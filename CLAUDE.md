@@ -125,7 +125,8 @@ been going wrong, then proposes changes and waits. Also repo-local.
 - **Keep shared skills portable Agent Skills** (`name` and `description`
   required). Claude-only `context` / `agent` / `background` are fine where a
   skill should fork, and `disable-model-invocation` is read by Claude and Cursor
-  but not by every harness. Whatever such a key enforces has to be written into
+  but not OpenCode 2, which needs `metadata: opencode/autoinvoke: "false"` for
+  the same effect, so a manual-only skill carries both. Whatever such a key enforces has to be written into
   the skill's own text as well or it only holds where the key is read. Don't put
   `allowed-tools` on a shared skill.
 

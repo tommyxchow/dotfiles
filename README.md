@@ -233,7 +233,7 @@ copied, a database seeded, a port picked, or dependencies installed before
 anything else says so in its own agent instructions, and the agent does that
 part.
 
-Inside herdr, agents name their tab after the task and label the panes they
+Inside herdr, agents name their tab for what it holds and label the panes they
 split, so the sidebar says what each one is doing and a label like `dev :3001`
 says which port is taken. Each name says only what the level above it doesn't:
 a worktree's workspace already carries the task, so a tab there is named for

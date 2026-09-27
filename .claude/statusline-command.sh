@@ -200,7 +200,9 @@ fi
 if [ -n "$HERDR_PANE_ID" ]; then
   herdr_bin="${HERDR_BIN_PATH:-herdr}"
   if command -v "$herdr_bin" >/dev/null 2>&1; then
-    ctx_args=()
+    # A session with no context number yet, like one just after /clear,
+    # clears both so an older value doesn't linger until its TTL runs out.
+    ctx_args=(--clear-token ctx --clear-token ctxhigh)
     if [ -n "$used_pct" ]; then
       ctx_used=0
       [ -n "$size_raw" ] && ctx_used=$(( pct * size_raw / 100 ))

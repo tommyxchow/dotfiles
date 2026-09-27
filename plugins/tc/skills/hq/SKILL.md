@@ -41,14 +41,14 @@ Edit only your own lines, and read the file again right before each edit, since 
 
 When HQ mode turns on, take stock before doing anything else, because sessions I started by hand, workers from an earlier HQ, and other HQs may already be running.
 
-1. **Name yourself.** Rename your own agent to `hq`, or `hq-2`, `hq-3`, and so on when a live agent already has that name, with `herdr agent rename "$HERDR_PANE_ID" <name>`. That name is your owner tag on the board. Name your tab the same way, following the global herdr rules.
-2. **Read the board** if it exists, and run `herdr agent list`. Leave out your own pane.
-3. **Leave other HQs' work alone.** An agent named `hq` or `hq-<n>` is another HQ, and a board line whose owner is a live agent belongs to it. Don't read, wait on, or answer for either.
+1. **Read the board** if it exists, and run `herdr agent list`. Leave out your own pane.
+2. **Name yourself** `hq`, or the first of `hq-2`, `hq-3`, and so on that no live agent has, with `herdr agent rename "$HERDR_PANE_ID" <name>`. That name is your owner tag on the board. Name your tab the same way, following the global herdr rules. Lines that already carry your new name belong to an earlier HQ that is gone, so treat them like any other line whose owner is gone.
+3. **Leave other HQs' work alone.** An agent named `hq` or `hq-<n>` is another HQ, and a board line whose owner is another live HQ belongs to it. Don't read, wait on, or answer for either.
 4. **Offer the rest.** List the live agents with no line, and the lines whose owner is gone, in one short message: each in a sentence, what it is on and what it waits on, the ones waiting on me first. Work that out from the board line, or for an agent with no line from its terminal title, its folder, the branch there, and a short `herdr agent read <pane-id> --source recent-unwrapped --lines 60`. Ask which ones I want you to take; with no other HQ running, taking all of them is the recommended answer.
 5. **Adopt what I pick.** Give an agent with no name a slug for its task with `herdr agent rename <pane-id> <slug>`, so you can reach it after its pane moves. Write each line with you as the owner, then start waits on the working ones and handle the blocked ones as below.
 6. **Settle lines whose agent is gone.** Check the task's PR with `gh pr view`, report what happened, and remove the line or mark it waiting on me. Only settle lines you own or just adopted.
 
-I may leave some sessions out, like one I use for something outside my repos. Give each of those a line marked "not tracked", so a later HQ doesn't offer it again, and don't wait on it or read it again.
+I may leave some sessions out, like one I use for something outside my repos. Give each of those a line with no owner, marked "not tracked", so no HQ offers it again, and don't wait on it or read it again. Step 4 skips "not tracked" lines.
 
 ## Other HQs
 
@@ -60,19 +60,19 @@ Never send another HQ text with `herdr agent prompt`. Text typed into a pane rea
 
 1. **Pick the repo and the branch** by the global Git rules: the ticket id, or the GitHub username and a short phrase.
 2. **Create the worktree** from that repo's main checkout with `herdr worktree create --cwd <repo> --branch <branch> --label <slug> --no-focus`. It returns the worktree's workspace and its first pane. A worker that will only discuss or research, and won't write to the repo, skips the worktree and gets a new tab with `herdr tab create --cwd <repo> --label <slug> --no-focus` instead, using the pane that tab opens with.
-3. **Pick the harness, model, and effort.** Claude models run in Claude Code, `--kind claude`, with the model its settings already choose. Use OpenCode, `--kind opencode`, only when I name a non-Claude model, and pass that model with `-m <provider/model>`, since OpenCode otherwise reuses whatever ran last. Pick the effort by the task:
+3. **Pick the harness, model, and effort.** Claude models run in Claude Code, `--kind claude`, with the model its settings already choose unless I name another, like `sonnet`. Use OpenCode, `--kind opencode`, only when I name a non-Claude model, and pass that model with `-m <provider/model>`, since OpenCode otherwise reuses whatever ran last. Pick the effort by the task:
    - `low` for a rename, a typo, a one-line config change, or a lookup.
-   - The default, which is `medium` on the current Opus, for most building, a bug with a clear repro, and PR feedback. Pass no flag for it.
+   - The model's default for most building, a bug with a clear repro, and PR feedback. Pass no flag for it.
    - `high` for an unclear cause, a change that cuts across the codebase, or auth, money, and migrations.
    - `xhigh` for deep research, or a problem that beat a worker at a lower level.
    - `max` only when I ask for it, since it tends to overthink.
-4. **Start the worker** in that pane with `herdr agent start <slug> --kind <kind> --pane <pane-id>`, adding `-- --effort <level>` for a Claude worker off the default, or `-- -m <provider/model>` for OpenCode. Name it with the same short slug as the label, like `nav-flicker`, so the sidebar and the board match.
+4. **Start the worker** in that pane with `herdr agent start <slug> --kind <kind> --pane <pane-id>`, adding `-- --effort <level>` for a Claude worker off the default and `-- --model <alias>` when I named a Claude model (both go after one `--`), or `-- -m <provider/model>` for OpenCode. Name it with the same short slug as the label, like `nav-flicker`, so the sidebar and the board match.
 5. **Hand it the task** with `herdr agent prompt`: the task in my words, the ticket or link, any decisions we settled here, and `ship it` only if I said it. Leave the conventions out, because the worker loads the same global instructions you do.
 6. **Add its line** to the board and start its wait, the way the next section describes for any worker you just sent input to. Tell me what you dispatched in one line each, with the effort and why when it isn't the default, so I can change it.
 
 Dispatch independent tasks one after another in the same turn rather than waiting for each worker to start its work.
 
-Never type `/effort`, `/model`, or `/autocompact` into a worker's pane. In Claude Code those save the choice as my default for every later session. To give a running task more effort, start a fresh session in the same worktree at the higher level: split a pane in that workspace, start it as `<slug>-2` with the flag, and hand it the plan file path and the last worker's report. That also clears its context. Move the board line to the new name and tell me the old pane can be closed.
+Never type `/effort`, `/model`, or `/autocompact` into a worker's pane. In Claude Code those save the choice as my default for every later session. To give a running task more effort, start a fresh session in the same worktree at the higher level: split a pane in that workspace, start it as `<slug>-<n>` with the next free number and the flag, and hand it the plan file path and the last worker's report. That also clears its context. Move the board line to the new name and tell me the old pane can be closed.
 
 ## Wait on signals
 
