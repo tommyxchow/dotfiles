@@ -12,7 +12,7 @@ if [ -z "$(echo "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0; fi
 # seven_used are percentages *used*, matching the context percentage so every
 # number on the line runs the same direction; five_over and seven_over flag an
 # exhausted window; size is the context window formatted (1M / 200K) and size_raw
-# the same value in tokens, which the context color scales its trip points from;
+# the same value in tokens, which the context red scales its trip point from;
 # project is the dir basename.
 us=$'\037'
 IFS="$us" read -r model used_pct five_used five_over seven_used seven_over effort size size_raw project cur_dir five_reset seven_reset cost repo wt <<EOF
@@ -71,8 +71,8 @@ dot="${muted}·${reset}"
 # Color for a "% used" value, shared by every percentage on the line so a bigger
 # number always means worse and a colored one always means the same thing. A
 # value with room to spare gets no color at all: ink here is reserved for what
-# needs attention. Callers pass their own trip points, since context scales its
-# own to the window's headroom while a rate-limit window only matters near
+# needs attention. Callers pass their own trip points, since context red scales
+# to the window's headroom while a rate-limit window only matters near
 # exhaustion.
 color_used() {
   if [ "$1" -ge "$3" ]; then printf '%s' "$red"
