@@ -111,10 +111,10 @@ repo-local.
   looking at a decision, not drift.
 
 - **The installer links first-party skills into `~/.claude/skills`.** Claude
-  Code, Cursor, Grok Build, and OpenCode 2 all read that path. OpenCode 2 only
-  treats a typed `/vet` as that skill when its frontmatter carries
-  `metadata: opencode/slash: "true"`, so every first-party skill sets it; a
-  new skill without it is reachable there only through `/skills`. Do not copy
+  Code, Cursor, Grok Build, and OpenCode 2 all read that path. OpenCode 2
+  reaches them through its `/skills` picker. Its v2.0.18 build never reads the
+  `metadata: opencode/slash: "true"` key the skills carry, so a typed `/vet`
+  there is not the skill; check a newer build before relying on it. Do not copy
   those skills into `~/.config/opencode/skills`, do not enable `tc@chow` on a
   machine that ran the installer or install it on claude.ai (both copies would
   load; see the `tc` gotcha below), and do not install `mattpocock-skills` from

@@ -127,11 +127,12 @@ Claude Code compatibility.
 
 **OpenCode 2:** `~/.config/opencode/AGENTS.md` must be a symlink to
 `.claude/CLAUDE.md`. In this repo, root `AGENTS.md` must be a symlink to
-`CLAUDE.md` (installer-created, gitignored), since OpenCode 2 reads `CLAUDE.md`
-only where no `AGENTS.md` exists. It already reads `~/.claude/skills`, so do not
-also link first-party skills into `~/.config/opencode/skills` or link
-`~/.agents/skills`. Typed slash commands come from each skill's
-`metadata: opencode/slash: "true"`, not from command stubs; the installer sweep
+`CLAUDE.md` (installer-created, gitignored), since OpenCode 2 reads only
+`AGENTS.md` and never `CLAUDE.md`. It already reads `~/.claude/skills`, so do
+not also link first-party skills into `~/.config/opencode/skills` or link
+`~/.agents/skills`. Skills are reached through its `/skills` picker; v2.0.18
+ignores the skills' `opencode/slash` key, so on a newer build, check whether a
+typed `/vet` reaches the skill. There are no command stubs; the installer sweep
 removes any leftover links in `~/.config/opencode/commands` that point into this
 repo. `~/.config/opencode/cli.json` is the TUI/keybinds file from
 `opencode/cli.json`. On Windows, apply the WT sendInput chords from the README;
@@ -244,9 +245,9 @@ mkdir -p ~/.claude/skills/herdr && herdr --skill > ~/.claude/skills/herdr/SKILL.
 
 Skip it when the binary is not on PATH. An older copy that `gh skill list`
 shows as installed from `herdrdev/herdr` tracks the latest tag rather than the
-binary; delete `~/.claude/skills/herdr` and write the bundled one. If `gh skill
-list` still lists it afterwards, remove it with the subcommand `gh skill --help`
-names for that, since the name is not confirmed here.
+binary; delete `~/.claude/skills/herdr` and write the bundled one. `gh skill`
+has no remove command, and `gh skill list` reads the folders themselves, so the
+bundled copy then lists with no source repo.
 
 ## Herdr pane hook
 
