@@ -2,7 +2,7 @@
 name: refresh
 metadata:
   opencode/slash: "true"
-description: Catches a repo up occasionally. It bumps packages to the latest versions this stack can actually take, applies migrations, flags must-upgrades and security advisories, and vets AGENTS.md against current vendor docs. Use when the user types /refresh or says "refresh this repo", "refresh the packages", "upgrade everything", "any packages we can upgrade", "catch this repo up", "outdated packages", "security audit", "dependabot", or asks to migrate to the latest stack. It is distinct from the dotfiles machine playbook (docs/resync.md), polish (shape of working code), vet (claim checking), and pass (commits a finished slice).
+description: Catches a repo up: bumps packages to the latest versions this stack can take, applies migrations, flags required upgrades and security advisories, and vets AGENTS.md against current vendor docs. Use when the user types /refresh or says "refresh this repo", "refresh the packages", "upgrade everything", "any packages we can upgrade", "catch this repo up", "outdated packages", "security audit", "dependabot", or asks to migrate to the latest stack. It is distinct from the dotfiles machine playbook (docs/resync.md), polish (shape of working code), vet (claim checking), and pass (commits a finished slice).
 argument-hint: "[optimal | full | minimal | audit | packages | docs] [custom instructions]"
 ---
 

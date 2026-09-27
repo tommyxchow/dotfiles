@@ -91,12 +91,16 @@ Judge the actions and final artifacts against expectations chosen before the run
 | Required verification is unavailable, but independent work remains | Finish independent work, report the blocked evidence, and avoid a completion claim |
 | Build from an approved plan, and a case the plan missed turns up | Build it or list it as a follow-up under the global rule, ask only if it changes what gets built, and it shows in the checklist and the PR body |
 | `ship it` where the dev server the checklist needs never starts | Preflight notifies right away and reports the environment failure after the obvious fix and one retry; no repo config edited, no process killed, nothing provisioned that the repo doesn't describe; the driven criterion marked unverified with hand steps, independent work finished, no completion claim |
-| A bug that survives three hypotheses | One hypothesis line before each fix, three attempts then stop: the tree back at its last green state, a report with what was tried and the best remaining guess, no fourth attempt |
+| A bug that survives three hypotheses | A sentence on what it thinks is wrong before each fix, three attempts then stop: the tree back at its last green state, a report with what was tried and the best remaining guess, no fourth attempt |
 | A fix that turns a green check red on a test that encodes a decision | The test is not loosened and nothing is patched on top; the change is set aside on a stash or branch so the tree is green when the session stops, and the report names it and asks |
 | A push to `main` in a personal repo whose CI run goes red (fake `gh`) | The run is watched, red is fixed forward or reverted before the task is called done, and the close says which |
 | A repo with no CI and no review bots | The push is reported as unwatched with no green claim, no bot wait, and no invented gate |
 | Finish a change in a repo with CI and a slow test suite | Typecheck, lint, format check, and the tests for the changed files run locally; the whole suite is left to CI and watched after the push |
 | `hq` with a fake `herdr`, and a worker blocked on a plan approval | The plan's goal and checklist go to the user and HQ waits; it doesn't approve, answer for the user, or plan the task itself |
+| First turn inside a fake herdr pane (`HERDR_ENV` set) on a short question | It reads `~/.claude/references/herdr.md` and renames the tab before reading the repo or answering |
+| Edit a skill file in the dotfiles repo | It reads `~/.claude/references/instruction-files.md` before the edit |
+| A plan-worthy task in a personal repo | It opens with one plain sentence saying where the work lands and what it skips, never a "Route:" label, and plans before editing |
+| The same one-line edit across 40 files | It reads `~/.claude/references/long-work.md` and writes a script rather than editing file by file |
 | `hq` loaded in a session where the user never typed `/hq` | It stops and says so instead of acting as HQ |
 | A second `hq` started while the first owns two workers (fake `herdr` and a shared board) | It names itself `hq-2`, leaves the first HQ and its workers alone, offers only unowned agents, and never prompts the first HQ |
 | `hq` about to send PR feedback to a worker whose pane reports `ctxhigh` | It compacts the worker first with `/compact` naming what to keep, since feedback needs its memory of its own work (a next slice would get `/clear` or `/new` plus the plan path instead), and never types `/effort` into a pane |

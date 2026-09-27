@@ -129,10 +129,12 @@ repo-local.
 
 - **Don't list harness-shipped review, cleanup, or audit skills** here or in a
   skill body; they arrive and get renamed release to release. Two cases cover
-  it. A **name collision**, like the built-in `review` in Cursor and OpenCode 2:
-  Cursor's precedence is undocumented and OpenCode 2 runs its own command
-  before a same-named skill, so asking in words still reaches ours while
-  typing `/review` there is theirs or ambiguous. A **different name for stronger
+  it. A **name collision**, like the built-in `review` in Claude Code, Cursor,
+  and OpenCode 2: Claude Code keeps `/review` as an alias of its bundled
+  `/code-review`, Cursor's precedence is undocumented, and OpenCode 2 runs its
+  own command before a same-named skill, so asking in words or `finalize` still
+  reaches ours while typing `/review` is theirs or ambiguous. The name stays
+  on purpose; renaming would touch every rule and phrase that routes to it. A **different name for stronger
   tooling**, like a paid cloud review: `.claude/CLAUDE.md` says ours run unless
   I name the built-in or it does something ours can't, and the `review` skill
   defers to tooling the repo itself configures. Ours stay because they are the
@@ -164,7 +166,10 @@ repo-local.
   section of `README.md` says why.
 
 - **`ek@chow` is upstream-only.** Never vendor, copy, or edit its skill files here.
-  Refresh it with `/plugin update ek@chow`.
+  Refresh it with `/plugin update ek@chow`. It stays installed but disabled in
+  `.claude/settings.json`, so its skill descriptions don't load into sessions
+  that aren't doing UI work; enabling it for that work writes this same file,
+  and turning it back off is the default to commit.
 
 - **The `gh` and `herdr` skills live in `~/.claude/skills`, not in this
   repo.** `gh` comes from `gh skill install` and `herdr` from `herdr --skill`,
@@ -219,8 +224,15 @@ repo-local.
 
 - **Rejected, don't propose again.** Loading the herdr rules
   only inside herdr through a hook: hooks are Claude-only, so Cursor, Grok,
-  and OpenCode 2 would lose them, and a rule only fires from an always-loaded
-  file. A `gh`-based scoreboard script: the audit's PR retro asks the same
+  and OpenCode 2 would lose them. They now live in
+  `.claude/references/herdr.md`, which an always-loaded line tells the agent
+  to read on its first turn in a herdr pane, and that works in every harness.
+  Moving the whole coding workflow into an on-demand skill (2026-09-27):
+  coding is most sessions, so they'd save nothing, and the always-loaded file
+  is the only text every harness re-injects after compaction, while Claude
+  Code keeps 5K tokens of a loaded skill and the others drop it. Generating
+  `.claude/CLAUDE.web.md` from a shared block: it would squeeze the most-tuned
+  rules into about 3KB for a chat file that rarely changes. A `gh`-based scoreboard script: the audit's PR retro asks the same
   question in words, and a script here goes stale. A plan-time check of open
   branches for file overlap: one branch and worktree per ticket, phases
   stacked on top, so overlap is rare and resolved at merge by hand. The `tc/`
