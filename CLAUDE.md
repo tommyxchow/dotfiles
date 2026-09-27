@@ -241,6 +241,14 @@ been going wrong, then proposes changes and waits. Also repo-local.
   happened, and none of my repos gives a model tools. Revisit the first if an
   agent ever adds a wrong package, the second once an app calls a model with
   tools.
+  From the 2026-09-27 hq review: renaming `hq`, which stays. An OpenCode
+  plugin that reports context to herdr: HQ reads OpenCode's own on-screen
+  readout instead, and the plugin was more machinery than that gap needs.
+  Making the fresh-context final review a judgment call like the other
+  steps: it stays fixed, since on a small diff it is one read and it is the
+  step most likely to catch something. A plain "go" opening the draft PR in
+  a repo that isn't mine: it commits on a branch and offers the PR, and
+  `ship it` opens it.
 
 - **Where the global file differs from Anthropic's prompting advice, it does so on purpose.**
   Anthropic leans toward prose with little bold, calm emphasis, and saying what
