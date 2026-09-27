@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Dotfiles installer — links files from this repo into their real locations.
+# Dotfiles installer: links files from this repo into their real locations.
 # One script for macOS, Linux, and Windows under Git Bash. Windows needs
 # Developer Mode (Settings > System > For developers) so an unelevated shell
 # can create symlinks; the installer stops with that hint when it cannot.
@@ -95,29 +95,29 @@ link() {
   clean_bak "$src" "$target"
 }
 
-link "git/.gitconfig"          "$HOME/.gitconfig"
-link "git/ignore"              "$HOME/.config/git/ignore"
-link "vscode/settings.json"    "$VSCODE_USER/settings.json"
-link "vscode/keybindings.json" "$VSCODE_USER/keybindings.json"
-link "vscode/settings.json"    "$CURSOR_USER/settings.json"
-link "vscode/keybindings.json" "$CURSOR_USER/keybindings.json"
+link "git/.gitconfig"                "$HOME/.gitconfig"
+link "git/ignore"                    "$HOME/.config/git/ignore"
+link "vscode/settings.json"          "$VSCODE_USER/settings.json"
+link "vscode/keybindings.json"       "$VSCODE_USER/keybindings.json"
+link "vscode/settings.json"          "$CURSOR_USER/settings.json"
+link "vscode/keybindings.json"       "$CURSOR_USER/keybindings.json"
 if [ "$WINDOWS" = 1 ]; then
   printf "  SKIP  ghostty/config (macOS and Linux only)\n"
 else
-  link "ghostty/config"        "$HOME/.config/ghostty/config"
+  link "ghostty/config"              "$HOME/.config/ghostty/config"
 fi
-link ".claude/settings.json"   "$HOME/.claude/settings.json"
-link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
-link ".claude/CLAUDE.md"       "$HOME/.config/opencode/AGENTS.md"
+link ".claude/settings.json"         "$HOME/.claude/settings.json"
+link ".claude/CLAUDE.md"             "$HOME/.claude/CLAUDE.md"
+link ".claude/CLAUDE.md"             "$HOME/.config/opencode/AGENTS.md"
 link ".claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
-link ".claude/references"      "$HOME/.claude/references"
-link "CLAUDE.md"               "$DOTFILES/AGENTS.md"
-link "opencode/cli.json"       "$HOME/.config/opencode/cli.json"
+link ".claude/references"            "$HOME/.claude/references"
+link "CLAUDE.md"                     "$DOTFILES/AGENTS.md"
+link "opencode/cli.json"             "$HOME/.config/opencode/cli.json"
 
 # Agent helpers on PATH. ~/.local/bin is on PATH by default on most Linux
 # shells and on none of macOS zsh or Git Bash, so warn with the line to add
 # rather than editing a shell profile this repo does not own.
-link "bin/wait-for"            "$HOME/.local/bin/wait-for"
+link "bin/wait-for"                  "$HOME/.local/bin/wait-for"
 case ":$PATH:" in
   *":$HOME/.local/bin:"*) printf "  OK    ~/.local/bin on PATH\n" ;;
   *) printf "  WARN  ~/.local/bin not on PATH; add export PATH=\"\$HOME/.local/bin:\$PATH\" to your shell profile so wait-for resolves\n" ;;
@@ -180,7 +180,7 @@ done
 # Cursor can load a symlinked local plugin, but the rule file needs
 # alwaysApply frontmatter that .claude/CLAUDE.md does not carry. Write a real
 # directory under ~/.cursor/plugins/local and copy CLAUDE.md into an
-# alwaysApply rule. Re-run the installer after editing CLAUDE.md, then
+# alwaysApply rule. Re-run the installer after editing .claude/CLAUDE.md, then
 # Developer: Reload Window. Do not put a description on the rule; Cursor has
 # mapped alwaysApply + description to agent-requestable.
 write_cursor_plugin() {
@@ -216,7 +216,7 @@ write_cursor_plugin
 
 # Grok Build reads ~/.grok/config.toml and writes runtime state back into it
 # (marketplace bookkeeping, pinned sessions), so it is never symlinked. Seed a
-# missing config from grok/config.toml; otherwise patch only our non-default
+# missing config from grok/config.toml; otherwise patch only the keys we set
 # keys in place, leaving everything Grok wrote untouched.
 grok_toml_set() { # file section key value
   local file="$1" sec="$2" key="$3" val="$4"
@@ -321,7 +321,7 @@ write_grok_lsp() {
   if command -v typescript-language-server >/dev/null 2>&1; then
     printf "  OK    typescript-language-server on PATH\n"
   else
-    printf "  WARN  typescript-language-server not on PATH — pnpm add -g typescript-language-server typescript\n"
+    printf "  WARN  typescript-language-server not on PATH; run pnpm add -g typescript-language-server typescript\n"
   fi
 }
 write_grok_lsp
@@ -370,9 +370,9 @@ check_web_instructions() {
   [ -f "$src" ] || return 0
   len="$(wc -c < "$src" | tr -d ' ')"
   if [ "$len" -gt 4000 ]; then
-    printf "  WARN  CLAUDE.web.md is %s chars, over grok.com's 4000 limit\n" "$len"
+    printf "  WARN  CLAUDE.web.md is %s bytes, over grok.com's 4000 limit\n" "$len"
   else
-    printf "  OK    CLAUDE.web.md fits grok.com's 4000-char limit (%s)\n" "$len"
+    printf "  OK    CLAUDE.web.md fits grok.com's 4000-char limit (%s bytes)\n" "$len"
   fi
 }
 check_web_instructions
@@ -395,5 +395,5 @@ check_reference_paths() {
 }
 check_reference_paths
 
-echo
-echo "Done."
+printf "\n"
+printf "Done.\n"

@@ -2,12 +2,11 @@
 // branch's pull request and its CI (or just the CI on the default branch, which
 // has no pull request), and `dirty`, how many files are uncommitted. Herdr runs
 // it with "all" on start and from the refresh action, and with "event" when an
-// agent settles or a workspace gets focus. The values show through the `$pr`
-// and `$dirty` slots in herdr's sidebar config.
+// agent settles, a workspace gets focus, or a worktree is opened. The values
+// show through the `$pr` and `$dirty` slots in herdr's sidebar config.
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 
 const herdr = process.env.HERDR_BIN_PATH ?? "herdr";
 // One fixed name: a workspace accepts values from at most 32 sources in its lifetime.
@@ -50,7 +49,7 @@ function ciMark(checks) {
 
 // Short on purpose: the sidebar clips long values. A PR number under 10000 keeps
 // the longest badge, "#1234 approved ✗", at 16 characters.
-export function formatBadge(pr) {
+function formatBadge(pr) {
   const state = prState(pr);
   // CI on a merged or closed PR is history, not something to act on.
   const mark = state === "merged" || state === "closed" ? null : ciMark(pr.statusCheckRollup ?? []);
@@ -59,7 +58,7 @@ export function formatBadge(pr) {
 
 // gh run list reports lowercase values and an empty conclusion while a run is
 // going, so this maps them onto the check-run shape ciMark reads.
-export function runsBadge(runs) {
+function runsBadge(runs) {
   const checks = runs.map((run) => ({ status: run.status.toUpperCase(), conclusion: (run.conclusion ?? "").toUpperCase() || null }));
   const mark = ciMark(checks);
   return mark ? `CI ${mark}` : null;
@@ -179,12 +178,9 @@ function main(mode) {
   if (file) writeFileSync(file, JSON.stringify({ ...lastRefresh, [workspaceId]: Date.now() }));
 }
 
-// Guarded so the badge formatters can be imported and checked without running anything.
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  try {
-    main(process.argv[2]);
-  } catch (error) {
-    console.error(error.message);
-    process.exit(1);
-  }
+try {
+  main(process.argv[2]);
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
 }

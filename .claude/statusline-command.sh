@@ -5,7 +5,7 @@
 # mean attention, and a healthy line carries neither.
 
 input=$(cat)
-if [ -z "$(echo "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0; fi
+if [ -z "$(printf '%s' "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0; fi
 
 # Pull all fields in one jq pass, joined by the unit separator (0x1f, defined in
 # bash and passed via --arg) so empty fields are preserved on read. five_used and
@@ -131,7 +131,7 @@ now=$(date +%s)
 five_in=$(reset_in "$five_reset")
 seven_in=$(reset_in "$seven_reset")
 
-# Segment 1 — location: "<place> <branch>", where place is the project, or
+# Segment 1: location, "<place> <branch>", where place is the project, or
 # "repo:worktree" inside a worktree. The dir basename in a worktree is the
 # worktree, not the repo, so a worktree would otherwise read as an unrelated
 # project.
@@ -165,14 +165,14 @@ if [ -n "$name" ]; then
   loc="${loc}${reset}"
 fi
 
-# Segment 2 — model, trailed by size + effort a tier down. Both are static
+# Segment 2: model, trailed by size + effort a tier down. Both are static
 # session config, so they sit apart from the numbers that move.
 meta="$size"
 [ -n "$effort" ] && meta="${meta:+$meta }$effort"
 modelseg="${reset}${model}${reset}"
 [ -n "$meta" ] && modelseg="${modelseg} ${muted}${meta}${reset}"
 
-# Segment 3 — context window used, labeled so the % can't be mistaken for a
+# Segment 3: context window used, labeled so the % can't be mistaken for a
 # rate-limit one. Orange is the soft ceiling of 70%, where starting fresh or
 # compacting pays off before more work; the herdr token below trips at the same
 # point. Red means auto-compact is close, so it trips on room left rather than
@@ -180,7 +180,7 @@ modelseg="${reset}${model}${reset}"
 # Anything smaller or unreported keeps 75 rather than scaling past it.
 ctxseg=""
 if [ -n "$used_pct" ]; then
-  pct=$(printf "%.0f" "$used_pct")
+  pct=$(printf '%.0f' "$used_pct")
   ctx_orange=70
   ctx_red=75
   if [ -n "$size_raw" ] && [ "$size_raw" -gt 200000 ]; then
@@ -218,14 +218,14 @@ if [ -n "$HERDR_PANE_ID" ]; then
   fi
 fi
 
-# Segment 4 — rate-limit usage: 5h · 7d (dot only between two present windows)
+# Segment 4: rate-limit usage, 5h · 7d (dot only between two present windows)
 usage=""
 for w in "$(win_seg 5h "$five_used" "$five_over" "$five_in")" "$(win_seg 7d "$seven_used" "$seven_over" "$seven_in")"; do
   [ -n "$w" ] || continue
   if [ -n "$usage" ]; then usage="${usage} ${dot} ${w}"; else usage="$w"; fi
 done
 
-# Segment 5 — estimated session cost, client-side and reset by /clear. Shown
+# Segment 5: estimated session cost, client-side and reset by /clear. Shown
 # only when tokens are actually being billed: a spent window means usage is
 # drawing on credits, and no rate-limit data at all means API pricing. Inside
 # the subscription allowance the number isn't money, so it stays hidden.

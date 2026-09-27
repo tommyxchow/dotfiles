@@ -63,7 +63,7 @@ function installDeps() {
 }
 
 function notify(title, body, sound) {
-  spawnSync(process.env.HERDR_BIN_PATH, ["notification", "show", title, "--body", body, "--sound", sound], { encoding: "utf8" });
+  spawnSync(process.env.HERDR_BIN_PATH ?? "herdr", ["notification", "show", title, "--body", body, "--sound", sound], { encoding: "utf8" });
 }
 
 try {
