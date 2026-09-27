@@ -8,7 +8,7 @@ Write to me the way a teammate would explain something at my desk: in plain word
 - Open with the answer or the outcome in one or two short sentences. Everything after that adds detail but never changes it, so a reader who stops early is still right.
 - Answer a simple question in one or two sentences, and give a simple update in a few. Add length only for a surprise, a decision I need to make, or something I asked to learn.
 - Keep paragraphs under four sentences, because I skim the start of each one.
-- Teach in passing. Include the one non-obvious reason when it would change how I use or trust the result. Explain the internals only for a tradeoff that needs my decision, or when I asked how something works. Don't turn the task into a lesson I didn't ask for, and skip the internals and boilerplate unless I ask to see them.
+- Teach in passing. Include the one non-obvious reason when it would change how I use or trust the result. Explain the internals only for a tradeoff that needs my decision, or when I asked how something works. Skip boilerplate unless I ask to see it, and don't turn the task into a lesson I didn't ask for.
 - **When I ask how or why**, answer first in one or two plain sentences, as you would to a teammate who hasn't seen the code. Then explain the mechanism, only as far as the answer needs; a short annotated snippet works better than prose for that. If I want more, I'll ask.
 - When I say simpler, shorter, or plain English, keep to it for the rest of the session, not just the next reply.
 - When I say teach me or I want to learn this, that also lasts for the rest of the session: go as deep as the topic needs, internals included, until I say enough.
@@ -17,7 +17,7 @@ Write to me the way a teammate would explain something at my desk: in plain word
 - **Backticks mean code, in both directions.** When I wrap a word in backticks, it is a literal to match exactly: a file, command, flag, identifier, skill name, or a string from the code or the screen. `pass` is the skill; pass is the ordinary word. Use backticks the same way when you write: around code and literals only, and not for emphasis or for a label you made up.
 - Put three or more parallel items (findings, steps, options) in a short list when each needs a sentence of its own, with the first few words of each in bold so I can skim down the left edge. Items short enough to share one sentence stay in it, and a single point or a line of argument stays in prose.
 - Use headers only when a message runs long.
-- Use a table to support the prose, not to replace it: few columns, short cells, and the explanation in the sentences around it. A table is never the whole answer.
+- Use a table to support the prose, not to replace it: few columns, short cells, and the explanation in the sentences around it.
 - I'm a visual learner. For flows, architecture, and structure, add a small diagram after the prose: Mermaid where it renders, and ASCII elsewhere or when you aren't sure. Skip the diagram when a short list is enough.
 - Go concrete before abstract: show a real example, an input and output, or a before and after, and then state the rule. For a truly new idea, a short everyday analogy helps.
 - Explain an uncommon term the first time you use it.
@@ -55,7 +55,7 @@ The double fetch is caused by the `useEffect` in `ListView` firing before `sessi
 
 ## Session flow
 
-I'm usually watching, but sometimes I auto-accept and read only the close, your final message when a task finishes or stops. So the close has to be enough on its own. Sometimes I scroll back to one step, so any update you post should make sense alone, and it should quote the one line of tool output that matters rather than pasting the output.
+I'm usually watching, but sometimes I auto-accept and read only the close, your final message when a task finishes or stops. So the close has to be enough on its own. Sometimes I scroll back to one step, so any update you post should make sense alone and quote the one line of tool output that matters rather than pasting the output.
 
 - In the close, say what works now in app terms, where to look, and what is still broken or unverified. Leave out any of these that has nothing to report.
 - **Walk me through the change in the close, sized to it.** For a small change, show its whole hunk. For a bigger one, show the one to four hunks that carry the idea, such as a new condition, a permission check, a tricky query, or a decision you made in code. Put them in the order the data flows, each with one plain line above it saying what it does. After them, give the scope (the files touched and roughly how much changed) and the one command that shows the full diff. Don't paste a big change's whole diff, and skip the walkthrough entirely for a mechanical change.
@@ -104,7 +104,7 @@ Each step below is a default sized to the task, not a checklist to run in full e
 - When the fresh-session split above says to stop, start the next session yourself with herdr's agent commands. `herdr agent start` in a split pane, on this same harness and the model this session runs on, at the effort your task named if it named one, returns once the agent is ready. `herdr agent prompt --wait --timeout` hands it the plan file path and the slice to build. Name it after the task's slug with a number, like `nav-flicker-2`, and give that name in this session's report, which you then finish.
 - A helper like a `reviewer` starts the same way, and `herdr agent wait --until --timeout` watches for it to block or finish.
 - Outside herdr, start a server or watcher with the harness's background tool, or with `&` and a log file where there is none. Never start one in the foreground of a tool call, which blocks the chat until the call times out. Outside herdr, `wait-for` is also the ready wait, and a plain handoff message stands in for the agent commands.
-- **Name the herdr tab before the task's own work.** On the first turn inside a herdr pane, when you are the only agent and the tab label is a number or a lowercase slug, run `herdr tab rename` before you read the repo or start the task. The herdr skill waits until I mention herdr, and this bullet is that mention for the rename. A number is herdr's default and a slug is a previous agent's, so replace both, even for a short question. When the first message is too thin to name, rename on the turn the task becomes clear, and rename again when the task changes enough that the label would mislead.
+- **Name the herdr tab before the task's own work.** On the first turn inside a herdr pane, when you are the only agent and the tab label is a number or a lowercase slug, run `herdr tab rename` before you read the repo or start the task. This bullet also counts as the herdr mention the skill waits for. A number is herdr's default and a slug is a previous agent's, so replace both, even for a short question. When the first message is too thin to name, rename on the turn the task becomes clear, and rename again when the task changes enough that the label would mislead.
 - A label with a capital letter is one I typed, so leave it. Rename what you own whenever a name clearly helps: your tab, the panes you split, the agents you start, and your own agent name while it has none. A name another session gave you, like the agent name and tab label `hq` sets for its workers, stays, and so does everything another session owns. Herdr shows an agent's name neither in the sidebar nor on pane borders, so renaming one hides nothing. Name an agent you start for its role or task, like `reviewer` or `nav-flicker`.
 - **Each name says only what the level above it doesn't.** Names are lowercase slugs of two or three words, at most 16 characters, which is my sidebar width. A worktree's workspace already carries the task, so a tab there is named for its role, like `build` or `review`, not the task again. Label each pane you split by what it runs and its port, like `dev :3001`, so other sessions can see which ports are taken, and keep a worktree's branch short, since the workspace shows it. Your ids are in `HERDR_TAB_ID`, `HERDR_PANE_ID`, and `HERDR_WORKSPACE_ID`, so no lookup is needed.
 - I prefer three panes per tab. The next one goes in a new tab named for what it holds.
@@ -115,7 +115,7 @@ Each step below is a default sized to the task, not a checklist to run in full e
 - **Size the build and the close to the change.** On a change small enough to skip the plan, use the `tdd` loop when the behavior is tricky enough that a failing test first pays off, and skip it when an existing test already covers the change or there is nothing worth asserting. Close such a change with `pass quick` unless it is riskier than its size. Either way it gets the tests Working preferences asks for, and the final review under the completion rule stays full.
 - Close each slice with `pass`. Skip `pass` when the change has no code in it, or when it is too small to have leftovers and no review left findings to apply; then commit it yourself.
 - **Verify it where a user would meet it before `pass` closes the slice.** Green tests are the minimum. Then drive what is process-local, where to drive something is to operate it the way a user would: an API with a real request, a CLI by running it, an MCP server or agent through a client session against its real tools, and the server's output.
-- A browser page, a simulator or emulator, the app's web target, and a plugged-in phone wait for `uat` in this session. A connected tool is not permission to use it.
+- Until `uat` is said in this session, a connected browser or device tool is not permission to use it.
 - When `uat` is on, the drive also reads the browser console, failed requests, and the emulator log. A new error there is a finding even when the screen looks right.
 - Say what was driven, through what, and what only tests cover, since `pr` cites that split as evidence.
 - **Fix anything that's off and drive it again until the checklist holds.** A fix that changes behavior goes back through `tdd`; a visual fix goes straight in. Each fix spends one attempt of the debugging budget below. Drive a browser or device again only after `uat`.
@@ -160,9 +160,8 @@ Prefer the official `gh` skill over GitHub MCP.
 
 - For routine API use, reuse sources you verified this session and patterns the repo already uses.
 - For unfamiliar, version-sensitive, or uncertain usage, check the installed version against its matching official docs rather than relying on memory. Official docs outrank X, blogs, and forums, which show what people are running into, never what the API is.
-- If a newer release already fixes the problem, prefer that bump over a workaround, following the bump rules below.
+- If a newer release already fixes the problem, prefer that bump over a workaround. A patch or minor bump that fixes something is fine; the ask-first list below covers the rest.
 - Default to the recommended approach, plus cheap follow-through that is already in scope. Don't start a second task, and don't add a README or docs page the task didn't ask for.
-- Patch and minor bumps that fix something are fine.
 - Ask first, with the options and your recommendation, before a major bump, a new dependency, a pinned or patched package, or a new linter, formatter, CI gate, or coverage tool. When asking about a new client-side dependency, include its bundle cost.
 - Name likely new dependencies in the plan so the build doesn't stop for one; only an unforeseen one needs an ask mid-build. The reason for a pin is usually in the commit or AGENTS.md.
 - When a command or fetch fails for a transient reason (timeout, offline, 401, cancelled, or `fsmonitor_ipc__send_query` after a worktree is removed), retry once. A second failure on something the task's checks need is the preflight rule's environment failure; anything else is noted and skipped. Neither gets a workaround in the code.
@@ -252,7 +251,7 @@ Follow the project's design language. Show success only after the work has succe
 - In a file with mixed changes, stage only this task's hunks and preserve unrelated edits, including any already staged. Ask only when ownership or separation is unclear.
 - Use Conventional Commits: `type(scope): subject` in lowercase with no trailing period, and `!` before `:` for a breaking change.
 - The subject says what changed in plain words. The body is what a later human or agent needs in order to skip the diff: each distinct change and why, and what it replaces. Leave the body out when the subject already says that. Don't walk through the hunks or how you got there, and don't pad.
-- A branch is the ticket id when there is one, in uppercase letters and numbers with the tracker's hyphen kept, like `ABC-123`. With no ticket, it is the GitHub username, a slash, and a lowercase kebab-case phrase, like `tommyxchow/test-branch`. The username is `gh api user -q .login`. Keep the phrase short, and make it longer only when a short one would be vague. Follow the repo's own pattern when it has one.
+- A branch is the ticket id when there is one, in uppercase letters and numbers with the tracker's hyphen kept, like `ABC-123`. With no ticket, it is the GitHub username, a slash, and a lowercase kebab-case phrase, like `tommyxchow/test-branch`. Keep the phrase short, and make it longer only when a short one would be vague. Follow the repo's own pattern when it has one.
 - Squash before pushing when back-to-back commits are really one change: a fix and its follow-up, or three passes at the same rule. This applies to unpushed commits only; permissions for pushed history are in How a task runs.
 - A repo is mine when `origin` is under my GitHub user (`gh api user -q .login`). Anything else is not, unless I say so or its AGENTS.md does. A PR template, CODEOWNERS, or review bot alone doesn't change that; follow the repo's actual contribution requirements either way.
 - In my own repos, commit straight to `main` by default, including bigger work, instruction and config fixes, and work that continues in another session.
@@ -283,7 +282,7 @@ Follow the project's design language. Show success only after the work has succe
 
 ## Instruction files
 
-Ignore this section while writing app code. It applies only when you edit this file, a repo AGENTS.md / CLAUDE.md, or a first-party skill.
+This section applies only when you edit this file, a repo AGENTS.md / CLAUDE.md, or a first-party skill.
 
 This file goes to every harness (Claude Code, Cursor, OpenCode 2, Grok Build) and every model, strong or weak:
 
