@@ -110,6 +110,7 @@ link ".claude/settings.json"   "$HOME/.claude/settings.json"
 link ".claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link ".claude/CLAUDE.md"       "$HOME/.config/opencode/AGENTS.md"
 link ".claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+link ".claude/references"      "$HOME/.claude/references"
 link "CLAUDE.md"               "$DOTFILES/AGENTS.md"
 link "opencode/cli.json"       "$HOME/.config/opencode/cli.json"
 
@@ -375,6 +376,24 @@ check_web_instructions() {
   fi
 }
 check_web_instructions
+
+# The global file keeps situational rules (herdr, long work, instruction
+# files) in reference files it tells the agent to read by path. A trigger
+# that names a missing file fails silently in every session, so check each.
+check_reference_paths() {
+  local missing=0
+  local ref
+  for ref in $(grep -o '~/\.claude/references/[A-Za-z0-9._-]*' "$DOTFILES/.claude/CLAUDE.md" | sort -u); do
+    if [ ! -f "$DOTFILES/.claude/references/${ref##*/}" ]; then
+      printf "  WARN  .claude/CLAUDE.md points to %s, which is not in .claude/references\n" "$ref"
+      missing=1
+    fi
+  done
+  if [ "$missing" = 0 ]; then
+    printf "  OK    every reference file the global instructions name exists\n"
+  fi
+}
+check_reference_paths
 
 echo
 echo "Done."

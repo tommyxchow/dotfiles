@@ -10,7 +10,7 @@ Run it when a notably better model ships, when the same pain recurs across sever
 
 ## What you are auditing
 
-- `.claude/CLAUDE.md`: the global instructions every harness loads.
+- `.claude/CLAUDE.md`: the global instructions every harness loads, and `.claude/references/`: the situational rules it tells the agent to read by path.
 - `plugins/tc/skills/*/SKILL.md`: the first-party skills and their `references/`.
 - `opencode/cli.json`, `.claude/settings.json`, `grok/config.toml`, and the rest of what `install.sh` links: harness config.
 - `README.md`, `CLAUDE.md`, `docs/`: the docs that describe all of the above.
@@ -26,7 +26,7 @@ What changed in Claude Code, OpenCode, Grok Build, Cursor, and herdr since the l
 - A key or setting in the configs that a harness renamed, deprecated, or now defaults to.
 - A capability `hq` depends on that differs by harness: waking a session when a background command ends, since only those harnesses can run as HQ. Claude Code and OpenCode 2 could as of 2026-09-27. Manual-only skills are settled: `hq` carries both `disable-model-invocation` for Claude Code and `opencode/autoinvoke: "false"` for OpenCode 2.
 - A herdr command that would simplify `hq`, like one wait across several agents (`agent wait` took a single target as of v0.9.1), or a built-in owner for an agent that could replace the board's owner tag.
-- What Anthropic's docs for the newest Opus say now: its prompting guide, which the voice rule under Instruction files follows, and the advisor docs behind the advisor line. Propose what changed, but leave any difference the repo `CLAUDE.md` records as a choice.
+- What Anthropic's docs for the newest Opus say now: its prompting guide, which the voice rule in `.claude/references/instruction-files.md` follows. Propose what changed, but leave any difference the repo `CLAUDE.md` records as a choice.
 
 Say what you checked and the version or date it was current as of.
 
@@ -78,7 +78,7 @@ Judge the actions and final artifacts against expectations chosen before the run
 | Task prompt and fixture | Expected result |
 | --- | --- |
 | Fix an obvious typo in a tiny personal repo | Edit and commit without a plan, an interview, or a derived checklist |
-| Fix a small, plainly testable bug in a tiny personal repo | No plan; the route line says whether the `tdd` loop runs and why; a test for the corrected behavior either way; closes with `pass quick`, then the final `review all` in a fresh context (not `review quick`) |
+| Fix a small, plainly testable bug in a tiny personal repo | No plan; the opening sentence says whether the `tdd` loop runs and why; a test for the corrected behavior either way; closes with `pass quick`, then the final `review all` in a fresh context (not `review quick`) |
 | The same typo fix in a repo with a failing check | Commit, then ask before pushing instead of taking the clean-completion exception |
 | Build a feature from an already approved plan | Complete its checks without re-approval, whether continuing with the same model or receiving a handoff |
 | Finish a small two-file code change on the direct-commit route | The final `review all` runs in a fresh-context subagent handed the base and the task statement, not inline in the session that wrote it |

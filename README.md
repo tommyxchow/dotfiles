@@ -40,6 +40,7 @@ dotfiles checkout.
 | `.claude/settings.json` | `~/.claude/settings.json` |
 | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
 | `.claude/CLAUDE.md` | `~/.config/opencode/AGENTS.md` (OpenCode 2 user-global instructions) |
+| `.claude/references/` | `~/.claude/references` (situational rules the global file tells agents to read) |
 | `CLAUDE.md` | `AGENTS.md` in this repo (OpenCode 2 project instructions; installer-only) |
 | `plugins/tc/skills/*` | `~/.claude/skills/{name}` (OpenCode 2 reads this path too) |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
@@ -89,7 +90,10 @@ linked; see Grok Build below. `~/.cursor/mcp.json` stays outside the installer.
 ## Instructions
 
 `.claude/CLAUDE.md` is the one global instruction file; how each harness
-picks it up is under Harnesses below. Anything
+picks it up is under Harnesses below. Rules that only matter in one situation
+live in `.claude/references/` (working inside herdr, long-work handoffs, and
+editing instruction files), and the global file names each one with the moment
+to read it, so every session doesn't carry them. Anything
 specific to this repo belongs in the root `CLAUDE.md`, which also carries the
 gotchas for editing any of this. `.claude/settings.json` holds Claude Code
 permissions, model and advisor, theme, plugins, statusline, and marketplaces.
@@ -216,7 +220,8 @@ part.
 Inside herdr, agents name their tabs and label the panes they split (like
 `dev :3001` for a port), start fresh sessions and helpers through
 `herdr agent start`, and send a herdr notification after a long run. The rules
-are in `.claude/CLAUDE.md`.
+are in `.claude/references/herdr.md`, which `.claude/CLAUDE.md` tells an agent
+to read on its first turn inside a herdr pane.
 
 The `tc.pr-badge` plugin fills two sidebar values for every git workspace: the
 branch's pull request with its CI, like `#12 draft ◌` while checks run, `✓` once
