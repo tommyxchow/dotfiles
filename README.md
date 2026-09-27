@@ -111,8 +111,8 @@ in the skill files.
 | `/tdd` | Build new behavior test first: name the cases, red, then the smallest code that passes. |
 | `/polish` | Shape of code you already wrote. `quick` is inline and removal-only. |
 | `/review` | Real bugs, security, performance, edge cases, and missing pieces in pending changes. Reports; fixes only when told. `quick` is one read; `deep` fans out and reproduces findings. |
-| `/pass` | Slice is done: apply this session's confirmed review findings, vet, leftovers, polish if code-shaped, slice-ready, then the commit. `quick` trims vet and polish. |
-| **finalize** | The final step, said on demand: the full review in a fresh context, then `pass` applies what it confirmed and commits. With a PR open and your local head matching it, the review goes through `pr check`; otherwise it reviews against the PR's base. "review/pass" in either order means the same. |
+| `/pass` | Slice is done: apply this session's confirmed review findings, vet, leftovers, polish if code-shaped, ready to commit, then the commit. `quick` trims vet and polish. |
+| **finalize** | The final step, said on demand: the full review in a fresh context, then `pass` applies what it confirmed and commits. With a PR open, it goes through `pr check` when your local head matches the PR and nothing is pending, and otherwise reviews against the PR's base. "review/pass" in either order means the same. |
 | `/pr` | Prepare the task, review its complete final diff, publish a draft with acceptance evidence, then watch its CI to green. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
@@ -140,16 +140,17 @@ them (see Maintenance below). Install each, then `/reload-plugins`. Skip
 `tc@chow` on a machine that ran the installer, since those skills are already
 linked:
 
+```bash
+claude plugin install ek@chow --scope user
+claude plugin disable ek@chow --scope user
+claude plugin install typescript-lsp@claude-plugins-official --scope user
+claude plugin install frontend-design@claude-plugins-official --scope user
+```
+
 `ek@chow` is disabled in `settings.json` by default, so its design and
 animation skills stay out of sessions that aren't doing UI work. Turn it on
 for that work with `claude plugin enable ek@chow --scope user`; that writes the
 linked `settings.json`, so keep or discard the diff afterward.
-
-```bash
-claude plugin install ek@chow --scope user
-claude plugin install typescript-lsp@claude-plugins-official --scope user
-claude plugin install frontend-design@claude-plugins-official --scope user
-```
 
 Use the CLI over the interactive `/plugin` menu: the menu installs to
 **project** scope, which pins the plugin to one repo while user-scope

@@ -1,6 +1,6 @@
-# Long work: handoffs, mechanical loops, and work across several PRs
+# Long work: handoffs and mechanical loops
 
-Read this before handing work to another session or model, when the global fresh-session split says to stop, before a mechanical edit across many files, and when work spans several PRs (a stack, a flag, a schema change), as the global instructions say.
+Read this before handing work to another session or model, including when the global fresh-session split says to stop, and before a mechanical edit across many files, as the global instructions say.
 
 ## Handing work to another session or model
 
@@ -12,10 +12,3 @@ Read this before handing work to another session or model, when the global fresh
 
 - **A big mechanical job is a script first, then a loop.** When the same edit applies across many files and the edit is regular, write it as a script or codemod, because a script can't drift.
 - When the edit can't be expressed as a script, prove the pattern on two or three files, then run it as one isolated invocation per file with only the tools that edit needs. One session working through forty files drifts partway down the list.
-
-## Work across several PRs
-
-- Hide half-finished work behind a flag or an unrouted page, not on a long-lived branch.
-- Schema and API changes expand, migrate, then contract across PRs when an older client or another deploy still reads the old shape. When only this deploy reads it, one PR is fine.
-- When I name a parent to stack on, usually partway through, rebase this branch onto it and set the PR's base to it. Most sessions never stack.
-- When a parent merges, `pr rebase` moves the children. It uses plain git, not a stacking tool.

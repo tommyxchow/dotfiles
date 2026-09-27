@@ -378,19 +378,19 @@ check_web_instructions() {
 check_web_instructions
 
 # The global file keeps situational rules (herdr, long work, instruction
-# files) in reference files it tells the agent to read by path. A trigger
-# that names a missing file fails silently in every session, so check each.
+# files) in reference files it tells the agent to read by path, and skills
+# name them too. A path to a missing file fails silently, so check each.
 check_reference_paths() {
   local missing=0
   local ref
-  for ref in $(grep -o '~/\.claude/references/[A-Za-z0-9._-]*' "$DOTFILES/.claude/CLAUDE.md" | sort -u); do
+  for ref in $(grep -rhoE '~/\.claude/references/[A-Za-z0-9._-]+' "$DOTFILES/.claude/CLAUDE.md" "$DOTFILES/plugins/tc/skills" | sort -u); do
     if [ ! -f "$DOTFILES/.claude/references/${ref##*/}" ]; then
-      printf "  WARN  .claude/CLAUDE.md points to %s, which is not in .claude/references\n" "$ref"
+      printf "  WARN  %s is named in the global file or a skill but is not in .claude/references\n" "$ref"
       missing=1
     fi
   done
   if [ "$missing" = 0 ]; then
-    printf "  OK    every reference file the global instructions name exists\n"
+    printf "  OK    every reference file the global instructions and skills name exists\n"
   fi
 }
 check_reference_paths

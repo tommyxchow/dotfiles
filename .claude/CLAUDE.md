@@ -70,7 +70,7 @@ I'm usually watching, but sometimes I auto-accept and read only the close, your 
   - [2] Leave it local
   ```
   Slot `[1]` is the path you would take, and it is the only one tagged `(recommended)`. Two options is the normal shape. Add a third or fourth only when it changes what I end up with, not how you get there. I answer with `1` or `1 and 3`; as you act on my answer, restate each pick in a few words.
-  When two independent choices both need my sign-off, give each its own short title above its options, like `Naming` and `Colors`, so I can answer `1 and 2`.
+  When two independent choices both need my sign-off, give each its own short title above its own options, each with its own recommended pick, so I can answer like `Naming 1, Colors 2`.
 - **Open a task with one plain sentence saying where the work will land**: straight to `main`, a PR, a stacked PR, or a mechanical loop; here or in a worktree; and which steps it skips and why. For example: "This is small, so I'll fix it straight on `main` here, without a plan." That sentence is where I catch a task that was sized wrong, so write it as a sentence, never as a label like "Route:".
 - Call out anything you changed that I didn't ask for, and any choice you made for me.
 - Report failures, workarounds, and skipped checks when they affect confidence, completion, or something I need to do. Leave out tool errors you recovered from and routine skips that have no bearing on the result.
@@ -96,7 +96,7 @@ Each step below is a default sized to the task, not a checklist to run in full e
 - **When a case the plan missed turns up while building**, treat it the way the approved plan would have. Build it when a criterion can't hold without it, or when it's cheap and clearly wanted. Otherwise add it to the checklist as a follow-up and keep going. Ask only when it changes what gets built, and batch that question with the other open ones at the slice boundary. Either way, the case goes in the checklist and in the close or the PR body's decisions section, so I can veto it at PR review and nothing is silently absorbed or dropped.
 - **Long work splits across sessions, because rule-following decays as a session runs long.** A long session keeps track of the task but loses the conventions. So in long work, write the decisions made so far into the plan at a slice boundary, then stop and say the next slice should start in a fresh session. A fresh session that reads the plan follows these rules better than a long one that remembers the conversation.
 - Don't split a session that is still short, and don't split for a small plan. When what's left is about one slice, build it here, even late in a long session.
-- **Before handing work to another session or model, running a mechanical edit across many files, or splitting work across several PRs (a stack, a flag, a schema change), read `~/.claude/references/long-work.md`.**
+- **Before handing work to another session or model, including when the split above says to stop, or before a mechanical edit across many files, read `~/.claude/references/long-work.md`.**
 - **When a session compacts, keep what the next turn needs to carry on**: the plan file path and which checklist items are done, the files changed so far, the commands that check them, the decisions made and why, and any question waiting on me. Drop tool output that has already been acted on.
 - **Inside a herdr pane (`HERDR_ENV` is set), read `~/.claude/references/herdr.md` on your first turn, before you read the repo or start the task, and do its first step, naming the tab, even for a short question.** It covers panes, servers, naming, notifications, worktrees, and handoffs. This rule is also the herdr mention the `herdr` skill's description waits for, so load that skill for the exact commands.
 - Outside herdr, start a server or watcher with the harness's background tool, or with `&` and a log file where there is none. Never start one in the foreground of a tool call, which blocks the chat until the call times out. Outside herdr, `wait-for` is also the ready wait, and a plain handoff message stands in for herdr's agent commands.
@@ -122,7 +122,7 @@ Each step below is a default sized to the task, not a checklist to run in full e
 - **Subagents are yours to spawn when they make the result better or faster**: parallel research, a fresh-context review, a big mechanical loop, or page fetches kept out of this window. Don't spawn one for a small task or a small change, where a cold start costs more than it saves. The final task review is the exception; the completion rule below says why. Size a fan-out to the work: typically two to five subagents, one per independent area, and more only for a per-file mechanical loop, since each one spends its own tokens and returns its results into this context.
 - Run subagents in the background where the harness allows it, and keep working. Wait only when the next step needs their result, as a skill's reconcile step does. Inside a skill, its own size gate decides.
 - **Pick a subagent's model and effort by the job when the harness lets you choose.** Judgment work, like a review or a plan, runs on the session's model. Well-specified building runs on the same model at a lower effort before it moves to a smaller model. Lookups, summaries, and mechanical loops go to the cheapest model in the same family that follows instructions.
-- **The completion rule is the same with or without a PR.** Check every acceptance criterion (the close mentions only the ones not done or not proven), run the local check, and run `review all` on the complete task diff, including pending and untracked work. That review runs in a fresh context even on a small change, because the session that wrote the code is biased toward it. Then run `pass`, which applies the confirmed in-scope findings.
+- **The completion rule is the same with or without a PR.** Check every acceptance criterion (when the checklist lives in a plan file or PR body, the close mentions only the ones not done or not proven), run the local check, and run `review all` on the complete task diff, including pending and untracked work. That review runs in a fresh context even on a small change, because the session that wrote the code is biased toward it. Then run `pass`, which applies the confirmed in-scope findings.
 - Review substantive edits made after that, and rerun the checks they affect. A check that already passed on this exact tree this session is cited, not rerun; only an edit since then calls for a rerun.
 - Mechanical changes and docs, config, or instruction-only work need the relevant checks, not a full code review.
 - Choose between a direct commit and a PR using the Git rules below. Run `pr` near the end, not per slice. The PR body publishes the acceptance evidence and stays current with each push that changes the work or its evidence.
@@ -224,7 +224,7 @@ Follow the project's design language. Show success only after the work has succe
 - Keep shareable state in the URL, settings in storage, auth in an httpOnly, Secure, SameSite cookie, and ephemeral UI state in memory.
 - The empty, loading, error, and success states and the keyboard path are part of the feature, not follow-ups, because a PM finds them on the first click.
 - A browser or device waits for `uat`: a browser, including Chrome through its MCP, a simulator, an emulator, the app's web target, or a plugged-in phone. Don't offer one or start one on a UI task, and a connected browser or device tool isn't permission to use it until `uat` is on in this session. The close says what you didn't check in a browser or on a device, and that saying `uat` checks it.
-- `uat` on its own, or a sentence whose point is to run that check, turns it on: drive the change there and fix what it finds through the normal loop. When a ledger exists (the `pr` skill's list of acceptance criteria with their evidence), the check covers the browser and device criteria still marked not driven. When a PR is open, refresh its evidence; otherwise the close is the record.
+- `uat` on its own, or a sentence whose point is to run that check, turns it on: drive the change there and fix what it finds through the normal loop. When a ledger exists (the `pr` skill's list of acceptance criteria with their evidence), the check covers the browser and device criteria not yet checked in a browser or on a device. When a PR is open, refresh its evidence; otherwise the close is the record.
 - A mention of `uat` while we're talking about the step doesn't turn it on, and `UAT feedback` stays notes pasted after your own testing.
 - When the check runs, use the session's browser tool in your own tab. When it connects to shared Chrome, coordinate access and leave my tabs alone.
 - Never write that the UI works without having driven it.
@@ -245,6 +245,8 @@ Follow the project's design language. Show success only after the work has succe
 - Use a branch and PR only when I ask for one or said `ship it`. When a change is risky enough to want a separate review, suggest one in your opening sentence, and accept a no. Choosing either route changes nothing about push permission, which is in How a task runs.
 - In a repo that isn't mine, every change gets a PR unless I ask for a commit to `main`. A repo I made and own is still mine, even at work.
 - One PR does one thing. Small refactors the feature needs can stay with it; put independently useful or risky refactors in their own PR first, and stack when needed.
+- Hide half-finished work behind a flag or an unrouted page, not on a long-lived branch.
+- Schema and API changes expand, migrate, then contract across PRs when an older client or another deploy still reads the old shape. When only this deploy reads it, one PR is fine.
 - A risky change (migration, backfill, auth, money) names its rollback in the PR body.
 - **Pick the checkout by the task.** A session I opened in a worktree stays there; never nest another worktree inside it. From the main checkout, a small change stays put, on `main` or a branch as the route needs.
 - Larger or longer work, or work with several slices, gets its own worktree so other sessions in this repo keep working undisturbed. Inside a herdr pane, create it the way the herdr reference says.
@@ -254,6 +256,8 @@ Follow the project's design language. Show success only after the work has succe
 - **Install dependencies on first need, not up front**: the first dev server, type check, test run, or repo check installs them. In a monorepo, install only the package you work in and what it depends on (`pnpm install --filter <pkg>...`).
 - A repo whose own instructions say to install first, or say how, wins over installing on first need.
 - A worktree isolates files but not ports or local databases. Assume other sessions of mine are running in sibling checkouts of the same repo: don't switch branches, stash, or rewrite a ref another session could be using, and give any server or database you start its own port.
+- When I name a parent to stack on, usually partway through, rebase this branch onto it and set the PR's base to it. Most sessions never stack.
+- When a parent merges, `pr rebase` moves the children. It uses plain git, not a stacking tool.
 
 ## External writing
 
@@ -265,4 +269,4 @@ Follow the project's design language. Show success only after the work has succe
 
 ## Instruction files
 
-Before editing this file, a repo's AGENTS.md or CLAUDE.md, or a first-party skill, read `~/.claude/references/instruction-files.md`. Its rules apply only then.
+Before editing this file, a file in `~/.claude/references/`, a repo's AGENTS.md or CLAUDE.md, or a first-party skill, read `~/.claude/references/instruction-files.md`. Its rules apply only then.
