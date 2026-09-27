@@ -217,7 +217,7 @@ write_cursor_plugin
 # Grok Build reads ~/.grok/config.toml and writes runtime state back into it
 # (marketplace bookkeeping, pinned sessions), so it is never symlinked. Seed a
 # missing config from grok/config.toml; otherwise patch only the keys we set
-# keys in place, leaving everything Grok wrote untouched.
+# in place, leaving everything Grok wrote untouched.
 grok_toml_set() { # file section key value
   local file="$1" sec="$2" key="$3" val="$4"
   local tmp
