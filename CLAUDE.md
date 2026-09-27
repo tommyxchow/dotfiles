@@ -134,15 +134,16 @@ repo-local.
   it. A **name collision**, like the built-in `review` in Claude Code, Cursor,
   and OpenCode 2: Claude Code keeps `/review` as an alias of its bundled
   `/code-review`, Cursor's precedence is undocumented, and OpenCode 2 runs its
-  own command before a same-named skill, so asking in words or `finalize` still
-  reaches ours while typing `/review` is theirs or ambiguous. The name stays
-  on purpose; renaming would touch every rule and phrase that routes to it. A **different name for stronger
-  tooling**, like a paid cloud review: `.claude/CLAUDE.md` says ours run unless
-  I name the built-in or it does something ours can't, and the `review` skill
-  defers to tooling the repo itself configures. Ours stay because they are the
-  only copies that work in all four harnesses and read a repo's own rules
-  first. The cloud review can be started from a script, but it bills per run,
-  so no session starts it unasked.
+  own command before a same-named skill, so asking in words or `finalize`
+  still reaches ours while typing `/review` is theirs or ambiguous. The name
+  stays on purpose; renaming would touch every rule and phrase that routes to
+  it. A **different name for stronger tooling**, like a paid cloud review:
+  `.claude/CLAUDE.md` says ours run unless I name the built-in or it does
+  something ours can't, and the `review` skill defers to tooling the repo
+  itself configures. Ours stay because they are the only copies that work in
+  all four harnesses and read a repo's own rules first. The cloud review can
+  be started from a script, but it bills per run, so no session starts it
+  unasked.
 
 - **`tc` stays in the marketplace catalog; do not install it on claude.ai.**
   The catalog entry serves machines that install the plugin instead of running
@@ -224,23 +225,23 @@ repo-local.
   settings only: `hq` picks a worker's effort per launch with `--effort`,
   which lasts one session and writes nothing back.
 
-- **Rejected, don't propose again.** Loading the herdr rules
-  only inside herdr through a hook: hooks are Claude Code-only, so Cursor, Grok
-  Build, and OpenCode 2 would lose them. They now live in
-  `.claude/references/herdr.md`, which an always-loaded line tells the agent
-  to read on its first turn in a herdr pane, and that works in every harness.
-  Moving the whole coding workflow into an on-demand skill (2026-09-27):
-  coding is most sessions, so they'd save nothing, and the always-loaded file
-  is the only text every harness re-injects after compaction, while Claude
-  Code keeps 5K tokens of a loaded skill and the others drop it. Generating
-  `.claude/CLAUDE.web.md` from a shared block: it would squeeze the most-tuned
-  rules into about 3KB for a chat file that rarely changes. A `gh`-based scoreboard script: the audit's PR retro asks the same
-  question in words, and a script here goes stale. A plan-time check of open
-  branches for file overlap: one branch and worktree per ticket, phases
-  stacked on top, so overlap is rare and resolved at merge by hand. The `tc/`
-  branch prefix stays dropped. It was a sidebar grouping trick; the global Git
-  section uses the ticket id in the tracker's own case, or
-  `<github-login>/kebab-phrase` with no ticket. A rule naming a model's
+- **Rejected, don't propose again.** Loading the herdr rules only inside herdr
+  through a hook: hooks are Claude Code-only, so Cursor, Grok Build, and
+  OpenCode 2 would lose them. They now live in `.claude/references/herdr.md`,
+  which an always-loaded line tells the agent to read on its first turn in a
+  herdr pane, and that works in every harness. Moving the whole coding
+  workflow into an on-demand skill (2026-09-27): coding is most sessions, so
+  they'd save nothing, and the always-loaded file is the only text every
+  harness re-injects after compaction, while Claude Code keeps 5K tokens of a
+  loaded skill and the others drop it. Generating `.claude/CLAUDE.web.md` from
+  a shared block: it would squeeze the most-tuned rules into about 3KB for a
+  chat file that rarely changes. A `gh`-based scoreboard script: the audit's
+  PR retro asks the same question in words, and a script here goes stale. A
+  plan-time check of open branches for file overlap: one branch and worktree
+  per ticket, phases stacked on top, so overlap is rare and resolved at merge
+  by hand. The `tc/` branch prefix stays dropped. It was a sidebar grouping
+  trick; the global Git section uses the ticket id in the tracker's own case,
+  or `<github-login>/kebab-phrase` with no ticket. A rule naming a model's
   early-stop habits, like the list in Anthropic's prompting guides (a summary
   that announces the next step, an offer to continue, and the rest), globally
   or under `ship it`, and any rule setting how often to post progress updates:
@@ -252,15 +253,14 @@ repo-local.
   and prompt injection into a model that can call tools. Neither mistake has
   happened, and none of my repos gives a model tools. Revisit the first if an
   agent ever adds a wrong package, the second once an app calls a model with
-  tools.
-  From the 2026-09-27 hq review: renaming `hq`, which stays. An OpenCode 2
-  plugin that reports context to herdr: HQ reads OpenCode's own on-screen
-  readout instead, and the plugin was more machinery than that gap needs.
-  Making the fresh-context final review a judgment call like the other
+  tools. From the 2026-09-27 hq review: renaming `hq`, which stays. An
+  OpenCode 2 plugin that reports context to herdr: HQ reads OpenCode's own
+  on-screen readout instead, and the plugin was more machinery than that gap
+  needs. Making the fresh-context final review a judgment call like the other
   steps: it stays fixed, since on a small diff it is one read and it is the
-  step most likely to catch something. A plain "go" opening the draft PR in
-  a repo that isn't mine: it commits on a branch and offers the PR, and
-  `ship it` opens it.
+  step most likely to catch something. A plain "go" opening the draft PR in a
+  repo that isn't mine: it commits on a branch and offers the PR, and `ship
+  it` opens it.
 
 - **Where the global file differs from Anthropic's prompting advice, it does so on purpose.**
   Anthropic leans toward prose with little bold, calm emphasis, and saying what
