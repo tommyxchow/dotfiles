@@ -31,8 +31,8 @@ Keep a board at `~/.local/state/hq/board.md`, one line per worker. Every HQ on t
 Key each line by agent name, never by pane ID, because herdr gives a pane a new ID when it moves and the agent name follows the agent. The owner goes in parentheses after the name. Create the file on the first dispatch.
 
 ```
-- nav-flicker (hq): tommychow.com, fix the nav flicker on sign-in (ABC-123), high. Waiting on me: plan approval.
-- skins-search (hq-2): sourceskins, add search to the skins page. Waiting on worker.
+- alpha (hq): tommychow.com, fix the nav flicker on sign-in (ABC-123), high. Waiting on me: plan approval.
+- bravo (hq-2): sourceskins, add search to the skins page. Waiting on worker.
 ```
 
 Edit only your own lines, and read the file again right before each edit, since another HQ may have changed it. Read it again before every status report and whenever you resume after a long gap or a compaction, instead of trusting your memory of the conversation. A fresh HQ session should be able to pick up from the board and `herdr agent list` alone.
@@ -45,7 +45,7 @@ When HQ mode turns on, take stock before doing anything else, because sessions I
 2. **Name yourself** `hq`, or the first of `hq-2`, `hq-3`, and so on that no live agent has, with `herdr agent rename "$HERDR_PANE_ID" <name>`. That name is your owner tag on the board. Name your tab the same way, following the global herdr rules. Lines that already carry your new name belong to an earlier HQ that is gone, so treat them like any other line whose owner is gone.
 3. **Leave other HQs' work alone.** An agent named `hq` or `hq-<n>` is another HQ, and a board line whose owner is another live HQ belongs to it. Don't read, wait on, or answer for either.
 4. **Offer the rest.** List the live agents with no line, and the lines whose owner is gone, in one short message: each in a sentence, what it is on and what it waits on, the ones waiting on me first. Work that out from the board line, or for an agent with no line from its terminal title, its folder, the branch there, and a short `herdr agent read <pane-id> --source recent-unwrapped --lines 60`. Ask which ones I want you to take; with no other HQ running, taking all of them is the recommended answer.
-5. **Adopt what I pick.** Give an agent with no name a slug for its task with `herdr agent rename <pane-id> <slug>`, so you can reach it after its pane moves. Write each line with you as the owner, then start waits on the working ones and handle the blocked ones as below.
+5. **Adopt what I pick.** Give an agent with no name the next free worker name, as dispatch step 4 describes, with `herdr agent rename <pane-id> <name>`, so you can reach it after its pane moves. Write each line with you as the owner, then start waits on the working ones and handle the blocked ones as below.
 6. **Settle lines whose agent is gone.** Check the task's PR with `gh pr view`, report what happened, and remove the line or mark it waiting on me. Only settle lines you own or just adopted.
 
 I may leave some sessions out, like one I use for something outside my repos. Give each of those a line with no owner, marked "not tracked", so no HQ offers it again, and don't wait on it or read it again. Step 4 skips "not tracked" lines.
@@ -66,13 +66,13 @@ Never send another HQ text with `herdr agent prompt`. Text typed into a pane rea
    - `high` for an unclear cause, a change that cuts across the codebase, or auth, money, and migrations.
    - `xhigh` for deep research, or a problem that beat a worker at a lower level.
    - `max` only when I ask for it, since it tends to overthink.
-4. **Start the worker** in that pane with `herdr agent start <slug> --kind <kind> --pane <pane-id>`, adding `-- --effort <level>` for a Claude worker off the default and `-- --model <alias>` when I named a Claude model (both go after one `--`), or `-- -m <provider/model>` for OpenCode. Name it with the same short slug as the label, like `nav-flicker`, so the sidebar and the board match.
+4. **Start the worker** in that pane with `herdr agent start <name> --kind <kind> --pane <pane-id>`, adding `-- --effort <level>` for a Claude worker off the default and `-- --model <alias>` when I named a Claude model (both go after one `--`), or `-- -m <provider/model>` for OpenCode. Name it with the first NATO letter, `alpha` through `zulu`, that no live agent and no board line has, like `bravo`, unless I named it myself. The letters are built to be said aloud, so I can ask about Bravo in passing. The label keeps the task slug, so the sidebar shows what each worker is on and the board says which letter it is.
 5. **Hand it the task** with `herdr agent prompt`: the task in my words, the ticket or link, any decisions we settled here, `ship it` only if I said it, and its effort when it isn't the default, so a handoff to a fresh session keeps it. Leave the conventions out, because the worker loads the same global instructions you do.
 6. **Add its line** to the board and start its wait, the way the next section describes for any worker you just sent input to. Tell me what you dispatched in one line each, with the effort and why when it isn't the default, so I can change it.
 
 Dispatch independent tasks one after another in the same turn rather than waiting for each worker to start its work.
 
-Never type `/effort`, `/model`, or `/autocompact` into a worker's pane. In Claude Code those save the choice as my default for every later session. To give a running task more effort, start a fresh session in the same worktree at the higher level: split a pane in that workspace, start it as `<slug>-<n>` with the next free number and the flag, and hand it the plan file path and the last worker's report. That also clears its context. Move the board line to the new name and tell me the old pane can be closed.
+Never type `/effort`, `/model`, or `/autocompact` into a worker's pane. In Claude Code those save the choice as my default for every later session. To give a running task more effort, start a fresh session in the same worktree at the higher level: split a pane in that workspace, start it as `<name>-<n>` with the next free number, like `bravo-2`, and the flag, and hand it the plan file path and the last worker's report. That also clears its context. Move the board line to the new name and tell me the old pane can be closed.
 
 ## Wait on signals
 
@@ -111,7 +111,7 @@ No session can see its own context use, so read it from herdr. A Claude pane pub
 When I ask for status, read the board and run `herdr agent list`, then give one short sentence per worker you own in app terms. Put the ones waiting on me first, with what I need to do. For example:
 
 ```
-Two need you. nav-flicker has a plan ready for approval, and skins-search asks whether search should include sold-out skins (it recommends yes). The settings-page worker opened its draft PR and CI is green.
+Two need you. Alpha has the nav flicker plan ready for approval, and Bravo asks whether skins search should include sold-out skins (it recommends yes). Charlie opened the settings page draft PR and CI is green.
 ```
 
 When another HQ is running, end with one line naming it and how many workers it owns, so I know where the rest are.
