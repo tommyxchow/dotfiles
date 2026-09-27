@@ -59,8 +59,9 @@ been going wrong, then proposes changes and waits. Also repo-local.
   The repo files are canonical: editing them updates the linked files on disk.
   Already-running sessions may need a reload or restart to load revised
   instructions. OpenCode 2 reads the global text through
-  `~/.config/opencode/AGENTS.md` (installer link to `.claude/CLAUDE.md`); it
-  does not load `~/.claude/CLAUDE.md`, so the link is what actually feeds it.
+  `~/.config/opencode/AGENTS.md` (installer link to `.claude/CLAUDE.md`). It
+  falls back to `~/.claude/CLAUDE.md` only when that file is missing, so the
+  link is what actually feeds it.
   In this repo the installer also links
   `AGENTS.md` to this file so OpenCode 2 sees these gotchas. Cursor does support
   symlinked local plugins, but `rules/global.mdc` needs `alwaysApply: true`
@@ -213,7 +214,9 @@ been going wrong, then proposes changes and waits. Also repo-local.
   a `/effort` or `/model` write-back; discard it unless I say to keep that
   level. A stray top-level `effortLevel` does more harm here than elsewhere:
   inside this checkout this file is also project settings, and a
-  project-level `effortLevel` overrides every model's own default.
+  project-level `effortLevel` overrides every model's own default. This is
+  about saved settings only: `hq` picks a worker's effort per launch with
+  `--effort`, which lasts one session and writes nothing back.
 
 - **Rejected, don't propose again.** Loading the herdr rules
   only inside herdr through a hook: hooks are Claude-only, so Cursor, Grok,

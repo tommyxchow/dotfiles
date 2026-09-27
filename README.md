@@ -116,7 +116,7 @@ through `/skills` there.
 | `/pr` | Prepare the task, review its complete final diff, publish a draft with acceptance evidence, then watch its CI to green. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
-| `/hq` | Manual only. Run this herdr session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Never builds or approves for you, and merges only a PR you name. |
+| `/hq` | Manual only. Run this herdr session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's effort at launch, runs Claude models in Claude Code, and shares one board with any other HQ. Never builds or approves for you, and merges only a PR you name. |
 | `/cleanup` | Repo hygiene: finished and dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
 | **audit** (this repo) | This **setup**. Follow `docs/audit.md`: re-examine the instructions and skills against current harnesses and recent pain, then propose. |
@@ -195,8 +195,8 @@ is not on PATH.
 This setup is OpenCode 2 ([V2 docs](https://opencode.ai/v2/docs/)). The binary
 is `opencode`, with `opencode2` left as a back-compat shim.
 It reads user-global instructions from `~/.config/opencode/AGENTS.md` and
-project `AGENTS.md` walking up from the working directory. It does not load
-`CLAUDE.md`. The installer links those `AGENTS.md` paths to the shared
+project `AGENTS.md` walking up from the working directory. It reads
+`CLAUDE.md` only as a fallback where no `AGENTS.md` exists. The installer links those `AGENTS.md` paths to the shared
 `.claude/CLAUDE.md` and this repo's `CLAUDE.md`. Skills still come from
 `~/.claude/skills`. OpenCode 2 does not load Claude marketplace plugins, so
 `ek` is Claude Code-only.
@@ -235,11 +235,12 @@ part.
 
 Inside herdr, agents name their tab after the task and label the panes they
 split, so the sidebar says what each one is doing and a label like `dev :3001`
-says which port is taken. Tab names are lowercase slugs of at most 16
-characters, which is what fits in the sidebar at its usual width here, not a
-herdr limit. Agents rename a tab only when its label is a number or such a
-slug, so a name typed by hand stays. They leave their own agent name alone,
-since it shows which harness is running. A fresh session or a helper agent is
+says which port is taken. Each name says only what the level above it doesn't:
+a worktree's workspace already carries the task, so a tab there is named for
+its role, like `build`. Names are lowercase slugs of at most 16 characters,
+which is what fits in the sidebar at its usual width here, not a herdr limit.
+Agents rename freely when it helps, but a label with a capital letter was typed
+by hand and stays. A fresh session or a helper agent is
 started through `herdr agent start` and prompted with `herdr agent prompt`,
 and every wait on a pane carries a timeout. After a long run they send a herdr
 notification, because herdr's own alerts skip the tab that is open. All of

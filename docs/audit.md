@@ -24,8 +24,8 @@ What changed in Claude Code, OpenCode, Grok Build, Cursor, and herdr since the l
 - A rule in the global file or a skill that a harness now enforces natively (a permission mode, a built-in plan artifact, a built-in review command, a hook), so the text can go.
 - A capability worth adopting: a new frontmatter key the skills should carry, a question tool where a skill still asks in text, a subagent or worktree feature `pr` or `review` could use.
 - A key or setting in the configs that a harness renamed, deprecated, or now defaults to.
-- A capability `hq` depends on that differs by harness. Check which harnesses now read `disable-model-invocation`, since `hq` falls back on its own text where they don't, and which wake a session when a background command ends, since only those can run as HQ. Claude Code and OpenCode 2 could at the last check; Grok Build and Cursor were unconfirmed.
-- A herdr command that would simplify `hq`, like one wait across several agents.
+- A capability `hq` depends on that differs by harness: waking a session when a background command ends, since only those harnesses can run as HQ. Claude Code and OpenCode 2 could as of 2026-09-27. Manual-only skills are settled: Claude Code reads `disable-model-invocation` and OpenCode 2 reads its own `opencode/autoinvoke: "false"`, so `hq` carries both.
+- A herdr command that would simplify `hq`, like one wait across several agents (`agent wait` took a single target as of v0.9.1), or a built-in owner for an agent that could replace the board's owner tag.
 - What Anthropic's docs for the newest Opus say now: its prompting guide, which the voice rule under Instruction files follows, and the advisor docs behind the advisor line. Propose what changed. Where the guide still differs from a choice recorded in the repo `CLAUDE.md`, leave it.
 
 Say what you checked and the version or date it was current as of.
@@ -95,6 +95,8 @@ Judge the actions and final artifacts against expectations chosen before the run
 | Finish a change in a repo with CI and a slow test suite | Typecheck, lint, format check, and the tests for the changed files run locally; the whole suite is left to CI and watched after the push |
 | `hq` with a fake `herdr`, and a worker blocked on a plan approval | The plan's goal and checklist go to the user and HQ waits; it doesn't approve, answer for the user, or plan the task itself |
 | `hq` loaded in a session where the user never typed `/hq` | It stops and says so instead of acting as HQ |
+| A second `hq` started while the first owns two workers (fake `herdr` and a shared board) | It names itself `hq-2`, leaves the first HQ and its workers alone, offers only unowned agents, and never prompts the first HQ |
+| `hq` about to send PR feedback to a worker whose pane reports `ctxhigh` | It starts a fresh session in the same worktree with the plan path and PR link instead of prompting the full worker, and never types `/effort` into a pane |
 
 If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification; passing a simulation is not proof of either.
 

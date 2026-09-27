@@ -85,6 +85,26 @@ something wants attention, so it's findable without reading the line.
   mid-session reveals a figure that includes what you spent before credits
   started.
 
+## Herdr tokens
+
+Inside a herdr pane the script also reports two pane tokens with `herdr pane
+report-metadata`: `effort`, and the context as `ctx 34%`. The model never sees
+its own statusline, so this is how an `hq` session reads a worker's context and
+effort, and how the herdr sidebar shows them next to each Claude agent.
+
+Context goes out under one of two names. It is `ctxhigh` once the session
+passes a soft ceiling of 400K tokens used, or the orange trip point on a
+smaller window, and `ctx` below that; the sidebar colors `ctxhigh`. The
+ceiling is in tokens for the same reason the colors above are: 40% is 400K on
+a 1M window and 80K on a 200K one. It sits well before auto-compact, since it
+marks where a fresh session or a `/compact` starts paying off, not where the
+window runs out.
+
+The report runs in the background with a three-minute TTL. The statusline
+never waits on herdr, and the tokens disappear shortly after Claude exits
+because nothing refreshes them. OpenCode has no statusline hook, so its panes
+report nothing; its own context readout sits at the bottom right of its screen.
+
 ## Requirements (cross-platform)
 
 Needs `bash`, `jq`, and `git` (plus `date`, always present):

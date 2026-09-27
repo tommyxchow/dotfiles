@@ -6,7 +6,7 @@ This playbook lives in the repo and loads only when you open this workspace and 
 
 Refreshing packages and framework versions in a **product** repo is the `refresh` skill. Do not run that here.
 
-Primary harnesses: **Claude Code**, **Cursor**, **Grok Build**, **OpenCode 2**. The installer is enough for instructions and first-party skills on all of those. Marketplace plugins (`ek`, `frontend-design`, `typescript-lsp`) need the `claude` CLI; skip that section if it is not installed.
+Harnesses: **Claude Code** and **OpenCode 2** are the daily CLIs, **Grok Build** is occasional, and **Cursor** is the desktop editor, which never runs inside herdr. The installer is enough for instructions and first-party skills on all of those. Marketplace plugins (`ek`, `frontend-design`, `typescript-lsp`) need the `claude` CLI; skip that section if it is not installed.
 
 Flow: **find repo → pull or clone → installer → marketplace plugins (if `claude`) → dedupe → leftover sweep → vendored skills → report.**
 
@@ -68,7 +68,7 @@ If `claude` is missing, say so in the report and continue.
 
 **Grok:** `~/.grok/config.toml` must carry the non-default keys from `grok/config.toml` — the installer patches them; re-run it if drifted. Everything else in that file is Grok-owned runtime state; do not manage it. `~/.grok/lsp.json` should exist (installer seeds from `grok/lsp.json`); warn if `typescript-language-server` is missing from PATH. No extra links: Grok reads `~/.claude/CLAUDE.md` and `~/.claude/skills` through Claude compatibility.
 
-**OpenCode 2:** `~/.config/opencode/AGENTS.md` must be a symlink to `.claude/CLAUDE.md`. In this repo, root `AGENTS.md` must be a symlink to `CLAUDE.md` (installer-created, gitignored). OpenCode 2 does not load `CLAUDE.md`, so this link is what feeds it. It already reads `~/.claude/skills`. Do not also link first-party skills into `~/.config/opencode/skills`. There are no slash-command stubs any more: each first-party skill carries `metadata: opencode/slash: "true"`, which is what makes a typed `/vet` run the skill on OpenCode 2. The installer sweep removes any leftover links in `~/.config/opencode/commands` that point into this repo. `~/.config/opencode/cli.json` is the TUI/keybinds file from `opencode/cli.json`. On Windows, apply the WT sendInput chords from the README; they are not linked. Do not also link `~/.agents/skills`.
+**OpenCode 2:** `~/.config/opencode/AGENTS.md` must be a symlink to `.claude/CLAUDE.md`. In this repo, root `AGENTS.md` must be a symlink to `CLAUDE.md` (installer-created, gitignored). OpenCode 2 reads `CLAUDE.md` only as a fallback where no `AGENTS.md` exists, so this link is what feeds it. It already reads `~/.claude/skills`. Do not also link first-party skills into `~/.config/opencode/skills`. There are no slash-command stubs any more: each first-party skill carries `metadata: opencode/slash: "true"`, which is what makes a typed `/vet` run the skill on OpenCode 2. The installer sweep removes any leftover links in `~/.config/opencode/commands` that point into this repo. `~/.config/opencode/cli.json` is the TUI/keybinds file from `opencode/cli.json`. On Windows, apply the WT sendInput chords from the README; they are not linked. Do not also link `~/.agents/skills`.
 
 **Project-scope leftovers:** only if `claude` exists. `claude plugin list` plus `~/.claude/plugins/installed_plugins.json`. User scope is the only scope that should exist, so uninstall `--scope project` every project-scope record, running each uninstall from its `projectPath`. When that path is this repo, the uninstall edits `.claude/settings.json` here, which is also the user-scope file: restore any `enabledPlugins` key it removed by editing the JSON, not with `git checkout`. Both scopes share one cache directory, so confirm `claude plugin list` still shows the user-scope entry afterwards and reinstall `--scope user` if it vanished.
 
@@ -163,11 +163,14 @@ Never stop the server from inside a session.
 
 The pane hook is the other surface, and it is per agent rather than per machine.
 Run `herdr integration status --outdated-only` and reinstall whatever it lists
-with `herdr integration install <agent>`. Keep that set to claude, codex, cursor,
-grok, and opencode. Two of those write into files this repo tracks: claude into
-`.claude/settings.json`, opencode into `opencode/cli.json` through the
-`~/.config/opencode/cli.json` link. Read both diffs after installing. The rest
-are self-contained in their own config directories and need no cleanup. When a
+with `herdr integration install <agent>`. Keep that set to claude, opencode,
+and grok, the CLIs that run in herdr panes; Codex is never used, and Cursor is
+used only as its desktop app, outside herdr. If a codex or cursor integration is
+still installed, report it and leave its removal to the user. Two of those write
+into files this repo tracks: claude into `.claude/settings.json`, opencode into
+`opencode/cli.json` through the `~/.config/opencode/cli.json` link. Read both
+diffs after installing. Grok's is self-contained in its own config directory and
+needs no cleanup. When a
 pane shows the wrong state, `herdr agent explain <pane>` says which rule decided
 it.
 
@@ -227,13 +230,17 @@ setup expects six settings in it. Its theme follows the terminal's light or
 dark mode, like Claude Code's `theme: auto`; picking a theme by hand in herdr's
 Settings turns `auto_switch` back off. The global rules have agents send a
 notification after a long run, and `system` is the delivery that shows outside
-the herdr window. The Claude entry puts each session's title in the sidebar. It
-replaces `rows` rather than adding to it, so its first and last rows repeat
-whatever `[ui.sidebar.agents] rows` holds on that machine. A fresh session
-titles itself "Claude Code", which only repeats the agent row under it, so the
-title row hides until the session has a real title; `hide` needs herdr 0.9.1 or
-newer. The OpenCode entry does the same for OpenCode 2, whose title reads
-`OC | <session title>`; the prefix is OpenCode's and no herdr rule can strip it.
+the herdr window. The agent entries give Claude and OpenCode the same shape:
+where the agent is, what it is doing, and for Claude how heavy it is. No row
+names the harness. Claude is the default and carries no mark, and OpenCode 2's
+own title already starts with `OC |`, a prefix no herdr rule can strip, so an
+`agent` row would only repeat it. Any other harness falls back to herdr's
+default rows, which do name it. A fresh Claude session titles itself "Claude
+Code", so that title row hides until the session has a real title; `hide`
+needs herdr 0.9.1 or newer. Claude's third row is the effort and context the
+statusline publishes (see `docs/statusline.md`); the context turns orange as
+`$ctxhigh` past the soft ceiling. An entry replaces `rows` rather than adding
+to it.
 The spaces rows are
 herdr's defaults plus the `$pr` and `$dirty` slots the `tc.pr-badge` plugin
 fills, the PR or default-branch CI state and the uncommitted file count; a slot
@@ -259,12 +266,11 @@ show_agent_labels_on_pane_borders = true
 claude = [
   ["state_icon", "machine", "workspace", "tab"],
   [{ token = "terminal_title_stripped", rules = [{ equals = "Claude Code", hide = true }] }],
-  ["agent"],
+  ["$effort", "$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
 ]
 opencode = [
   ["state_icon", "machine", "workspace", "tab"],
   ["terminal_title_stripped"],
-  ["agent"],
 ]
 
 [ui.sidebar.spaces]
