@@ -24,7 +24,7 @@ Decide which steps run first, then load only what they need. Read [../vet/SKILL.
 - Don't push.
 - Commit only after the report says `✅ Slice ready.`, following the git rules. A `❌ Not yet.` slice stays uncommitted.
 - Don't watch CI, write AGENTS.md, or start a second task.
-- Stay within this slice. `pr check` reports PR readiness, and `pr ready` also has approval to flip the draft. Here, "Slice ready" means clean enough to commit.
+- Stay within this slice. `pr check` reports PR readiness, and `pr ready` also has approval to flip the draft. Here, "Slice ready" means clean enough to commit. It is not a claim that the whole task is correct and complete.
 - Don't add your own size tiers. Polish decides how much to review by size. Vet decides by what could have gone stale, not by how many files changed. `quick` is the one tier this skill sets, and it hands the same word to polish.
 - Don't look for unused starter dependencies or unrelated dead files.
 

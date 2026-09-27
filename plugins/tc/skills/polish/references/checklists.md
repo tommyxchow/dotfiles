@@ -48,7 +48,7 @@ A clean result is valid, so don't manufacture findings to fill the table.
 **Owns:** new code that re-implements something the codebase already has.
 **Out of scope:** internal complexity with no existing equivalent goes to Quality. Novel hot paths go to Efficiency, but still report pure duplicates here.
 
-1. **Existing utility or duplicate function**: new code does what a helper or function in shared/util or an adjacent module already does. Call the existing one.
+1. **Existing utility or duplicate function**: new code does what an existing function, or a helper in shared/util or an adjacent module, already does. Call the existing one.
 2. **Inline logic with a utility**: hand-rolled path/env/clone/merge/guard logic where an established helper exists. Use the helper.
 3. **Semantic duplicate**: same intent as existing code, different implementation, so it does not read as a copy. Examples are a second date formatter with different steps, a second retry loop with its own backoff, or a permission rule spelled a new way. Search by what the code does, not by how it looks. Two implementations of one rule drift, and only one of them gets the next fix.
 

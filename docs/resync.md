@@ -181,7 +181,8 @@ the server up, so a `SKIP` line there means start herdr and re-run the
 installer. `herdr plugin list --json` shows them registered and `herdr plugin
 log list` shows their last runs with exit codes and output, which is where to
 look when a new worktree came up without its env or a badge is missing.
-`herdr plugin action invoke tc.pr-badge.refresh` refreshes the badge by hand.
+The badge refreshes when herdr starts, when an agent settles, when a workspace gets focus, and by hand through
+`herdr plugin action invoke tc.pr-badge.refresh`.
 
 Then check `git diff .claude/settings.json`. Installing the claude integration
 writes a hook command with an absolute path into this machine's home directory,
