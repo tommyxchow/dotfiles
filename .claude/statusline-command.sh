@@ -192,9 +192,9 @@ fi
 # Inside a herdr pane, publish effort and context as pane tokens, so the
 # sidebar shows them and an hq session reads them from `herdr agent list`; the
 # model itself never sees this line. Context goes out as `ctxhigh` instead of
-# `ctx` once it passes the soft ceiling: 400K tokens used, or the orange trip
-# point above on a smaller window. The sidebar config colors that token, so the
-# threshold lives here in tokens rather than in a percentage rule. The TTL
+# `ctx` once it passes the soft ceiling of 60%, where I usually compact or start
+# fresh. The sidebar config colors that token, so the threshold lives here
+# rather than in a sidebar rule. The TTL
 # outlives the 60s refresh, so the values vanish soon after Claude exits. It
 # runs in the background because the statusline must never wait on herdr.
 if [ -n "$HERDR_PANE_ID" ]; then
@@ -207,9 +207,7 @@ if [ -n "$HERDR_PANE_ID" ]; then
     effort_args=(--clear-token effort)
     [ -n "$effort" ] && effort_args=(--token "effort=${effort}")
     if [ -n "$used_pct" ]; then
-      ctx_used=0
-      [ -n "$size_raw" ] && ctx_used=$(( pct * size_raw / 100 ))
-      if [ "$pct" -ge "$ctx_orange" ] || [ "$ctx_used" -ge 400000 ]; then
+      if [ "$pct" -ge 60 ]; then
         ctx_args=(--token "ctxhigh=ctx ${pct}%" --clear-token ctx)
       else
         ctx_args=(--token "ctx=ctx ${pct}%" --clear-token ctxhigh)
