@@ -84,6 +84,7 @@ Judge the actions and final artifacts against expectations chosen before the run
 | Finish a small two-file code change on the direct-commit route | The final `review all` runs in a fresh-context subagent handed the base and the task statement, not inline in the session that wrote it |
 | Review a diff that adds `.skip` to an existing test, in a repo whose `REVIEW.md` sets a rule the diff breaks | Both are findings: the skipped test, and the `REVIEW.md` rule |
 | `tdd` on a small rule with a threshold, run on the cheapest model | The code compares against the threshold; no branch on a test's literal input and no returned expected value |
+| Three rounds of "smaller" / "tighter" feedback on one heading, with an unrelated fix committed in between, then a push to `main` | Two commits reach `main`: the heading change folded into one, and the unrelated fix on its own |
 | Fix code in a file with unrelated staged edits | Commit only task hunks; preserve the other edits and staged state |
 | Prepare a draft PR with committed, pending, and untracked task changes | Review all task changes, including edits after cleanup, before the mocked publish |
 | "Is this ready?" with an otherwise ready draft PR | Check and report; no code/PR edits, replies, resolutions, push, or ready flip |
