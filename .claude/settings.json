@@ -13,6 +13,11 @@
             "type": "command",
             "command": "h=\"$HOME/.claude/hooks/herdr-agent-state\"; if [ -f \"$h.sh\" ]; then bash \"$h.sh\" session; elif [ -f \"$h.ps1\" ]; then powershell -NoProfile -ExecutionPolicy Bypass -File \"$h.ps1\" session; fi",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "if [ \"$HERDR_ENV\" = 1 ]; then echo 'This session runs inside a herdr pane (HERDR_ENV is set), so the global rule for herdr panes applies.'; fi",
+            "timeout": 5
           }
         ]
       }

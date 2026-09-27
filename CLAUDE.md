@@ -180,16 +180,17 @@ repo-local.
   `herdr update`. Do not vendor either into `plugins/tc/skills`, and do not also
   install them for cursor, opencode, or grok.
 
-- **Herdr owns its pane hook; never vendor it here either.**
-  `herdr integration install claude` writes an absolute machine path into the
-  `hooks` section of `.claude/settings.json`, replacing the committed entry on
-  older builds and appending a second one on current builds. The committed
-  entry is a portable `$HOME` form that already covers both platforms, so
-  restore it after any reinstall or that path ships to every machine. The
-  opencode integration writes into `opencode/cli.json` too, but its
-  `"plugins": ["./herdr-opencode"]` entry is relative and stays committed;
-  without it OpenCode 2 never loads herdr's plugin. How the two surfaces
-  refresh is in `docs/resync.md`.
+- **Herdr owns its pane hook; never vendor it here either.** `herdr
+  integration install claude` writes an absolute machine path into the `hooks`
+  section of `.claude/settings.json`, replacing the committed entry on older
+  builds and appending a second one on current builds. The committed entry is
+  a portable `$HOME` form that already covers both platforms, so restore it
+  after any reinstall or that path ships to every machine. That entry also
+  carries a second hook of ours, which prints one line saying the session is
+  in herdr; keep it when restoring. The opencode integration writes into
+  `opencode/cli.json` too, but its `"plugins": ["./herdr-opencode"]` entry is
+  relative and stays committed; without it OpenCode 2 never loads herdr's
+  plugin. How the two surfaces refresh is in `docs/resync.md`.
 
 - **OpenCode 2 replaces the `cli.json` link when it saves a setting.** A
   toggle in its UI, like turning tabs on, writes a regular file over the
@@ -229,40 +230,44 @@ repo-local.
   through a hook: hooks are Claude Code-only, so Cursor, Grok Build, and
   OpenCode 2 would lose them. They now live in `.claude/references/herdr.md`,
   which an always-loaded line tells the agent to read on its first turn in a
-  herdr pane, and that works in every harness. Moving the whole coding
-  workflow into an on-demand skill (2026-09-27): coding is most sessions, so
-  they'd save nothing, and the always-loaded file is the only text every
-  harness re-injects after compaction, while Claude Code keeps 5K tokens of a
-  loaded skill and the others drop it. Moving the handoff and mechanical-loop
-  rules into a reference file: it saved about 1.4KB, and its trigger fires
-  late in a long session, which is when rules are followed worst. Generating
-  `.claude/CLAUDE.web.md` from a shared block: it would squeeze the most-tuned
-  rules into about 3KB for a chat file that rarely changes. A `gh`-based
-  scoreboard script: the audit's PR retro asks the same question in words, and
-  a script here goes stale. A plan-time check of open branches for file
-  overlap: one branch and worktree per ticket, phases stacked on top, so
-  overlap is rare and resolved at merge by hand. The `tc/` branch prefix stays
-  dropped. It was a sidebar grouping trick; the global Git section uses the
-  ticket id in the tracker's own case, or `<github-login>/kebab-phrase` with
-  no ticket. A rule naming a model's early-stop habits, like the list in
-  Anthropic's prompting guides (a summary that announces the next step, an
-  offer to continue, and the rest), globally or under `ship it`, and any rule
-  setting how often to post progress updates: how often a model reports and
-  where it ends a turn is left to each model's default. A watcher like
-  herd-orchestrator-cli on top of `hq`: HQ already collects the decisions that
-  need me, so revisit it only if HQ misses them. Two `review` lens lines from
-  the 2026-09-23 audit: a new-dependency check (the package is the intended
-  one, not a hallucinated or typosquatted name) and prompt injection into a
-  model that can call tools. Neither mistake has happened, and none of my
-  repos gives a model tools. Revisit the first if an agent ever adds a wrong
-  package, the second once an app calls a model with tools. From the
-  2026-09-27 hq review: renaming `hq`, which stays. An OpenCode 2 plugin that
-  reports context to herdr: HQ reads OpenCode's own on-screen readout instead,
-  and the plugin was more machinery than that gap needs. Making the
-  fresh-context final review a judgment call like the other steps: it stays
-  fixed, since on a small diff it is one read and it is the step most likely
-  to catch something. A plain "go" opening the draft PR in a repo that isn't
-  mine: it commits on a branch and offers the PR, and `ship it` opens it.
+  herdr pane, and that works in every harness. The one hook that stays only
+  says the session is in herdr, because no harness shows `HERDR_ENV` in
+  context; a live trial showed the first-turn rule never fired without it, and
+  the other harnesses check the variable with a command instead. Moving the
+  whole coding workflow into an on-demand skill (2026-09-27): coding is most
+  sessions, so they'd save nothing, and the always-loaded file is the only
+  text every harness re-injects after compaction, while Claude Code keeps 5K
+  tokens of a loaded skill and the others drop it. Moving the handoff and
+  mechanical-loop rules into a reference file: it saved about 1.4KB, and its
+  trigger fires late in a long session, which is when rules are followed
+  worst. Generating `.claude/CLAUDE.web.md` from a shared block: it would
+  squeeze the most-tuned rules into about 3KB for a chat file that rarely
+  changes. A `gh`-based scoreboard script: the audit's PR retro asks the same
+  question in words, and a script here goes stale. A plan-time check of open
+  branches for file overlap: one branch and worktree per ticket, phases
+  stacked on top, so overlap is rare and resolved at merge by hand. The `tc/`
+  branch prefix stays dropped. It was a sidebar grouping trick; the global Git
+  section uses the ticket id in the tracker's own case, or
+  `<github-login>/kebab-phrase` with no ticket. A rule naming a model's
+  early-stop habits, like the list in Anthropic's prompting guides (a summary
+  that announces the next step, an offer to continue, and the rest), globally
+  or under `ship it`, and any rule setting how often to post progress updates:
+  how often a model reports and where it ends a turn is left to each model's
+  default. A watcher like herd-orchestrator-cli on top of `hq`: HQ already
+  collects the decisions that need me, so revisit it only if HQ misses them.
+  Two `review` lens lines from the 2026-09-23 audit: a new-dependency check
+  (the package is the intended one, not a hallucinated or typosquatted name)
+  and prompt injection into a model that can call tools. Neither mistake has
+  happened, and none of my repos gives a model tools. Revisit the first if an
+  agent ever adds a wrong package, the second once an app calls a model with
+  tools. From the 2026-09-27 hq review: renaming `hq`, which stays. An
+  OpenCode 2 plugin that reports context to herdr: HQ reads OpenCode's own
+  on-screen readout instead, and the plugin was more machinery than that gap
+  needs. Making the fresh-context final review a judgment call like the other
+  steps: it stays fixed, since on a small diff it is one read and it is the
+  step most likely to catch something. A plain "go" opening the draft PR in a
+  repo that isn't mine: it commits on a branch and offers the PR, and `ship
+  it` opens it.
 
 - **Where the global file differs from Anthropic's prompting advice, it does so on purpose.**
   Anthropic leans toward prose with little bold, calm emphasis, and saying what
