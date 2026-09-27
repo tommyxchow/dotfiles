@@ -2,7 +2,7 @@
 name: vet
 metadata:
   opencode/slash: "true"
-description: 'Cross-checks a claim against current official docs and primary sources, then answers in a few sentences with the pages that settled it. Stops as soon as the best source answers; a fact the vendor never published is reported as not documented, not hunted. Keeps page fetches out of this window. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, pass ("final double check"), or pr ("final review", "is this ready"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; whether the code is correct is the review skill. `quick` is up to three claims, local docs or one page each, no fan-out, and never the full vet.'
+description: 'Cross-checks a claim against current official docs and primary sources, then answers in a few sentences with the pages that settled it. Stops as soon as the best source answers; a fact the vendor never published is reported as not documented, not hunted. Keeps page fetches out of this window. Use when the user says vet, research, search online, look this up, cross-check, is this still true, is anyone else hitting this, known issue, workaround, or the request hinges on versions, APIs, prices, dates, or "latest". After an audit, wait to edit. Not for local codebase search, code review, running tests, tldr, pass ("final double check"), or pr ("final review", "is this ready"). Bare "double check" / "verify" routes by object: a claim or current docs is this skill; code correctness is the review skill. `quick` is up to three claims, local docs or one page each, no fan-out, and never the full vet.'
 argument-hint: "[quick] [<claim or topic to verify> | <task to research>]"
 context: fork
 agent: general-purpose
@@ -26,13 +26,13 @@ Page fetches stay in child windows, and the coordinator keeps only the section 4
 - Spawn only one level deep: leaves never split their work again.
 - **No way to spawn a worker here**: do the work in this window and don't mention it. Still run independent searches and fetches in the same turn. The isolation saves context, but the answer is what matters.
 
-For example, one claim ("does `Map` use `has`?") is one leaf. A pasted plan with independent facts (HGIG vs DTM, Fine Tune Dark Areas with HGIG, whether a C3 needs ColorControl) gets one leaf per fact, all spawned in the same turn. Claims that live on one page go to the same leaf.
+For example, one claim ("does `Map` use `has`?") is one leaf. A pasted plan with independent facts (HGIG vs DTM, Fine Tune Dark Areas with HGIG, whether a C3 needs ColorControl) gets one leaf per fact, all spawned in the same turn.
 
 ## 1. Pick the mode (don't stall asking "what to review")
 
 - **Bare `vet` / `research` / search / look this up / cross-check / is this still true**: check the last response or the named topic using section 3, and give the short answer from section 4.
 - **"is anyone else hitting this" / known issue / workaround**: follow the known-issue path in section 3.
-- **"double check" / "verify"**: route by what is being checked. A claim, version, API, "latest", or current docs belongs to this skill. Code correctness goes to `review`. A finished slice ("final double check", "close this out") goes to `pass`. PR readiness ("final review", "is this ready") goes to `pr check`, which reports without flipping the draft.
+- **"double check" / "verify"**: route by what is being checked. A claim, version, API, "latest", or current docs belongs to this skill. Code correctness goes to `review`. A finished slice ("final double check", "close this out") goes to `pass`. PR readiness ("final review", "is this ready") goes to `pr check`.
 - **Pasted plan from another model** ("chatgpt said", "wdyt", "what do you think"): audit the claims in the paste. Give the same short answer unless several claims are wrong or uncertain.
 - **"vet" attached to a forward task** ("build X and vet it", "what's the best Y"): do the task with research behind it. Check each checkable fact against a current source before asserting it, and cite inline as you go.
 - **Ambiguous**: check the last checkable claims if the last turn asserted a fact, or the last code change if the user means correctness. Ask only if there is genuinely nothing to act on.
@@ -42,7 +42,7 @@ For example, one claim ("does `Map` use `has`?") is one leaf. A pasted plan with
 
 For a dev question inside a repo, read the installed version from the manifest or lockfile (package.json, pnpm-lock.yaml, pubspec.yaml, …) before searching. Prefer docs for that version, including docs bundled in `node_modules`, over the live site, which usually describes *latest*. When the question is about a bug or a missing feature, also check the changelog between the installed and current version. If it is already fixed, say so and recommend the bump instead of a workaround. The target is the best current approach compatible with the project, not merely the newest.
 
-**Local sources come first for how the installed thing behaves.** Flags, subcommands, config keys, and API signatures are settled by `<tool> --help`, `man`, `pnpm help <cmd>`, or the `README` / `CHANGELOG` shipped with the installed package or SDK. That output is version-matched by definition and costs no fetch, so cite it as "installed vX help output" and stop. The web is still the source for what the local copy can't know: "latest", what changed since the installed version, advisories, deprecations, prices, and best-practice recommendations. This doesn't mean you should grep the whole install, since the no-binaries rule in section 3 still holds.
+**Local sources come first for how the installed thing behaves.** Flags, subcommands, config keys, and API signatures are settled by `<tool> --help`, `man`, `pnpm help <cmd>`, or the `README` / `CHANGELOG` shipped with the installed package or SDK. That output is version-matched by definition and costs no fetch, so cite it as "installed vX help output" and stop. The web is still the source for what the local copy can't know: "latest", what changed since the installed version, advisories, deprecations, prices, and best-practice recommendations. Don't grep the whole install; the no-binaries rule in section 3 still holds.
 
 ## 3. Verify
 
@@ -66,7 +66,7 @@ For a dev question inside a repo, read the installed version from the manifest o
 
 ## 4. Present the result
 
-Start with a one-line verdict, then give only what was wrong, in the global Communication voice of full sentences and plain words. A clean result is a few sentences and the sources, not a row per fact and not a tally of every claim. Cite the way a careful teammate would rather than the way a paper does, so leave out footnotes, a bibliography, and "according to".
+Start with a one-line verdict, then give only what was wrong, in the global Communication voice. A clean result is a few sentences and the sources, not a row per fact and not a tally of every claim. Cite the way a careful teammate would rather than the way a paper does, so leave out footnotes, a bibliography, and "according to".
 
 - **Verdict first:** `✅ Yes.` / `❌ No.` / `⚠️ Yes, except …` Put one emoji on that line so it stands out when I scroll back, and don't mark every claim. Then give the one or two things that are wrong, still uncertain, or missing.
 - **Cite the pages that settled it** as autolinked names (`[Next.js docs](url)`, with a date only when the page shows one). Quote a short phrase when the exact wording is the proof (an API name, a version). Don't blockquote a page, and don't list every page you opened.
