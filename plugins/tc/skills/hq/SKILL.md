@@ -105,9 +105,9 @@ No session can see its own context use, so read it from herdr. A Claude pane pub
 
 - **Before sending a worker more work**, like PR feedback or its next slice, check its context. Past the ceiling, refresh it first, choosing by what the next step needs:
   - **Compact** when it needs to remember its own work, as with PR feedback, a fix to what it built, or a debugging thread it is partway through. Type `/compact <what to keep>` into an idle Claude worker, naming the decisions and open threads to keep, or `/compact` into an OpenCode one.
-  - **Clear** when the plan already carries everything, as at the start of its next slice. Type `/clear` into an idle Claude worker or `/new` into an OpenCode one, then hand it the plan file path, the PR link, and its last report.
+  - **Clear** when the plan already carries everything, as at the start of its next slice. Type `/clear` into an idle Claude worker or `/new` into an OpenCode one, then hand it the plan file path, the PR link, and its last report. Never clear a worker that is waiting on an answer or whose checkout has uncommitted changes, so run `git status` there first; compact it instead.
 
-  Either way it keeps its pane, name, effort, and board line, so start a fresh session only when it also needs a different effort, as above. Unrelated work is a new task, so it goes through the dispatch steps to a new worker in its own worktree rather than into a finished worker's pane.
+  Either way, wait for the worker to be idle again before sending the work. It keeps its pane, name, effort, and board line, so start a fresh session only when it also needs a different effort, as above. Unrelated work is a new task, so it goes through the dispatch steps to a new worker in its own worktree rather than into a finished worker's pane.
 - **Your own context** is read from your own pane the same way. The board is your memory, so compacting costs you little, but you can't run it yourself. Past the ceiling, at a moment when no question is mid-relay and the board is current, tell me in one line that it's a good time to `/compact`. Never hand yourself off to a fresh session, since a new agent named `hq-<n>` would look like another HQ and leave your workers alone. After any compaction, read the board and `herdr agent list` again before acting on anything.
 
 ## Status

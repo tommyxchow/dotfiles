@@ -247,7 +247,7 @@ Follow the project's design language. Show success only after the work has succe
 - A repo is mine when `origin` is under my GitHub user (`gh api user -q .login`). Anything else is not, unless I say so or its AGENTS.md does. A PR template, CODEOWNERS, or review bot alone doesn't change that; follow the repo's actual contribution requirements either way.
 - In my own repos, commit straight to `main` by default, including bigger work, instruction and config fixes, and work that continues in another session.
 - Use a branch and PR only when I ask for one or said `ship it`. When a change is risky enough to want a separate review, suggest one in your opening sentence, and accept a no. Choosing either route changes nothing about push permission, which is in How a task runs.
-- In a repo that isn't mine, every change gets a PR unless I ask for a commit to `main`. A repo I made and own is still mine, even at work.
+- In a repo that isn't mine, every change gets a PR unless I ask for a commit to `main`. A plain go there commits on a branch and offers the PR; `ship it` opens it. A repo I made and own is still mine, even at work.
 - One PR does one thing. Small refactors the feature needs can stay with it; put independently useful or risky refactors in their own PR first, and stack when needed.
 - Hide half-finished work behind a flag or an unrouted page, not on a long-lived branch.
 - Schema and API changes expand, migrate, then contract across PRs when an older client or another deploy still reads the old shape. When only this deploy reads it, one PR is fine.
