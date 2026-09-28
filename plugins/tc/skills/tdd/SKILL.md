@@ -46,7 +46,7 @@ Don't write the implementation first and then backfill the tests around it. If t
 
 ## 4. What makes a test worth keeping
 
-Follow the testing rules under global Working preferences. Three more rules apply on top of those:
+Follow the testing rules in `~/.claude/references/testing.md` and the three under global Working preferences. Three more rules apply on top of those:
 
 - **Assert what the caller can see**: the return value, the rendered output, the response body, the row that got written.
 - **Mock a boundary, not the behavior under test.** Mocking an app module is not by itself a reason to restructure. Check whether the mock hides the behavior this test should exercise before you move the boundary.

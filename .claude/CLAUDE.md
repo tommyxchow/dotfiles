@@ -116,7 +116,6 @@ Each step below is a default sized to the task, not a checklist to run in full e
 - A fix that turns a green check red is reverted, not patched on top, whether it is a debugging attempt or the task's own change.
 - Whenever a stop waits on my decision, leave the tree green for when I come back. Set the candidate change aside on a stash or a branch, name it in the report, and apply it back when I answer.
 - **Wait on a signal, never on a sleep.** Wait with `wait-for <url> [seconds] [pid]`, `herdr pane wait-output <pane> --match <text> --timeout <ms>`, or the harness's own watcher, always with a deadline, and act as soon as the thing answers. Start a wait that can outlast a tool call's timeout in the background on purpose.
-- Repo-specific numbers, like a slow first compile or the usual CI time, belong in that repo's AGENTS.md.
 - **`ship it` runs the chain to a draft PR without another check-in.** Said once the plan is approved, or on work small enough not to need a plan, it means: preflight, build (with `tdd` where it pays off), verify and loop, `pass` each slice, then `pr`, which owns the completion rule, the draft, and the CI watch from there. The route is a draft PR on its own branch, in the checkout the Git rules pick.
 - A plain approval, like go, do it, or build it, runs the same chain with the same pauses, on the route the Git rules pick by default. Only `ship it` adds the draft PR. `uat` is separate: `ship it`, go, or build it doesn't turn it on.
 - The chain pauses only at my checkpoints and the stop conditions above: the plan gate when the scope needs a plan and there is none, a decision only I can make, the debugging budget, an environment failure with nothing left to build around it, marking ready, and merging. A pause says what I have to do, with a notification where the harness can send one.
@@ -164,30 +163,8 @@ Prefer the official `gh` skill over GitHub MCP.
 - In a repo with no CI, run the whole suite locally once, at completion. A repo's AGENTS.md that defines its own local check wins. Prefer the local check over a single linter pass, and don't invent a gate the repo doesn't have.
 - **New behavior gets tests**: the happy path, the sad paths a user can actually hit (bad input, a failed request, a denied permission), and the edges likely to break, with realistic data and flows rather than placeholders.
 - A bug fix starts with a test for the corrected behavior, where that behavior is testable.
-- Before a behavior-preserving refactor of untested logic, add a characterization test that pins what the code does today. A deliberate behavior change is not one of these; don't pin the behavior you are replacing.
-- Don't add test scaffolding for formatting, a mechanical rename, or a similarly low-impact edit with no behavior change.
-- Test at the lowest level that can catch the failure: pure logic as a unit test, wiring as an integration test, and end-to-end only on critical journeys.
-- Tests assert what the user sees. A UI test finds elements the way a user does, by role and visible label, with a test id as the last resort.
-- **Tests match the final behavior.** The tests in a change describe how the code works when the change is done. When the behavior changes along the way, update or delete the test for the earlier version rather than leaving both.
-- Don't add a test that only records a step you passed through, including a check that the old value is absent (`not`, `not.toContain`, `not in` the value you removed). A negative test stays when the absence is something a user can observe today, like no email sent without consent or a viewer getting a 403. It goes only when its sole reason is a state the code passed through, like asserting a removed config key is gone.
-- **Size tests to the behavior**: roughly one focused test per stated behavior, in the repo's test style. Look for a test that already covers the case before adding one.
-- Don't write a test to move a coverage number. Coverage finds untested code; it doesn't grade tests.
-- Neighboring tests set the style and the scale. Where they are weak, write to the rules below rather than copying the weakness.
-- Don't commit scratch checks, one-off scripts, or a focused or skipped test.
-- A test must catch a relevant incorrect behavior. Deleting the implementation is one useful way to check that, not a universal rule, since a test that forbids an unwanted side effect may still pass.
-- Check expected results independently of the implementation. Hand-written values and reviewed, focused snapshots both count; recomputing the same logic or accepting output you haven't read does not.
-- Test the outcome, not the wording or the wiring. Assert a literal string, a constant, or a config value only when that exact value is the behavior, like an error message a user reads or a field another system parses.
-- A test that only proves a framework or library works, or that a mock was called, tests nothing of ours.
-- A test that has to change when the code is refactored without a behavior change is testing the implementation. Assert the outcome instead, or drop the test.
-- A test reads top to bottom as one story (set up, act, assert) and is named for the behavior. Prefer plain duplication over a shared helper, and use no loops or conditionals.
-- When a test fails, its message says what was expected and what happened, so the cause is obvious without a debugger.
-- Use real dependencies where practical. At a slow, nondeterministic, or out-of-process boundary, prefer a fake (a small working stand-in) over a stub or mock.
-- For vendor SDKs, prefer a wrapper you own when one fits; intercepting network requests is also valid.
-- Keep tests fast and deterministic: fake the clock, and never wait with a sleep.
-- Each test sets up its own state and passes alone and in any order.
-- Keep auto-waiting and retrying assertions. Whole-test retries don't prove flakiness is fixed: fix the cause, and keep the repo's retry configuration unless changing it is part of the task.
+- **Before writing or changing a test, read `~/.claude/references/testing.md`.** It holds how tests are sized, what they assert, and how they stay fast and independent.
 - Fix a failing test in the code, never by deleting, skipping, or loosening the test. The one exception is a test that describes a behavior this task deliberately replaced, meaning one I asked for or the plan settles, never one decided while debugging. Update or remove that test so the suite matches the final behavior, and say why.
-- When any other test is wrong, say so and show why before changing it.
 - If I paste another agent's plan, diff, or answer, check it rather than agreeing by default.
 - **Where the harness keeps memory across sessions**, write short, specific entries rather than long ones, since an index line or a search hit is all a later session sees.
 
@@ -196,19 +173,14 @@ Prefer the official `gh` skill over GitHub MCP.
 Working code is the minimum, not the goal. Fit the repo, and follow the repo where it already differs from these rules.
 
 - In JS/TS, use `pnpm` / `pnx` (`pnpm dlx` / `pnpx`), never `npm` / `npx` / `yarn`.
-- Write the simplest thing that fits: no extra option, layer, or file for a case the task doesn't have.
-- Keep code inline until a pattern appears three times.
-- Keep code flat and direct. Prefer early returns and lookup tables over deep nesting, and a plain function over a class, factory, or registry with one use.
-- A wrapper that only forwards to one call adds nothing; call the underlying thing directly.
-- **Don't restate a default.** Set an option, flag, or config key only when the value differs from the default, when the default can't be trusted to hold, or when naming it documents a deliberate choice, and then say why next to it.
-- A setup follows the same rule: stay close to the tool's defaults and add only what the task or the repo actually needs.
+- Write the simplest thing that fits: no extra option, layer, or file for a case the task doesn't have, and keep code inline until a pattern appears three times.
+- Keep code flat and direct. Prefer early returns and lookup tables over deep nesting, a plain function over a class, factory, or registry with one use, and calling the underlying thing directly over a wrapper that only forwards to it.
+- **Don't restate a default.** Set an option, flag, or config key only when the value differs from the default, when the default can't be trusted to hold, or when naming it documents a deliberate choice, and then say why next to it. A setup follows the same rule: stay close to the tool's defaults and add only what the task or the repo actually needs.
 - Before writing a helper, hook, or component, look for the one the repo already has, including one spelled differently, and call or extend it.
-- When the end result is the same, change the lines that need changing rather than rewriting the file.
 - Don't cover up type problems with `as`, `!`, or `any`. Model mutually exclusive states as a union (in Dart, a sealed class).
 - Use named exports unless the framework requires a default export. Name new JS/TS files in kebab-case, including components.
 - Write for a reviewer who sees only this hunk, cold, in a diff. A plain five-line version beats a clever one-liner, names say what the thing is, and code is never shortened to save lines or tokens. I rarely read the code, so when I do, it has to read at a glance.
 - Comment the non-obvious why (a constraint, a quirk, an intent), not what the code already says; most functions need no comment at all. `// loop over users`, a docblock that repeats the signature, and section dividers add nothing, while `// Stripe sends amounts in cents` is worth its line.
-- Don't leave behind anything that only made sense during this task.
 - Validate external input at the boundary with the repo's validator, then trust the types. Prefer Zod when choosing a TS validator.
 - Keep security on the server. Never interpolate untrusted input into a shell command, query, filesystem path, or outbound URL, and never put secrets in `PUBLIC` env vars or the client.
 - Don't hand-roll auth, sessions, or crypto. Use what the repo already has, otherwise the platform's built-in or a maintained library, named in the plan like any new dependency. The permission rules, meaning who owns what and who can do what, are still ours to write.
@@ -251,7 +223,6 @@ Follow the project's design language. Show success only after the work has succe
 - One PR does one thing. Small refactors the feature needs can stay with it; put independently useful or risky refactors in their own PR first, and stack when needed.
 - Hide half-finished work behind a flag or an unrouted page, not on a long-lived branch.
 - Schema and API changes expand, migrate, then contract across PRs when an older client or another deploy still reads the old shape. When only this deploy reads it, one PR is fine.
-- A risky change (migration, backfill, auth, money) names its rollback in the PR body.
 - **Pick the checkout by the task.** A session I opened in a worktree stays there; never nest another worktree inside it. From the main checkout, a small change stays put, on `main` or a branch as the route needs.
 - Larger or longer work, or work with several slices, gets its own worktree so other sessions in this repo keep working undisturbed. Inside a herdr pane, create it the way the herdr reference says.
 - Elsewhere, use the harness's own worktree command. Never `git worktree add` into a folder I didn't open. Then continue in that checkout. A harness with neither branches in place and says so.
@@ -261,7 +232,6 @@ Follow the project's design language. Show success only after the work has succe
 - A repo whose own instructions say to install first, or say how, wins over installing on first need.
 - A worktree isolates files but not ports or local databases. Assume other sessions of mine are running in sibling checkouts of the same repo: don't switch branches, stash, or rewrite a ref another session could be using, and give any server or database you start its own port.
 - When I name a parent to stack on, usually partway through, rebase this branch onto it and set the PR's base to it. Most sessions never stack.
-- When a parent merges, `pr rebase` moves the children. It uses plain git, not a stacking tool.
 
 ## External writing
 

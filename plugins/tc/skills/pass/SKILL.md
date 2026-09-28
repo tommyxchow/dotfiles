@@ -20,11 +20,9 @@ Decide which steps run first, then load only what they need. Read [../vet/SKILL.
 
 - A pass is not a code review; that is `review`. Don't look for bugs or examine the design or the meaning of the code unless it blocks a pass step, such as a stale API, a leftover, a polish finding, or the gate. Step 1 applies findings a review already confirmed, which is not bug hunting.
 - Don't add tests to prove the slice is correct. The only new tests are step 1's.
-- Don't open a browser to prove the UI again.
 - Don't push.
 - Commit only after the report says `✅ Ready to commit.`, following the git rules. A `❌ Not yet.` slice stays uncommitted.
-- Don't watch CI, write AGENTS.md, or start a second task.
-- Stay within this slice. `pr check` reports PR readiness, and `pr ready` also has approval to flip the draft. Here, "Ready to commit" means the slice is clean enough to commit. It is not a claim that the whole task is correct and complete.
+- Stay within this slice. Here, "Ready to commit" means the slice is clean enough to commit. It is not a claim that the whole task is correct and complete.
 - Don't add your own size tiers. Polish decides how much to review by size. Vet decides by what could have gone stale, not by how many files changed. `quick` is the one tier this skill sets, and it hands the same word to polish.
 - Don't look for unused starter dependencies or unrelated dead files.
 

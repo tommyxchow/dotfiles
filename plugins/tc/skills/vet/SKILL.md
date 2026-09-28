@@ -34,7 +34,6 @@ For example, one claim ("does `Map` use `has`?") is one leaf. A pasted plan with
 
 - **Bare `vet` / `research` / search / look this up / cross-check / is this still true**: check the last response or the named topic using section 3, and give the short answer from section 4.
 - **"is anyone else hitting this" / known issue / workaround**: follow the known-issue path in section 3.
-- **"double check" / "verify"**: route by what is being checked. A claim, version, API, "latest", or current docs belongs to this skill. Code correctness goes to `review`. A finished slice ("final double check", "close this out") goes to `pass`. PR readiness ("final review", "is this ready") goes to `pr check`.
 - **Pasted plan from another model** ("chatgpt said", "wdyt", "what do you think"): audit the claims in the paste. Give the same short answer unless several claims are wrong or uncertain.
 - **"vet" attached to a forward task** ("build X and vet it", "what's the best Y"): do the task with research behind it. Check each checkable fact against a current source before asserting it, and cite inline as you go.
 - **Ambiguous**: check the last checkable claims if the last turn asserted a fact, or the last code change if the user means correctness. Ask only if there is genuinely nothing to act on.
@@ -84,6 +83,6 @@ Start with a one-line verdict, then give only what was wrong, in the global Comm
 
 ## 5. Boundaries
 
-- vet **reports or answers; it doesn't apply changes.** After an audit, wait for approval before editing. "Final double check" / "close this out" goes to `pass`, which vets and then patches. On a branch with a PR, "final review" goes to `pr`.
+- vet **reports or answers; it doesn't apply changes.** After an audit, wait for approval before editing. On a branch with a PR, "final review" goes to `pr`.
 - Open-ended exploratory research is a standalone deep-research round, not a vet.
 - Confirming a code change works means running it locally, so don't web-search a local correctness check.
