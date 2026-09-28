@@ -233,7 +233,10 @@ repo-local.
   herdr pane, and that works in every harness. The one hook that stays only
   says the session is in herdr, because no harness shows `HERDR_ENV` in
   context; a live trial showed the first-turn rule never fired without it, and
-  the other harnesses check the variable with a command instead. Moving the
+  the other harnesses check the variable with a command instead. An OpenCode
+  2 plugin that adds the same note by asking herdr which pane owns a session
+  (2026-09-27): too much machinery for a tab name, and OpenCode on Grok 4.6
+  skipping the check is accepted. Moving the
   whole coding workflow into an on-demand skill (2026-09-27): coding is most
   sessions, so they'd save nothing, and the always-loaded file is the only
   text every harness re-injects after compaction, while Claude Code keeps 5K
