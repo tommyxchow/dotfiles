@@ -290,7 +290,7 @@ components, that's a conflict and the plugin fails to load. Switch the entry to
 
 | Plugin | Notes |
 |--------|-------|
-| `typescript-lsp` | Enables Claude Code's built-in LSP tool for TS/JS. Requires `typescript-language-server` + `typescript` on PATH. |
+| `typescript-lsp` | Type errors after each edit and symbol lookups for TS/JS. Needs `typescript-language-server` on PATH plus TypeScript 6 or earlier installed in the project; without a project copy the server won't start. TS 7 ships no `tsserver.js`, so a TS 7 repo gets nothing until [claude-plugins-official#4492](https://github.com/anthropics/claude-plugins-official/issues/4492) lands. |
 | `frontend-design` | Distinctive frontend design guidance for new or substantially redesigned UI. |
 
 ### Maintenance
