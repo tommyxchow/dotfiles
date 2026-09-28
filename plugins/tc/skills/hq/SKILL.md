@@ -32,7 +32,7 @@ Key each line by agent name, never by pane ID, because herdr gives a pane a new 
 
 ```
 - alpha (hq): tommychow.com, fix the nav flicker on sign-in (ABC-123), high. Waiting on me: plan approval.
-- bravo (hq-2): sourceskins, add search to the skins page. Waiting on worker.
+- bravo (hq-2): frosty, add search to the followed channels list. Waiting on worker.
 ```
 
 Edit only your own lines, and read the file again right before each edit, since another HQ may have changed it. Read it again before every status report and whenever you resume after a long gap or a compaction, instead of trusting your memory of the conversation. A fresh HQ session should be able to pick up from the board and `herdr agent list` alone.

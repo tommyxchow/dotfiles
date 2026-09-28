@@ -210,9 +210,9 @@ repo-local.
 
 - **The two Next.js lines stay in `.claude/CLAUDE.md`.** An audit proposed
   moving them to next-template's AGENTS.md, since a stack rule in a
-  global file looks out of place. Rejected: three of the product repos are
-  Next.js, globals are the source of truth, and the security line guards a bug
-  class that is costly to miss. Don't propose the move again.
+  global file looks out of place. Rejected: tommychow.com and next-template
+  are Next.js, globals are the source of truth, and the security line guards
+  a bug class that is costly to miss. Don't propose the move again.
 
 - **Models are set by alias, and effort stays at each model's default, except
   Opus 5.5 at `high`.** `model` is `opus` and `advisorModel` is `fable`.
