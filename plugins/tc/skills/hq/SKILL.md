@@ -115,7 +115,7 @@ No session can see its own context use, so read it from herdr. A Claude pane pub
 When I ask for status, read the board and run `herdr agent list`, then give one short sentence per worker you own in app terms. Put the ones waiting on me first, with what I need to do. For example:
 
 ```
-Two need you. Alpha has the nav flicker plan ready for approval, and Bravo asks whether skins search should include sold-out skins (it recommends yes). Charlie opened the settings page draft PR and CI is green.
+Two need you. Alpha has the nav flicker plan ready for approval, and Bravo asks whether channel search should include offline channels (it recommends yes). Charlie opened the settings page draft PR and CI is green.
 ```
 
 When another HQ is running, end with one line naming it and how many workers it owns, so I know where the rest are.
