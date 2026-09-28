@@ -331,18 +331,18 @@ setup expects five settings in it:
   since the global rules have agents send a notification after a long run.
 - **Pane border labels** are on, so each pane's border names the harness
   running in it. Herdr's source labels the border with the harness, not the
-  agent's name, which is why the herdr rules in `.claude/references/herdr.md`
-  say herdr shows an agent's name neither in the sidebar nor on pane borders.
+  agent's name.
 - **Agent rows** give Claude Code and OpenCode 2 the same shape: where the agent
-  is, what it is doing, and for Claude how heavy it is. No row names the
+  is, what it is doing, and for Claude who it is and how heavy. No row names the
   harness. Claude is the default and carries no mark, and OpenCode 2's own title
   already starts with `OC |`, a prefix no herdr rule can strip, so an `agent`
   row would only repeat it. Any other harness falls back to herdr's default
   rows, which do name it. A fresh Claude session titles itself "Claude Code", so
   that title row hides until the session has a real title; `hide` needs herdr
-  0.9.1 or newer. Claude's third row is the effort and context the statusline
-  publishes (see `docs/statusline.md`); the context turns orange as `$ctxhigh`
-  past the soft ceiling. An entry replaces `rows` rather than adding to it.
+  0.9.1 or newer. Claude's third row is the agent's name in bold, when it has
+  one, then the effort and context the statusline publishes (see
+  `docs/statusline.md`), so an `hq` worker named `vega` is easy to find; the
+  context turns orange as `$ctxhigh` past the soft ceiling. An entry replaces `rows` rather than adding to it.
 - **Spaces rows** are herdr's defaults plus the `$pr` and `$dirty` slots the
   `tc.pr-badge` plugin fills: the PR or default-branch CI state, and the
   uncommitted file count. A slot shows nothing until a value is reported. The
@@ -368,7 +368,7 @@ show_agent_labels_on_pane_borders = true
 claude = [
   ["state_icon", "machine", "workspace", "tab"],
   [{ token = "terminal_title_stripped", rules = [{ equals = "Claude Code", hide = true }] }],
-  ["$effort", "$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
+  [{ token = "$name", bold = true }, "$effort", "$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
 ]
 opencode = [
   ["state_icon", "machine", "workspace", "tab"],
