@@ -31,7 +31,7 @@
   "enabledPlugins": {
     "ek@chow": false,
     "typescript-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": false
+    "frontend-design@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "chow": {
@@ -40,6 +40,11 @@
         "repo": "tommyxchow/dotfiles"
       },
       "autoUpdate": true
+    }
+  },
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
     }
   },
   "advisorModel": "fable",

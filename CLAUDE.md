@@ -214,13 +214,16 @@ repo-local.
   Next.js, globals are the source of truth, and the security line guards a bug
   class weaker models still write. Don't propose the move again.
 
-- **Models are set by alias, and effort stays at each model's default.**
-  `model` is `opus` and `advisorModel` is `fable`. Aliases follow the newest
-  release of each family, so a new model needs no edit here. Pin a version or
-  add a suffix like `[1m]` only when the model docs say the bare alias falls
-  short. A `modelSettings` block or a top-level `effortLevel` that reappears is
-  a `/effort` or `/model` write-back; discard it unless I say to keep that
-  level. A stray top-level `effortLevel` does more harm here than elsewhere:
+- **Models are set by alias, and effort stays at each model's default, except
+  Opus 5.5 at `high`.** `model` is `opus` and `advisorModel` is `fable`.
+  Aliases follow the newest release of each family, so a new model needs no
+  edit here. Pin a version or add a suffix like `[1m]` only when the model docs
+  say the bare alias falls short. The one kept `modelSettings` entry,
+  `claude-opus-5-5` at `high`, is my choice (2026-09-27); it is keyed to that
+  model id, so when the `opus` alias moves on it stops applying and the new
+  model runs at its default until I pick again. Any other `modelSettings` entry
+  or top-level `effortLevel` that appears is a `/effort` or `/model`
+  write-back; discard it unless I say to keep that level. A stray top-level `effortLevel` does more harm here than elsewhere:
   inside this checkout this file is also project settings, and a project-level
   `effortLevel` overrides every model's own default. This covers saved
   settings only: `hq` picks a worker's effort per launch with `--effort`,
