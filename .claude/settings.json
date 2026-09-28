@@ -47,7 +47,7 @@
       "effortLevel": "high"
     }
   },
-  "advisorModel": "fable",
+  "advisorModel": "opus",
   "showClearContextOnPlanAccept": true,
   "theme": "auto",
   "tui": "fullscreen",
