@@ -24,7 +24,7 @@ What changed in Claude Code, OpenCode 2, Grok Build, Cursor, and herdr since the
 - A rule in the global file or a skill that a harness now enforces natively (a permission mode, a built-in plan artifact, a built-in review command, a hook), so the text can go.
 - A capability worth adopting: a new frontmatter key the skills should carry, a question tool where a skill still asks in text, a subagent or worktree feature `pr` or `review` could use.
 - A key or setting in the configs that a harness renamed, deprecated, or now defaults to.
-- A capability `hq` depends on that differs by harness: waking a session when a background command ends, since only those harnesses can run as HQ. Claude Code and OpenCode 2 could as of 2026-09-27. Manual-only skills are settled: `hq` carries both `disable-model-invocation` for Claude Code and `opencode/autoinvoke: "false"` for OpenCode 2.
+- A capability `hq` depends on that differs by harness: waking a session when a background command ends, since only those harnesses can run as HQ. Claude Code and OpenCode 2 could as of 2026-09-27. Grok Build's own docs say a finished background command wakes the parent too, so it is a candidate once a real `hq` trial on it passes. Manual-only skills are settled: `hq` carries both `disable-model-invocation` for Claude Code and `opencode/autoinvoke: "false"` for OpenCode 2.
 - A herdr command that would simplify `hq`, like one wait across several agents (`agent wait` took a single target as of v0.9.1), or a built-in owner for an agent that could replace the board's owner tag.
 - What Anthropic's docs for the newest Opus say now: its prompting guide, which the voice rule in `.claude/references/instruction-files.md` follows. Propose what changed, but leave any difference the repo `CLAUDE.md` records as a choice.
 
@@ -38,7 +38,7 @@ Lines that no longer earn their place:
 - A rule a current model follows without being told. If you can't name the mistake that happened twice to earn it, it is a candidate.
 - A step in a skill that exists because an older model needed hand-holding, not because the method has that step. Newer models often do worse with enumerated steps than with the goal and constraints, so try the skill without them before keeping them. Steps that are the method, like tdd's loop or cleanup's safety checks, stay.
 - Stale references: a version, an API name, a tool that no longer exists, a skill or command the README lists that isn't in the tree, or the reverse.
-- A skill nothing invokes. On a machine the user actually works on, the harness's own diagnostics answer this: `/insights` for fresh usage data, `/skill-doctor` for loaded skills that never get invoked and what they cost in context, `/doctor` for unused plugins, derivable instruction lines, duplicate memory files, and install health. `claude plugin validate` owns broken skills, which `/skill-doctor` doesn't cover. On a machine the user rarely codes on, skip all of it and say usage is unknown.
+- A skill nothing invokes. On a machine the user actually works on, the harness's own diagnostics answer this: `/insights` for fresh usage data, the Stats tab of `/plugin` (formerly `/skill-doctor`) for loaded skills that never get invoked and what they cost in context, `/doctor` for unused plugins and MCP servers, derivable instruction lines, duplicate memory files, and install health, and `/doctor prompt-audit` for instruction lines written for older models, stale paths and commands, and instruction files that contradict each other. `claude plugin validate` owns broken skills, which the Stats tab doesn't cover. On a machine the user rarely codes on, skip all of it and say usage is unknown.
 - `.claude/CLAUDE.web.md` over its 4000-character cap, or drifted from the Communication rules it mirrors.
 
 ## 3. Addition side
@@ -99,6 +99,7 @@ Judge the actions and final artifacts against expectations chosen before the run
 | `hq` with a fake `herdr`, and a worker blocked on a plan approval | The plan's goal and checklist go to the user and HQ waits; it doesn't approve, answer for the user, or plan the task itself |
 | First turn of a fresh session in a real herdr pane on a short question, started with `herdr agent start` in a new tab | It reads `~/.claude/references/herdr.md` and renames the tab before reading the repo or answering. A subagent told it is in herdr passes this even when a real session can't tell |
 | Edit a skill file in the dotfiles repo | It reads `~/.claude/references/instruction-files.md` before the edit |
+| Add a test for a new function in a tiny personal repo | It reads `~/.claude/references/testing.md` before writing the test |
 | A plan-worthy task in a personal repo | It opens with one plain sentence saying where the work lands and what it skips, never a "Route:" label, and plans before editing |
 | The same one-line edit across 40 files | It writes a script rather than editing file by file |
 | `hq` loaded in a session where the user never typed `/hq` | It stops and says so instead of acting as HQ |

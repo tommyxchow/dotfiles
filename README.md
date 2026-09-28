@@ -91,7 +91,7 @@ linked; see Grok Build below. `~/.cursor/mcp.json` stays outside the installer.
 
 `.claude/CLAUDE.md` is the one global instruction file; how each harness
 picks it up is under Harnesses below. Rules that only matter in one situation
-live in `.claude/references/` (working inside herdr and
+live in `.claude/references/` (working inside herdr, writing tests, and
 editing instruction files), and the global file names each one with the moment
 to read it, so every session doesn't carry them. Anything
 specific to this repo belongs in the root `CLAUDE.md`, which also carries the
