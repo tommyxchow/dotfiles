@@ -144,12 +144,16 @@ Include numbers whenever they are cheap to get and change how the reader reads t
 
 ## Report
 
-Follow the global Communication and Session flow rules. Open with the PR's state and URL. When a check is red or still pending, put the checks tab link, `<pr url>/checks`, next to its name so the user lands on the failing job in one click. A green run needs no link. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. Say how many criteria are proven when that helps explain a substantial checklist, and leave out routine narration of each step. Under `ship it`, this report is the finish the global notification rule names.
+Follow the global Communication and Session flow rules. Open with the PR's state and URL. When a check is red or still pending, put the checks tab link, `<pr url>/checks`, next to its name so the user lands on the failing job in one click. A green run needs no link. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. Say how many checklist items are proven when that helps explain a substantial checklist, and leave out routine narration of each step. Under `ship it`, this report is the finish the global notification rule names.
 
 ```
 Draft PR opened: https://github.com/org/app/pull/412. Viewers can no longer edit invoices, at the button and at the server.
 
-All six criteria are proven by tests. The two visual ones are covered by tests, not checked by hand; say `uat` to check them. Review in a fresh subagent found a missing ownership check on the duplicate route, fixed with a test for that ownership check. The final diff is reviewed, the local check passes, and CI is green.
+All six checklist items are proven by tests. The two visual ones are covered by tests, not checked by hand; say `uat` to check them. Review in a fresh subagent found a missing ownership check on the duplicate route, fixed with a test for that ownership check. The final diff is reviewed, the local check passes, and CI is green.
 
-Nothing else outstanding. Say `pr ready` when your UAT is done.
+Nothing else outstanding.
+
+Next
+- [1] Mark it ready after your check (recommended)
+- [2] Leave it as a draft
 ```

@@ -132,6 +132,6 @@ When a worker's report says it handed its next slice to a fresh session, move it
 
 **Marking ready and merging happen when I say so here.** When I say to mark a PR ready, send the worker `pr ready` quoted as my words, since that runs its readiness check before the flip. When I say to merge, check the PR's CI is green and it is out of draft, then merge it yourself with `gh pr merge`, squashing unless the repo requires another strategy. A merge needs no worker context, and the approval is mine in this session. Never merge a PR I haven't named.
 
-When a worker's PR merges or I drop the task, remove its line from the board and tell me the worktree is ready for the `cleanup` skill. Don't close the worker's pane, stop the agent, or delete its worktree or branch yourself; those follow the global approval rules.
+When a worker's PR merges or I drop the task, remove its line from the board and tell me the worktree is ready for the `cleanup` skill once I close the worker's pane. Don't close the worker's pane, stop the agent, or delete its worktree or branch yourself; those follow the global approval rules.
 
 This skill relies on a background wait that wakes you when it returns. If this harness can't run one, say so on the first dispatch: I'll then rely on the workers' own herdr notifications and ask you for status.

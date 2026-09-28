@@ -11,9 +11,6 @@ herdr. The installer is enough for instructions and first-party skills on all of
 those. Marketplace plugins (`ek`, `frontend-design`, `typescript-lsp`) need the
 `claude` CLI; skip that section if it is not installed.
 
-Flow: **find repo → pull or clone → installer → marketplace plugins (if
-`claude`) → dedupe → leftover sweep → vendored skills → report.**
-
 The installer is the mechanical source of truth (`install.sh`). Do not
 reimplement its links. This file is the judgment pass around it.
 
@@ -169,7 +166,8 @@ Delete only what is clearly leftover from an older layout:
   links when Developer Mode is off)
 - Identical `.bak` next to installer targets (the installer already drops those;
   remove a remaining `.bak` only when it is a pre-link leftover and the live
-  file is the symlink)
+  file is the symlink). `~/.config/opencode/cli.json.bak` is the exception: it
+  holds settings OpenCode saved, so copy them into `opencode/cli.json` first
 - Plugin cache dirs under `~/.claude/plugins/cache` for plugins **not** in
   `installed_plugins.json` (skip this if there is no Claude plugin cache)
 - Empty `~/.agents` / `~/.agents/skills` / `~/.config/opencode/skills` after

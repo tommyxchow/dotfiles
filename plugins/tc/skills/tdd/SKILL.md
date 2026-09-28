@@ -42,7 +42,7 @@ Take one case all the way through before starting the next:
 4. **Run it again and see green.**
 5. **Move to the next case.**
 
-Don't write the implementation first and then backfill the tests around it. If the code for a case already exists and a test already covers it, the loop is over for that case. Don't add a second test that recomputes what the code does. When a later decision replaces a case you already tested, fix or delete that test under the global final-behavior rule.
+Don't write the implementation first and then backfill the tests around it. If the code for a case already exists and a test already covers it, the loop is over for that case. Don't add a second test that recomputes what the code does. When a later decision replaces a case you already tested, fix or delete that test under the final-behavior rule in `~/.claude/references/testing.md`.
 
 ## 4. What makes a test worth keeping
 
