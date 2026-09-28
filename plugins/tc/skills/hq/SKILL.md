@@ -31,8 +31,8 @@ Keep a board at `~/.local/state/hq/board.md`, one line per worker. Every HQ on t
 Key each line by agent name, never by pane ID, because herdr gives a pane a new ID when it moves and the agent name follows the agent. The owner goes in parentheses after the name. Create the file on the first dispatch.
 
 ```
-- alpha (hq): tommychow.com, fix the nav flicker on sign-in (ABC-123), high. Waiting on me: plan approval.
-- bravo (hq-2): frosty, add search to the followed channels list. Waiting on worker.
+- mars (hq): tommychow.com, fix the nav flicker on sign-in (ABC-123), high. Waiting on me: plan approval.
+- venus (hq-2): frosty, add search to the followed channels list. Waiting on worker.
 ```
 
 Edit only your own lines, and read the file again right before each edit, since another HQ may have changed it. Read it again before every status report and whenever you resume after a long gap or a compaction, instead of trusting your memory of the conversation. A fresh HQ session should be able to pick up from the board and `herdr agent list` alone.
@@ -66,13 +66,13 @@ Never send another HQ text with `herdr agent prompt`. Text typed into a pane rea
    - `high` for an unclear cause, a change that cuts across the codebase, or auth, money, and migrations.
    - `xhigh` for deep research, or a problem that beat a worker at a lower level.
    - `max` only when I ask for it, since it tends to overthink.
-4. **Start the worker** in that pane with `herdr agent start <name> --kind <kind> --pane <pane-id>`, adding `-- --effort <level>` for a Claude worker off the default and `-- --model <alias>` when I named a Claude model (both go after one `--`), or `-- -s <session id>` for OpenCode, which opens the session you created on its model. Name it with the first NATO letter, `alpha` through `zulu`, that no live agent or board line uses, like `bravo`, unless I named it myself. A letter counts as used while any agent or line carries it, with or without a number, so `bravo` stays taken while `bravo-2` is live. The letters are built to be said aloud, so I can ask about Bravo in passing. The label keeps the task slug, so the sidebar shows what each worker is on and the board says which letter it is.
+4. **Start the worker** in that pane with `herdr agent start <name> --kind <kind> --pane <pane-id>`, adding `-- --effort <level>` for a Claude worker off the default and `-- --model <alias>` when I named a Claude model (both go after one `--`), or `-- -s <session id>` for OpenCode, which opens the session you created on its model. Name it with the first name in this list that no live agent or board line uses, unless I named it myself: `mars`, `venus`, `orion`, `pluto`, `sirius`, `andromeda`, `europa`, `halley`, `neptune`, `lyra`, `callisto`, `ganymede`, `rigel`, `deneb`. A name counts as used while any agent or line carries it, with or without a number, so `venus` stays taken while `venus-2` is live. Once all are taken, name the worker for its task slug. They're places in space rather than characters, so a model reading them picks up no persona. Each starts with its own letter and is short to type, so I can ask about Venus in passing, and the best known come first. The label keeps the task slug, so the sidebar shows what each worker is on and the board says which name it is.
 5. **Hand it the task** with `herdr agent prompt`: the task in my words, the ticket or link, any decisions we settled here, `ship it` only if I said it, and its effort when it isn't the default, so a handoff to a fresh session keeps it. Leave the conventions out, because the worker loads the same global instructions you do.
 6. **Add its line** to the board and start its wait, the way the next section describes for any worker you just sent input to. Tell me what you dispatched in one line each, with the effort and why when it isn't the default, so I can change it.
 
 Dispatch independent tasks one after another in the same turn rather than waiting for each worker to start its work.
 
-Never type `/effort`, `/model`, or `/autocompact` into a worker's pane. In Claude Code those save the choice as my default for every later session. To give a running task more effort, start a fresh session in the same worktree at the higher level: split a pane in that workspace, start it as `<name>-<n>` with the next free number, like `bravo-2`, and the flag, and hand it the plan file path and the last worker's report. That also clears its context. Move the board line to the new name and tell me the old pane can be closed.
+Never type `/effort`, `/model`, or `/autocompact` into a worker's pane. In Claude Code those save the choice as my default for every later session. To give a running task more effort, start a fresh session in the same worktree at the higher level: split a pane in that workspace, start it as `<name>-<n>` with the next free number, like `venus-2`, and the flag, and hand it the plan file path and the last worker's report. That also clears its context. Move the board line to the new name and tell me the old pane can be closed.
 
 ## Wait on signals
 
@@ -115,7 +115,7 @@ No session can see its own context use, so read it from herdr. A Claude pane pub
 When I ask for status, read the board and run `herdr agent list`, then give one short sentence per worker you own in app terms. Put the ones waiting on me first, with what I need to do. For example:
 
 ```
-Two need you. Alpha has the nav flicker plan ready for approval, and Bravo asks whether channel search should include offline channels (it recommends yes). Charlie opened the settings page draft PR and CI is green.
+Two need you. Mars has the nav flicker plan ready for approval, and Venus asks whether channel search should include offline channels (it recommends yes). Orion opened the settings page draft PR and CI is green.
 ```
 
 When another HQ is running, end with one line naming it and how many workers it owns, so I know where the rest are.
