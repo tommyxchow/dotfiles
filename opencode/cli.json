@@ -30,7 +30,7 @@
     "image_preview": true
   },
   "tabs": {
-    "enabled": false
+    "mode": "off"
   },
   "plugins": ["./herdr-opencode"]
 }
