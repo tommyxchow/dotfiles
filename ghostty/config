@@ -1,6 +1,7 @@
 font-family = Lilex
 font-family = Symbols Nerd Font
 
-theme = Monokai Pro
+# Follows the system's light or dark mode, so herdr's auto_switch does too.
+theme = light:Monokai Pro Light,dark:Monokai Pro
 background-opacity = 0.8
 background-blur = 60
