@@ -330,8 +330,10 @@ Herdr's `config.toml` is machine-local; `herdr --help` prints its path. This
 setup expects five settings in it:
 
 - **Theme** follows the terminal's light or dark mode, like Claude Code's
-  `theme: auto`. Picking a theme by hand in herdr's Settings turns
-  `auto_switch` back off.
+  `theme: auto`. Herdr's default theme is catppuccin, so the file sets only
+  `auto_switch`, which swaps in its `catppuccin-latte` sibling on a light
+  terminal. Picking a theme by hand in herdr's Settings writes a `name` and
+  turns `auto_switch` back off.
 - **Toast delivery** is `system`, the one that shows outside the herdr window,
   since the global rules have agents send a notification after a long run.
 - **Pane border labels** are on, so each pane's border names the harness
@@ -363,7 +365,6 @@ only a fixed hex and the pastels vanish on the light theme.
 
 ```toml
 [theme]
-name = "catppuccin"
 auto_switch = true
 
 [ui.toast]
