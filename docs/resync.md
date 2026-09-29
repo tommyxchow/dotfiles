@@ -356,12 +356,12 @@ setup expects five settings in it:
   other harness uses `rows`, herdr's default with the name added after the
   harness, like `codex · vega`. An entry replaces `rows` rather than adding to
   it.
-- **Spaces rows** are herdr's defaults plus the `$pr` and `$dirty` slots the
-  `tc` plugin fills: the PR or default-branch CI state, and the
-  uncommitted file count. A slot shows nothing until a value is reported. The
-  first matching rule wins, so the red rules for a failed check and for
-  requested changes come first, then orange for running checks (yellow is the
-  file count's color). An inline table has to stay on one line.
+- **Spaces rows** are herdr's defaults plus the `$pr`, `$added`, and `$removed` slots
+  the `tc` plugin fills: the PR or default-branch CI state, then the
+  uncommitted lines added in green and removed in red. A slot shows nothing
+  until a value is reported. The first matching rule wins, so the red rules
+  for a failed check and for requested changes come first, then orange for
+  running checks. An inline table has to stay on one line.
 
 The colors are mid-tones rather than catppuccin's pastels, because a rule takes
 only a fixed hex and the pastels vanish on the light theme.
@@ -402,7 +402,7 @@ grok = [
 [ui.sidebar.spaces]
 rows = [
   ["state_icon", "workspace"],
-  ["branch", "git_status", { token = "$pr", rules = [{ contains = "✗", fg = "#e5484d" }, { contains = "changes", fg = "#e5484d" }, { contains = "◌", fg = "#e8762c" }, { contains = "approved", fg = "#3fa34d" }, { contains = "merged", dim = true }, { contains = "closed", dim = true }] }, { token = "$dirty", fg = "#d99a1a" }],
+  ["branch", "git_status", { token = "$pr", rules = [{ contains = "✗", fg = "#e5484d" }, { contains = "changes", fg = "#e5484d" }, { contains = "◌", fg = "#e8762c" }, { contains = "approved", fg = "#3fa34d" }, { contains = "merged", dim = true }, { contains = "closed", dim = true }] }, { token = "$added", fg = "#3fa34d" }, { token = "$removed", fg = "#e5484d" }],
 ]
 ```
 

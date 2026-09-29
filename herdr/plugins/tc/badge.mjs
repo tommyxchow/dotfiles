@@ -1,11 +1,11 @@
-// Fills two sidebar values for each git workspace: `pr`, the state of the
+// Fills three sidebar values for each git workspace: `pr`, the state of the
 // branch's pull request and its CI (or just the CI on the default branch, which
-// has no pull request), and `dirty`, how many files are uncommitted. Herdr runs
-// it with "all" on start and from the refresh action, and with "event" when an
-// agent settles, a workspace gets focus, or a worktree is opened. The values
-// show through the `$pr` and `$dirty` slots in herdr's sidebar config.
+// has no pull request), and `added` and `removed`, the uncommitted lines. Herdr
+// runs it with "all" on start and from the refresh action, and with "event" when
+// an agent settles, a workspace gets focus, or a worktree is opened. The values
+// show through the `$pr`, `$added`, and `$removed` slots in herdr's sidebar config.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const herdr = process.env.HERDR_BIN_PATH ?? "herdr";
@@ -19,6 +19,7 @@ const SETTLED = new Set(["idle", "done"]);
 const FAILED_CHECKS = new Set(["FAILURE", "ERROR", "TIMED_OUT", "STARTUP_FAILURE", "ACTION_REQUIRED"]);
 // Commit statuses have only a state; check runs have a status and a conclusion.
 const PENDING_STATES = new Set(["PENDING", "EXPECTED"]);
+const MAX_UNTRACKED_BYTES = 1_000_000;
 
 function run(command, args, cwd) {
   const result = spawnSync(command, args, { cwd, encoding: "utf8" });
@@ -91,9 +92,59 @@ function prBadge(checkout) {
   return pr ? formatBadge(pr) : null;
 }
 
-function dirtyMarker(checkout) {
-  const changed = run("git", ["-C", checkout, "status", "--porcelain"]).split("\n").filter(Boolean).length;
-  return changed ? `±${changed}` : null;
+// Git treats a file with a NUL byte in its first 8000 bytes as binary and gives
+// it no line count, so this does too.
+function lineCount(content) {
+  if (content.length === 0 || content.subarray(0, 8000).includes(0)) return 0;
+  let lines = 0;
+  for (const byte of content) if (byte === 0x0a) lines++;
+  return content.at(-1) === 0x0a ? lines : lines + 1;
+}
+
+// The spaces row shares about 16 columns with the branch and the PR badge, so
+// 12345 shows as "12.3k".
+function compact(count) {
+  return count < 1000 ? String(count) : `${Math.round(count / 100) / 10}k`;
+}
+
+// Lines added and removed across all uncommitted work: staged and unstaged
+// edits against the last commit, plus new files git doesn't track yet, which
+// count as added the way a pull request shows them.
+function diffCounts(checkout) {
+  // A repo with no commits yet has no HEAD, so there only staged files count.
+  const hasHead = spawnSync("git", ["-C", checkout, "rev-parse", "--verify", "--quiet", "HEAD"]).status === 0;
+  const numstat = run("git", ["-C", checkout, "diff", "--numstat", hasHead ? "HEAD" : "--cached"]);
+  let added = 0;
+  let removed = 0;
+  for (const line of numstat.split("\n").filter(Boolean)) {
+    // A binary file reports "-" for both counts, which Number turns into NaN.
+    const [plus, minus] = line.split("\t").map(Number);
+    added += plus || 0;
+    removed += minus || 0;
+  }
+  // Called directly because run() trims, which would cut a leading space off the
+  // first name. The larger buffer fits a folder not ignored yet, like a fresh
+  // node_modules, whose file list passes the 1 MB default.
+  const untracked = spawnSync("git", ["-C", checkout, "ls-files", "--others", "--exclude-standard", "-z"], {
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  if (untracked.status !== 0) {
+    throw new Error(`git ls-files failed: ${untracked.error?.message ?? untracked.stderr.trim()}`);
+  }
+  for (const file of untracked.stdout.split("\0").filter(Boolean)) {
+    const path = join(checkout, file);
+    // Undefined when a watcher or test run deleted the file after ls-files listed it.
+    const stat = lstatSync(path, { throwIfNoEntry: false });
+    // A nested repo shows up as a folder and a symlink has no lines of its own.
+    // Anything big, like a dump or a video, is left out rather than read whole
+    // on every refresh.
+    if (stat?.isFile() && stat.size <= MAX_UNTRACKED_BYTES) added += lineCount(readFileSync(path));
+  }
+  return {
+    added: added ? `+${compact(added)}` : null,
+    removed: removed ? `-${compact(removed)}` : null,
+  };
 }
 
 function report(workspaceId, values) {
@@ -121,7 +172,7 @@ function refresh(workspaceId) {
   const workspace = JSON.parse(run(herdr, ["workspace", "get", workspaceId])).result.workspace;
   const checkout = checkoutOf(workspace);
   if (!checkout) return; // not a git checkout, so there is nothing to show
-  const values = { dirty: dirtyMarker(checkout) };
+  const values = diffCounts(checkout);
   try {
     values.pr = prBadge(checkout);
   } catch (error) {
