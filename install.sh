@@ -152,6 +152,19 @@ link_herdr_plugins() {
       printf "  SKIP  herdr plugin %s (start herdr, then re-run or: herdr plugin link %s)\n" "$id" "$path"
     fi
   done
+  # Plugins since merged into tc, unlinked only once tc is registered so their
+  # jobs never stop running. Unlinking only unregisters them; the files are
+  # already gone from this repo.
+  command -v herdr >/dev/null 2>&1 || return 0
+  herdr plugin list --json 2>/dev/null | grep -q '"plugin_id":"tc"' || return 0
+  for id in tc.pr-badge tc.worktree-bootstrap; do
+    herdr plugin list --json 2>/dev/null | grep -q "\"plugin_id\":\"$id\"" || continue
+    if herdr plugin unlink "$id" >/dev/null 2>&1; then
+      printf "  UNLINK herdr plugin %s (merged into tc)\n" "$id"
+    else
+      printf "  WARN  herdr plugin %s is still linked (run: herdr plugin unlink %s)\n" "$id" "$id"
+    fi
+  done
 }
 link_herdr_plugins
 

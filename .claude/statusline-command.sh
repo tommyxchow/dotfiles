@@ -189,10 +189,11 @@ if [ -n "$used_pct" ]; then
   ctxseg="${muted}ctx${reset} $(color_used "$pct" "$ctx_orange" "$ctx_red")${pct}%${reset}"
 fi
 
-# Inside a herdr pane, publish the agent's name, effort, and context as pane
-# tokens, so the sidebar shows them and an hq session reads them from
-# `herdr agent list`; herdr has no built-in sidebar slot for the name. The
-# model itself never sees this line. Context goes out as `ctxhigh` instead of
+# Inside a herdr pane, publish the agent's effort and context as pane tokens,
+# so the sidebar shows them and an hq session reads them from `herdr agent
+# list`. The agent's name is the `tc` herdr plugin's token, and pane tokens are
+# shared across sources, so this never touches `name`. The model itself never
+# sees this line. Context goes out as `ctxhigh` instead of
 # `ctx` once it reaches the orange point above. The sidebar config can only
 # color a token by name, so the threshold lives here rather than in a sidebar
 # rule. The TTL outlives the 60s refresh, so the values vanish soon after Claude
@@ -214,14 +215,8 @@ if [ -n "$HERDR_PANE_ID" ]; then
         ctx_args=(--token "ctx=ctx ${pct}%" --clear-token ctxhigh)
       fi
     fi
-    {
-      # An unnamed agent, like one I started by hand, clears the token.
-      name=$("$herdr_bin" agent get "$HERDR_PANE_ID" | jq -r '.result.agent.name // empty')
-      name_args=(--clear-token name)
-      [ -n "$name" ] && name_args=(--token "name=${name}")
-      "$herdr_bin" pane report-metadata "$HERDR_PANE_ID" --source tc.statusline \
-        "${name_args[@]}" "${effort_args[@]}" "${ctx_args[@]}" --ttl-ms 180000
-    } >/dev/null 2>&1 &
+    "$herdr_bin" pane report-metadata "$HERDR_PANE_ID" --source tc.statusline \
+      "${effort_args[@]}" "${ctx_args[@]}" --ttl-ms 180000 >/dev/null 2>&1 &
   fi
 fi
 

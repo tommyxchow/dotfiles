@@ -280,16 +280,21 @@ every machine, and it is the only way OpenCode 2 loads herdr's plugin. Without
 it herdr gets no working, idle, or blocked state from OpenCode 2 and no session
 to restore, and `herdr integration status` reports opencode as `needs repair`.
 
-The herdr plugins under `herdr/plugins` (`tc.worktree-bootstrap` and
-`tc.pr-badge`, described in the README's Herdr section) are the third surface.
-The installer links every folder there through `herdr plugin link`, which needs
-the server up, so a `SKIP` line there means start herdr and re-run the
-installer. `herdr plugin list --json` shows them registered and `herdr plugin
-log list` shows their last runs with exit codes and output, which is where to
-look when a new worktree came up without its env or a badge is missing.
-The badge refreshes when herdr starts, when an agent settles, when a workspace
-gets focus, when a new worktree opens, and by hand through
-`herdr plugin action invoke tc.pr-badge.refresh`.
+The `tc` herdr plugin under `herdr/plugins/tc` (worktree env files, PR badges,
+and agent names, described in the README's Herdr section) is the third surface.
+The installer links it through `herdr plugin link`, which needs the server up,
+so a `SKIP` line there means start herdr and re-run the installer. It also
+unlinks `tc.pr-badge` and `tc.worktree-bootstrap`, the two plugins `tc`
+replaced, and prints an `UNLINK` line for each. `herdr plugin list --json`
+shows it registered and `herdr plugin log list` shows its last runs with exit
+codes and output, which is where to look when a new worktree came up without
+its env, or a badge or name is missing. The badge refreshes when herdr starts,
+when an agent settles, when a workspace gets focus, when a new worktree opens,
+and by hand through `herdr plugin action invoke tc.refresh`. The name refreshes
+when herdr starts and on every agent status change, since herdr has no rename
+event, so a freshly renamed agent shows its name at its next status change, or
+at once through `herdr plugin action invoke tc.names`, which `hq` runs after
+adopting workers.
 
 Then check `git diff .claude/settings.json`. Installing the claude integration
 writes a hook command with an absolute path into this machine's home directory,
@@ -332,19 +337,22 @@ setup expects five settings in it:
 - **Pane border labels** are on, so each pane's border names the harness
   running in it. Herdr's source labels the border with the harness, not the
   agent's name.
-- **Agent rows** give Claude Code and OpenCode 2 the same shape: where the agent
-  is, what it is doing, and for Claude who it is and how heavy. No row names the
-  harness. Claude is the default and carries no mark, and OpenCode 2's own title
-  already starts with `OC |`, a prefix no herdr rule can strip, so an `agent`
-  row would only repeat it. Any other harness falls back to herdr's default
-  rows, which do name it. A fresh Claude session titles itself "Claude Code", so
-  that title row hides until the session has a real title; `hide` needs herdr
-  0.9.1 or newer. Claude's third row is the agent's name in bold, when it has
-  one, then the effort and context the statusline publishes (see
-  `docs/statusline.md`), so an `hq` worker named `vega` is easy to find; the
-  context turns orange as `$ctxhigh` past the soft ceiling. An entry replaces `rows` rather than adding to it.
+- **Agent rows** give Claude Code, OpenCode 2, and Grok Build the same shape:
+  where the agent is, what it is doing, and who it is. No row names the
+  harness. Claude is the default and carries no mark, OpenCode 2's own title
+  already starts with `OC |`, and Grok's reads `grok` or ends in `- grok`, marks
+  no herdr rule can strip, so an `agent` row would only repeat them. A
+  fresh Claude session titles itself "Claude Code", so that title row hides
+  until the session has a real title; `hide` needs herdr 0.9.1 or newer. The
+  last row is the agent's herdr name in bold, which the `tc` plugin publishes
+  for every harness, so an `hq` worker named `vega` is easy to find; an agent
+  with no name shows no such row. Claude's adds the effort and context the
+  statusline publishes (see `docs/statusline.md`), and the context turns orange
+  as `$ctxhigh` past the soft ceiling. Any other harness uses `rows`, herdr's
+  default with the name added after the harness, like `codex · vega`. An entry
+  replaces `rows` rather than adding to it.
 - **Spaces rows** are herdr's defaults plus the `$pr` and `$dirty` slots the
-  `tc.pr-badge` plugin fills: the PR or default-branch CI state, and the
+  `tc` plugin fills: the PR or default-branch CI state, and the
   uncommitted file count. A slot shows nothing until a value is reported. The
   first matching rule wins, so the red rules for a failed check and for
   requested changes come first, then orange for running checks (yellow is the
@@ -364,6 +372,12 @@ delivery = "system"
 [ui]
 show_agent_labels_on_pane_borders = true
 
+[ui.sidebar.agents]
+rows = [
+  ["state_icon", "machine", "workspace", "tab"],
+  ["agent", { token = "$name", bold = true }],
+]
+
 [ui.sidebar.agents.rows_by_agent]
 claude = [
   ["state_icon", "machine", "workspace", "tab"],
@@ -373,6 +387,12 @@ claude = [
 opencode = [
   ["state_icon", "machine", "workspace", "tab"],
   ["terminal_title_stripped"],
+  [{ token = "$name", bold = true }],
+]
+grok = [
+  ["state_icon", "machine", "workspace", "tab"],
+  ["terminal_title_stripped"],
+  [{ token = "$name", bold = true }],
 ]
 
 [ui.sidebar.spaces]

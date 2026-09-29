@@ -45,8 +45,7 @@ dotfiles checkout.
 | `plugins/tc/skills/*` | `~/.claude/skills/<name>` (OpenCode 2 reads this path too) |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
 | `bin/wait-for` | `~/.local/bin/wait-for` (agents wait on a URL with a deadline; the installer warns when that folder is not on PATH) |
-| `herdr/plugins/worktree-bootstrap` | herdr plugin `tc.worktree-bootstrap`, linked through the running herdr server |
-| `herdr/plugins/pr-badge` | herdr plugin `tc.pr-badge`, linked the same way |
+| `herdr/plugins/tc` | herdr plugin `tc`, linked through the running herdr server |
 | `.claude/statusline-command.sh` | `~/.claude/statusline-command.sh` (design notes in `docs/statusline.md`) |
 
 Cursor's rule file needs `alwaysApply: true` frontmatter that the shared file
@@ -195,8 +194,8 @@ plugins, so `ek` is Claude Code-only.
 Worktrees start from herdr, not from a harness. New worktree on a repo's
 sidebar row makes a real git worktree under `~/.herdr/worktrees/<repo>/<branch>`
 and opens it as a child workspace, so the agent, a shell, and a dev server all
-sit in the same checkout and show their git state together. The
-`tc.worktree-bootstrap` plugin the installer links runs on that event: it copies
+sit in the same checkout and show their git state together. The `tc` herdr
+plugin the installer links runs on that event: it copies
 the gitignored `.env*` files from the main checkout and posts a notification.
 It installs dependencies only in a pnpm repo that sets `virtualStoreType: global`
 in `pnpm-workspace.yaml`, pnpm's own recipe for worktrees: with that on, the
@@ -228,12 +227,14 @@ Inside herdr, agents name their tabs and label the panes they split (like
 are in `.claude/references/herdr.md`, which `.claude/CLAUDE.md` tells an agent
 to read on its first turn inside a herdr pane.
 
-The `tc.pr-badge` plugin fills two sidebar values for every git workspace: the
+The same plugin fills two sidebar values for every git workspace: the
 branch's pull request with its CI, like `#12 draft ◌` while checks run, `✓` once
 they pass, or `✗` when one failed; `CI ✓` and the like on the default branch,
 which has no pull request; and the count of uncommitted files, like `±3`. The
 pull request comes from `gh`, so without `gh` signed in only the file count
-shows. When it refreshes and how to debug it are in `docs/resync.md`.
+shows. It also shows each agent's herdr name, like an `hq` worker's `vega`,
+under that agent in the sidebar, for any harness. When it refreshes and how to
+debug it are in `docs/resync.md`.
 
 Herdr's `config.toml` stays machine-local, since it names the shell for that
 OS. `docs/resync.md` lists the settings this setup expects in it.
