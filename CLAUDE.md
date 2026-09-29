@@ -267,9 +267,7 @@ repo-local.
   model that can call tools. Neither mistake has happened, and none of my
   repos gives a model tools. Revisit the first if an agent ever adds a wrong
   package, the second once an app calls a model with tools. From the
-  2026-09-27 hq review: renaming `hq`, which stays. An OpenCode 2 plugin that
-  reports context to herdr: HQ reads OpenCode's own on-screen readout instead,
-  and the plugin was more machinery than that gap needs. Making the
+  2026-09-27 hq review: renaming `hq`, which stays. Making the
   fresh-context final review a judgment call like the other steps: it stays
   fixed, since on a small diff it is one read and it is the step most likely
   to catch something. A plain "go" opening the draft PR in a repo that isn't

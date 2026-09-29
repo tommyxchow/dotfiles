@@ -348,11 +348,14 @@ setup expects five settings in it:
   until the session has a real title; `hide` needs herdr 0.9.1 or newer. The
   last row is the agent's herdr name in bold, which the `tc` plugin publishes
   for every harness, so an `hq` worker named `vega` is easy to find; an agent
-  with no name shows no such row. Claude's adds the effort and context the
-  statusline publishes (see `docs/statusline.md`), and the context turns orange
-  as `$ctxhigh` past the soft ceiling. Any other harness uses `rows`, herdr's
-  default with the name added after the harness, like `codex · vega`. An entry
-  replaces `rows` rather than adding to it.
+  with no name shows no such row. Claude's adds the context the statusline
+  publishes (see `docs/statusline.md`), and OpenCode's adds the context the
+  `tc` plugin reads off its screen. The context turns orange as `$ctxhigh` past
+  the soft ceiling. Effort and model stay out: both are fixed at launch, and
+  `hq`, which picks them, reads the `effort` token from `herdr agent list`. Any
+  other harness uses `rows`, herdr's default with the name added after the
+  harness, like `codex · vega`. An entry replaces `rows` rather than adding to
+  it.
 - **Spaces rows** are herdr's defaults plus the `$pr` and `$dirty` slots the
   `tc` plugin fills: the PR or default-branch CI state, and the
   uncommitted file count. A slot shows nothing until a value is reported. The
@@ -383,12 +386,12 @@ rows = [
 claude = [
   ["state_icon", "machine", "workspace", "tab"],
   [{ token = "terminal_title_stripped", rules = [{ equals = "Claude Code", hide = true }] }],
-  [{ token = "$name", bold = true }, "$effort", "$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
+  [{ token = "$name", bold = true }, "$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
 ]
 opencode = [
   ["state_icon", "machine", "workspace", "tab"],
   ["terminal_title_stripped"],
-  [{ token = "$name", bold = true }],
+  [{ token = "$name", bold = true }, "$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
 ]
 grok = [
   ["state_icon", "machine", "workspace", "tab"],

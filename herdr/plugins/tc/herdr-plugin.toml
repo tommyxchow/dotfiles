@@ -3,7 +3,7 @@ name = "tc"
 # herdr requires version; the plugin is a live link, so it is not bumped for releases.
 version = "0.1.0"
 min_herdr_version = "0.9.0"
-description = "Sidebar PR badges and agent names, and env files for new worktrees"
+description = "Sidebar PR badges, agent names, and OpenCode context, and env files for new worktrees"
 platforms = ["linux", "macos", "windows"]
 
 # Pane and workspace tokens do not survive a server restart, so both refill here.
@@ -11,7 +11,7 @@ platforms = ["linux", "macos", "windows"]
 command = ["node", "badge.mjs", "all"]
 
 [[startup]]
-command = ["node", "agent-name.mjs", "all"]
+command = ["node", "agent-tokens.mjs", "all"]
 
 [[actions]]
 id = "refresh"
@@ -22,8 +22,8 @@ command = ["node", "badge.mjs", "all"]
 # idle or blocked worker hq just adopted.
 [[actions]]
 id = "names"
-title = "Refresh agent names"
-command = ["node", "agent-name.mjs", "all"]
+title = "Refresh agent names and OpenCode context"
+command = ["node", "agent-tokens.mjs", "all"]
 
 # An agent settling is when work was just committed or a PR opened.
 [[events]]
@@ -41,7 +41,7 @@ command = ["node", "badge.mjs", "event"]
 # Herdr has no rename event, so a new name shows at the agent's next status change.
 [[events]]
 on = "pane.agent_status_changed"
-command = ["node", "agent-name.mjs", "event"]
+command = ["node", "agent-tokens.mjs", "event"]
 
 [[events]]
 on = "worktree.created"

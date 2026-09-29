@@ -233,8 +233,9 @@ they pass, or `✗` when one failed; `CI ✓` and the like on the default branch
 which has no pull request; and the count of uncommitted files, like `±3`. The
 pull request comes from `gh`, so without `gh` signed in only the file count
 shows. It also shows each agent's herdr name, like an `hq` worker's `vega`,
-under that agent in the sidebar, for any harness. When it refreshes and how to
-debug it are in `docs/resync.md`.
+under that agent in the sidebar, for any harness, and for OpenCode 2 its
+context, read off the bottom of its screen. When it refreshes and how to debug
+it are in `docs/resync.md`.
 
 Herdr's `config.toml` stays machine-local, since it names the shell for that
 OS. `docs/resync.md` lists the settings this setup expects in it.

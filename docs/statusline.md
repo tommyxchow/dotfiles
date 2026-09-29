@@ -87,7 +87,8 @@ something wants attention, so it's findable without reading the line.
 Inside a herdr pane the script also reports two pane tokens with `herdr pane
 report-metadata`: `effort`, and the context as `ctx 34%`. The model never sees
 its own statusline, so this is how an `hq` session reads a worker's context and
-effort, and how the herdr sidebar shows both next to each Claude Code agent.
+effort. The herdr sidebar shows the context next to each Claude Code agent;
+effort is left out there, since it is fixed at launch and `hq` picked it.
 The agent's `name` token, shown on the same row, comes from the `tc` herdr
 plugin rather than from here, so it works for every harness. Pane tokens are
 shared across sources, so the script never sends or clears `name`.
@@ -104,8 +105,8 @@ runs out.
 The report runs in the background with a three-minute TTL. The statusline
 never waits on herdr, and the tokens disappear shortly after Claude exits
 because nothing refreshes them. OpenCode 2 and Grok Build have no statusline
-hook, so their panes show only the name; OpenCode 2's own context readout sits
-at the bottom right of its screen.
+hook. The `tc` herdr plugin reads OpenCode 2's context off the bottom of its
+screen at each change of state instead; Grok panes show only the name.
 
 ## Requirements (cross-platform)
 

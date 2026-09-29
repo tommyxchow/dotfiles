@@ -101,7 +101,7 @@ Before you send my answer, read the worker again and check it is still waiting o
 
 ## Context
 
-No session can see its own context use, so read it from herdr. A Claude pane publishes it as a pane token, `ctx`, which turns into `ctxhigh` past the soft ceiling of 70% of its window; both show in `herdr agent list`. An OpenCode pane shows its context at the bottom right of its screen, so read that with `herdr agent read <name> --source visible --lines 5`. Typing `/context` into an idle worker is the last resort, because its output fills that worker's context.
+No session can see its own context use, so read it from herdr. A Claude pane publishes it as a pane token, `ctx`, which turns into `ctxhigh` past the soft ceiling of 70% of its window; both show in `herdr agent list`. An OpenCode pane gets the same two tokens from the `tc` herdr plugin, which reads them off its screen at each change of state, so mid-turn they can lag; for a live number, read the bottom right of its screen with `herdr agent read <name> --source visible --lines 5`. Typing `/context` into an idle worker is the last resort, because its output fills that worker's context.
 
 - **Before sending a worker more work**, like PR feedback or its next slice, check its context. Past the ceiling, refresh it first, choosing by what the next step needs:
   - **Compact** when it needs to remember its own work, as with PR feedback, a fix to what it built, or a debugging thread it is partway through. Type `/compact <what to keep>` into an idle Claude worker, naming the decisions and open threads to keep, or `/compact` into an OpenCode one.
