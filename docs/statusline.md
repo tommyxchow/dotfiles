@@ -53,9 +53,9 @@ something wants attention, so it's findable without reading the line.
   `max`; Ultracode reports as `xhigh`). The display name's built-in
   `(… context)` suffix is stripped so the size isn't stated twice.
 - **`ctx 34%`**: context window used, labeled so it can't be confused with a
-  rate-limit percentage. Orange at 70%, the soft ceiling hq and the herdr
-  sidebar also use, and red under 50K tokens of room, which is 75% on a 200K
-  window and 95% on a 1M one (see Color thresholds).
+  rate-limit percentage. Orange at 60% on a window of 1M or more, the soft
+  ceiling hq and the herdr sidebar also use, and red under 50K tokens of room,
+  which is 75% on a 200K window and 95% on a 1M one (see Color thresholds).
 - **`5h 24% · 7d 42%`**: 5-hour and 7-day rate-limit windows **used**.
   Uncolored below 75, orange at 75, red at 90. Pro/Max only, and only after the
   first API response of a session.
@@ -93,14 +93,15 @@ The agent's `name` token, shown on the same row, comes from the `tc` herdr
 plugin rather than from here, so it works for every harness. Pane tokens are
 shared across sources, so the script never sends or clears `name`.
 
-Context goes out under one of two names. It is `ctxhigh` once the session
-passes a soft ceiling of 70% of its window, and `ctx` below that; the sidebar
-colors `ctxhigh`. Anthropic documents that quality drops as context fills but
-publishes no threshold, so 70% is a judgment call: it keeps a worker's context
-one round longer than 60%, and unlike 80% it still leaves a 200K window about
-60K tokens, enough for one more round of work before auto-compact. It marks
-where a fresh session or a `/compact` starts paying off, not where the window
-runs out.
+Context goes out under one of two names. It is `ctxhigh` once a session on a
+window of 1M tokens or more passes a soft ceiling of 60%, and `ctx` otherwise;
+the sidebar colors `ctxhigh`. Anthropic documents that quality drops as context
+fills but publishes no threshold, so 60% is a judgment call: 600K tokens is
+already three full 200K windows of history, and hq only compacts at a natural
+break, so an early flag costs little. A smaller window has no soft ceiling and
+never reports `ctxhigh`, because auto-compact handles it well enough. The flag
+marks where a `/compact` at the next break starts paying off, not where the
+window runs out.
 
 The report runs in the background with a three-minute TTL. The statusline
 never waits on herdr, and the tokens disappear shortly after Claude exits
@@ -141,7 +142,7 @@ idle, showing whatever was true at the last message. 60s keeps them honest.
 ## Color thresholds
 
 Context gives each color one meaning. Orange is the soft ceiling, a
-percentage, because it tracks how full the conversation is and matches the
+percentage that only windows of 1M or more have, because it tracks how full the conversation is and matches the
 herdr token below. Red is auto-compact's deadline, which Claude Code derives
 from the window minus reserved output rather than a fixed percentage, so red
 trips on the tokens left: 50K of room is the same amount of work on any
@@ -150,7 +151,7 @@ window, while 75% used is 50K on a 200K window and 250K on a 1M one.
 |        | Context        | Rate-limit window   |
 | ------ | -------------- | ------------------- |
 | low    | none           | none                |
-| orange | 70%+ used      | 75%+ used           |
+| orange | 60%+ used (1M) | 75%+ used           |
 | red    | under 50K left | 90%+ used, or `out` |
 
 "None" is the terminal's default foreground, not a gray: uncolored values stay

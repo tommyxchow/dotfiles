@@ -10,10 +10,15 @@ import { spawnSync } from "node:child_process";
 const herdr = process.env.HERDR_BIN_PATH ?? "herdr";
 // One fixed name: a pane accepts sequenced values from at most 32 sources in its lifetime.
 const SOURCE = "tc-agent-tokens";
-// The same soft ceiling the Claude statusline uses for its `ctxhigh` token.
-const CTX_HIGH_PCT = 70;
+// The same soft ceiling the Claude statusline uses for its `ctxhigh` token,
+// which applies only to a window of about 1M tokens or more. The footer shows
+// tokens used and a rounded percentage, so the window is estimated from the two;
+// the margin below 1M absorbs that rounding.
+const CTX_HIGH_PCT = 60;
+const CTX_HIGH_MIN_WINDOW = 900_000;
 // OpenCode 2's footer: "~/Developer    21.8K (4%) · $0.06  ctrl+p commands".
-const OPENCODE_CTX = /\d[\d.,]*[KM]?\s+\((\d+)%\)/;
+const OPENCODE_CTX = /(\d[\d.,]*)([KM]?)\s+\((\d+)%\)/;
+const UNIT = { "": 1, K: 1_000, M: 1_000_000 };
 
 function run(args) {
   const result = spawnSync(herdr, args, { encoding: "utf8" });
@@ -36,8 +41,9 @@ function openCodeTokens(paneId) {
   // Only the footer, the last non-empty line, so a transcript line shaped like
   // "12 (40%)" can't stand in for a footer that has no reading yet.
   const footer = lines.findLast((line) => line.trim() !== "") ?? "";
-  const pct = footer.match(OPENCODE_CTX)?.[1];
-  const high = pct !== undefined && Number(pct) >= CTX_HIGH_PCT;
+  const [, amount, unit, pct] = footer.match(OPENCODE_CTX) ?? [];
+  const window = pct > 0 ? (Number(amount.replaceAll(",", "")) * UNIT[unit] * 100) / pct : 0;
+  const high = pct !== undefined && Number(pct) >= CTX_HIGH_PCT && window >= CTX_HIGH_MIN_WINDOW;
   return {
     ctx: pct !== undefined && !high ? `ctx ${pct}%` : null,
     ctxhigh: high ? `ctx ${pct}%` : null,
