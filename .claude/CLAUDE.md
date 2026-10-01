@@ -225,6 +225,7 @@ Follow the project's design language. Show success only after the work has succe
 - **Install dependencies on first need, not up front**: the first dev server, type check, test run, or repo check installs them. In a monorepo, install only the package you work in and what it depends on (`pnpm install --filter <pkg>...`).
 - A repo whose own instructions say to install first, or say how, wins over installing on first need.
 - A worktree isolates files but not ports or local databases. Assume other sessions of mine are running in sibling checkouts of the same repo: don't switch branches, stash, or rewrite a ref another session could be using, and give any server or database you start its own port.
+- Catch a branch up with its base by rebasing while only my sessions push to it, and by merging the base in once anyone else does, since a force push breaks their copy. Rebasing a branch that is already pushed still follows the push rules in How a task runs.
 - When I name a parent to stack on, usually partway through, rebase this branch onto it and set the PR's base to it. Most sessions never stack.
 
 ## External writing
