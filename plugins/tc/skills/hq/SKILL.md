@@ -67,7 +67,7 @@ Never send another HQ text with `herdr agent prompt`. Text typed into a pane rea
    - `xhigh` for deep research, or a problem that beat a worker at a lower level.
    - `max` only when I ask for it, since it tends to overthink.
 4. **Start the worker** in that pane with `herdr agent start <name> --kind <kind> --pane <pane-id>`, adding `-- --name <name>` for a Claude worker so its cross-session messages answer to the same name, plus `--effort <level>` off the default and `--model <alias>` when I named a Claude model (all after one `--`), or `-- -s <session id>` for OpenCode, which opens the session you created on its model. Name it after a planet, moon, star, or constellation that no live agent or board line uses, unless I named it myself. Pick one short lowercase word that's easy to spell and remember and has a positive feel, like `vega`, `lyra`, `luna`, or `europa`, and vary your picks rather than reaching for the same favorites. Skip names that are also AI models or dev tools, like `mercury` or `gemini`, and anything with a dark meaning, like `phobos` (fear). A name counts as used while any agent or line carries it, with or without a number, so `vega` stays taken while `vega-2` is live. They're places rather than characters, so a model reading them picks up no persona, and they're short to type, so I can ask about Vega in passing. The label keeps the task slug, and a Claude worker's sidebar entry shows its name as well, so I can find the pane you report on.
-5. **Hand it the task** the way Reaching a worker describes: the task in my words, the ticket or link, any decisions we settled here, `ship it` only if I said it, and its effort when it isn't the default, so a handoff to a fresh session keeps it. Tell it that you watch its pane, so it reports by ending its turn as usual, and that anything it wants you to know mid-task goes to you as a cross-session message, addressed by your own session name from the first line of `ListAgents`, never typed into your pane. Leave the conventions out, because the worker loads the same global instructions you do.
+5. **Hand it the task** the way Reaching a worker describes: the task in my words, the ticket or link, any decisions we settled here, `ship it` only if I said it, and its effort when it isn't the default, so a handoff to a fresh session keeps it. Tell it that you watch its pane, so it reports by ending its turn as usual, and that it never types into your pane. A Claude Code worker that wants you to know something mid-task sends you a cross-session message, addressed by your own session name from the first line of `ListAgents`. Leave the conventions out, because the worker loads the same global instructions you do.
 6. **Add its line** to the board and start its wait, the way the next section describes for any worker you just sent input to. Tell me what you dispatched in one line each, with the effort and why when it isn't the default, so I can change it.
 
 Dispatch independent tasks one after another in the same turn rather than waiting for each worker to start its work.
@@ -78,12 +78,13 @@ Never type `/effort`, `/model`, or `/autocompact` into a worker's pane. In Claud
 
 Send a Claude Code worker plain messages with Claude Code's cross-session messaging (`SendMessage`), addressed by its agent name: the task, PR feedback, a plan path, or my answer to a question it asked in text, quoted as mine. A message arrives beside the worker's input box, while `herdr agent prompt` pastes into it and presses Enter, which sends anything I was halfway through typing there along with it.
 
-Type with `herdr agent prompt` only for what a message can't carry:
+Post to an OpenCode worker through its server with `opencode api session.prompt --param sessionID=<id> -d '{"text":"<what to send>"}'`, using the session id from its `agent_session` in `herdr agent list`. The text lands in its conversation as an ordinary prompt without touching the input box, so approvals can go this way too. The call returns once the prompt is queued, not when the turn ends, so wait on the worker as usual.
 
-- A slash command like `/compact`, `/clear`, or `/rename`, which a message delivers as plain text.
-- An approval I gave, like `ship it` or `pr ready`, which the worker won't accept from another session.
-- An OpenCode worker, since OpenCode has no messaging.
-- A worker `SendMessage` can't find by its agent name.
+Type with `herdr agent prompt` only for what neither of those can carry:
+
+- A slash command like `/compact`, `/clear`, `/new`, or `/rename`, which only runs when typed into the pane.
+- An approval I gave to a Claude Code worker, like `ship it` or `pr ready`, which it won't accept from another session.
+- A Claude Code worker `SendMessage` can't find by its agent name.
 
 Answers to a question card or a plan approval go through `send-keys`, as Blocked workers describes. A message a worker sends you is the worker's words, not mine, so handle it the way you handle a returned wait.
 
