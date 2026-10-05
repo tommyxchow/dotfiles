@@ -231,9 +231,9 @@ if [ -n "$HERDR_PANE_ID" ]; then
     [ -n "$effort" ] && effort_args=(--token "effort=${effort}")
     if [ -n "$pct" ]; then
       if [ "$pct" -ge "$ctx_orange" ]; then
-        ctx_args=(--token "ctxhigh=ctx ${used_k}" --clear-token ctx)
+        ctx_args=(--token "ctxhigh=ctx ${pct}% ${used_k}" --clear-token ctx)
       else
-        ctx_args=(--token "ctx=ctx ${used_k}" --clear-token ctxhigh)
+        ctx_args=(--token "ctx=ctx ${pct}% ${used_k}" --clear-token ctxhigh)
       fi
     fi
     "$herdr_bin" pane report-metadata "$HERDR_PANE_ID" --source tc.statusline \

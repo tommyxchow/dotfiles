@@ -95,7 +95,7 @@ something wants attention, so it's findable without reading the line.
 ## Herdr tokens
 
 Inside a herdr pane the script also reports two pane tokens with `herdr pane
-report-metadata`: `effort`, and the context as `ctx 340k`. The model never sees
+report-metadata`: `effort`, and the context as `ctx 34% 340k`, without the window, to fit the sidebar. The model never sees
 its own statusline, so this is how an `hq` session reads a worker's context and
 effort. The herdr sidebar shows the context next to each Claude Code agent;
 effort is left out there, since it is fixed at launch and `hq` picked it.
