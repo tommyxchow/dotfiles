@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code Statusline
-# Format: repo:worktree branch | Model effort [fast] | ctx N% Nk/size [cold] | 5h N% [reset] · 7d N% [reset] | $cost
+# Format: repo:worktree branch | Model effort [fast] | N% NK/size [cold] | 5h N% [reset] · 7d N% [reset] | $cost
 # Structure comes from spacing and tier, not color: gray is chrome, orange/red
 # mean attention, and a healthy line carries neither.
 
@@ -11,7 +11,7 @@ if [ -z "$(printf '%s' "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0;
 # bash and passed via --arg) so empty fields are preserved on read. five_used and
 # seven_used are percentages *used*, matching the context count so every number
 # on the line runs the same direction; five_over and seven_over flag an
-# exhausted window; size is the context window formatted (1M / 200k) and size_raw
+# exhausted window; size is the context window formatted (1M / 200K) and size_raw
 # the same value in tokens, which the context red scales its trip point from;
 # used_k is the context in use, formatted the same way; cold is set when the
 # prompt cache has expired; fast is set in fast mode; project is the dir basename.
@@ -23,7 +23,7 @@ $(jq -r --arg us "$us" '
 def used: if . == null then "" else (floor | if . > 100 then 100 else . end | tostring) end;
 def over: if . == null then "" elif . > 100 then "1" else "" end;
 # Tokens in k, or M with one decimal from a million up (1M, 1.2M).
-def tok: if type != "number" then "" elif . >= 999500 then (([., 1000000] | max) / 100000 | floor) / 10 | tostring + "M" else ((. / 1000) | round | tostring) + "k" end;
+def tok: if type != "number" then "" elif . >= 999500 then (([., 1000000] | max) / 100000 | floor) / 10 | tostring + "M" else ((. / 1000) | round | tostring) + "K" end;
 [
   (.model.display_name // "--"),
   ((.rate_limits.five_hour.used_percentage // null) | used),
@@ -180,8 +180,9 @@ modelseg="${reset}${model}${reset}"
 [ -n "$meta" ] && modelseg="${modelseg} ${muted}${meta}${reset}"
 
 # Segment 3: context used as a percentage, the quick read that matches the
-# rate-limit windows, then the tokens over the window (34% 340k/1M) a tier down
-# for the exact size. Both come from the same token count.
+# rate-limit windows, then the tokens over the window (34% 340K/1M) a tier down
+# for the exact size. Both come from the same token count. It needs no label:
+# the token count is what tells it apart from the labeled rate-limit windows.
 # Orange is the soft ceiling of 50% on a window of 1M or more,
 # where compacting at the next break pays off; the herdr token below trips at
 # the same point. A smaller window has no soft ceiling, since auto-compact
@@ -200,9 +201,9 @@ if [ -n "$used_raw" ] && [ "$used_raw" -gt 0 ] && [ -n "$size_raw" ] && [ "$size
   if [ -n "$size_raw" ] && [ "$size_raw" -gt 200000 ]; then
     ctx_red=$(( 100 - 50000 * 100 / size_raw ))
   fi
-  ctxseg="${muted}ctx${reset} $(color_used "$pct" "$ctx_orange" "$ctx_red")${pct}%${reset} ${muted}${used_k}"
-  [ -n "$size" ] && ctxseg="${ctxseg}/${size}"
-  ctxseg="${ctxseg}${reset}"
+  ctxtext="${used_k}"
+  [ -n "$size" ] && ctxtext="${ctxtext}/${size}"
+  ctxseg="$(color_used "$pct" "$ctx_orange" "$ctx_red")${pct}%${reset} ${muted}${ctxtext}${reset}"
   # An expired prompt cache means the next message re-caches the whole
   # conversation, which only costs enough to matter on a large one.
   if [ -n "$cold" ] && [ -n "$used_raw" ] && [ "$used_raw" -ge 50000 ]; then
@@ -231,9 +232,9 @@ if [ -n "$HERDR_PANE_ID" ]; then
     [ -n "$effort" ] && effort_args=(--token "effort=${effort}")
     if [ -n "$pct" ]; then
       if [ "$pct" -ge "$ctx_orange" ]; then
-        ctx_args=(--token "ctxhigh=ctx ${pct}% ${used_k}" --clear-token ctx)
+        ctx_args=(--token "ctxhigh=${pct}% ${ctxtext}" --clear-token ctx)
       else
-        ctx_args=(--token "ctx=ctx ${pct}% ${used_k}" --clear-token ctxhigh)
+        ctx_args=(--token "ctx=${pct}% ${ctxtext}" --clear-token ctxhigh)
       fi
     fi
     "$herdr_bin" pane report-metadata "$HERDR_PANE_ID" --source tc.statusline \

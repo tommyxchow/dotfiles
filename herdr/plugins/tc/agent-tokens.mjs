@@ -45,12 +45,14 @@ function openCodeTokens(paneId) {
   const used = pct !== undefined ? Number(amount.replaceAll(",", "")) * UNIT[unit] : 0;
   const window = pct > 0 ? (used * 100) / pct : 0;
   const high = pct !== undefined && Number(pct) >= CTX_HIGH_PCT && window >= CTX_HIGH_MIN_WINDOW;
-  // The same shape as the Claude statusline's token: 34% 340k, or 1.2M from a million up.
+  // The Claude statusline's shape, 34% 340K or 1.2M from a million up, without
+  // the window: OpenCode's footer doesn't state it, and an estimate from a
+  // rounded percentage would be wrong at low use.
   const amountLabel =
     used >= 999_500
       ? `${Math.floor(Math.round(Math.max(used, 1_000_000)) / 100_000) / 10}M`
-      : `${Math.round(used / 1000)}k`;
-  const label = `ctx ${pct}% ${amountLabel}`;
+      : `${Math.round(used / 1000)}K`;
+  const label = `${pct}% ${amountLabel}`;
   return {
     ctx: pct !== undefined && !high ? label : null,
     ctxhigh: high ? label : null,

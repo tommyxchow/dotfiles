@@ -10,9 +10,9 @@ script.
 ## Output format
 
 ```
-healthy   frosty main | Opus 5.5 high | ctx 34% 340k/1M | 5h 24% · 7d 42%
-worktree  frosty:my-feature feat/add-auth | Opus 5.5 high | ctx 34% 340k/1M | 5h 24% · 7d 42%
-stressed  frosty main | Opus 5.5 high fast | ctx 96% 962k/1M cold | 5h out 1h48m · 7d 88% 4d6h | $1.42
+healthy   frosty main | Opus 5.5 high | 34% 340K/1M | 5h 24% · 7d 42%
+worktree  frosty:my-feature feat/add-auth | Opus 5.5 high | 34% 340K/1M | 5h 24% · 7d 42%
+stressed  frosty main | Opus 5.5 high fast | 96% 962K/1M cold | 5h out 1h48m · 7d 88% 4d6h | $1.42
 ```
 
 **Every number is "used", so bigger is always worse.** An earlier version
@@ -52,18 +52,19 @@ something wants attention, so it's findable without reading the line.
   `fast` follows it in fast mode, which bills at a higher rate. The display
   name's built-in `(… context)` suffix is stripped, since the context segment
   states the window.
-- **`ctx 34% 340k/1M`**: context used, first as a percentage for the quick
-  read, in the same shape as the rate-limit windows, then in gray as tokens
-  from `total_input_tokens` over the window from `context_window_size`, the
-  units compaction and cost are measured in. Both come from the same token
-  count, and only the percentage takes a color: orange at 50% on a window of 1M or more,
+- **`34% 340K/1M`**: context used, first as a percentage for the quick read,
+  in the same shape as the rate-limit windows, then in gray as tokens from
+  `total_input_tokens` over the window from `context_window_size`, the units
+  compaction and cost are measured in. It needs no label, since the token count
+  is what tells it apart from the labeled `5h` and `7d` windows. Both come from
+  the same token count, and only the percentage takes a color: orange at 50% on a window of 1M or more,
   the soft ceiling hq and the herdr sidebar also use, and red under 50K tokens
   of room, which is 75% on a 200K window and 95% on a 1M one (see Color
   thresholds). The window is the model's, not an `--autocompact` one: Claude
   Code doesn't pass that to the statusline, so an hq worker started with
-  `--autocompact 500k` still shows `/1M` and compacts at about 470k.
+  `--autocompact 500k` still shows `/1M` and compacts at about 470K.
 - **`cold`**: the prompt cache has expired (`prompt_cache.warm` is false), so
-  the next message re-caches the whole conversation. It shows only from 50k
+  the next message re-caches the whole conversation. It shows only from 50K
   tokens, where that re-cache costs enough to matter, and it's the moment a
   `/clear` is worth considering when the history isn't needed.
 - **`5h 24% · 7d 42%`**: 5-hour and 7-day rate-limit windows **used**.
@@ -95,7 +96,8 @@ something wants attention, so it's findable without reading the line.
 ## Herdr tokens
 
 Inside a herdr pane the script also reports two pane tokens with `herdr pane
-report-metadata`: `effort`, and the context as `ctx 34% 340k`, without the window, to fit the sidebar. The model never sees
+report-metadata`: `effort`, and the context as `34% 340K/1M`, the same text as the statusline (an
+OpenCode pane leaves off the window, which its footer doesn't state). The model never sees
 its own statusline, so this is how an `hq` session reads a worker's context and
 effort. The herdr sidebar shows the context next to each Claude Code agent;
 effort is left out there, since it is fixed at launch and `hq` picked it.
