@@ -52,6 +52,11 @@ repo-local.
   A `deny` rule matches a literal command prefix, so it covers one spelling and
   nothing else, and `Bash(git push --force*)` would also match
   `--force-with-lease` that restacking needs.
+  The one `autoMode` entry is an `environment` note, kept with `"$defaults"`
+  so the built-ins and their updates stay: herdr worktrees belong to their
+  repo. Don't name my GitHub account there as trusted source control, since on
+  a work machine that would clear pushes of company code to a personal repo;
+  the built-ins already trust the repo a session starts in.
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
   `~/.claude/CLAUDE.md` points to `.claude/CLAUDE.md`.**

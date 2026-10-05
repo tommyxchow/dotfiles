@@ -57,5 +57,11 @@
   "theme": "auto",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "autoMode": {
+    "environment": [
+      "$defaults",
+      "Linked git worktrees of the working repo, including the ones herdr creates under ~/.herdr/worktrees, are part of that repo"
+    ]
+  }
 }
