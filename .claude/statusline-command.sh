@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code Statusline
-# Format: repo:worktree branch | Model effort [fast] | ctx Nk/size [cold] | 5h N% [reset] · 7d N% [reset] | $cost
+# Format: repo:worktree branch | Model effort [fast] | ctx N% Nk/size [cold] | 5h N% [reset] · 7d N% [reset] | $cost
 # Structure comes from spacing and tier, not color: gray is chrome, orange/red
 # mean attention, and a healthy line carries neither.
 
@@ -179,8 +179,9 @@ meta="$effort"
 modelseg="${reset}${model}${reset}"
 [ -n "$meta" ] && modelseg="${modelseg} ${muted}${meta}${reset}"
 
-# Segment 3: context in use over the window, in tokens (340k/1M), so it can't be
-# mistaken for a rate-limit percentage. The colors still trip on the percentage.
+# Segment 3: context used as a percentage, the quick read that matches the
+# rate-limit windows, then the tokens over the window (34% 340k/1M) a tier down
+# for the exact size. Both come from the same token count.
 # Orange is the soft ceiling of 50% on a window of 1M or more,
 # where compacting at the next break pays off; the herdr token below trips at
 # the same point. A smaller window has no soft ceiling, since auto-compact
@@ -199,8 +200,9 @@ if [ -n "$used_raw" ] && [ "$used_raw" -gt 0 ] && [ -n "$size_raw" ] && [ "$size
   if [ -n "$size_raw" ] && [ "$size_raw" -gt 200000 ]; then
     ctx_red=$(( 100 - 50000 * 100 / size_raw ))
   fi
-  ctxseg="${muted}ctx${reset} $(color_used "$pct" "$ctx_orange" "$ctx_red")${used_k}${reset}"
-  [ -n "$size" ] && ctxseg="${ctxseg}${muted}/${size}${reset}"
+  ctxseg="${muted}ctx${reset} $(color_used "$pct" "$ctx_orange" "$ctx_red")${pct}%${reset} ${muted}${used_k}"
+  [ -n "$size" ] && ctxseg="${ctxseg}/${size}"
+  ctxseg="${ctxseg}${reset}"
   # An expired prompt cache means the next message re-caches the whole
   # conversation, which only costs enough to matter on a large one.
   if [ -n "$cold" ] && [ -n "$used_raw" ] && [ "$used_raw" -ge 50000 ]; then

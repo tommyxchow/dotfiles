@@ -10,9 +10,9 @@ script.
 ## Output format
 
 ```
-healthy   frosty main | Opus 5.5 high | ctx 340k/1M | 5h 24% · 7d 42%
-worktree  frosty:my-feature feat/add-auth | Opus 5.5 high | ctx 340k/1M | 5h 24% · 7d 42%
-stressed  frosty main | Opus 5.5 high fast | ctx 962k/1M cold | 5h out 1h48m · 7d 88% 4d6h | $1.42
+healthy   frosty main | Opus 5.5 high | ctx 34% 340k/1M | 5h 24% · 7d 42%
+worktree  frosty:my-feature feat/add-auth | Opus 5.5 high | ctx 34% 340k/1M | 5h 24% · 7d 42%
+stressed  frosty main | Opus 5.5 high fast | ctx 96% 962k/1M cold | 5h out 1h48m · 7d 88% 4d6h | $1.42
 ```
 
 **Every number is "used", so bigger is always worse.** An earlier version
@@ -52,10 +52,11 @@ something wants attention, so it's findable without reading the line.
   `fast` follows it in fast mode, which bills at a higher rate. The display
   name's built-in `(… context)` suffix is stripped, since the context segment
   states the window.
-- **`ctx 340k/1M`**: tokens in the context, from `total_input_tokens`, over the
-  window from `context_window_size`, so it can't be confused with a rate-limit
-  percentage and reads in the units compaction and cost are measured in. The
-  colors still trip on the percentage: orange at 50% on a window of 1M or more,
+- **`ctx 34% 340k/1M`**: context used, first as a percentage for the quick
+  read, in the same shape as the rate-limit windows, then in gray as tokens
+  from `total_input_tokens` over the window from `context_window_size`, the
+  units compaction and cost are measured in. Both come from the same token
+  count, and only the percentage takes a color: orange at 50% on a window of 1M or more,
   the soft ceiling hq and the herdr sidebar also use, and red under 50K tokens
   of room, which is 75% on a 200K window and 95% on a 1M one (see Color
   thresholds). The window is the model's, not an `--autocompact` one: Claude
@@ -170,7 +171,7 @@ since a healthy value now says nothing rather than saying "green".
 
 **One gray, ANSI bright black (`\033[90m`)**, covers everything structural:
 labels, separators, and the secondary annotations (the worktree repo prefix,
-the model's effort, the context window, the reset times, the cost). An earlier version
+the model's effort, the context's token count, the reset times, the cost). An earlier version
 split this into two tiers, but in a healthy line the second tier landed on
 exactly one token, so it read as a stumble rather than a hierarchy.
 
