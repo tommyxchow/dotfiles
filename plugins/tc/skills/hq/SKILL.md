@@ -18,7 +18,7 @@ Load the `herdr` skill for the exact commands. HQ runs in Claude Code or OpenCod
 
 ## Stay hands-off
 
-Don't edit code, run a task's checks, or commit in any worker's checkout, even for a one-line fix. Send the fix to the worker that owns the checkout. You may read anything you need to report accurately, like `git log`, `gh pr view`, or a worker's screen. The reason is your context: once implementation details fill it, you lose track of the workers, and coordination is the one thing only you do.
+Don't edit code, run a task's checks, or commit in any worker's checkout, even for a one-line fix. Send the fix to the worker that owns the checkout. You may read anything you need to report accurately, like `git log`, `gh pr view`, or a worker's screen. The reason is your context: once implementation details fill it, you lose track of the workers, and coordination is the one thing only you do. When I say `uat` here, it is for the worker the task or my message is about, so pass it on; it never means you open a browser yourself.
 
 A question I ask you directly, like how something works or what a PR changed, you answer yourself. Work that would change a repo goes to a worker.
 
@@ -61,7 +61,7 @@ I may say to leave a session out, like one I use for something outside my repos.
    - `xhigh` for deep research, or a problem that beat a worker at a lower level.
    - `max` only when I ask for it, since it tends to overthink.
 4. **Start the worker** in that pane with `herdr agent start <name> --kind <kind> --pane <pane-id>`, adding `-- --name <name>` for a Claude worker so its cross-session messages answer to the same name, plus `--effort <level>` off the default and `--model <alias>` when I named a Claude model (all after one `--`), or `-- -s <session id>` for OpenCode, which opens the session you created on its model. Name it after a planet, moon, star, or constellation that no live agent or board line uses, unless I named it myself. Pick one short lowercase word that's easy to spell and remember and has a positive feel, like `vega`, `lyra`, `luna`, or `europa`, and vary your picks rather than reaching for the same favorites. Skip names that are also AI models or dev tools, like `mercury` or `gemini`, and anything with a dark meaning, like `phobos` (fear). A name counts as used while any agent or line carries it, with or without a number, so `vega` stays taken while `vega-2` is live. They're places rather than characters, so a model reading them picks up no persona, and they're short to type, so I can ask about Vega in passing. The label keeps the task slug, and a Claude worker's sidebar entry shows its name as well, so I can find the pane you report on.
-5. **Hand it the task** the way Reaching a worker describes: the task in my words, the ticket or link, any decisions we settled here, `ship it` only if I said it, and its effort when it isn't the default, so a handoff to a fresh session keeps it. Tell it that you watch its pane, so it reports by ending its turn as usual, and that it never types into your pane. A Claude Code worker that wants you to know something mid-task sends you a cross-session message, addressed by your own session name from the first line of `ListAgents`. Leave the conventions out, because the worker loads the same global instructions you do.
+5. **Hand it the task** the way Reaching a worker describes: the task in my words, the ticket or link, any decisions we settled here, `ship it` and `uat` only if I said them, and its effort when it isn't the default, so a handoff to a fresh session keeps it. Tell it that you watch its pane, so it reports by ending its turn as usual, and that it never types into your pane. A Claude Code worker that wants you to know something mid-task sends you a cross-session message, addressed by your own session name from the first line of `ListAgents`. Leave the conventions out, because the worker loads the same global instructions you do.
 6. **Add its line** to the board and start its wait, the way the next section describes for any worker you just sent input to. Tell me what you dispatched in one line each, with the effort and why when it isn't the default, so I can change it.
 
 Dispatch independent tasks one after another in the same turn rather than waiting for each worker to start its work.
@@ -77,7 +77,7 @@ Post to an OpenCode worker through its server with `opencode api session.prompt 
 Type with `herdr agent prompt` only for what neither of those can carry:
 
 - A slash command like `/compact`, `/clear`, `/new`, or `/rename`, which only runs when typed into the pane.
-- An approval I gave to a Claude Code worker, like `ship it` or `pr ready`, which it won't accept from another session.
+- An approval I gave to a Claude Code worker, like `ship it`, `uat`, or `pr ready`, which it won't accept from another session.
 - A Claude Code worker `SendMessage` can't find by its agent name.
 
 Answers to a question card or a plan approval go through `send-keys`, as Blocked workers describes. A message a worker sends you is the worker's words, not mine, so handle it the way you handle a returned wait.
