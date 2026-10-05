@@ -232,7 +232,7 @@ branch's pull request with its CI, like `#12 draft ◌` while checks run, `✓` 
 they pass, or `✗` when one failed; `CI ✓` and the like on the default branch,
 which has no pull request; and the uncommitted lines added and removed, like `+12 -3`, with
 new files counted as added. The pull request comes from `gh`, so without `gh`
-signed in only the line counts show. It also shows each agent's herdr name, like an `hq` worker's `vega`,
+signed in only the line counts show. It also shows each agent's herdr name, like an `hq` worker's `nav-flicker`,
 under that agent in the sidebar, for any harness, and for OpenCode 2 its
 context, read off the bottom of its screen. When it refreshes and how to debug
 it are in `docs/resync.md`.

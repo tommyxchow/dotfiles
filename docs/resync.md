@@ -347,14 +347,14 @@ setup expects five settings in it:
   fresh Claude session titles itself "Claude Code", so that title row hides
   until the session has a real title; `hide` needs herdr 0.9.1 or newer. The
   last row is the agent's herdr name in bold, which the `tc` plugin publishes
-  for every harness, so an `hq` worker named `vega` is easy to find; an agent
+  for every harness, so an `hq` worker named `nav-flicker` is easy to find; an agent
   with no name shows no such row. Claude's adds the context the statusline
   publishes (see `docs/statusline.md`), and OpenCode's adds the context the
   `tc` plugin reads off its screen. The context turns orange as `$ctxhigh` past
   the soft ceiling. Effort and model stay out: both are fixed at launch, and
   `hq`, which picks them, reads the `effort` token from `herdr agent list`. Any
   other harness uses `rows`, herdr's default with the name added after the
-  harness, like `codex · vega`. An entry replaces `rows` rather than adding to
+  harness, like `codex · nav-flicker`. An entry replaces `rows` rather than adding to
   it.
 - **Spaces rows** are herdr's defaults plus the `$pr`, `$added`, and `$removed` slots
   the `tc` plugin fills: the PR or default-branch CI state, then the
