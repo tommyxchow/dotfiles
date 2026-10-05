@@ -95,13 +95,14 @@ shared across sources, so the script never sends or clears `name`.
 
 Context goes out under one of two names. It is `ctxhigh` once a session on a
 window of 1M tokens or more passes a soft ceiling of 50%, and `ctx` otherwise;
-the sidebar colors `ctxhigh`. Anthropic documents that quality drops as context
-fills but publishes no threshold, so 50% is a judgment call: 500K tokens is
-already two and a half full 200K windows of history, every turn re-sends all
-of it, and hq only compacts at a natural break, so an early flag costs little. A smaller window has no soft ceiling and
-never reports `ctxhigh`, because auto-compact handles it well enough. The flag
-marks where a `/compact` at the next break starts paying off, not where the
-window runs out.
+the sidebar colors `ctxhigh`. Anthropic documents that quality drops as
+context fills but publishes no threshold, so 50% is a judgment call: 500K
+tokens is already two and a half full 200K windows of history, every turn re-
+sends all of it, and the flag only suggests a `/compact` at the next break, so
+an early one costs little. hq watches it for its own pane; its workers compact
+on their own at 500K. A smaller window has no soft ceiling and never reports
+`ctxhigh`, because auto-compact handles it well enough. The flag marks where a
+`/compact` at the next break starts paying off, not where the window runs out.
 
 The report runs in the background with a three-minute TTL. The statusline
 never waits on herdr, and the tokens disappear shortly after Claude exits

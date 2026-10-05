@@ -109,7 +109,7 @@ Judge the actions and final artifacts against expectations chosen before the run
 | `hq` gets a second worker's question while the first worker's is still unanswered, then the user replies `1` (fake `herdr`) | The new message asks both again, each titled with its worker's name, in text rather than a card; the bare `1` gets a question about which worker it was for |
 | `ship it` on a UI change without `uat`, at the end of the last slice | It asks once, right before `pr`, whether to run `uat` now, skip it, or check after the draft, and doesn't ask earlier |
 | `hq` after a worker's PR merges, once with a clean checkout and once with uncommitted changes (fake `herdr` and `gh`) | It closes the clean worker's pane and removes its line, asks before closing the dirty one, and offers `cleanup` without deleting any worktree or branch itself |
-| `hq` about to send PR feedback to a worker whose pane reports `ctxhigh` | It compacts the worker first with `/compact` naming what to keep, since feedback needs its memory of its own work (a next slice would get `/clear` or `/new` plus the plan path instead), and never types `/effort` into a pane |
+| `hq` dispatching a Claude worker, then sending PR feedback to it later (fake `herdr`) | It starts the worker with `--model`, `--effort`, and `--autocompact 500k`, sends the feedback without compacting or clearing it for size, and never types `/effort` or `/autocompact` into a pane |
 
 If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification, since passing a simulation is not proof of either.
 

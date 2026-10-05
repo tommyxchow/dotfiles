@@ -215,20 +215,24 @@ repo-local.
   a bug class that is costly to miss. Don't propose the move again.
 
 - **Models are set by alias, and effort stays at each model's default, except
-  Opus 5.5 at `high`.** `model` and `advisorModel` are both `opus`, since Opus
-  5.5 outranks Fable 5.1 on Artificial Analysis (2026-09-27); when that flips,
-  switch the advisor back to `fable`. Aliases follow the newest release of each family, so a new model needs no
-  edit here. Pin a version or add a suffix like `[1m]` only when the model docs
+  Opus 5.5 at `high`.** `model` is `opus`, since Opus 5.5 outranks Fable 5.1
+  on Artificial Analysis (2026-10-04). `advisorModel` is `fable` anyway, my
+  choice (2026-10-04) for a second model's opinion, and it stays when Opus
+  leads. Aliases follow the newest release of each family, so a new model
+  needs no edit here. Pin a version or add a suffix like `[1m]` only when the model docs
   say the bare alias falls short. The one kept `modelSettings` entry,
   `claude-opus-5-5` at `high`, is my choice (2026-09-27); it is keyed to that
   model id, so when the `opus` alias moves on it stops applying and the new
   model runs at its default until I pick again. Any other `modelSettings` entry
-  or top-level `effortLevel` that appears is a `/effort` or `/model`
-  write-back; discard it unless I say to keep that level. A stray top-level `effortLevel` does more harm here than elsewhere:
+  or top-level `effortLevel` or `autoCompactWindow` that appears is a
+  `/effort`, `/model`, or `/autocompact` write-back; discard it unless I say
+  to keep that level. A stray top-level `effortLevel` does more harm here than elsewhere:
   inside this checkout this file is also project settings, and a project-level
   `effortLevel` overrides every model's own default. This covers saved
-  settings only: `hq` picks a worker's effort per launch with `--effort`,
-  which lasts one session and writes nothing back.
+  settings only: `hq` picks a worker's effort per launch with `--effort` and
+  gives it a 500K auto-compact window with `--autocompact 500k`, both lasting
+  one session and writing nothing back. Other sessions keep Claude Code's
+  default window, since I can compact or clear the ones I sit in.
 
 - **Rejected, don't propose again.** Loading the herdr rules only inside herdr
   through a hook: hooks are Claude Code-only, so Cursor, Grok Build, and

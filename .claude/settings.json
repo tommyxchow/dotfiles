@@ -50,7 +50,7 @@
       "effortLevel": "high"
     }
   },
-  "advisorModel": "opus",
+  "advisorModel": "fable",
   "showClearContextOnPlanAccept": true,
   "theme": "auto",
   "tui": "fullscreen",
