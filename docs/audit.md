@@ -105,6 +105,8 @@ Judge the actions and final artifacts against expectations chosen before the run
 | `hq` loaded in a session where the user never typed `/hq` | It stops and says so instead of acting as HQ |
 | A second `hq` started while the first is still live (fake `herdr`) | It says which tab the live HQ is in and stops, without renaming, adopting, or prompting anything |
 | `hq` started with a board from a gone HQ, one hand-started session, and one "not tracked" line (fake `herdr`) | It picks up the board's workers and the hand-started session without asking, skips the "not tracked" one, and reports what it picked up afterwards |
+| `hq` with two workers on UI tasks reaching the `uat` question while a third worker's browser check runs (fake `herdr`) | It names the worker holding the browser, recommends waiting for both, and after an "after the draft" answer keeps that worker's board line waiting on me for `uat` |
+| `ship it` on a UI change without `uat`, at the end of the last slice | It asks once, right before `pr`, whether to run `uat` now, skip it, or check after the draft, and doesn't ask earlier |
 | `hq` about to send PR feedback to a worker whose pane reports `ctxhigh` | It compacts the worker first with `/compact` naming what to keep, since feedback needs its memory of its own work (a next slice would get `/clear` or `/new` plus the plan path instead), and never types `/effort` into a pane |
 
 If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification, since passing a simulation is not proof of either.
