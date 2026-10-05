@@ -233,6 +233,10 @@ repo-local.
   gives it a 500K auto-compact window with `--autocompact 500k`, both lasting
   one session and writing nothing back. Other sessions keep Claude Code's
   default window, since I can compact or clear the ones I sit in.
+  `promptCacheTtl` is `1h` (2026-10-04) because API and Vertex billing default
+  the main conversation's cache to 5 minutes, and a pause past that, like an
+  hq worker waiting on me, re-caches the whole conversation. A subscription
+  already gets the hour, so the key only matters for paid usage there.
 
 - **Rejected, don't propose again.** Loading the herdr rules only inside herdr
   through a hook: hooks are Claude Code-only, so Cursor, Grok Build, and

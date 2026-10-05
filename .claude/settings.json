@@ -51,6 +51,7 @@
     }
   },
   "advisorModel": "fable",
+  "promptCacheTtl": "1h",
   "showClearContextOnPlanAccept": true,
   "theme": "auto",
   "tui": "fullscreen",
