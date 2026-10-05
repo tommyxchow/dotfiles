@@ -106,7 +106,7 @@ Apply the Must items first, then the rest. The official order is to update first
 6. For generated UI, inspect what an overwrite would change and take only the real supersedes.
 7. Update AGENTS.md / README: add new gotchas, prune stale ones, and record new holds.
 
-Finish what a bump starts by removing the APIs, config keys, and docs it superseded. Don't leave old and new paths side by side, shims, or eslint-disables behind. Don't delete unused starter dependencies or hunt for dead files; that is Skip / `polish` work.
+Finish what a bump starts by removing the APIs, config keys, and docs it superseded. Don't leave old and new paths side by side, shims, or eslint-disables behind. Don't delete unused starter dependencies or hunt for dead files; that is out of scope here, so list any you noticed under Skip.
 
 ### 5. Verify
 

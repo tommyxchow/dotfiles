@@ -101,7 +101,8 @@ permissions, model and advisor, theme, plugins, statusline, and marketplaces.
 
 First-party skills are the directories under `plugins/tc/skills`, live links
 into `~/.claude/skills` that Claude Code, Cursor, Grok Build, and OpenCode 2 all
-read. Slash any of them from any repo after the installer has run. Details live
+read. Slash any of them from any repo after the installer has run; OpenCode 2
+reaches them through its `/skills` picker instead. Details live
 in the skill files.
 
 | Slash | When |
@@ -115,7 +116,7 @@ in the skill files.
 | `/pr` | Prepare the task, review its complete final diff, publish a draft with acceptance evidence, then watch its CI to green. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
-| `/hq` | Manual only. Run this herdr session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's effort at launch, runs Claude models in Claude Code, and shares one board with any other HQ. Never builds or approves for you, and merges only a PR you name. |
+| `/hq` | Manual only. Run this herdr session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's effort at launch, runs Claude models in Claude Code, and picks up sessions already running; one HQ runs at a time. Never builds or approves for you, and merges only a PR you name. |
 | `/cleanup` | Repo hygiene: finished and dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
 | `/tldr` | A skimmable summary, answer first. Bare is the last few messages; it also takes a topic, file, URL, pasted text, `changes`, `pr` with a number or URL, or `session`. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |

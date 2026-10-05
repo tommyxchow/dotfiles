@@ -40,7 +40,7 @@ Include the relevant UI states, keyboard path, and mutation failure paths from t
 
 **Feedback and scope changes.** Turn a pasted PM or reviewer note into numbered items tagged "UAT feedback," one per distinct point, and read its screenshots for the points the text left out. Each item ends fixed with evidence, declined with a one-line reason to relay, or as one question back with a recommended reading when a screenshot is ambiguous. A criterion the user drops mid-build stays in the ledger marked dropped, so nothing disappears silently. A case the plan missed enters the ledger tagged "discovered," with its evidence when built or as a follow-up when deferred under the global rule.
 
-**Browser and device UAT follows the global rule.** It stays off until `uat`, and a drive under `uat` is cited as evidence. Re-drive only what a slice couldn't reach or what a matching preview now shows. Otherwise mark each as "covered by tests, not checked by hand; say `uat` to check it" or "unverified," according to the evidence, and include its click path. A missing or failed browser or device blocks that evidence, but it doesn't block independent checks or fixes. Prefer a PR preview only after its deployed commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head). A preview of the previous push is not evidence for this one.
+**Browser and device UAT follows the global rule.** It stays off until `uat`, and a drive under `uat` is cited as evidence. Re-drive only what a slice couldn't reach or what a matching preview now shows. Otherwise mark each as "covered by tests, not checked by hand; say `uat` to check it" or "unverified," according to the evidence, and include its click path. When the user already answered the global `uat` question, follow the answer instead: skip marks those items unverified and accepted, and check after the draft marks them pending. A missing or failed browser or device blocks that evidence, but it doesn't block independent checks or fixes. Prefer a PR preview only after its deployed commit matches the current head (`gh api repos/{owner}/{repo}/deployments?sha=<head>` and its statuses, or the deploy bot's comment on this head). A preview of the previous push is not evidence for this one.
 
 ## 2. Open
 
@@ -107,7 +107,7 @@ Don't trigger bots to re-review, and don't try to detect which bot posted. The o
 Both modes use the same evidence, and `check` stays report-only as the top of this skill says. Explicit `ready` approval permits in-scope fixes through Update, and then you recheck the resulting head before flipping the draft.
 
 - Local `HEAD` matches the remote PR head, no pending task edits remain, and the body reflects that head. A local check with dirty task files does not prove the published PR. In `check`, report the mismatch. In `ready`, finish and push the task through Update first.
-- Every ledger item is proven, exercised, or unverified with a reason the user has accepted.
+- Every ledger item is proven, exercised, or unverified with a reason the user has accepted. An item pending a `uat` check after the draft blocks until the check runs or the user drops it.
 - No actionable threads are unresolved, checked with the complete thread and comment lookup in section 3. Apply that section's resolution policy: human pushback or judgment threads with an outcome reply may stay open when no implementation work or user decision remains outstanding.
 - The local check is green on this head, and `gh pr checks` shows the required checks passing, which is where the whole suite's result comes from. Pending is not green. When a repo has no check of its own, say so and count it as unverified, never as a pass.
 - The whole PR diff has been reviewed on this head. Reuse an equivalent complete review from Open or Update, and otherwise run `review pr <number>` as the final task review, in a fresh context. Apply the global mechanical/docs/config/instruction-only skip. In `check`, report the findings. In `ready`, send confirmed findings through Update, then restart this check. Per-push reviews of separate pieces do not replace a whole-diff review.
@@ -154,6 +154,6 @@ All six checklist items are proven by tests. The two visual ones are covered by 
 Nothing else outstanding.
 
 Next
-- [1] Mark it ready after your check (recommended)
+- [1] Mark it ready after your check (recommended: every item is proven and CI is green)
 - [2] Leave it as a draft
 ```

@@ -25,7 +25,7 @@ What changed in Claude Code, OpenCode 2, Grok Build, Cursor, and herdr since the
 - A capability worth adopting: a new frontmatter key the skills should carry, a question tool where a skill still asks in text, a subagent or worktree feature `pr` or `review` could use.
 - A key or setting in the configs that a harness renamed, deprecated, or now defaults to.
 - A capability `hq` depends on that differs by harness: waking a session when a background command ends, since only those harnesses can run as HQ. Claude Code and OpenCode 2 could as of 2026-09-27. Grok Build's own docs say a finished background command wakes the parent too, so it is a candidate once a real `hq` trial on it passes. Manual-only skills are settled: `hq` carries both `disable-model-invocation` for Claude Code and `opencode/autoinvoke: "false"` for OpenCode 2.
-- A herdr command that would simplify `hq`, like one wait across several agents (`agent wait` took a single target as of v0.9.1), or a built-in owner for an agent that could replace the board's owner tag.
+- A herdr command that would simplify `hq`, like one wait across several agents (`agent wait` took a single target as of v0.9.1).
 - What Anthropic's docs for the newest Opus say now: its prompting guide, which the voice rule in `.claude/references/instruction-files.md` follows. Propose what changed, but leave any difference the repo `CLAUDE.md` records as a choice.
 
 Say what you checked and the version or date it was current as of.

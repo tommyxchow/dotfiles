@@ -122,9 +122,9 @@ repo-local.
 
 - **Keep shared skills portable Agent Skills** (`name` and `description`
   required). Claude Code-only `context` / `agent` / `background` are fine where
-  a skill should fork, and `disable-model-invocation` is read by Claude and
-  Cursor but not OpenCode 2, which needs `metadata: opencode/autoinvoke:
-  "false"` for the same effect, so a manual-only skill carries both. Whatever
+  a skill should fork, and `disable-model-invocation` is read by Claude Code,
+  Cursor, and Grok Build but not OpenCode 2, which needs
+  `metadata: opencode/autoinvoke: "false"` for the same effect, so a manual-only skill carries both. Whatever
   such a key enforces has to be written into the skill's own text as well, or
   it only holds where the key is read. Don't put `allowed-tools` on a shared
   skill.
@@ -277,7 +277,11 @@ repo-local.
   the readiness line, since it duplicates the `pr` description only where a
   harness loads descriptions every session, which is unconfirmed for Grok
   Build; and `maxProseWidth`, a matter of taste that settings leave at the
-  default.
+  default. From the 2026-10-04 audit: dropping the UI lines on contrast and
+  tap targets and on showing success only after it succeeds, the
+  half-finished-work flag line, and expand, migrate, contract, for lack of a
+  recorded mistake. Each guards a mistake that costs a lot when it happens,
+  so they stay.
 
 - **Where the global file differs from Anthropic's prompting advice, it does so on purpose.**
   Anthropic leans toward prose with little bold, calm emphasis, and saying what
