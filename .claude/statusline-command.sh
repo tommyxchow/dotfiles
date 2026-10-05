@@ -252,9 +252,12 @@ done
 # Segment 5: estimated session cost, client-side and reset by /clear. Shown
 # only when tokens are actually being billed: a spent window means usage is
 # drawing on credits, and no rate-limit data at all means API pricing. Inside
-# the subscription allowance the number isn't money, so it stays hidden.
+# the subscription allowance the number isn't money, so it stays hidden. Rate
+# limits only arrive with the first response, so "no rate-limit data" counts
+# only once a response has filled the context; before that a fresh subscription
+# session would read as API pricing and show $0.00.
 costseg=""
-if [ -n "$cost" ] && { [ -n "$five_over" ] || [ -n "$seven_over" ] || [ -z "$five_used$seven_used" ]; }; then
+if [ -n "$cost" ] && [ -n "$used_raw" ] && [ "$used_raw" -gt 0 ] && { [ -n "$five_over" ] || [ -n "$seven_over" ] || [ -z "$five_used$seven_used" ]; }; then
   costseg="${muted}\$$(printf '%.2f' "$cost")${reset}"
 fi
 

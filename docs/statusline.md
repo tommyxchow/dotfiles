@@ -88,7 +88,9 @@ something wants attention, so it's findable without reading the line.
   real bill), two decimals, gray. `/clear` resets it to $0; a rate-limit window
   resetting does not. It appears **only when tokens are actually being billed**:
   a window reading `out` (usage drawing on credits) or no `rate_limits` in the
-  payload at all (API-key pricing). Inside the subscription allowance the figure
+  payload at all (API-key pricing), counted only after the first response,
+  since rate limits arrive with it and a fresh session would otherwise show
+  `$0.00`. Inside the subscription allowance the figure
   isn't money, so a permanent one would just be a number to ignore. It covers
   the whole session at list rates, so a window that flips to `out` mid-session
   reveals a figure that includes what you spent before credits started.
