@@ -42,11 +42,14 @@ function openCodeTokens(paneId) {
   // "12 (40%)" can't stand in for a footer that has no reading yet.
   const footer = lines.findLast((line) => line.trim() !== "") ?? "";
   const [, amount, unit, pct] = footer.match(OPENCODE_CTX) ?? [];
-  const window = pct > 0 ? (Number(amount.replaceAll(",", "")) * UNIT[unit] * 100) / pct : 0;
+  const used = pct !== undefined ? Number(amount.replaceAll(",", "")) * UNIT[unit] : 0;
+  const window = pct > 0 ? (used * 100) / pct : 0;
   const high = pct !== undefined && Number(pct) >= CTX_HIGH_PCT && window >= CTX_HIGH_MIN_WINDOW;
+  // The same units as the Claude statusline's token: 340k, or 1.2M from a million up.
+  const label = used >= 1_000_000 ? `ctx ${Math.floor(used / 100_000) / 10}M` : `ctx ${Math.round(used / 1000)}k`;
   return {
-    ctx: pct !== undefined && !high ? `ctx ${pct}%` : null,
-    ctxhigh: high ? `ctx ${pct}%` : null,
+    ctx: pct !== undefined && !high ? label : null,
+    ctxhigh: high ? label : null,
   };
 }
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code Statusline
-# Format: repo:worktree branch | Model size effort | ctx N% | 5h N% [reset] · 7d N% [reset] | $cost
+# Format: repo:worktree branch | Model effort [fast] | ctx Nk/size [cold] | 5h N% [reset] · 7d N% [reset] | $cost
 # Structure comes from spacing and tier, not color: gray is chrome, orange/red
 # mean attention, and a healthy line carries neither.
 
@@ -11,16 +11,19 @@ if [ -z "$(printf '%s' "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0;
 # bash and passed via --arg) so empty fields are preserved on read. five_used and
 # seven_used are percentages *used*, matching the context percentage so every
 # number on the line runs the same direction; five_over and seven_over flag an
-# exhausted window; size is the context window formatted (1M / 200K) and size_raw
+# exhausted window; size is the context window formatted (1M / 200k) and size_raw
 # the same value in tokens, which the context red scales its trip point from;
-# project is the dir basename.
+# used_k is the context in use, formatted the same way; cold is set when the
+# prompt cache has expired; fast is set in fast mode; project is the dir basename.
 us=$'\037'
-IFS="$us" read -r model used_pct five_used five_over seven_used seven_over effort size size_raw project cur_dir five_reset seven_reset cost repo wt <<EOF
+IFS="$us" read -r model used_pct five_used five_over seven_used seven_over effort size size_raw project cur_dir five_reset seven_reset cost repo wt used_k used_raw cold fast <<EOF
 $(jq -r --arg us "$us" '
 # used_percentage is documented 0–100. Clamp display at 100; flag only values
 # over 100 as spent (`out`), so 100% still means full.
 def used: if . == null then "" else (floor | if . > 100 then 100 else . end | tostring) end;
 def over: if . == null then "" elif . > 100 then "1" else "" end;
+# Tokens in k, or M with one decimal from a million up (1M, 1.2M).
+def tok: if type != "number" then "" elif . >= 1000000 then ((. / 100000 | floor) / 10 | tostring) + "M" else ((. / 1000) | round | tostring) + "k" end;
 [
   (.model.display_name // "--"),
   (.context_window.used_percentage // ""),
@@ -29,7 +32,7 @@ def over: if . == null then "" elif . > 100 then "1" else "" end;
   ((.rate_limits.seven_day.used_percentage // null) | used),
   ((.rate_limits.seven_day.used_percentage // null) | over),
   (.effort.level // ""),
-  ((.context_window.context_window_size // null) | if . == null then "" elif . >= 1000000 then ((. / 1000000) | floor | tostring) + "M" elif . >= 1000 then ((. / 1000) | floor | tostring) + "K" else tostring end),
+  ((.context_window.context_window_size // null) | tok),
   ((.context_window.context_window_size // null) | if type == "number" then floor else "" end),
   (((.workspace.project_dir // .workspace.current_dir // "") | gsub("\\\\"; "/") | split("/") | map(select(length > 0)) | last) // ""),
   ((.workspace.current_dir // "") | gsub("\\\\"; "/")),
@@ -37,7 +40,11 @@ def over: if . == null then "" elif . > 100 then "1" else "" end;
   (.rate_limits.seven_day.resets_at // ""),
   (.cost.total_cost_usd // ""),
   (.workspace.repo.name // ""),
-  (.worktree.name // .workspace.git_worktree // "")
+  (.worktree.name // .workspace.git_worktree // ""),
+  ((.context_window.total_input_tokens // null) | tok),
+  ((.context_window.total_input_tokens // null) | if type == "number" then floor else "" end),
+  (if .prompt_cache.warm == false then "1" else "" end),
+  (if .fast_mode == true then "1" else "" end)
 ] | map(tostring) | join($us)' <<<"$input")
 EOF
 
@@ -165,15 +172,17 @@ if [ -n "$name" ]; then
   loc="${loc}${reset}"
 fi
 
-# Segment 2: model, trailed by size + effort a tier down. Both are static
-# session config, so they sit apart from the numbers that move.
-meta="$size"
-[ -n "$effort" ] && meta="${meta:+$meta }$effort"
+# Segment 2: model, trailed by effort and fast mode a tier down. Both are
+# session config, so they sit apart from the numbers that move. Fast mode is
+# named because it bills at a higher rate.
+meta="$effort"
+[ -n "$fast" ] && meta="${meta:+$meta }fast"
 modelseg="${reset}${model}${reset}"
 [ -n "$meta" ] && modelseg="${modelseg} ${muted}${meta}${reset}"
 
-# Segment 3: context window used, labeled so the % can't be mistaken for a
-# rate-limit one. Orange is the soft ceiling of 50% on a window of 1M or more,
+# Segment 3: context in use over the window, in tokens (340k/1M), so it can't be
+# mistaken for a rate-limit percentage. The colors still trip on the percentage.
+# Orange is the soft ceiling of 50% on a window of 1M or more,
 # where compacting at the next break pays off; the herdr token below trips at
 # the same point. A smaller window has no soft ceiling, since auto-compact
 # handles it, so 101 keeps orange from ever tripping there. Red means auto-compact is close, so it trips on room left rather than
@@ -190,7 +199,13 @@ if [ -n "$used_pct" ]; then
   if [ -n "$size_raw" ] && [ "$size_raw" -gt 200000 ]; then
     ctx_red=$(( 100 - 50000 * 100 / size_raw ))
   fi
-  ctxseg="${muted}ctx${reset} $(color_used "$pct" "$ctx_orange" "$ctx_red")${pct}%${reset}"
+  ctxseg="${muted}ctx${reset} $(color_used "$pct" "$ctx_orange" "$ctx_red")${used_k}${reset}"
+  [ -n "$size" ] && ctxseg="${ctxseg}${muted}/${size}${reset}"
+  # An expired prompt cache means the next message re-caches the whole
+  # conversation, which only costs enough to matter on a large one.
+  if [ -n "$cold" ] && [ -n "$used_raw" ] && [ "$used_raw" -ge 50000 ]; then
+    ctxseg="${ctxseg} ${orange}cold${reset}"
+  fi
 fi
 
 # Inside a herdr pane, publish the agent's effort and context as pane tokens,
@@ -214,9 +229,9 @@ if [ -n "$HERDR_PANE_ID" ]; then
     [ -n "$effort" ] && effort_args=(--token "effort=${effort}")
     if [ -n "$used_pct" ]; then
       if [ "$pct" -ge "$ctx_orange" ]; then
-        ctx_args=(--token "ctxhigh=ctx ${pct}%" --clear-token ctx)
+        ctx_args=(--token "ctxhigh=ctx ${used_k}" --clear-token ctx)
       else
-        ctx_args=(--token "ctx=ctx ${pct}%" --clear-token ctxhigh)
+        ctx_args=(--token "ctx=ctx ${used_k}" --clear-token ctxhigh)
       fi
     fi
     "$herdr_bin" pane report-metadata "$HERDR_PANE_ID" --source tc.statusline \

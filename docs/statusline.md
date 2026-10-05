@@ -1,8 +1,8 @@
 # Statusline
 
 `.claude/statusline-command.sh` is my Claude Code statusline: location as
-`repo:worktree branch`, model with context size and effort, context used, the
-5h and 7d rate-limit windows, and session cost when it is real money. The
+`repo:worktree branch`, model with effort, context in tokens over the window,
+the 5h and 7d rate-limit windows, and session cost when it is real money. The
 installer links it and `settings.json` already runs it (see `README.md`), so a
 new machine needs nothing else. This file is the design notes behind the
 script.
@@ -10,12 +10,12 @@ script.
 ## Output format
 
 ```
-healthy   frosty main | Opus 4.8 1M xhigh | ctx 34% | 5h 24% · 7d 42%
-worktree  frosty:my-feature feat/add-auth | Opus 4.8 1M xhigh | ctx 34% | 5h 24% · 7d 42%
-stressed  frosty main | Opus 4.8 1M xhigh | ctx 79% | 5h out 1h48m · 7d 88% 4d6h | $1.42
+healthy   frosty main | Opus 5.5 high | ctx 340k/1M | 5h 24% · 7d 42%
+worktree  frosty:my-feature feat/add-auth | Opus 5.5 high | ctx 340k/1M | 5h 24% · 7d 42%
+stressed  frosty main | Opus 5.5 high fast | ctx 962k/1M cold | 5h out 1h48m · 7d 88% 4d6h | $1.42
 ```
 
-**Every percentage is "used", so bigger is always worse.** An earlier version
+**Every number is "used", so bigger is always worse.** An earlier version
 showed context as used and the rate-limit windows as remaining, which put two
 opposite scales behind the same `NN%` shape: a high number and a low number both meant trouble,
 four tokens apart. One direction means one mental model and one color function.
@@ -46,16 +46,25 @@ something wants attention, so it's findable without reading the line.
 - A `--worktree` session names its branch `worktree-<name>`, which would print
   the worktree name twice. That case **drops the branch**, since the place has
   already said it.
-- **`Opus 4.8 1M xhigh`**: model name, then context-window size and effort in
-  gray. Both are static session config, so they get their own segment away from
-  the numbers that move. Size comes from `context_window_size` (`1M` /
-  `200K`); effort from the live `/effort` (`low` / `medium` / `high` / `xhigh` /
-  `max`; Ultracode reports as `xhigh`). The display name's built-in
-  `(… context)` suffix is stripped so the size isn't stated twice.
-- **`ctx 34%`**: context window used, labeled so it can't be confused with a
-  rate-limit percentage. Orange at 50% on a window of 1M or more, the soft
-  ceiling hq and the herdr sidebar also use, and red under 50K tokens of room,
-  which is 75% on a 200K window and 95% on a 1M one (see Color thresholds).
+- **`Opus 5.5 high`**: model name, then effort in gray, from the live `/effort`
+  (`low` / `medium` / `high` / `xhigh` / `max`; Ultracode reports as `xhigh`).
+  Effort is session config, so it sits apart from the numbers that move. A
+  `fast` follows it in fast mode, which bills at a higher rate. The display
+  name's built-in `(… context)` suffix is stripped, since the context segment
+  states the window.
+- **`ctx 340k/1M`**: tokens in the context, from `total_input_tokens`, over the
+  window from `context_window_size`, so it can't be confused with a rate-limit
+  percentage and reads in the units compaction and cost are measured in. The
+  colors still trip on the percentage: orange at 50% on a window of 1M or more,
+  the soft ceiling hq and the herdr sidebar also use, and red under 50K tokens
+  of room, which is 75% on a 200K window and 95% on a 1M one (see Color
+  thresholds). The window is the model's, not an `--autocompact` one: Claude
+  Code doesn't pass that to the statusline, so an hq worker started with
+  `--autocompact 500k` still shows `/1M` and compacts at about 470k.
+- **`cold`**: the prompt cache has expired (`prompt_cache.warm` is false), so
+  the next message re-caches the whole conversation. It shows only from 50k
+  tokens, where that re-cache costs enough to matter, and it's the moment a
+  `/clear` is worth considering when the history isn't needed.
 - **`5h 24% · 7d 42%`**: 5-hour and 7-day rate-limit windows **used**.
   Uncolored below 75, orange at 75, red at 90. Pro/Max only, and only after the
   first API response of a session.
@@ -85,7 +94,7 @@ something wants attention, so it's findable without reading the line.
 ## Herdr tokens
 
 Inside a herdr pane the script also reports two pane tokens with `herdr pane
-report-metadata`: `effort`, and the context as `ctx 34%`. The model never sees
+report-metadata`: `effort`, and the context as `ctx 340k`. The model never sees
 its own statusline, so this is how an `hq` session reads a worker's context and
 effort. The herdr sidebar shows the context next to each Claude Code agent;
 effort is left out there, since it is fixed at launch and `hq` picked it.
@@ -152,7 +161,7 @@ window, while 75% used is 50K on a 200K window and 250K on a 1M one.
 |        | Context        | Rate-limit window   |
 | ------ | -------------- | ------------------- |
 | low    | none           | none                |
-| orange | 50%+ used (1M) | 75%+ used           |
+| orange | 500k+ (1M)     | 75%+ used           |
 | red    | under 50K left | 90%+ used, or `out` |
 
 "None" is the terminal's default foreground, not a gray: uncolored values stay
@@ -161,7 +170,7 @@ since a healthy value now says nothing rather than saying "green".
 
 **One gray, ANSI bright black (`\033[90m`)**, covers everything structural:
 labels, separators, and the secondary annotations (the worktree repo prefix,
-the model's size and effort, the reset times, the cost). An earlier version
+the model's effort, the context window, the reset times, the cost). An earlier version
 split this into two tiers, but in a healthy line the second tier landed on
 exactly one token, so it read as a stumble rather than a hierarchy.
 
