@@ -14,7 +14,7 @@ const SOURCE = "tc-agent-tokens";
 // which applies only to a window of about 1M tokens or more. The footer shows
 // tokens used and a rounded percentage, so the window is estimated from the two;
 // the margin below 1M absorbs that rounding.
-const CTX_HIGH_PCT = 60;
+const CTX_HIGH_PCT = 50;
 const CTX_HIGH_MIN_WINDOW = 900_000;
 // OpenCode 2's footer: "~/Developer    21.8K (4%) · $0.06  ctrl+p commands".
 const OPENCODE_CTX = /(\d[\d.,]*)([KM]?)\s+\((\d+)%\)/;

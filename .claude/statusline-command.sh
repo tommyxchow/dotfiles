@@ -173,7 +173,7 @@ modelseg="${reset}${model}${reset}"
 [ -n "$meta" ] && modelseg="${modelseg} ${muted}${meta}${reset}"
 
 # Segment 3: context window used, labeled so the % can't be mistaken for a
-# rate-limit one. Orange is the soft ceiling of 60% on a window of 1M or more,
+# rate-limit one. Orange is the soft ceiling of 50% on a window of 1M or more,
 # where compacting at the next break pays off; the herdr token below trips at
 # the same point. A smaller window has no soft ceiling, since auto-compact
 # handles it, so 101 keeps orange from ever tripping there. Red means auto-compact is close, so it trips on room left rather than
@@ -185,7 +185,7 @@ if [ -n "$used_pct" ]; then
   ctx_orange=101
   ctx_red=75
   if [ -n "$size_raw" ] && [ "$size_raw" -ge 1000000 ]; then
-    ctx_orange=60
+    ctx_orange=50
   fi
   if [ -n "$size_raw" ] && [ "$size_raw" -gt 200000 ]; then
     ctx_red=$(( 100 - 50000 * 100 / size_raw ))
