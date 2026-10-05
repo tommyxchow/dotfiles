@@ -9,24 +9,23 @@ if [ -z "$(printf '%s' "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0;
 
 # Pull all fields in one jq pass, joined by the unit separator (0x1f, defined in
 # bash and passed via --arg) so empty fields are preserved on read. five_used and
-# seven_used are percentages *used*, matching the context percentage so every
-# number on the line runs the same direction; five_over and seven_over flag an
+# seven_used are percentages *used*, matching the context count so every number
+# on the line runs the same direction; five_over and seven_over flag an
 # exhausted window; size is the context window formatted (1M / 200k) and size_raw
 # the same value in tokens, which the context red scales its trip point from;
 # used_k is the context in use, formatted the same way; cold is set when the
 # prompt cache has expired; fast is set in fast mode; project is the dir basename.
 us=$'\037'
-IFS="$us" read -r model used_pct five_used five_over seven_used seven_over effort size size_raw project cur_dir five_reset seven_reset cost repo wt used_k used_raw cold fast <<EOF
+IFS="$us" read -r model five_used five_over seven_used seven_over effort size size_raw project cur_dir five_reset seven_reset cost repo wt used_k used_raw cold fast <<EOF
 $(jq -r --arg us "$us" '
 # used_percentage is documented 0–100. Clamp display at 100; flag only values
 # over 100 as spent (`out`), so 100% still means full.
 def used: if . == null then "" else (floor | if . > 100 then 100 else . end | tostring) end;
 def over: if . == null then "" elif . > 100 then "1" else "" end;
 # Tokens in k, or M with one decimal from a million up (1M, 1.2M).
-def tok: if type != "number" then "" elif . >= 1000000 then ((. / 100000 | floor) / 10 | tostring) + "M" else ((. / 1000) | round | tostring) + "k" end;
+def tok: if type != "number" then "" elif . >= 999500 then (([., 1000000] | max) / 100000 | floor) / 10 | tostring + "M" else ((. / 1000) | round | tostring) + "k" end;
 [
   (.model.display_name // "--"),
-  (.context_window.used_percentage // ""),
   ((.rate_limits.five_hour.used_percentage // null) | used),
   ((.rate_limits.five_hour.used_percentage // null) | over),
   ((.rate_limits.seven_day.used_percentage // null) | used),
@@ -43,7 +42,7 @@ def tok: if type != "number" then "" elif . >= 1000000 then ((. / 100000 | floor
   (.worktree.name // .workspace.git_worktree // ""),
   ((.context_window.total_input_tokens // null) | tok),
   ((.context_window.total_input_tokens // null) | if type == "number" then floor else "" end),
-  (if .prompt_cache.warm == false then "1" else "" end),
+  (if .prompt_cache.warm == false and .prompt_cache.caching_observed == true then "1" else "" end),
   (if .fast_mode == true then "1" else "" end)
 ] | map(tostring) | join($us)' <<<"$input")
 EOF
@@ -189,8 +188,9 @@ modelseg="${reset}${model}${reset}"
 # percentage: under 50K tokens, which is 75% on a 200K window and 95% on 1M.
 # Anything smaller or unreported keeps 75 rather than scaling past it.
 ctxseg=""
-if [ -n "$used_pct" ]; then
-  pct=$(printf '%.0f' "$used_pct")
+pct=""
+if [ -n "$used_raw" ] && [ "$used_raw" -gt 0 ] && [ -n "$size_raw" ] && [ "$size_raw" -gt 0 ]; then
+  pct=$(( used_raw * 100 / size_raw ))
   ctx_orange=101
   ctx_red=75
   if [ -n "$size_raw" ] && [ "$size_raw" -ge 1000000 ]; then
@@ -227,7 +227,7 @@ if [ -n "$HERDR_PANE_ID" ]; then
     # A model with no effort setting clears the token rather than sending an empty value.
     effort_args=(--clear-token effort)
     [ -n "$effort" ] && effort_args=(--token "effort=${effort}")
-    if [ -n "$used_pct" ]; then
+    if [ -n "$pct" ]; then
       if [ "$pct" -ge "$ctx_orange" ]; then
         ctx_args=(--token "ctxhigh=ctx ${used_k}" --clear-token ctx)
       else

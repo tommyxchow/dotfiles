@@ -46,7 +46,10 @@ function openCodeTokens(paneId) {
   const window = pct > 0 ? (used * 100) / pct : 0;
   const high = pct !== undefined && Number(pct) >= CTX_HIGH_PCT && window >= CTX_HIGH_MIN_WINDOW;
   // The same units as the Claude statusline's token: 340k, or 1.2M from a million up.
-  const label = used >= 1_000_000 ? `ctx ${Math.floor(used / 100_000) / 10}M` : `ctx ${Math.round(used / 1000)}k`;
+  const label =
+    used >= 999_500
+      ? `ctx ${Math.floor(Math.round(Math.max(used, 1_000_000)) / 100_000) / 10}M`
+      : `ctx ${Math.round(used / 1000)}k`;
   return {
     ctx: pct !== undefined && !high ? label : null,
     ctxhigh: high ? label : null,
