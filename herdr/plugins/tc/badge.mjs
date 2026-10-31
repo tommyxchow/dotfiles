@@ -58,9 +58,13 @@ function formatBadge(pr) {
 }
 
 // gh run list reports lowercase values and an empty conclusion while a run is
-// going, so this maps them onto the check-run shape ciMark reads.
+// going, so this maps them onto the check-run shape ciMark reads. Dependabot's
+// update jobs run on the default branch's commit and fail on their own, so they
+// don't count toward its CI.
 function runsBadge(runs) {
-  const checks = runs.map((run) => ({ status: run.status.toUpperCase(), conclusion: (run.conclusion ?? "").toUpperCase() || null }));
+  const checks = runs
+    .filter((run) => !run.workflowName.startsWith("Dependabot"))
+    .map((run) => ({ status: run.status.toUpperCase(), conclusion: (run.conclusion ?? "").toUpperCase() || null }));
   const mark = ciMark(checks);
   return mark ? `CI ${mark}` : null;
 }
@@ -76,7 +80,9 @@ function defaultBranch(checkout) {
 // commit. Nothing shows before that commit is pushed or in a repo without CI.
 function defaultBranchBadge(checkout) {
   const sha = run("git", ["-C", checkout, "rev-parse", "HEAD"]);
-  const found = run("gh", ["run", "list", "--commit", sha, "--limit", "20", "--json", "status,conclusion"], checkout);
+  // 100 so Dependabot and scheduled runs on the same commit can't push the real
+  // CI out of the list.
+  const found = run("gh", ["run", "list", "--commit", sha, "--limit", "100", "--json", "status,conclusion,workflowName"], checkout);
   return runsBadge(JSON.parse(found));
 }
 
