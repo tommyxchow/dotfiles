@@ -443,6 +443,16 @@ repo, so there is no upstream file to diff; credits for borrowed ideas live in
 and its update already ran, and do not install `mattpocock-skills` from the
 marketplace, whose `grill-me` would collide with ours.
 
+## Memory
+
+Review Claude Code's memory folders under `~/.claude/projects/*/memory`. Delete
+a follow-up that's done, a note whose file, plan, or issue is gone, and one a
+newer note or a repo file now covers. Merge notes that say the same thing, and
+fix index lines that point at missing files. Check only what's quick to check,
+like whether a path exists or an issue is still open, and never add memories
+here. Report each removal in one line, and never drop a feedback note without
+naming it, since those record how the user wants to work.
+
 ## Report
 
 What changed, anything still broken, and what the user must do.
