@@ -243,9 +243,10 @@ if [ -n "$HERDR_PANE_ID" ]; then
 fi
 
 # The Herdr desktop app has no pane tokens, so the same values go out as
-# labels on the terminal, where hq reads them from `hc ls`. Labels have no TTL;
-# they end with the terminal, and `key=` clears one.
-if [ -n "$HC_TERMINAL_ID" ] && command -v hc >/dev/null 2>&1; then
+# labels on the terminal, where hq reads them with `hc get`. Labels have no TTL;
+# they end with the terminal, and `key=` clears one. A herdr pane inside a
+# desktop app terminal inherits HC_TERMINAL_ID too, so the pane wins there.
+if [ -n "$HC_TERMINAL_ID" ] && [ -z "$HERDR_PANE_ID" ] && command -v hc >/dev/null 2>&1; then
   labels=("effort=${effort}" "ctx=" "ctxhigh=")
   if [ -n "$pct" ]; then
     if [ "$pct" -ge "$ctx_orange" ]; then

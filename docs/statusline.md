@@ -107,6 +107,11 @@ The agent's `name` token, shown on the same row, comes from the `tc` herdr
 plugin rather than from here, so it works for every harness. Pane tokens are
 shared across sources, so the script never sends or clears `name`.
 
+The Herdr desktop app has no pane tokens, so there the script writes the same
+`effort`, `ctx`, and `ctxhigh` values as labels on its terminal with
+`hc label`, clearing the one that doesn't apply. `hq` reads them with
+`hc get <terminal> --json`. Labels have no TTL and end with the terminal.
+
 Context goes out under one of two names. It is `ctxhigh` once a session on a
 window of 1M tokens or more passes a soft ceiling of 50%, and `ctx` otherwise;
 the sidebar colors `ctxhigh`. Anthropic documents that quality drops as
