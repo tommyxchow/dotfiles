@@ -233,9 +233,9 @@ The Herdr desktop app works too. It runs terminals in herdr-core (`hc`) and
 sets `HC_TERMINAL_ID` instead of `HERDR_ENV`, so the same first-turn rule picks
 it up, and the reference's last section swaps in the `hc` and `herdr-app`
 commands. The status line publishes effort and context as terminal labels
-there. `hq` starts its workers as its own children, each in a space of its
-own, so they nest under it in the agents list, one wait covers all of them, and
-the screen stays on hq. The `tc` plugin
+there. `hq` starts its workers as its own children with no tab of their
+own, so each shows once, nested under it in the agents list. Clicking one opens
+it over the current tab, one wait covers all of them, and the screen stays on hq. The `tc` plugin
 doesn't run in the desktop app yet, so its sidebar badges and names and its
 worktree env copy are missing there.
 
