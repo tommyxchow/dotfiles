@@ -22,7 +22,7 @@ prints to me however work allows moving personal notes.
 ```text
 Export an upstream note from this dotfiles fork. Don't commit, push, or send anything anywhere; only print.
 
-1. Find candidates: commits whose message has an "Upstream: yes" trailer, plus any difference in the shared files (.claude/, plugins/, docs/) between this fork and the remote that points at github.com/tommyxchow/dotfiles. Fetch that remote first.
+1. Find candidates: commits whose message has an "Upstream: yes" trailer, plus any difference in the shared files (.claude/, plugins/, docs/) between this fork and github.com/tommyxchow/dotfiles. Use a remote that points at it if there is one, after fetching it; otherwise clone it into a temporary folder and compare against that.
 2. Keep only changes that would help a solo developer's personal setup. Drop anything that only makes sense at this job.
 3. For each one, write the idea in general terms: what to change, which shared file, and why. Describe a rule's intent and quote new rule text only once it's reworded generically.
 4. Strip everything that identifies work: company or product names, internal repos, hosts, URLs, ticket ids, people, internal tools or services, proprietary code, and secrets. If an idea can't be stated without them, leave it out and only count it.
