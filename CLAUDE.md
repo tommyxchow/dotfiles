@@ -224,9 +224,9 @@ repo-local.
 
 - **Models are set by alias, and effort stays at each model's default, except
   Opus 5.5 at `high`.** `model` is `opus`, since Opus 5.5 outranks Fable 5.1
-  on Artificial Analysis (2026-10-04). `advisorModel` is `fable` anyway, my
-  choice (2026-10-04) for a second model's opinion, and it stays when Opus
-  leads. Aliases follow the newest release of each family, so a new model
+  on Artificial Analysis (2026-10-04). `advisorModel` stays unset, which
+  turns the advisor off: my choice (2026-10-30), since it slowed sessions
+  down for little gain over Opus alone. Aliases follow the newest release of each family, so a new model
   needs no edit here. Pin a version or add a suffix like `[1m]` only when the model docs
   say the bare alias falls short. The one kept `modelSettings` entry,
   `claude-opus-5-5` at `high`, is my choice (2026-09-27); it is keyed to that

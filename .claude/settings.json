@@ -51,7 +51,6 @@
       "effortLevel": "high"
     }
   },
-  "advisorModel": "fable",
   "showClearContextOnPlanAccept": true,
   "tui": "fullscreen",
   "theme": "auto",

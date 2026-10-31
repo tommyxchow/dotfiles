@@ -95,7 +95,7 @@ editing instruction files), and the global file names each one with the moment
 to read it, so every session doesn't carry them. Anything
 specific to this repo belongs in the root `CLAUDE.md`, which also carries the
 gotchas for editing any of this. `.claude/settings.json` holds Claude Code
-permissions, model and advisor, theme, plugins, statusline, and marketplaces.
+permissions, model, theme, plugins, statusline, and marketplaces.
 
 ## Skills
 
