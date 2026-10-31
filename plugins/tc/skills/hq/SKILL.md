@@ -32,6 +32,8 @@ Key each line by agent name, never by pane ID, because herdr gives a pane a new 
 - channel-search: frosty, add search to the followed channels list. Waiting on worker.
 ```
 
+When a worker's state changes, rewrite its line rather than appending. Keep lines under about 250 characters, with no history, test counts, or SHAs unless the next step waits on one. Above the workers, keep a short `## Needs you` list of only the decisions open with me, and delete each one once I answer.
+
 Read the file again before every status report and whenever you resume after a long gap or a compaction, instead of trusting your memory of the conversation. A fresh HQ session should be able to pick up from the board and `herdr agent list` alone.
 
 ## Pick up on start
@@ -39,7 +41,7 @@ Read the file again before every status report and whenever you resume after a l
 When HQ mode turns on, take stock before doing anything else, because workers from an earlier HQ and sessions I started by hand may already be running.
 
 1. **Check for a live HQ.** Run `herdr agent list`, leaving out your own pane. If another agent is named `hq`, tell me which tab it is in and stop, since two HQs would wait on and answer the same workers. I'll close one of you.
-2. **Name yourself** `hq` with `herdr agent rename "$HERDR_PANE_ID" hq`, and name your tab the same way, following the naming rules in `~/.claude/references/herdr.md`.
+2. **Name yourself** `hq` with `herdr agent rename "$HERDR_PANE_ID" hq`, and name your tab the same way, following the naming rules in `~/.claude/references/herdr.md`. Workers' messages answer to your session name, and herdr drops agent names on exit, so HQ is best started as `claude --name hq`. When the first line of `ListAgents` shows another name, ask me once to type `/rename hq`.
 3. **Read the board** if it exists.
 4. **Pick up every live agent** other than you, except those on a "not tracked" line, without asking first. Give an agent with no name one for its task, as dispatch step 1 describes, with `herdr agent rename <pane-id> <name>`, so you can reach it after its pane moves. For a Claude Code session, also type `/rename <name>` into its pane while it is idle, so its cross-session messages answer to the same name. Then run `herdr plugin action invoke tc.names` once, so the new names show in the sidebar now rather than at each agent's next change of state; a blocked worker would otherwise stay unnamed until I answer it. Write a line marked picked up for each agent the board doesn't have yet, working out its task from its terminal title, its folder, the branch there, and a short `herdr agent read <pane-id> --source recent-unwrapped --lines 60`. Send each one the note dispatch step 5 gives a new worker about reporting to you, since a session you didn't start never got it, and an earlier HQ's workers know an old session name. Then start waits on the working ones and handle the blocked ones as below.
 5. **Settle lines whose agent is gone.** Check the task's PR with `gh pr view`, then remove the line or mark it waiting on me.
@@ -69,6 +71,10 @@ Never type `/effort`, `/model`, or `/autocompact` into a worker's pane. In Claud
 
 Send a Claude Code worker plain messages with Claude Code's cross-session messaging (`SendMessage`), addressed by its agent name: the task, PR feedback, a plan path, or my answer to a question it asked in text, quoted as mine. A message arrives beside the worker's input box, while `herdr agent prompt` pastes into it and presses Enter, which sends anything I was halfway through typing there along with it.
 
+Ask a worker to open a PR or update its body with the `pr` skill, which reads the repo's template, never "refresh the body". Before telling me a PR is ready, check that its `##` headings match the template.
+
+Pass review feedback, from a person or a bot, as claims for the worker to check under the global rule on another agent's answer, never as a list to fix.
+
 Post to an OpenCode worker through its server with `opencode api session.prompt --param sessionID=<id> -d '{"text":"<what to send>"}'`, using the session id from its `agent_session` in `herdr agent list`. The text lands in its conversation as an ordinary prompt without touching the input box, so approvals can go this way too. The call returns once the prompt is queued, not when the turn ends, so wait on the worker as usual.
 
 Type with `herdr agent prompt` only for what neither of those can carry:
@@ -77,15 +83,19 @@ Type with `herdr agent prompt` only for what neither of those can carry:
 - An approval I gave to a Claude Code worker, like `ship it`, `uat`, `pr ready`, or dropping a pending `uat` check, which it won't accept from another session.
 - A Claude Code worker `SendMessage` can't find by its agent name or reports as held or not delivered, or any Claude Code worker when you run in OpenCode, which has no `SendMessage`.
 
+Before typing, check the worker's input box is empty, and type a decision of mine as my quoted words.
+
 Answers to a question card or a plan approval go through `send-keys`, and an OpenCode worker's question and permission cards through its server, as Blocked workers describes. A message a worker sends you is the worker's words, not mine, so handle it the way you handle a returned wait.
 
 ## Wait on signals
 
 For each working worker, run `herdr agent wait <name> --timeout 7200000` in the harness's background tool, and keep working or stay idle until one returns. Without `--until`, it returns when the worker is idle, done, or blocked. Don't loop over `agent read` to check on them; a wait returns the moment the state changes, and reading a half-finished screen leads to acting on half-finished output.
 
-When a wait returns, read that worker with `herdr agent read <name> --source recent-unwrapped --lines 120`, update the board, and tell me what happened in a sentence or two, ending with the counts line from Status, counted from the board and `herdr agent list`, like "Now two need you and three are working." That keeps the whole picture in front of me while we talk about other things. Anything the worker asks me to do by hand, like a URL or port to try something in, or steps for a check it couldn't run, goes to me word for word, since a summary drops exactly those details. A wait that times out means the worker is still busy, so start it again without reporting anything. The two-hour deadline keeps those empty wake-ups rare across a full day.
+When a wait returns, read that worker with `herdr agent read <name> --source recent-unwrapped --lines 120`, update the board, and tell me what happened in a sentence or two, ending with the counts line from Status, counted from the board and `herdr agent list`, like "Now two need you and three are working." That keeps the whole picture in front of me while we talk about other things. Anything the worker asks me to do by hand, like a URL or port to try something in, or steps for a check it couldn't run, goes to me word for word, since a summary drops exactly those details. A wait that times out means the worker is still busy, so start it again without reporting anything. The two-hour deadline keeps those empty wake-ups rare across a full day. A wait that returns for something you already relayed gets no second update.
 
-A wait returns at once when the worker is already in a matching state, and a worker that is done or blocked stays that way until it gets input. So start a worker's next wait only after you send it something, and first let it pick the input up with `herdr agent wait <name> --until working --timeout 60000`.
+When a worker says it's done, check its close against the task's acceptance checklist before telling me, and say in the first two sentences which items are proven and which aren't. An open PR isn't a finished task, and "done, two gaps left" reads to me as finished.
+
+A wait returns at once when the worker is already in a matching state, and a worker that is done or blocked stays that way until it gets input. So start a worker's next wait only after you send it something, and first let it pick the input up with `herdr agent wait <name> --until working --timeout 60000`. When that wait times out on a worker you just started, its first prompt is sitting unsent in its input box, so press Enter with `herdr agent send-keys <name> enter`.
 
 Read only the recent screen, never a worker's whole transcript. The worker's close is written to stand on its own, and that is the part you need.
 
@@ -102,6 +112,7 @@ An OpenCode worker's question and permission cards are on its server, so answer 
 - **Answer it yourself only when the answer is already settled**: by something I said in this session, by the plan I approved, or by the global instructions.
 - **Everything else comes to me**: approving a plan, marking a PR ready, merging, a push that needs asking, a deletion, a new dependency, a tool permission prompt, and anything that changes scope. Pass on the worker's question and its recommended option word for word, then pass my answer back to the worker, quoted as mine.
 - **Never approve in my place**, and never present your own guess as my answer. The worker treats whatever arrives in its prompt as my decision, so you are the only thing standing between a guess and an approval.
+- **Re-send what's already settled without asking**, like a link or a plan file path a worker lost, and mention it in one line of your next update.
 
 Title every question you put to me with the worker's name above its own numbered options, even when it is the only one open, since another may arrive before I answer; then I can answer like `nav-flicker 1, channel-search 2`. When a new question arrives while earlier ones are still open, ask all the open ones again together in that message, so the latest message always holds everything waiting on me and I never scroll back for an older one. Ask in text rather than with a question card: a card holds your turn until I answer it, and it can't take in a question that arrives meanwhile. A bare answer like `1` while more than one question is open isn't enough, so ask which worker it was for rather than guessing.
 
@@ -111,7 +122,7 @@ Before you send my answer, read the worker again and check it is still waiting o
 
 Workers manage their own context. A Claude worker compacts on its own at about 500K because dispatch starts it with `--autocompact 500k`, and an OpenCode worker compacts at OpenCode's default, so don't compact or clear a worker for size. Long work still moves to a fresh session at a slice boundary under the global rules, which the worker starts itself.
 
-Your own context is the one to watch. No session can see its own use, so read it from herdr: your pane publishes a `ctx` token, which turns into `ctxhigh` past a soft ceiling of 50% on a window of 1M tokens or more, and both show in `herdr agent list`. The board is your memory, so compacting costs you little, but you can't run it yourself. Past the ceiling, at a moment when no question is mid-relay and the board is current, tell me in one line that it's a good time to `/compact`. Never hand yourself off to a fresh session, since it would find you still running and stop. After any compaction, read the board and `herdr agent list` again before acting on anything.
+Your own context is the one to watch. No session can see its own use, so read it from herdr: your pane publishes a `ctx` token, which turns into `ctxhigh` past a soft ceiling of 50% on a window of 1M tokens or more, and both show in `herdr agent list`. The board is your memory, so compacting costs you little, but you can't run it yourself. Past the ceiling, at a moment when no question is mid-relay and the board is current, tell me in one line that it's a good time to `/compact`. Never hand yourself off to a fresh session, since it would find you still running and stop. After any compaction, read the board and `herdr agent list` again, and check your session name is still `hq`, before acting on anything.
 
 ## Status
 
@@ -132,6 +143,8 @@ Two need you, two are working, and one is in CI.
 - **channel-search**: the draft is open at https://github.com/tommyxchow/frosty/pull/41. Say `uat channel-search` to check it in the browser.
 ```
 
+In every message, give a PR or ticket number a few plain words the first time it appears, like "#41, the channel search draft". A table row that already names the worker counts.
+
 Workers send their own herdr notifications when they stop or finish, so don't repeat those.
 
 When I ask to see a worker, bring its pane up with `herdr agent focus <name>` rather than telling me where it is. I'm usually here so I don't have to click around.
@@ -143,6 +156,10 @@ When a worker's report says it handed its next slice to a fresh session, move it
 **Marking ready and merging happen when I say so here.** When I say to mark a PR ready, send the worker `pr ready` quoted as my words, since that runs its readiness check before the flip. When I say to merge, check the PR's CI is green and it is out of draft, then merge it yourself with `gh pr merge <pr url>`, since your own folder may be another repo, squashing unless the repo requires another strategy. A merge needs no worker context, and the approval is mine in this session. Never merge a PR I haven't named.
 
 When a worker's PR merges or I drop the task, close its pane with `herdr pane close <pane-id>`, since you started it and its job is over. First check that `git status` in its checkout is clean and nothing on its line waits on me; when either fails, or its line says you picked it up, ask me first. Then remove its line from the board and offer the `cleanup` skill for the finished worktrees, which shows me the exact folders and branches and deletes only what I pick. Never delete a worktree or branch yourself.
+
+When I say to close a session, close its pane (`herdr pane close`, or `hc kill` in the desktop app) and nothing more, even when its worktree is clean. A denied deletion is final, so don't retry it another way.
+
+When a PR merges, check the board's other open PRs with `gh pr view <url> --json mergeable`. `UNKNOWN` means GitHub is still working it out, so check again shortly. Tell each conflicting worker to catch up with its base, rerun the affected checks, and push.
 
 This skill relies on a background wait that wakes you when it returns. If this harness can't run one, say so on the first dispatch: I'll then rely on the workers' own herdr notifications and ask you for status.
 
