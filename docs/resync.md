@@ -205,6 +205,10 @@ Both channels install a binary named `opencode`, so only `opencode --version`
 tells you the line, and a `1.x` there means the machine is on the wrong
 channel. `opencode2` is only a back-compat shim the v2 installer writes.
 
+Update it each resync by rerunning that v2 install line, which replaces the
+binary in place with the newest v2 build, then confirm with `opencode --version`.
+Nothing else flags a stale build, and one once sat weeks behind.
+
 Check each resync whether the channels have merged:
 
 ```bash
@@ -220,6 +224,12 @@ On Windows that resolves to the WSL launcher and updates the Linux copy instead,
 so upgrades there have to route through Git Bash. This machine does that with an
 `opencode` function in `Microsoft.PowerShell_profile.ps1`, which this repo does
 not track.
+
+## Grok Build update
+
+If `grok` is on PATH, run `grok update`, which installs the newest stable
+build. A running Grok session keeps the old build until it restarts, so say so
+in the report.
 
 ## Third-party skills
 
