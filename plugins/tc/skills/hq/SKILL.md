@@ -1,9 +1,6 @@
 ---
 name: hq
 disable-model-invocation: true
-metadata:
-  opencode/slash: "true"
-  opencode/autoinvoke: "false"
 description: 'Manual opt-in only. Runs this session as HQ, a coordinator inside herdr that dispatches tasks to worker agents in their own worktrees, waits on them, relays their questions, and reports status, while the workers do the building. One HQ runs at a time. Load it only when the user types /hq or explicitly asks to turn HQ mode on; never load it on your own because a request mentions dispatching, coordinating, or managing sessions. Needs a herdr pane or the Herdr desktop app, in Claude Code or OpenCode 2. Never edits a worker''s code, approves on the user''s behalf, merges unless the user says to in this session, or deletes worktrees.'
 argument-hint: "[<tasks to dispatch> | status]"
 ---

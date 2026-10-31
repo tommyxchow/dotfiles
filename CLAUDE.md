@@ -124,9 +124,8 @@ committed here.
 
 - **The installer links first-party skills into `~/.claude/skills`.** Claude
   Code, Cursor, Grok Build, and OpenCode 2 all read that path. OpenCode 2
-  reaches them through its `/skills` picker. Its v2.0.18 build never reads the
-  `metadata: opencode/slash: "true"` key the skills carry, so a typed `/vet`
-  there is not the skill; check a newer build before relying on it. Do not copy
+  reaches them through its `/skills` picker. No build through v2.2.5 reads an
+  `opencode/slash` key, so the skills dropped it (2026-10-31). Do not copy
   those skills into `~/.config/opencode/skills`, do not enable `tc@chow` on a
   machine that ran the installer or install it on claude.ai (both copies would
   load; see the `tc` gotcha below), and do not install `mattpocock-skills` from
@@ -135,8 +134,8 @@ committed here.
 - **Keep shared skills portable Agent Skills** (`name` and `description`
   required). Claude Code-only `context` / `agent` / `background` are fine where
   a skill should fork, and `disable-model-invocation` is read by Claude Code,
-  Cursor, and Grok Build but not OpenCode 2, which needs
-  `metadata: opencode/autoinvoke: "false"` for the same effect, so a manual-only skill carries both. Whatever
+  Cursor, Grok Build, and OpenCode 2 (from v2.2.5, checked in the binary), so
+  a manual-only skill needs only that key. Whatever
   such a key enforces has to be written into the skill's own text as well, or
   it only holds where the key is read. Don't put `allowed-tools` on a shared
   skill.

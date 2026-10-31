@@ -127,9 +127,8 @@ Claude Code compatibility.
 `CLAUDE.md` (installer-created, gitignored), since OpenCode 2 reads only
 `AGENTS.md` and never `CLAUDE.md`. It already reads `~/.claude/skills`, so do
 not also link first-party skills into `~/.config/opencode/skills` or link
-`~/.agents/skills`. Skills are reached through its `/skills` picker; v2.0.18
-ignores the skills' `opencode/slash` key, so on a newer build, check whether a
-typed `/vet` reaches the skill. There are no command stubs; the installer sweep
+`~/.agents/skills`. Skills are reached through its `/skills` picker. There are
+no command stubs; the installer sweep
 removes any leftover links in `~/.config/opencode/commands` that point into this
 repo. `~/.config/opencode/cli.json` is the TUI/keybinds file from
 `opencode/cli.json`. On Windows, apply the WT sendInput chords from the README;
