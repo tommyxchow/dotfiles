@@ -41,6 +41,13 @@ When I say audit the setup, meta review, optimize my workflow, or self review:
 read `docs/audit.md` and follow it. It proposes changes and waits. Also
 repo-local.
 
+## Upstream from work
+
+When I say upstream from work, export an upstream note, or paste an
+`UPSTREAM NOTE`: read `docs/upstream.md` and follow it. Ideas from my work
+fork arrive as reworded notes, never patches, and nothing that names work gets
+committed here.
+
 ## Gotchas
 
 - **Don't add `permissions.deny` or `autoMode` rules for destructive commands.**
