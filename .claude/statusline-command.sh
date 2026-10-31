@@ -16,7 +16,7 @@ if [ -z "$(printf '%s' "$input" | tr -d '[:space:]')" ]; then echo "--"; exit 0;
 # used_k is the context in use, formatted the same way; cold is set when the
 # prompt cache has expired; fast is set in fast mode; project is the dir basename.
 us=$'\037'
-IFS="$us" read -r model five_used five_over seven_used seven_over effort size size_raw project cur_dir five_reset seven_reset cost repo wt used_k used_raw cold fast <<EOF
+IFS="$us" read -r model model_id five_used five_over seven_used seven_over effort size size_raw project cur_dir five_reset seven_reset cost repo wt used_k used_raw cold fast <<EOF
 $(jq -r --arg us "$us" '
 # used_percentage is documented 0–100. Clamp display at 100; flag only values
 # over 100 as spent (`out`), so 100% still means full.
@@ -26,6 +26,7 @@ def over: if . == null then "" elif . > 100 then "1" else "" end;
 def tok: if type != "number" then "" elif . >= 999500 then (([., 1000000] | max) / 100000 | floor) / 10 | tostring + "M" else ((. / 1000) | round | tostring) + "K" end;
 [
   (.model.display_name // "--"),
+  (.model.id // ""),
   ((.rate_limits.five_hour.used_percentage // null) | used),
   ((.rate_limits.five_hour.used_percentage // null) | over),
   ((.rate_limits.seven_day.used_percentage // null) | used),
@@ -46,6 +47,14 @@ def tok: if type != "number" then "" elif . >= 999500 then (([., 1000000] | max)
   (if .fast_mode == true then "1" else "" end)
 ] | map(tostring) | join($us)' <<<"$input")
 EOF
+
+# Claude Code can report a 200K window on a 1M session, which pegs context at
+# 100% with 800K left. Any of these means the real window is 1M.
+if [[ "$model_id" == *"[1m]" || "$model" == *"(1M context)"* ]] ||
+   { [ -n "$used_raw" ] && [ -n "$size_raw" ] && [ "$used_raw" -gt "$size_raw" ]; }; then
+  size_raw=1000000
+  size="1M"
+fi
 
 # display_name already carries a "(… context)" suffix on extended-context models;
 # strip it so the size isn't stated twice.
@@ -157,11 +166,12 @@ if [ -n "$wt" ]; then
   elif [ -n "$project" ] && [ "$project" != "$wt" ]; then wtpart="$wt"
   else name="$wt"; fi
 fi
-# A `claude --worktree` session names the branch "worktree-<name>", which would
-# print the worktree name twice and say nothing the place hasn't already said.
-[ -n "$wtpart" ] && [ "$branch" = "worktree-$wtpart" ] && branch=""
-name=$(clip "$name" 20)
-wtpart=$(clip "$wtpart" 20)
+# A branch named after its worktree, or "worktree-<name>" as a `claude
+# --worktree` session names it, would print the worktree name twice and say
+# nothing the place hasn't already said.
+if [ -n "$wt" ] && { [ "$branch" = "$wt" ] || [ "$branch" = "worktree-$wt" ]; }; then branch=""; fi
+name=$(clip "$name" 24)
+wtpart=$(clip "$wtpart" 24)
 branch=$(clip "$branch" 24)
 loc=""
 if [ -n "$name" ]; then
