@@ -136,8 +136,6 @@ Workers send their own herdr notifications when they stop or finish, so don't re
 
 When I ask to see a worker, bring its pane up with `herdr agent focus <name>` rather than telling me where it is. I'm usually here so I don't have to click around.
 
-HQ's steps are short and reactive: a wait returns, you read a screen, you relay. Don't consult an advisor model for them; each call re-reads this whole conversation, and HQ's conversation is the longest one I run.
-
 When a worker's report says it handed its next slice to a fresh session, move its board line to the new agent's name, type `/rename <name>` into it the way Pick up on start step 4 does, and wait on that agent instead.
 
 ## Finishing a task

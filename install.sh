@@ -190,8 +190,9 @@ for dir in "$HOME/.agents/skills" "$HOME/.agents" "$HOME/.config/opencode/skills
   rmdir "$dir" 2>/dev/null || true
 done
 
-# Cursor can load a symlinked local plugin, but the rule file needs
-# alwaysApply frontmatter that .claude/CLAUDE.md does not carry. Write a real
+# Cursor loads a symlinked local plugin only when it points inside
+# ~/.cursor/plugins/local, and the rule file needs alwaysApply frontmatter
+# that .claude/CLAUDE.md does not carry. Write a real
 # directory under ~/.cursor/plugins/local and copy CLAUDE.md into an
 # alwaysApply rule. Re-run the installer after editing .claude/CLAUDE.md, then
 # Developer: Reload Window. Do not put a description on the rule; Cursor has

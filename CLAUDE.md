@@ -63,7 +63,10 @@ committed here.
   so the built-ins and their updates stay: herdr worktrees belong to their
   repo. Don't name my GitHub account there as trusted source control, since on
   a work machine that would clear pushes of company code to a personal repo;
-  the built-ins already trust the repo a session starts in.
+  the built-ins already trust the repo a session starts in. Turn down
+  `/auto-mode-setup` and its "Teach auto mode" offer: it rewrites
+  `environment` without `"$defaults"`, which replaces that entry and freezes
+  the built-ins at today's text.
 
 - **`~/.claude/settings.json` points to `.claude/settings.json`;
   `~/.claude/CLAUDE.md` points to `.claude/CLAUDE.md`.**
@@ -73,10 +76,11 @@ committed here.
   `~/.config/opencode/AGENTS.md` (installer link to `.claude/CLAUDE.md`) and
   never reads a `CLAUDE.md` (checked in the v2.0.18 binary), so the link is
   the only thing that feeds it. In this repo the installer also links `AGENTS.md` to
-  this file so OpenCode 2 sees these gotchas. Cursor supports symlinked local
-  plugins, but `rules/global.mdc` needs `alwaysApply: true` frontmatter that
-  `.claude/CLAUDE.md` doesn't carry, so the installer copies it into
-  `~/.cursor/plugins/local/tc/rules/global.mdc`. That copy is stale until you
+  this file so OpenCode 2 sees these gotchas. Cursor loads a symlink in its
+  local plugins folder only when it points inside that folder, and
+  `rules/global.mdc` needs `alwaysApply: true` frontmatter that
+  `.claude/CLAUDE.md` doesn't carry, so the installer writes a real folder
+  and copies it into `~/.cursor/plugins/local/tc/rules/global.mdc`. That copy is stale until you
   re-run `./install.sh` after editing that file, whichever agent or editor made
   the edit, and then **Developer: Reload Window**. Do not also keep a User Rule
   with the same text. Cursor's third-party config setting still imports
@@ -303,7 +307,10 @@ committed here.
   tap targets and on showing success only after it succeeds, the
   half-finished-work flag line, and expand, migrate, contract, for lack of a
   recorded mistake. Each guards a mistake that costs a lot when it happens,
-  so they stay.
+  so they stay. From the 2026-10-31 audit: setting `notes = false` in
+  herdr-core's config so `hq` could type slash commands and approvals into
+  desktop workers. It is machine-wide and strips the tag that marks every
+  `hc` message as another agent's, so those stay with me.
 
 - **Where the global file differs from Anthropic's prompting advice, it does so on purpose.**
   Anthropic leans toward prose with little bold, calm emphasis, and saying what
