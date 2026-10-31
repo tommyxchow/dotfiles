@@ -179,11 +179,12 @@ repo-local.
   that aren't doing UI work; enabling it for that work writes this same file,
   and turning it back off is the default to commit.
 
-- **The `gh` and `herdr` skills live in `~/.claude/skills`, not in this
-  repo.** `gh` comes from `gh skill install` and `herdr` from `herdr --skill`,
-  the copy bundled with the installed binary, which resync rewrites after each
-  `herdr update`. Do not vendor either into `plugins/tc/skills`, and do not also
-  install them for cursor, opencode, or grok.
+- **The `gh`, `herdr`, `hc`, and `herdr-app` skills live in `~/.claude/skills`,
+  not in this repo.** `gh` comes from `gh skill install`, and the other three
+  from their binary's `--skill`, the copy bundled with the installed version,
+  which resync rewrites after each update. `hc` and `herdr-app` print no
+  frontmatter, so resync adds it. Do not vendor any of them into
+  `plugins/tc/skills`, and do not also install them for cursor, opencode, or grok.
 
 - **Herdr owns its pane hook; never vendor it here either.** `herdr
   integration install claude` writes an absolute machine path into the `hooks`
@@ -192,7 +193,9 @@ repo-local.
   a portable `$HOME` form that already covers both platforms, so restore it
   after any reinstall or that path ships to every machine. That entry also
   carries a second hook of ours, which prints one line saying the session is
-  in herdr; keep it when restoring. The opencode integration writes into
+  in herdr, from `HERDR_ENV` for the terminal app or `HC_TERMINAL_ID` for the
+  Herdr desktop app; keep it when restoring. The desktop app needs no pane hook,
+  since it reads Claude Code's status on its own. The opencode integration writes into
   `opencode/cli.json` too, but its `"plugins": ["./herdr-opencode"]` entry is
   relative and stays committed; without it OpenCode 2 never loads herdr's
   plugin. How the two surfaces refresh is in `docs/resync.md`.

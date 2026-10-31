@@ -247,6 +247,23 @@ binary; delete `~/.claude/skills/herdr` and write the bundled one. `gh skill`
 has no remove command, and `gh skill list` reads the folders themselves, so the
 bundled copy then lists with no source repo.
 
+The Herdr desktop app bundles two more skills the same way: `hc --skill` for
+herdr-core and `herdr-app --skill` for the window. Neither carries frontmatter,
+so add it while writing them. Write each one after its binary updates, and skip
+either one when its binary is not on PATH:
+
+```bash
+mkdir -p ~/.claude/skills/hc && {
+  printf -- '---\nname: hc\ndescription: "%s"\n---\n\n' "Control herdr-core with hc, the runtime behind the Herdr desktop app: start, read, wait on, message, and close terminals and agents. Use only inside the Herdr desktop app (HC_TERMINAL_ID is set), when the herdr rules or hq need a command beyond the tab rename. Not for the herdr terminal app, which is the herdr skill."
+  hc --skill
+} > ~/.claude/skills/hc/SKILL.md
+
+mkdir -p ~/.claude/skills/herdr-app && {
+  printf -- '---\nname: herdr-app\ndescription: "%s"\n---\n\n' "Drive the Herdr desktop app window with herdr-app: spaces, tabs, panes, layouts, keys, themes, and mods. Use only inside the Herdr desktop app (HC_TERMINAL_ID is set), when the herdr rules or hq need a window command or the user asks to change what Herdr shows. Not for the herdr terminal app, which is the herdr skill."
+  herdr-app --skill
+} > ~/.claude/skills/herdr-app/SKILL.md
+```
+
 ## Herdr pane hook
 
 Skip this section if `herdr` is not on PATH.

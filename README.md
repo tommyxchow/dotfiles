@@ -116,7 +116,7 @@ in the skill files.
 | `/pr` | Prepare the task, review its complete final diff, publish a draft with acceptance evidence, then watch its CI to green. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
-| `/hq` | Manual only. Run this herdr session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's model and effort at launch, runs Claude models in Claude Code, picks up sessions already running, and closes the workers it started once their PR merges; one HQ runs at a time. Start it with `claude --effort medium`, since its steps are short relays in the longest conversation you run. Never builds or approves for you, and merges only a PR you name. |
+| `/hq` | Manual only. Run this herdr or Herdr desktop app session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's model and effort at launch, runs Claude models in Claude Code, picks up sessions already running, and closes the workers it started once their PR merges; one HQ runs at a time. Start it with `claude --effort medium`, since its steps are short relays in the longest conversation you run. Never builds or approves for you, and merges only a PR you name. |
 | `/cleanup` | Repo hygiene: finished and dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
 | `/tldr` | A skimmable summary, answer first. Bare is the last few messages; it also takes a topic, file, URL, pasted text, `changes`, `pr` with a number or URL, or `session`. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
@@ -227,6 +227,14 @@ Inside herdr, agents name their tabs and label the panes they split (like
 `herdr agent start`, and send a herdr notification after a long run. The rules
 are in `.claude/references/herdr.md`, which `.claude/CLAUDE.md` tells an agent
 to read on its first turn inside a herdr pane.
+
+The Herdr desktop app works too. It runs terminals in herdr-core (`hc`) and
+sets `HC_TERMINAL_ID` instead of `HERDR_ENV`, so the same first-turn rule picks
+it up, and the reference's last section swaps in the `hc` and `herdr-app`
+commands. The status line publishes effort and context as terminal labels
+there, and `hq` dispatches workers into their own spaces. The `tc` plugin
+doesn't run in the desktop app yet, so its sidebar badges and names and its
+worktree env copy are missing there.
 
 The same plugin fills two sidebar values for every git workspace: the
 branch's pull request with its CI, like `#12 draft ◌` while checks run, `✓` once

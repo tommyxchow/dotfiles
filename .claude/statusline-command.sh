@@ -242,6 +242,21 @@ if [ -n "$HERDR_PANE_ID" ]; then
   fi
 fi
 
+# The Herdr desktop app has no pane tokens, so the same values go out as
+# labels on the terminal, where hq reads them from `hc ls`. Labels have no TTL;
+# they end with the terminal, and `key=` clears one.
+if [ -n "$HC_TERMINAL_ID" ] && command -v hc >/dev/null 2>&1; then
+  labels=("effort=${effort}" "ctx=" "ctxhigh=")
+  if [ -n "$pct" ]; then
+    if [ "$pct" -ge "$ctx_orange" ]; then
+      labels=("effort=${effort}" "ctxhigh=${pct}% ${ctxtext}" "ctx=")
+    else
+      labels=("effort=${effort}" "ctx=${pct}% ${ctxtext}" "ctxhigh=")
+    fi
+  fi
+  hc label "$HC_TERMINAL_ID" "${labels[@]}" >/dev/null 2>&1 &
+fi
+
 # Segment 4: rate-limit usage, 5h · 7d (dot only between two present windows)
 usage=""
 for w in "$(win_seg 5h "$five_used" "$five_over" "$five_in")" "$(win_seg 7d "$seven_used" "$seven_over" "$seven_in")"; do

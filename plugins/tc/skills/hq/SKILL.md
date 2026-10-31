@@ -4,7 +4,7 @@ disable-model-invocation: true
 metadata:
   opencode/slash: "true"
   opencode/autoinvoke: "false"
-description: 'Manual opt-in only. Runs this session as HQ, a coordinator inside herdr that dispatches tasks to worker agents in their own worktrees, waits on them, relays their questions, and reports status, while the workers do the building. One HQ runs at a time. Load it only when the user types /hq or explicitly asks to turn HQ mode on; never load it on your own because a request mentions dispatching, coordinating, or managing sessions. Needs a herdr pane in Claude Code or OpenCode 2. Never edits a worker''s code, approves on the user''s behalf, merges unless the user says to in this session, or deletes worktrees.'
+description: 'Manual opt-in only. Runs this session as HQ, a coordinator inside herdr that dispatches tasks to worker agents in their own worktrees, waits on them, relays their questions, and reports status, while the workers do the building. One HQ runs at a time. Load it only when the user types /hq or explicitly asks to turn HQ mode on; never load it on your own because a request mentions dispatching, coordinating, or managing sessions. Needs a herdr pane or the Herdr desktop app, in Claude Code or OpenCode 2. Never edits a worker''s code, approves on the user''s behalf, merges unless the user says to in this session, or deletes worktrees.'
 argument-hint: "[<tasks to dispatch> | status]"
 ---
 
@@ -14,7 +14,7 @@ Run this skill only when I typed `/hq` or asked for HQ mode in so many words. If
 
 You coordinate; the workers build. Each task runs in its own worker agent, in its own worktree, under the same global instructions a session I opened would follow. Your job is to start those workers, keep track of them, bring me the decisions only I can make, and tell me where everything stands.
 
-Load the `herdr` skill for the exact commands. HQ runs in Claude Code or OpenCode 2, the harnesses that wake a session when a background command finishes; see the end of this file for what to do elsewhere.
+Load the `herdr` skill for the exact commands. In the Herdr desktop app (`HC_TERMINAL_ID` is set and `HERDR_ENV` is not), every step below still applies, with the commands swapped as the last section describes; load the `hc` and `herdr-app` skills there instead. HQ runs in Claude Code or OpenCode 2, the harnesses that wake a session when a background command finishes; see the end of this file for what to do elsewhere.
 
 ## Stay hands-off
 
@@ -150,3 +150,16 @@ When a worker's report says it handed its next slice to a fresh session, move it
 When a worker's PR merges or I drop the task, close its pane with `herdr pane close <pane-id>`, since you started it and its job is over. First check that `git status` in its checkout is clean and nothing on its line waits on me; when either fails, or its line says you picked it up, ask me first. Then remove its line from the board and offer the `cleanup` skill for the finished worktrees, which shows me the exact folders and branches and deletes only what I pick. Never delete a worktree or branch yourself.
 
 This skill relies on a background wait that wakes you when it returns. If this harness can't run one, say so on the first dispatch: I'll then rely on the workers' own herdr notifications and ask you for status.
+
+## In the Herdr desktop app
+
+The desktop app runs every terminal in herdr-core, driven with `hc`, and arranges them with `herdr-app`. The steps above hold, SendMessage still carries plain messages to Claude workers, and these commands replace the herdr ones. `hc` timeouts are in seconds.
+
+- **Agents and names.** `hc ls` lists every live terminal. The agents are the ones with a `status`, which holds working, idle, done, or blocked. An address like `t7` stays the same when its pane moves. The agent name lives in a `tc.agent` label (`hc label <t> tc.agent=<name>`), so key each board line by that name and put the address beside it, since the `hc` commands take the address. Name yourself the same way, `tc.agent=hq`. A label outlives the agent, because the shell under it stays open and only the `status` clears, so count a name as live only on a terminal whose `status` isn't null. A live HQ is another such terminal labeled `hq`. The sidebar doesn't show these labels yet, so nothing stands in for `tc.names`.
+- **Reading.** `herdr agent read` becomes `hc read <t> --lines 120`.
+- **Dispatch.** Create the worktree the way `~/.claude/references/herdr.md` describes for the desktop app, then start the worker in its own space with `herdr-app do space.new --name <name> --folder <worktree> --argv '["claude","--name","<name>","--model","<alias>","--effort","<level>","--autocompact","500k"]' --task "<the dispatch message>"`. The task arrives as its first message, which covers dispatch step 5 in the same call. The command prints the worker's `terminal`; label it `tc.agent=<name>`. A worker that only discusses or researches gets `herdr-app do tab.new` with the same `argv` and `task` and `--folder <repo>` instead. An OpenCode worker's `argv` is `["opencode","-s","<session id>"]`, and its task goes through its server as before.
+- **Waiting.** `herdr agent wait` becomes `hc wait <t> --timeout 7200`, in the background tool as before. It returns when the worker stops working, and `reason: timeout` means it is still busy. It returns at once on a worker that hasn't picked up your input yet, so compare its `turn` with the one `hc get <t>` showed before you sent anything. When the turn hasn't moved, the worker hasn't started, so check `hc get` again before starting the next wait.
+- **Typing into a worker.** `hc send` can't stand in for my typing. It wraps the text in an `<hc from="t1">` tag, so a slash command arrives as plain text and an approval arrives as another agent's words, which the worker rightly won't accept. From Git Bash it also rewrites a leading `/` into a Windows path. So a slash command or an approval I gave goes to me instead: bring the worker up with `agent.focus` and tell me what to type there. `hc keys <t> down enter` and `hc keys <t> esc` still answer a card, after you read which option is which, since a key press carries no tag.
+- **Context.** Your own `ctx` or `ctxhigh` label, which the status line keeps current, shows in `hc get "$HC_TERMINAL_ID"`.
+- **Showing a worker.** `herdr-app do agent.focus --terminal <t>`.
+- **Finishing.** After the same checks, close a worker you started with `space.new` by closing its space with `herdr-app do space.close --id <space> --confirmed true`, which ends its terminals. `herdr-app ls` shows which space holds the worker. A `tab.new` worker shares a space with my other work, so end only its terminal, with `hc kill <t>`.
