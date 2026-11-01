@@ -168,6 +168,45 @@ link_herdr_plugins() {
 }
 link_herdr_plugins
 
+# The Herdr desktop app's sidebar copies, modified from its Apache-2.0 mods
+# (herdr-app/LICENSE). The mod files are copied, not linked: the app reloads a
+# mod only when a file in its own folder changes, so an edit behind a link would
+# wait for the next app start. Re-run the installer after editing them. Each
+# folder stays a real folder, since the app writes its own type files there.
+# badge.mjs is a link, since node reads it fresh on every run; it goes into each
+# folder so the mod runs it from there, which is how both herdr apps show the
+# same PR badge. HERDR_APP_HOME moves the app's folder, as it does for the app.
+HERDR_APP_DIR="${HERDR_APP_HOME:-$HOME/.config/herdr-app}"
+copy_herdr_app_mods() {
+  local dir name file src target
+  if ! command -v herdr-app >/dev/null 2>&1; then
+    printf "  SKIP  herdr-app mods (herdr-app not on PATH)\n"
+    # Count the badge links as ours anyway, or the sweep below would prune them.
+    for dir in "$DOTFILES"/herdr-app/mods/*/; do
+      LINKED="$LINKED$HERDR_APP_DIR/mods/$(basename "$dir")/badge.mjs|"
+    done
+    return
+  fi
+  for dir in "$DOTFILES"/herdr-app/mods/*/; do
+    name="$(basename "$dir")"
+    mkdir -p "$HERDR_APP_DIR/mods/$name"
+    for file in main.js mod.json; do
+      src="$DOTFILES/herdr-app/mods/$name/$file"
+      target="$HERDR_APP_DIR/mods/$name/$file"
+      # A link from an earlier run would make cp write through it into the repo.
+      [ -L "$target" ] && rm -f "$target"
+      if cmp -s "$src" "$target"; then
+        printf "  OK    %s\n" "$target"
+      else
+        cp "$src" "$target"
+        printf "  COPY  %s -> herdr-app/mods/%s/%s\n" "$target" "$name" "$file"
+      fi
+    done
+    link "herdr/plugins/tc/badge.mjs" "$HERDR_APP_DIR/mods/$name/badge.mjs"
+  done
+}
+copy_herdr_app_mods
+
 # Links from older layouts: in the folders this installer manages, anything
 # that points into this repo but was not linked above, plus dangling links
 # left by a deleted dotfiles checkout. Links to anything else are not ours.
@@ -185,7 +224,7 @@ sweep() {
 }
 sweep "$HOME"/.claude/* "$HOME"/.claude/skills/* "$HOME"/.agents/skills/* \
   "$HOME"/.config/opencode/* "$HOME"/.config/opencode/skills/* "$HOME"/.config/opencode/commands/* \
-  "$HOME"/.codex/*
+  "$HOME"/.codex/* "$HERDR_APP_DIR"/mods/*/*
 for dir in "$HOME/.agents/skills" "$HOME/.agents" "$HOME/.config/opencode/skills" "$HOME/.config/opencode/commands"; do
   rmdir "$dir" 2>/dev/null || true
 done
