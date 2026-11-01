@@ -4,6 +4,8 @@
 // runs it with "all" on start and from the refresh action, and with "event" when
 // an agent settles, a workspace gets focus, or a worktree is opened. The values
 // show through the `$pr`, `$added`, and `$removed` slots in herdr's sidebar config.
+// The Herdr desktop app's tc mods run it as `json <folder>` instead, which prints
+// the same values for that folder's checkout, so both apps show one badge.
 import { spawnSync } from "node:child_process";
 import { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -212,7 +214,34 @@ function eventWorkspace() {
   return data.workspace_id ?? data.workspace?.workspace_id ?? process.env.HERDR_WORKSPACE_ID ?? null;
 }
 
+// For the desktop app: the values refresh() reports, printed as JSON for the
+// checkout around `folder`, plus its branch. A folder outside git prints all
+// nulls. A failed PR lookup still prints the counts, with the reason in `error`
+// so the caller can log it.
+function printJson(folder) {
+  // The app's spaces mod watches .git and reruns this on a change, so its git
+  // calls must not write there (an index refresh would wake the watch again).
+  process.env.GIT_OPTIONAL_LOCKS = "0";
+  const top = spawnSync("git", ["-C", folder, "rev-parse", "--show-toplevel"], { encoding: "utf8" });
+  if (top.status !== 0) {
+    console.log(JSON.stringify({ branch: null, pr: null, added: null, removed: null }));
+    return;
+  }
+  const checkout = top.stdout.trim();
+  const values = { branch: run("git", ["-C", checkout, "branch", "--show-current"]) || null, ...diffCounts(checkout), pr: null };
+  try {
+    values.pr = prBadge(checkout);
+  } catch (error) {
+    values.error = error.message;
+  }
+  console.log(JSON.stringify(values));
+}
+
 function main(mode) {
+  if (mode === "json") {
+    printJson(process.argv[3] ?? process.cwd());
+    return;
+  }
   if (mode === "all") {
     const { workspaces } = JSON.parse(run(herdr, ["workspace", "list"])).result;
     for (const workspace of workspaces) {
