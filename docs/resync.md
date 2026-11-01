@@ -366,22 +366,22 @@ setup expects five settings in it:
   running in it. Herdr's source labels the border with the harness, not the
   agent's name.
 - **Agent rows** give Claude Code, OpenCode 2, and Grok Build the same shape:
-  where the agent is, what it is doing, and who it is. No row names the
-  harness. Claude is the default and carries no mark, OpenCode 2's own title
-  already starts with `OC |`, and Grok's reads `grok` or ends in `- grok`, marks
-  no herdr rule can strip, so an `agent` row would only repeat them. A
-  fresh Claude session titles itself "Claude Code", so that title row hides
-  until the session has a real title; `hide` needs herdr 0.9.1 or newer. The
-  last row is the agent's herdr name in bold, which the `tc` plugin publishes
-  for every harness, so an `hq` worker named `nav-flicker` is easy to find; an agent
-  with no name shows no such row. Claude's adds the context the statusline
-  publishes (see `docs/statusline.md`), and OpenCode's adds the context the
-  `tc` plugin reads off its screen. The context turns orange as `$ctxhigh` past
-  the soft ceiling. Effort and model stay out: both are fixed at launch, and
-  `hq`, which picks them, reads the `effort` token from `herdr agent list`. Any
-  other harness uses `rows`, herdr's default with the name added after the
-  harness, like `codex · nav-flicker`. An entry replaces `rows` rather than adding to
-  it.
+  the agent's herdr name in bold, which the `tc` plugin publishes for every
+  harness, then its tab, and on a second row its context. The name stands in
+  for the workspace and the session title, which only repeated it, most of all
+  under `hq`, whose workers carry the task in their workspace, tab, and name.
+  Every session names itself under the herdr rules, so an unnamed agent is
+  rare and shows only its machine and tab. No row names the harness, since the
+  pane border already does. Claude's second row is the context the statusline
+  publishes (see `docs/statusline.md`), OpenCode's the context the `tc` plugin
+  reads off its screen; it turns orange as `$ctxhigh` past the soft ceiling,
+  and a row with nothing reported yet disappears. Grok has no context reading,
+  so its entry is the one row. Effort and model stay out: both are fixed at
+  launch, and `hq`, which picks them, reads the `effort` token from
+  `herdr agent list`. Any other harness uses `rows`, herdr's default with the
+  name added after the harness, like `codex · nav-flicker`. An entry replaces
+  `rows` rather than adding to it. The Herdr desktop app's `tc-agents` mod
+  shows the same name and context; see Herdr desktop app below.
 - **Spaces rows** are herdr's defaults plus the `$pr`, `$added`, and `$removed` slots
   the `tc` plugin fills: the PR or default-branch CI state, then the
   uncommitted lines added in green and removed in red. A slot shows nothing
@@ -410,19 +410,15 @@ rows = [
 
 [ui.sidebar.agents.rows_by_agent]
 claude = [
-  ["state_icon", "machine", "workspace", "tab"],
-  [{ token = "terminal_title_stripped", rules = [{ equals = "Claude Code", hide = true }] }],
-  [{ token = "$name", bold = true }, "$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
+  ["state_icon", "machine", { token = "$name", bold = true }, "tab"],
+  ["$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
 ]
 opencode = [
-  ["state_icon", "machine", "workspace", "tab"],
-  ["terminal_title_stripped"],
-  [{ token = "$name", bold = true }, "$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
+  ["state_icon", "machine", { token = "$name", bold = true }, "tab"],
+  ["$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
 ]
 grok = [
-  ["state_icon", "machine", "workspace", "tab"],
-  ["terminal_title_stripped"],
-  [{ token = "$name", bold = true }],
+  ["state_icon", "machine", { token = "$name", bold = true }, "tab"],
 ]
 
 [ui.sidebar.spaces]
@@ -434,6 +430,46 @@ rows = [
 
 After an edit, `herdr config check` validates the file and `herdr server
 reload-config` applies it.
+
+## Herdr desktop app
+
+Skip this section if `herdr-app` is not on PATH or its window isn't open,
+since these commands talk to the running app.
+
+The installer copies the `tc-agents` and `tc-spaces` mods from `herdr-app/mods`
+into `~/.config/herdr-app/mods` and links the `tc` plugin's `badge.mjs` into
+each, so the app's sidebar shows what the herdr config above shows: each
+space's branch, PR or CI badge, and uncommitted lines, and each agent's name
+and context, the context at the end of the name line since the app's sidebar
+is wide enough. The app adds two things the terminal app doesn't have: a line
+saying what an agent is doing, from Claude Code's own status report, which
+`herdr agent get` doesn't expose (checked in 0.9.4), and the branch and badge
+on a paneless `hq` worker, which has no space row of its own.
+The installer copies rather than links because the app reloads a mod only
+when a file in its own folder changes, so rerun it after editing a mod.
+
+The layout that shows them is regenerated here rather than committed, so it
+follows Herdr's own `main` after an update. `layout.clone` won't overwrite, so
+the old copy goes first. Sizes and other clicks live in `layouts/.state/` and
+stay:
+
+```sh
+h="${HERDR_APP_HOME:-$HOME/.config/herdr-app}"
+herdr-app do layout.switch --name main
+rm -f "$h/layouts/tc.json"
+herdr-app do layout.clone --name main --as tc   # also switches to it
+sed -i -e 's/"mod": "agents"/"mod": "tc-agents"/' -e 's/"mod": "spaces"/"mod": "tc-spaces"/' "$h/layouts/tc.json"
+grep -c '"mod": "tc-' "$h/layouts/tc.json"      # 2; anything else means main's blocks changed
+```
+
+The two mods are frozen copies of Herdr's own, so an app update doesn't reach
+them. When `herdr-app --version` is newer than `cloned_from.version` in a mod's
+`mod.json`, diff the repo copy against Herdr's shipped `mods/agents/main.js` or
+`mods/spaces/main.js`. Each copy's header lists what tc changed, so anything
+else that differs is Herdr's update: port it into the repo copy, bump the
+version, and rerun the installer. `herdr-app check` on both
+folders and `herdr-app status` with no errors confirm they load. Switching to
+`main` shows Herdr's own lists again.
 
 ## Skill sources
 

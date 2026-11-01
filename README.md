@@ -46,6 +46,7 @@ dotfiles checkout.
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
 | `bin/wait-for` | `~/.local/bin/wait-for` (agents wait on a URL with a deadline; the installer warns when that folder is not on PATH) |
 | `herdr/plugins/tc` | herdr plugin `tc`, linked through the running herdr server |
+| `herdr-app/mods/*` | copied into `~/.config/herdr-app/mods/<name>`, with the `tc` plugin's `badge.mjs` linked beside them (the Herdr desktop app's sidebar) |
 | `.claude/statusline-command.sh` | `~/.claude/statusline-command.sh` (design notes in `docs/statusline.md`) |
 
 Cursor's rule file needs `alwaysApply: true` frontmatter that the shared file
@@ -236,16 +237,20 @@ commands. The status line publishes effort and context as terminal labels
 there. `hq` starts its workers as its own children with no tab of their
 own, so each shows once, nested under it in the agents list. Clicking one opens
 it over the current tab, one wait covers all of them, and the screen stays on hq. The `tc` plugin
-doesn't run in the desktop app yet, so its sidebar badges and names and its
-worktree env copy are missing there.
+doesn't run in the desktop app, so its worktree env copy is missing there, but
+the `tc-spaces` and `tc-agents` mods in `herdr-app/` show the same sidebar
+info: they are copies of the app's own lists, modified under its Apache-2.0
+license, and they run the plugin's badge script for their values. Under each
+agent they also show what it's doing right now, from Claude Code's own status
+report. `docs/resync.md` sets up the layout that uses them.
 
 The same plugin fills two sidebar values for every git workspace: the
 branch's pull request with its CI, like `#12 draft ◌` while checks run, `✓` once
 they pass, or `✗` when one failed; `CI ✓` and the like on the default branch,
 which has no pull request; and the uncommitted lines added and removed, like `+12 -3`, with
 new files counted as added. The pull request comes from `gh`, so without `gh`
-signed in only the line counts show. It also shows each agent's herdr name, like an `hq` worker's `nav-flicker`,
-under that agent in the sidebar, for any harness, and for OpenCode 2 its
+signed in only the line counts show. It also publishes each agent's herdr name, like an `hq` worker's `nav-flicker`,
+which leads that agent's sidebar row, for any harness, and for OpenCode 2 its
 context, read off the bottom of its screen. When it refreshes and how to debug
 it are in `docs/resync.md`.
 
