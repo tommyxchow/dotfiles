@@ -458,7 +458,8 @@ h="${HERDR_APP_HOME:-$HOME/.config/herdr-app}"
 herdr-app do layout.switch --name main
 rm -f "$h/layouts/tc.json"
 herdr-app do layout.clone --name main --as tc   # also switches to it
-sed -i -e 's/"mod": "agents"/"mod": "tc-agents"/' -e 's/"mod": "spaces"/"mod": "tc-spaces"/' "$h/layouts/tc.json"
+# Through a temp file, since macOS sed has no plain -i.
+t="$(mktemp)" && sed -e 's/"mod": "agents"/"mod": "tc-agents"/' -e 's/"mod": "spaces"/"mod": "tc-spaces"/' "$h/layouts/tc.json" > "$t" && mv "$t" "$h/layouts/tc.json"
 grep -c '"mod": "tc-' "$h/layouts/tc.json"      # 2; anything else means main's blocks changed
 ```
 
