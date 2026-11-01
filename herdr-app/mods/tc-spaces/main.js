@@ -24,7 +24,10 @@ function badgeColor(t, text) {
   if (/✗|changes/.test(text)) return t.ansi1;
   if (text.includes("◌")) return t.ansi3;
   if (text.includes("approved")) return t.ansi2;
-  return t.dim;
+  // Merged and closed are history, so they fade; an open PR or a CI result reads
+  // a step brighter, like the TUI's plain text.
+  if (/merged|closed/.test(text)) return t.dim;
+  return t.muted;
 }
 
 function find(node, id) {
