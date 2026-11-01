@@ -237,12 +237,8 @@ commands. The status line publishes effort and context as terminal labels
 there. `hq` starts its workers as its own children with no tab of their
 own, so each shows once, nested under it in the agents list. Clicking one opens
 it over the current tab, one wait covers all of them, and the screen stays on hq. The `tc` plugin
-doesn't run in the desktop app, so its worktree env copy is missing there, but
-the `tc-spaces` and `tc-agents` mods in `herdr-app/` show the same sidebar
-info: they are copies of the app's own lists, modified under its Apache-2.0
-license, and they run the plugin's badge script for their values. Under each
-agent they also show what it's doing right now, from Claude Code's own status
-report. `docs/resync.md` sets up the layout that uses them.
+doesn't run in the desktop app, so its worktree env copy is missing there; the
+mods in `herdr-app/` give the app the same sidebar info (see `docs/resync.md`).
 
 The same plugin fills two sidebar values for every git workspace: the
 branch's pull request with its CI, like `#12 draft ◌` while checks run, `✓` once

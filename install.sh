@@ -168,14 +168,9 @@ link_herdr_plugins() {
 }
 link_herdr_plugins
 
-# The Herdr desktop app's sidebar copies, modified from its Apache-2.0 mods
-# (herdr-app/LICENSE). The mod files are copied, not linked: the app reloads a
-# mod only when a file in its own folder changes, so an edit behind a link would
-# wait for the next app start. Re-run the installer after editing them. Each
-# folder stays a real folder, since the app writes its own type files there.
-# badge.mjs is a link, since node reads it fresh on every run; it goes into each
-# folder so the mod runs it from there, which is how both herdr apps show the
-# same PR badge. HERDR_APP_HOME moves the app's folder, as it does for the app.
+# The Herdr desktop app's sidebar mods. Copied, not linked, because the app
+# reloads a mod only when a file in its own folder changes; badge.mjs is
+# linked, since node reads it fresh each run.
 HERDR_APP_DIR="${HERDR_APP_HOME:-$HOME/.config/herdr-app}"
 copy_herdr_app_mods() {
   local dir name file src target
