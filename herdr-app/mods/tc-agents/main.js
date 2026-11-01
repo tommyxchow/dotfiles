@@ -413,7 +413,10 @@ export default class Agents extends View {
 
     const row = (a, i, subs = []) => {
       const pic = icon(a.program, 16, t.foreground);
-      const more = detail.get(a.address);
+      // The agent's own name, like the herdr TUI's $name, wins over its tab's:
+      // two sessions sharing a tab would otherwise read the same.
+      const term = this.byAddr.get(a.address);
+      const more = term?.name || term?.labels?.["tc.agent"] || detail.get(a.address);
       // An agent on another machine (`vps/t7`) says which.
       const machine = a.address.includes("/") ? a.address.split("/")[0] : null;
       if (collapsed) {
