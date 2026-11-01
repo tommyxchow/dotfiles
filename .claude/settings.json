@@ -24,6 +24,17 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "s=\"$HOME/.claude/skills/hq/save-close.sh\"; if [ -f \"$s\" ]; then bash \"$s\"; fi",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

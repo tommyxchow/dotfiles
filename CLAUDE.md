@@ -204,7 +204,9 @@ committed here.
   after any reinstall or that path ships to every machine. That entry also
   carries a second hook of ours, which prints one line saying the session is
   in herdr, from `HERDR_ENV` for the terminal app or `HC_TERMINAL_ID` for the
-  Herdr desktop app; keep it when restoring. The desktop app needs no pane hook,
+  Herdr desktop app; keep it when restoring. The `Stop` entry is ours too:
+  it saves each named herdr agent's last message for `hq` to read, through
+  `plugins/tc/skills/hq/save-close.sh`. The desktop app needs no pane hook,
   since it reads Claude Code's status on its own. The opencode integration writes into
   `opencode/cli.json` too, but its `"plugins": ["./herdr-opencode"]` entry is
   relative and stays committed; without it OpenCode 2 never loads herdr's
