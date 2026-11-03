@@ -3,7 +3,7 @@
 //
 // Modified by tc from Herdr's shipped `agents` mod (version in mod.json), under
 // the Apache License 2.0 (herdr-app/LICENSE in the dotfiles repo). Changes: the
-// agent's context at the end of its name line; under a paneless hq worker, a
+// agent's context as a fill bar and percent at the end of its name line; under a paneless hq worker, a
 // line with its branch, PR badge, and uncommitted lines (it has no space row of
 // its own); a line with what the agent reports it's doing while it works or
 // waits on you; a row without a space header leading with the agent's own name;
@@ -131,12 +131,19 @@ function duration(ms) {
   return h < 24 ? `${h}h` : `${Math.floor(h / 24)}d`;
 }
 
+function durationWords(ms) {
+  const m = Math.floor(ms / 60000);
+  if (m < 1) return "under a minute";
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return h === 1 ? "1 hour" : `${h} hours`;
+  const d = Math.floor(h / 24);
+  return d === 1 ? "1 day" : `${d} days`;
+}
+
 // The time label's tooltip, like "Working for 3 min" or "Finished 2 hours ago".
 function timeTip(status, ms) {
-  const m = Math.floor(ms / 60000);
-  const h = Math.floor(m / 60);
-  const d = Math.floor(h / 24);
-  const span = m < 1 ? "under a minute" : m < 60 ? `${m} min` : h < 24 ? (h === 1 ? "1 hour" : `${h} hours`) : d === 1 ? "1 day" : `${d} days`;
+  const span = durationWords(ms);
   if (status === "done") return `Finished ${span} ago`;
   const state = { working: "Working", blocked: "Waiting on you", idle: "Idle" }[status] ?? "Like this";
   return `${state} for ${span}`;
