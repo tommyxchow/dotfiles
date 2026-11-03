@@ -5,20 +5,32 @@
 // the Apache License 2.0 (herdr-app/LICENSE in the dotfiles repo). Changes: the
 // agent's context at the end of its name line; under a paneless hq worker, a
 // line with its branch, PR badge, and uncommitted lines (it has no space row of
-// its own); and a line with what the agent reports it's doing while it works or
-// waits on you.
+// its own); a line with what the agent reports it's doing while it works or
+// waits on you; a row without a space header leading with the agent's own name;
+// the time label dropping first in a narrow sidebar; and hover tooltips in plain
+// words for the context, the time label, the badge, and the line counts.
 
 import { View, div, image, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
 import { agents, terminals, panes, focused, spaces, run, theme, shared, setShared, setAgentOrder, openOverlay, closeOverlay, props, window, layout, exec, appHome } from "herdr";
 
-// The context as the dotfiles status line publishes it, like "12% 126K/1M", at
-// the end of a row's name line, orange once it's `ctxhigh` past the soft ceiling.
-// The herdr TUI puts it on its own row only because its sidebar is too narrow.
+// The context the dotfiles status line publishes, like "12% 126K/1M", at the end
+// of a row's name line as a small fill bar and the percent, with the token counts
+// in its tooltip; orange once it's `ctxhigh` past the soft ceiling. The herdr TUI
+// puts it on its own row only because its sidebar is too narrow.
+const CTX_BAR_PX = 18;
 function ctxLabel(t, k) {
   const l = k?.labels ?? {};
-  const ctx = l.ctxhigh ?? l.ctx;
-  return ctx ? div().flex_none().text_size(11).text_color(l.ctxhigh ? t.ansi3 : t.dim).child(ctx) : null;
+  const ctx = l.ctxhigh || l.ctx;
+  if (!ctx) return null;
+  const color = l.ctxhigh ? t.ansi3 : t.dim;
+  const [, pct, used, size] = ctx.match(/^(\d+)% (\S+)\/(\S+)$/) ?? [];
+  if (!pct) return div().flex_none().text_size(11).text_color(color).child(ctx);
+  const fill = Math.round((CTX_BAR_PX * Math.min(Number(pct), 100)) / 100);
+  return h_flex().id(`ctx-${k.address}`).flex_none().gap(4).items_center().text_size(11).text_color(color)
+    .tooltip(`Context ${pct}% full, ${used} of ${size} tokens`)
+    .child(div().w(CTX_BAR_PX).h(4).rounded(2).bg(t.input).child(div().w(fill).h_full().rounded(2).bg(color)))
+    .child(`${pct}%`);
 }
 
 const activity = (k) => (typeof k?.report === "string" ? k.report : k?.report?.msg) || null;
@@ -48,6 +60,17 @@ export function badgeColor(t, text) {
   return t.muted;
 }
 
+// The badge in words for its tooltip: "#12 approved ✓" reads "Pull request #12:
+// approved, CI passed", and "CI ✗" reads "Default branch: CI failed".
+function badgeTip(text) {
+  const ci = { "✓": "CI passed", "✗": "CI failed", "◌": "CI running" }[text.match(/[✓✗◌]/u)?.[0]];
+  if (text.startsWith("CI")) return `Default branch: ${ci ?? "no CI"}`;
+  const [, number, state] = text.match(/^#(\d+) (\w+)/) ?? [];
+  if (!number) return text;
+  const words = state === "changes" ? "changes requested" : state;
+  return `Pull request #${number}: ${[words, ci].filter(Boolean).join(", ")}`;
+}
+
 function find(node, id) {
   if (node?.id === id) return node;
   for (const child of node?.children ?? []) {
@@ -58,7 +81,10 @@ function find(node, id) {
 }
 
 // The sidebar's rail goes by its width, not a flag: dragging its edge narrows it too.
-const narrow = () => (find(layout(), "sidebar")?.size?.px ?? Infinity) < 160;
+const sidebarWidth = () => find(layout(), "sidebar")?.size?.px ?? Infinity;
+const narrow = () => sidebarWidth() < 160;
+// Below this width a row drops its time label so the name keeps room.
+const TIME_MIN_PX = 190;
 
 // To the rail (on macOS wide enough for the traffic lights), or back to the width it had.
 function toggleSidebar() {
@@ -80,7 +106,7 @@ function title(tab, l) {
   const prog = l?.program?.name;
   const live = clean(l?.title);
   const telling = live && live !== prog && !/^[~/]|^[A-Za-z]:\\/.test(live) && !live.includes("@") && live.toLowerCase() !== l?.program?.key;
-  return tab.name === prog && telling ? live : tab.name;
+  return (tab.name === prog || !tab.named) && telling ? live : tab.name;
 }
 const RANK = { blocked: 4, done: 3, working: 2, idle: 1 };
 // A sub-agent without a pane isn't in agents(): its raw word, error counting as
@@ -105,6 +131,17 @@ function duration(ms) {
   return h < 24 ? `${h}h` : `${Math.floor(h / 24)}d`;
 }
 
+// The time label's tooltip, like "Working for 3 min" or "Finished 2 hours ago".
+function timeTip(status, ms) {
+  const m = Math.floor(ms / 60000);
+  const h = Math.floor(m / 60);
+  const d = Math.floor(h / 24);
+  const span = m < 1 ? "under a minute" : m < 60 ? `${m} min` : h < 24 ? (h === 1 ? "1 hour" : `${h} hours`) : d === 1 ? "1 day" : `${d} days`;
+  if (status === "done") return `Finished ${span} ago`;
+  const state = { working: "Working", blocked: "Waiting on you", idle: "Idle" }[status] ?? "Like this";
+  return `${state} for ${span}`;
+}
+
 // The agent's icon from the app's program table: a one-color glyph or a picture.
 function icon(p, size, color) {
   if (!p?.icon) return null;
@@ -117,7 +154,9 @@ export default class Agents extends View {
     this.folded = new Set();
     // Each agent's last state and when it changed (ms), kept across restarts.
     this.changed = JSON.parse(localStorage.getItem("changed") ?? "{}");
-    this.pins = JSON.parse(localStorage.getItem("pins") ?? "[]");
+    this.pendingPins = JSON.parse(localStorage.getItem("pins") ?? "[]");
+    if (!this.pendingPins.length) localStorage.removeItem("pins");
+    this.migratingPins = new Set();
     this.git = {};
     cx.timer.every(30000, (cx) => cx.notify());
     cx.timer.every(GIT_EVERY_MS, (cx) => this.refreshGit(cx));
@@ -188,9 +227,10 @@ export default class Agents extends View {
     const g = (k.parent && this.git[k.cwd]) || {};
     const bits = [];
     if (g.branch) bits.push(div().min_w(0).truncate().child(g.branch));
-    if (g.pr) bits.push(div().flex_none().text_color(badgeColor(t, g.pr)).child(g.pr));
+    if (g.pr) bits.push(div().id(`badge-${k.address}`).flex_none().text_color(badgeColor(t, g.pr)).tooltip(badgeTip(g.pr)).child(g.pr));
     const counts = [g.added && div().flex_none().text_color(t.ansi2).child(g.added), g.removed && div().flex_none().text_color(t.ansi1).child(g.removed)].filter(Boolean);
-    if (counts.length) bits.push(h_flex().flex_none().gap(4).children(counts));
+    const changed = [g.added && `${g.added.slice(1)} added`, g.removed && `${g.removed.slice(1)} removed`].filter(Boolean).join(", ");
+    if (counts.length) bits.push(h_flex().id(`lines-${k.address}`).flex_none().gap(4).tooltip(`Not committed yet: ${changed} lines`).children(counts));
     const doing = status === "working" || status === "blocked" ? activity(k) : null;
     const line = (children) => h_flex().h(16).items_center().text_size(11).text_color(t.dim)
       .children(rail.map((l) => div().w(9).mr(4).h_full().flex_none().when(l === "│" || l === "├", (el) => el.border_l(1.5).border_color(t.input))))
@@ -219,19 +259,24 @@ export default class Agents extends View {
     localStorage.setItem("changed", JSON.stringify(this.changed));
   }
 
-  setPins(pins) {
-    this.pins = pins;
-    localStorage.setItem("pins", JSON.stringify(pins));
-  }
-
-  // Drops pins of agents that ended. Only for machines the list has heard from:
-  // right after a start, or while a machine connects, its agents aren't listed yet.
-  prunePins(all) {
-    const machine = (addr) => (addr.includes("/") ? addr.split("/")[0] : "");
-    const heard = new Set(all.map((k) => machine(k.address)));
-    const live = new Set(all.filter((k) => k.state === "live").map((k) => k.address));
-    const kept = this.pins.filter((p) => !heard.has(machine(p)) || live.has(p));
-    if (kept.length !== this.pins.length) this.setPins(kept);
+  // Keep offline pins until their terminal returns, and keep each pending until
+  // core echoes the label so a failed write doesn't erase the old pin.
+  migratePins(all) {
+    const listed = new Map(all.filter((t) => t.state === "live").map((t) => [t.address, t]));
+    const pending = this.pendingPins.filter((address) => {
+      const terminal = listed.get(address);
+      if (!terminal) return true;
+      if (terminal.labels?.["herdr.pinned"]) return false;
+      if (!this.migratingPins.has(address)) {
+        this.migratingPins.add(address);
+        run("terminal.pin", { terminal: address, pinned: true });
+      }
+      return true;
+    });
+    if (pending.length === this.pendingPins.length) return;
+    this.pendingPins = pending;
+    if (pending.length) localStorage.setItem("pins", JSON.stringify(pending));
+    else localStorage.removeItem("pins");
   }
 
   since(a) {
@@ -346,6 +391,7 @@ export default class Agents extends View {
     let list = agents();
     this.listed = new Map(list.map((a) => [a.address, a.status]));
     const all = terminals();
+    this.migratePins(all);
     this.byAddr = new Map(all.map((k) => [k.address, k]));
     // A worker that just started, or just finished a turn (a commit, a pushed
     // PR), shouldn't wait for the next timer, as the herdr TUI plugin doesn't.
@@ -360,9 +406,8 @@ export default class Agents extends View {
     const urgency = new Map(list.map((a) => [a.address, Math.max(this.rank(a), ...this.tree(all, a.address).map((s) => RANK[kidStatus(s.t, this.listed)] ?? 0))]));
     const rankOf = (a) => urgency.get(a.address);
     if (byPriority) list = [...list].sort((x, y) => rankOf(y) - rankOf(x) || this.since(y) - this.since(x) || y.seq - x.seq);
-    this.prunePins(all);
-    const pinned = this.pins.map((p) => list.find((a) => a.address === p)).filter(Boolean);
-    const rest = list.filter((a) => !this.pins.includes(a.address));
+    const pinned = list.filter((a) => a.pinned);
+    const rest = list.filter((a) => !a.pinned);
     list = [...pinned, ...rest];
     setAgentOrder(list.map((a) => a.address));
 
@@ -437,7 +482,7 @@ export default class Agents extends View {
       }
       const when = this.since(a);
       const idle = a.status === "idle" && !a.focused;
-      const isPinned = this.pins.includes(a.address);
+      const isPinned = a.pinned;
       const pin = div()
         .id(`pin-${a.address}`)
         .flex_none()
@@ -449,16 +494,18 @@ export default class Agents extends View {
         .tooltip(isPinned ? "Unpin" : "Pin to the top")
         .on_click((_e, cx) => {
           cx.stop_propagation();
-          this.setPins(isPinned ? this.pins.filter((p) => p !== a.address) : [...this.pins, a.address]);
+          run("terminal.pin", { terminal: a.address, pinned: !isPinned });
           // The row moves away from under the pointer, and no hover-out comes.
           this.hovered = null;
           cx.notify();
         })
         .child(svg(`mods/workspace-chrome/${isPinned ? "pin-off" : "pin"}.svg`).size(13));
       // Under a space header the space goes without saying; an automatic tab number says nothing.
-      // Without a space header above (priority, pinned) the row names its space.
+      // Without a space header above (priority, pinned) the row adds its space,
+      // after the agent's own name so a narrow sidebar cuts the space, not the name.
       const full = byPriority || isPinned;
-      const name = full ? a.space_name || label(a) : more ?? (/^\d+$/.test(label(a)) ? a.program?.name || label(a) : label(a));
+      const name = more ?? (/^\d+$/.test(label(a)) ? a.program?.name || label(a) : label(a));
+      const where = full && a.space_name && a.space_name !== name ? a.space_name : null;
       // Under the name, past the 16px icon and its 9px gap.
       const extra = this.extras(t, this.byAddr.get(a.address), a.status, pic ? 25 : 0);
       return v_flex()
@@ -487,14 +534,17 @@ export default class Agents extends View {
               this.folded.has(a.address) ? this.folded.delete(a.address) : this.folded.add(a.address);
               cx.notify();
             })).child(pic)))
-          .child(h_flex().flex_1().min_w(0).gap(5).items_center()
-            .child(div().min_w(0).max_w(full && more ? 120 : 200).truncate().text_color(idle ? t.muted : t.foreground).child(name))
-            .when(full && Boolean(more), el => el.child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(`\u00b7 ${more}`))))
+          // The 36px floor sits on the name and space together, so a short name
+          // keeps its width and the space follows right after it.
+          .child(h_flex().flex_1().min_w(36).gap(5).items_center()
+            .child(div().min_w(0).max_w(where ? 120 : 200).truncate().text_color(idle ? t.muted : t.foreground).child(name))
+            .when(Boolean(where), el => el.child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(`\u00b7 ${where}`))))
           .when(Boolean(machine), el => el.child(div().text_size(10).text_color(t.dim).child(machine)))
           .when(subs.length > 0, el => el.child(fold(a, subs)))
           .when(this.hovered === a.address, el => el.child(pin))
           .when(Boolean(ctxLabel(t, this.byAddr.get(a.address))), el => el.child(ctxLabel(t, this.byAddr.get(a.address))))
-          .when(this.hovered !== a.address && Boolean(when), el => el.child(div().flex_none().text_size(11).text_color(t.dim).child(duration(now - when))))
+          .when(this.hovered !== a.address && Boolean(when) && sidebarWidth() >= TIME_MIN_PX, el => el.child(div().id(`when-${a.address}`).flex_none().text_size(11).text_color(t.dim)
+            .tooltip(timeTip(a.status, now - when)).child(duration(now - when))))
           .child(this.status(t, a, byPriority && !isPinned)))
         .children(extra);
     };
