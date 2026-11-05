@@ -50,13 +50,16 @@ const CLEARED = ["effort=", "ctx=", "ctxhigh="];
 
 // Null means the read failed, so the labels already there stay put.
 async function labelsFor(sessionID) {
-  // The newest few messages only: the last reply's token counts are the
-  // prompt's size, and the whole history runs past execFile's output limit.
+  // The newest two entries are a finished turn's idle record and its last
+  // reply, whose token counts are the prompt's size. Anything more pulls in
+  // whole tool outputs and can pass execFile's output limit.
   const messages = await server(
-    "session.message.list", "--param", `sessionID=${sessionID}`, "--param", "order=desc", "--param", "limit=5");
+    "session.message.list", "--param", `sessionID=${sessionID}`, "--param", "order=desc", "--param", "limit=2");
   if (!messages) return null;
   const last = messages.find((m) => m.type === "assistant" && m.tokens);
-  if (!last) return CLEARED;
+  // No reply in a non-empty list means something newer is queued, so keep
+  // the current labels; an empty session has nothing to show yet.
+  if (!last) return messages.length ? null : CLEARED;
   const effort = `effort=${last.model?.variant ?? ""}`;
   const window = last.model ? await contextWindow(last.model) : undefined;
   // `input` excludes cached tokens here. This is the sum OpenCode's footer shows.
@@ -80,11 +83,12 @@ function setup(api) {
     return route.type === "session" ? route.sessionID : undefined;
   };
   let chain = Promise.resolve();
+  let disposed = false;
   function publish() {
     const sessionID = routeSession();
     chain = chain.then(async () => {
       const labels = sessionID ? await labelsFor(sessionID) : CLEARED;
-      if (labels) await run("hc", ["label", terminal, ...labels]);
+      if (labels && !disposed) await run("hc", ["label", terminal, ...labels]);
     });
   }
 
@@ -104,10 +108,12 @@ function setup(api) {
     publish();
   }, 1000);
   return () => {
+    disposed = true;
     clearInterval(poll);
     unsubscribe();
     // Labels outlive the program, so clear them for whatever runs here next.
-    execFile("hc", ["label", terminal, ...CLEARED], { windowsHide: true }, () => {});
+    // Queued behind any publish in flight, so its labels can't land after.
+    chain = chain.then(() => run("hc", ["label", terminal, ...CLEARED]));
   };
 }
 

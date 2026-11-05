@@ -491,8 +491,9 @@ that model's alias to the entry, but the entry doesn't follow the `opus` alias
 to a newer model, so a new Opus would quietly run at its own default. Find the
 id `opus` resolves to now in Claude Code's
 [model config docs](https://code.claude.com/docs/en/model-config). When
-`modelSettings` has no entry for it, rename the old Opus entry's key to the new
-id and keep its level, unless Anthropic's
+`modelSettings` has no entry for it, or only an `/effort` write-back that the
+models gotcha in `CLAUDE.md` says to discard, give the new id the old Opus
+entry's level and remove the old key, unless Anthropic's
 [effort docs](https://platform.claude.com/docs/en/build-with-claude/effort)
 recommend a different starting level for that model in coding or agentic work,
 which wins. Update the date and model name in the models gotcha in `CLAUDE.md`
