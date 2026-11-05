@@ -305,6 +305,9 @@ Keep the `"plugins": ["./herdr-opencode"]` entry the opencode install adds to
 every machine, and it is the only way OpenCode 2 loads herdr's plugin. Without
 it herdr gets no working, idle, or blocked state from OpenCode 2 and no session
 to restore, and `herdr integration status` reports opencode as `needs repair`.
+Keep our `"./tc-context"` in the same list, so the result reads
+`["./herdr-opencode", "./tc-context"]`; it sets the desktop app's context
+labels for OpenCode 2, and an install that rewrites the list drops it.
 
 The `tc` herdr plugin under `herdr/plugins/tc` (worktree env files, PR badges,
 and agent names, described in the README's Herdr section) is the third surface.

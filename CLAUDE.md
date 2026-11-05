@@ -210,7 +210,9 @@ committed here.
   since it reads Claude Code's status on its own. The opencode integration writes into
   `opencode/cli.json` too, but its `"plugins": ["./herdr-opencode"]` entry is
   relative and stays committed; without it OpenCode 2 never loads herdr's
-  plugin. How the two surfaces refresh is in `docs/resync.md`.
+  plugin. Keep `"./tc-context"` in that list as well: it's ours, linked from
+  `opencode/tc-context`, and sets the desktop app's context labels for
+  OpenCode, so a reinstall that rewrites the list must not drop it. How the two surfaces refresh is in `docs/resync.md`.
 
 - **`herdr-app/mods` are Apache-2.0 copies of Herdr's own mods.** Keep each
   header's list of what tc changed current, since it is the license's notice

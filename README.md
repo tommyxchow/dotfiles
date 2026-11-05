@@ -44,6 +44,7 @@ dotfiles checkout.
 | `CLAUDE.md` | `AGENTS.md` in this repo (OpenCode 2 project instructions; installer-only) |
 | `plugins/tc/skills/*` | `~/.claude/skills/<name>` (OpenCode 2 reads this path too) |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
+| `opencode/tc-context` | `~/.config/opencode/tc-context` (sets the desktop app's context labels for OpenCode 2) |
 | `bin/wait-for` | `~/.local/bin/wait-for` (agents wait on a URL with a deadline; the installer warns when that folder is not on PATH) |
 | `herdr/plugins/tc` | herdr plugin `tc`, linked through the running herdr server |
 | `herdr-app/mods/*` | copied into `~/.config/herdr-app/mods/<name>`, with the `tc` plugin's `badge.mjs` linked beside them (the Herdr desktop app's sidebar) |
@@ -234,7 +235,8 @@ The Herdr desktop app works too. It runs terminals in herdr-core (`hc`) and
 sets `HC_TERMINAL_ID` instead of `HERDR_ENV`, so the same first-turn rule picks
 it up, and the reference's last section swaps in the `hc` and `herdr-app`
 commands. The status line publishes effort and context as terminal labels
-there. `hq` starts its workers as its own children with no tab of their
+there, and for OpenCode 2 the `opencode/tc-context` plugin publishes the same
+labels after each turn. `hq` starts its workers as its own children with no tab of their
 own, so each shows once, nested under it in the agents list. Clicking one opens
 it over the current tab, one wait covers all of them, and the screen stays on hq. The `tc` plugin
 doesn't run in the desktop app, so its worktree env copy is missing there; the

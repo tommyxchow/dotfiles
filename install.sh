@@ -113,6 +113,7 @@ link ".claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
 link ".claude/references"            "$HOME/.claude/references"
 link "CLAUDE.md"                     "$DOTFILES/AGENTS.md"
 link "opencode/cli.json"             "$HOME/.config/opencode/cli.json"
+link "opencode/tc-context"           "$HOME/.config/opencode/tc-context"
 
 # Agent helpers on PATH. ~/.local/bin is on PATH by default on most Linux
 # shells and on none of macOS zsh or Git Bash, so warn with the line to add

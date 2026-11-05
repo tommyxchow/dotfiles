@@ -32,5 +32,5 @@
   "tabs": {
     "mode": "off"
   },
-  "plugins": ["./herdr-opencode"]
+  "plugins": ["./herdr-opencode", "./tc-context"]
 }
