@@ -480,6 +480,21 @@ repo, so there is no upstream file to diff; credits for borrowed ideas live in
 and its update already ran, and do not install `mattpocock-skills` from the
 marketplace, whose `grill-me` would collide with ours.
 
+## Opus effort
+
+`.claude/settings.json` keeps Opus at `high` through a `modelSettings` entry
+keyed by the canonical model id, like `claude-opus-5-5`. Claude Code matches
+that model's alias to the entry, but the entry doesn't follow the `opus` alias
+to a newer model, so a new Opus would quietly run at its own default. Find the
+id `opus` resolves to now in Claude Code's
+[model config docs](https://code.claude.com/docs/en/model-config). When
+`modelSettings` has no entry for it, rename the old Opus entry's key to the new
+id and keep its level, unless Anthropic's
+[effort docs](https://platform.claude.com/docs/en/build-with-claude/effort)
+recommend a different starting level for that model in coding or agentic work,
+which wins. Update the date and model name in the models gotcha in `CLAUDE.md`
+to match, and name the change in the report.
+
 ## Memory
 
 Review Claude Code's memory folders under `~/.claude/projects/*/memory`. Delete
@@ -496,7 +511,7 @@ What changed, anything still broken, and what the user must do.
 
 - Cursor: **Developer: Reload Window** after the local plugin rewrite.
 - Grok Build / OpenCode 2: links are updated on disk. Reload or start a new session if it has not loaded the revised instructions; link presence alone does not prove that.
-- Claude Code: `/reload-plugins` if marketplace plugins changed.
+- Claude Code: `/reload-plugins` if marketplace plugins changed, and a new session to pick up an Opus effort entry the step above moved.
 - If the installer warned that `~/.local/bin` is not on PATH, add the export line it prints to your shell profile; `wait-for` doesn't resolve until then.
 
 Do not commit. Do not push.

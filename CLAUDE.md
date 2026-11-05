@@ -247,8 +247,9 @@ committed here.
   needs no edit here. Pin a version or add a suffix like `[1m]` only when the model docs
   say the bare alias falls short. The one kept `modelSettings` entry,
   `claude-opus-5-5` at `high`, is my choice (2026-09-27); it is keyed to that
-  model id, so when the `opus` alias moves on it stops applying and the new
-  model runs at its default until I pick again. Any other `modelSettings` entry
+  model id, so when the `opus` alias moves on, resync's Opus effort step moves
+  the entry to the new id at the same level, or at the level Anthropic
+  recommends for that model. Any other `modelSettings` entry
   or top-level `effortLevel` or `autoCompactWindow` that appears is a
   `/effort`, `/model`, or `/autocompact` write-back; discard it unless I say
   to keep that level. A stray top-level `effortLevel` does more harm here than elsewhere:
