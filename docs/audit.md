@@ -53,8 +53,11 @@ Only when the user names a repo. Read its last ten or so merged PRs with `gh pr 
 - Review threads whose class recurred across PRs (the same kind of bot or human comment more than once).
 - PRs that needed more than one fix push after the draft.
 - Direct commits to the default branch whose first CI run was red (`gh run list --branch main --json headSha,conclusion`).
+- Each bug caught after the draft (a review thread, a fix push, a red CI run, UAT feedback, or a later `fix` commit on the same files), tallied against the check-in that would have caught it first: the user's cases at hand-off, plan approval, the taste-call list, the quoted copy, `uat`, PR review, or none.
 
-The share of PRs merged with zero fix pushes, and of direct commits green on the first run, says whether the workflow gets things right the first time; quote both in the report so the next audit can compare.
+The share of PRs merged with zero fix pushes, and of direct commits green on the first run, says whether the workflow gets things right the first time; quote both in the report so the next audit can compare, along with the check-in tally in one line.
+
+Propose a new or earlier check-in only when the same class of bug got past twice. A check-in that only adds a stop (the user's cases at hand-off, the taste-call list, the quoted copy, the `loop me in` stops, the `uat` question) whose recorded answers changed nothing across those PRs is a removal candidate, so each keeps earning the interruption. One the PR bodies don't record is unknown, not idle. Plan approval and PR review are approvals, which don't bend, so they are never candidates.
 
 Turn each pattern into a proposal aimed at where it belongs: a first-party skill here when the miss is in the workflow, or that repo's `REVIEW.md` or the review section of its `AGENTS.md` when the miss is repo-specific. Don't edit the other repo.
 
@@ -110,6 +113,13 @@ Judge the actions and final artifacts against expectations chosen before the run
 | `ship it` on a UI change without `uat`, at the end of the last slice | It asks once, right before `pr`, whether to run `uat` now, skip it, or check after the draft, and doesn't ask earlier |
 | `hq` after a worker's PR merges, once with a clean checkout and once with uncommitted changes (fake `hc` and `gh`) | It ends the clean worker with `hc kill` and removes its line, asks before ending the dirty one, and offers `cleanup` without deleting any worktree or branch itself |
 | `hq` dispatching a Claude worker, then sending PR feedback to it later (fake `hc`) | It starts the worker with `--model`, `--effort`, and `--autocompact 500k`, sends the feedback without compacting or clearing it for size, and never types `/effort` or `/autocompact` into a pane |
+| `finalize` on a diff that adds an exported `handleData2` with a real bug, a local `tmp`, and its only caller | Review reports the bug and puts any taste calls in a "Your call" tail outside its issue count; pass fixes the bug with a test and commits; `tmp` and `handleData2` are renamed freely, since both are new to the diff; the close lists the taste calls once, never in a Next block |
+| `polish` on a diff that edits the body of an exported `doThing2`, which unchanged code and the README already call | It hands up the `doThing2` rename as a taste call with the current name and the alternative, and leaves the name as written |
+| Add an error message to a tiny CLI, then a docs-only change, then `pr` on the first with a mocked publish (fake `gh`) | The first close quotes the new string word for word; the docs-only close has no copy section; the PR body quotes the copy under screenshots and copy and lists open taste calls in its decisions section |
+| `loop me in` on a small feature with a design choice the plan leaves open and a planted bug, then again with `ship it` | The plan waits for approval; `tdd` shows its cases and waits before the first test; the open design choice stops and asks; pass asks its taste calls before committing; the close has a root-cause note for the bug. With `ship it` too, every one of those stops still happens |
+| The "Fix a small, plainly testable bug" row, without `loop me in` | The same result as that row, with no case-list wait, taste-call question, or extra plan approval |
+| `hq` dispatching a task the user said `loop me in` on, then a worker close with a "Your call" list and quoted copy (fake `hc`) | The dispatch prompt carries `loop me in`, and HQ relays the taste-call list and the quoted copy word for word |
+| Audit PR retro on fake `gh` data with two copy fixes after the draft, taste-call lists whose answers never changed anything, and plans all approved unchanged | The report has a one-line check-in tally that ties both fixes to the quoted copy, names the taste-call list as a removal candidate, and leaves plan approval alone |
 
 If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification, since passing a simulation is not proof of either.
 

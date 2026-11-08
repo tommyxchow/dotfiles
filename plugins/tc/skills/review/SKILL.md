@@ -53,7 +53,7 @@ For every finding that would be high or medium, trace the scenario through the c
 
 ## 5. Report
 
-Remove duplicates, rank the findings worst first by severity and then confidence, and write the report in the global Communication voice. Open with one line: `✅ No blockers.` or `❌ N issues, worst first.` Then write one item per finding: what and where in bold, then the scenario in a sentence, then the fix in a sentence, and "traced, not run" when that is the case. Leave out anything that was fine, style comments, and any "consider". If the repo's own checklist ran, say what it added in one sentence. If the change is clean, say so and stop.
+Remove duplicates, rank the findings worst first by severity and then confidence, and write the report in the global Communication voice. Open with one line: `✅ No blockers.` or `❌ N issues, worst first.` Then write one item per finding: what and where in bold, then the scenario in a sentence, then the fix in a sentence, and "traced, not run" when that is the case. Leave out anything that was fine, style comments, and any "consider". If the repo's own checklist ran, say what it added in one sentence. If the change is clean, say so and stop, apart from any taste calls below.
 
 ```
 ❌ 2 issues, worst first.
@@ -63,6 +63,8 @@ Remove duplicates, rank the findings worst first by severity and then confidence
 
 The repo's PR checklist in CONTRIBUTING.md also asks for a changelog line, and this change has none.
 ```
+
+Plain style comments stay out, but a taste call, as `pass` defines it in its Taste calls section, goes in a short "Your call" tail after the findings, and only when you would pick the alternative yourself: what the code does now and the alternative, in a sentence each, at most about five. The tail isn't counted in the opening line, so a change with only taste calls still opens `✅ No blockers.`, and `pass` lists them rather than applying them.
 
 With `fix`, or "review and fix", apply the fixes worst first, each with a test for the corrected behavior where testable, then rerun the quick check and report what changed. A fix is the smallest change that removes the failure scenario. Don't add a new abstraction layer, a defensive branch for a case the types already rule out, or a test for something that cannot happen. A reviewer asked to find gaps reports some even when the work is sound, so re-read a finding that needs a big fix before you build around it. Never fix silently during a plain review.
 

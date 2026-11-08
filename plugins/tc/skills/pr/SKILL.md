@@ -133,9 +133,9 @@ Write the body in the global External writing voice, sized to the change. When t
 
 3. **Acceptance criteria, when the ledger has more than one item.** List the ledger from section 1, one line per item with its evidence or its "unverified" reason. UAT-feedback and discovered items keep their tags. Dropped items say dropped.
 4. **Test plan.** Say what ran (the check, the test counts), and give the numbered click path for UAT, starting from the preview URL when there is one and otherwise from `pnpm dev` and a route.
-5. **Screenshots.** Show before and after for anything visual. Fold them past two.
+5. **Screenshots and copy.** Show before and after for anything visual. Fold them past two. Quote each new or changed string a user reads, word for word and grouped by screen, as the global close rule on copy says.
 6. **Risk and rollback.** Include this only when the change is risky: a migration, a backfill, auth, money, or a shape another client or deploy still reads. Write one sentence each for what could go wrong and how to back it out.
-7. **Decisions and follow-ups.** Cover the cases the plan missed. First give what was built beyond the ticket, with a one-line why, then what the ticket implied that this PR deliberately leaves out, with an issue link when one exists.
+7. **Decisions and follow-ups.** Cover the cases the plan missed. First give what was built beyond the ticket, with a one-line why, then what the ticket implied that this PR deliberately leaves out, with an issue link when one exists. End with the taste calls `pass` left open, under "Your call", each with what the code does now and the alternative, so PR review is where they get answered.
 8. **Stack.** Add `Stacked on #N` and `Depends on #M` when they apply.
 
 Include numbers whenever they are cheap to get and change how the reader reads the PR: sizes, test counts, before-and-after timings on a performance PR. Include bundle deltas and Lighthouse scores only when the repo already measures them. Never invent a metric.

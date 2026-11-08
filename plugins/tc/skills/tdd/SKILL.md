@@ -24,7 +24,7 @@ Decide this first, then say in a sentence whether you'll write the tests first, 
 - **If neither, derive them**: the happy path, the sad paths a user can hit, the edges most likely to break (empty, one, many, the boundary value), with realistic data, and for a bug, the exact failure reported.
 - **If you're changing code that has no tests**, pin its current behavior first with a characterization test, which asserts what the code does today, even the odd parts. Then start the loop for the change. Without that test, you can't tell a deliberate change from an accident.
 - **Say where you'll test them.** That might be the function, the module's public surface, the route's response, or what the component renders. Pick the outermost boundary that still fails for one clear reason, because a test bound to internals breaks on every refactor and proves nothing about behavior.
-- **Then start.** Say in a sentence or two which cases you'll cover and where the tests will check the behavior, then go. Stop and ask only when the boundary is a real design decision, such as inventing a new module seam to make something testable.
+- **Then start.** Say in a sentence or two which cases you'll cover and where the tests will check the behavior, then go. Stop and ask only when the boundary is a real design decision, such as inventing a new module seam to make something testable. When `loop me in` is on, show the case list and wait for the user's edits before the first test instead; for the part the loop doesn't fit, show the behaviors you'll check the same way.
 
 If testing a case means reaching inside the thing under test, treat that as a signal about the design. Say so, and either restructure the code or move the boundary out.
 

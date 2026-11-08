@@ -26,13 +26,25 @@ Decide which steps run first, then load only what they need. Read [../vet/SKILL.
 
 ## Steps
 
-1. **Findings.** If a `review` ran this session and left confirmed findings on this tree, apply them now under review's `fix` rule: make the smallest change that removes the failure scenario, add a test for the corrected behavior where it is testable, and work from the worst finding down. Likely findings stay reported, not fixed. If no review ran this session, skip this step, and don't run one here.
+1. **Findings.** If a `review` ran this session and left confirmed findings on this tree, apply them now under review's `fix` rule: make the smallest change that removes the failure scenario, add a test for the corrected behavior where it is testable, and work from the worst finding down. A confirmed finding that is a taste call (below) isn't applied; it stays as written and goes to the report. Likely findings stay reported, not fixed. If no review ran this session, skip this step, and don't run one here.
 2. **Vet.** Skip it when nothing could have gone stale: local logic, copy, a rename, in-repo helpers, or the same pattern as the code next door.
    If this session already vetted the same thing, point to that result instead of vetting again. A new vendor API touched since then still gets vetted.
    Otherwise follow `vet` on just the parts that could have gone stale: new or changed third-party APIs, version pins, anything chosen because it is "current", "latest", or best practice, and plans pasted from another model. On `quick`, vet only a new or changed vendor API, and hand vet `quick` too. A one-file API change still gets vetted, and a twenty-file rename does not. Wait for vet's reconciled answer, then **patch** what was wrong, plus any cheap-to-fix misses inside the slice. Don't wait for approval here, because pass is the one place where vet's findings get applied straight away.
 3. **Leftovers.** Work only on in-scope siblings. Remove APIs, config, and docs that were made dead, old paths left beside their replacements, tests that describe a behavior this change replaced, and scratch this slice added (`console.log`, `debugger`, focused-only tests, notes nobody asked for). Fix stale prose under the global External writing rules. If the diff looks like it contains a secret, strip or flag it without installing a scanner. Follow the global change ownership rule for mixed files and staged work. Unrelated dirty files alone are not a blocker. Report any correctness issue you discover as a review finding for `tdd` rather than silently treating it as cleanup.
 4. **Polish.** Follow `polish` unless the user passed `skip polish`, the slice is not code-shaped, or polish already ran this session on those files. Hand it this slice's files as its whole pool rather than its session-wide default. Pass `quick` through when this run is quick. Pass `skip check` through when the user gave it, so that polish's gate reports skipped instead of running. A missing Prettier or ESLint is not a reason to skip, and neither is a small TS or Dart slice.
 5. **Ready to commit.** List the outstanding items, or say there are none. If the slice is code and the user didn't pass `skip check`, run the local check from the global instructions. When this exact tree already passed that check this session, cite that result, whether polish just ran it or an earlier run did. Any edit in steps 1–4 since then means you run it again, and `quick` always runs it. A typecheck alone is not the local check. If a review this session found nothing on this tree and nothing changed since the last pass, the whole pass is one line saying so, with no re-reading files or rerunning the check. If there is no check, say so. Don't run `review` here or imply that a pass included one. End with `✅ Ready to commit.` or `❌ Not yet.` On `✅`, commit the slice.
+
+## Taste calls
+
+A taste call is a change that swaps one reasonable choice for another, where nothing in the repo, the plan, or a failure scenario decides between them, and the choice shows beyond this diff. Those are the calls the user wants to make, so a pass lists them rather than applying them. There are three kinds:
+
+- **A name a user or another caller sees**: an exported function or type, a route, a CLI flag, a config key, an event or column name.
+- **User-facing copy**: the wording and tone of UI text, errors, emails, notifications, and CLI output.
+- **An API's shape**: a signature, its params, a return shape, an error model, an endpoint, or a component's props.
+
+Some changes look like taste and aren't, so they're still fixed: anything with a concrete failure scenario, even in copy (a typo, a wrong count, copy that contradicts what the code does, an error that doesn't say what went wrong, a missing error message); anything the repo already decides, through lint, an existing naming pattern, or a `REVIEW.md` rule; and an internal name, placeholder or not, which `polish` renames on its own. A name this same change introduces, whose every caller is in this change too, counts as internal even when it is exported, since nothing outside the diff sees it yet.
+
+Taste calls reach a pass from review's "Your call" tail, from polish's summary, and from step 1's findings. The code as written stands, and the slice still commits. When `loop me in` is on, ask them with the question tool before step 5's check, and apply what the user picks, so the check covers it.
 
 ## Report
 
@@ -42,4 +54,12 @@ Follow the global Communication and Session flow rules. Open with `✅ Ready to 
 ✅ Ready to commit. The settings page now saves the theme choice and remembers it on reload.
 
 I removed the old localStorage helper and combined two duplicate save handlers. The local check passes. Committed as `<hash>`.
+```
+
+When taste calls are open, end with a short "Your call" list, numbered so the user can answer like `Your call 2`, which keeps it apart from a Next block's bare `1`. Each item says what the code does now and the alternative, in a sentence. List them once in the task's close, which is this report when the pass is the last step, and on the PR route also in the PR body's decisions section, where `pr` carries them. They are not Next-block choices, because those repeat in every message until answered, and a taste call shouldn't nag.
+
+```
+Your call (the code stays as written until you pick):
+- [1] The exported `getUserData` is what the settings page calls. It could be `fetchProfile`, matching the `/profile` route.
+- [2] The empty list says "Nothing here yet." It could say "No saved searches yet." to name what's missing.
 ```

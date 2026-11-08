@@ -84,6 +84,7 @@ Give each subagent the post-0.5 scope and the **absolute path** to this skill's 
 3. Apply only findings with **high/med severity at high confidence**.
 4. Follow the shape hierarchy. Removal-shaped cleanups (dead code, unused params, redundant state) are the safest and go first. Extract/move/split-shaped findings need a clearly named seam and a payoff now. When in doubt, drop the restructuring and keep the deletion.
 5. Drop any remaining Prettier/ESLint-shaped findings.
+6. A rename of something a caller or user sees, or a reshape of an API, is a taste call as `pass` defines it in its Taste calls section. Leave it as written and list it at the end of the summary in pass's "Your call" shape, with the current name or shape and the alternative, never as a Next-block choice. Internal names, placeholders included, are still yours to rename.
 
 ## Phase 3 — Apply and verify
 
