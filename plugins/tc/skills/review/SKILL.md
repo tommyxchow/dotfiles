@@ -64,7 +64,7 @@ Remove duplicates, rank the findings worst first by severity and then confidence
 The repo's PR checklist in CONTRIBUTING.md also asks for a changelog line, and this change has none.
 ```
 
-Plain style comments stay out, but a taste call, as `pass` defines it in its Taste calls section, goes in a short "Your call" tail after the findings, and only when you would pick the alternative yourself: what the code does now and the alternative, in a sentence each, at most about five. The tail isn't counted in the opening line, so a change with only taste calls still opens `✅ No blockers.`, and `pass` lists them rather than applying them.
+Plain style comments stay out, but a taste call, as `pass` defines it in its Taste calls section, goes in a "Your call" tail after the findings, in pass's "Your call" shape, and only when you would pick the alternative yourself, at most about five. The tail isn't counted in the opening line, so a change with only taste calls still opens `✅ No blockers.`, and `pass` lists them rather than applying them.
 
 With `fix`, or "review and fix", apply the fixes worst first, each with a test for the corrected behavior where testable, then rerun the quick check and report what changed. A fix is the smallest change that removes the failure scenario. Don't add a new abstraction layer, a defensive branch for a case the types already rule out, or a test for something that cannot happen. A reviewer asked to find gaps reports some even when the work is sound, so re-read a finding that needs a big fix before you build around it. Never fix silently during a plain review.
 

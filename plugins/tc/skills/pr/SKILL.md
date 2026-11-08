@@ -135,14 +135,14 @@ Write the body in the global External writing voice, sized to the change. When t
 4. **Test plan.** Say what ran (the check, the test counts), and give the numbered click path for UAT, starting from the preview URL when there is one and otherwise from `pnpm dev` and a route.
 5. **Screenshots and copy.** Show before and after for anything visual. Fold them past two. Quote each new or changed string a user reads, word for word and grouped by screen, as the global close rule on copy says.
 6. **Risk and rollback.** Include this only when the change is risky: a migration, a backfill, auth, money, or a shape another client or deploy still reads. Write one sentence each for what could go wrong and how to back it out.
-7. **Decisions and follow-ups.** Cover the cases the plan missed. First give what was built beyond the ticket, with a one-line why, then what the ticket implied that this PR deliberately leaves out, with an issue link when one exists. End with the taste calls `pass` left open, under "Your call", each with what the code does now and the alternative, so PR review is where they get answered.
+7. **Decisions and follow-ups.** Cover the cases the plan missed. First give what was built beyond the ticket, with a one-line why, then what the ticket implied that this PR deliberately leaves out, with an issue link when one exists. Then the calls the user made in the session, as the commit bodies record them. End with the taste calls `pass` left open, in pass's "Your call" shape, so PR review is where they get answered.
 8. **Stack.** Add `Stacked on #N` and `Depends on #M` when they apply.
 
 Include numbers whenever they are cheap to get and change how the reader reads the PR: sizes, test counts, before-and-after timings on a performance PR. Include bundle deltas and Lighthouse scores only when the repo already measures them. Never invent a metric.
 
 ## Report
 
-Follow the global Communication and Session flow rules. Open with the PR's state and URL. When a check is red or still pending, put the checks tab link, `<pr url>/checks`, next to its name so the user lands on the failing job in one click. A green run needs no link. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. Say how many checklist items are proven when that helps explain a substantial checklist, and leave out routine narration of each step. Under `ship it`, this report is the finish the global notification rule names.
+Follow the global Communication and Session flow rules. Open with the PR's state and URL. When a check is red or still pending, put the checks tab link, `<pr url>/checks`, next to its name so the user lands on the failing job in one click. A green run needs no link. Summarize meaningful fixes and verification evidence, then anything unverified or needing the user's decision. End with the open taste calls in pass's "Your call" shape, after anything needing the user's decision. Say how many checklist items are proven when that helps explain a substantial checklist, and leave out routine narration of each step. Under `ship it`, this report is the finish the global notification rule names.
 
 ```
 Draft PR opened: https://github.com/org/app/pull/412. Viewers can no longer edit invoices, at the button and at the server.
