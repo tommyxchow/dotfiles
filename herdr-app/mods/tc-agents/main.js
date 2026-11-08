@@ -7,7 +7,8 @@
 // line with its branch, PR badge, and uncommitted lines (it has no space row of
 // its own); a line with what the agent reports it's doing while it works or
 // waits on you; a row leading with the agent's own title, with the tab someone
-// named dimmed after it; a row without a space header leading with the agent's own name;
+// named dimmed after it; a sub-agent with its own row not repeated under its
+// parent; a row without a space header leading with the agent's own name;
 // the time label dropping first in a narrow sidebar; and hover tooltips in plain
 // words for the context, the time label, the badge, and the line counts.
 
@@ -331,8 +332,9 @@ export default class Agents extends View {
   }
 
   // Live sub-agents of `addr`, depth first, each with the tree lines in front of it.
+  // One with a pane already has its own row, so it isn't repeated under its parent.
   tree(all, addr, lead = []) {
-    const kids = all.filter((k) => k.parent === addr && k.state === "live");
+    const kids = all.filter((k) => k.parent === addr && k.state === "live" && !this.listed?.has(k.address));
     return kids.flatMap((k, i) => {
       const last = i === kids.length - 1;
       return [
