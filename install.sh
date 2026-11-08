@@ -138,9 +138,12 @@ copy_herdr_app_mods() {
   local dir name file src target
   if ! command -v herdr-app >/dev/null 2>&1; then
     printf "  SKIP  herdr-app mods (herdr-app not on PATH)\n"
-    # Count the badge links as ours anyway, or the sweep below would prune them.
+    # Still repoint the badge link in each mod folder an earlier run made, so an
+    # old link into a deleted path gets fixed and the sweep below keeps it.
     for dir in "$DOTFILES"/herdr-app/mods/*/; do
-      LINKED="$LINKED$HERDR_APP_DIR/mods/$(basename "$dir")/badge.mjs|"
+      name="$(basename "$dir")"
+      [ -d "$HERDR_APP_DIR/mods/$name" ] || continue
+      link "herdr-app/badge.mjs" "$HERDR_APP_DIR/mods/$name/badge.mjs"
     done
     return
   fi

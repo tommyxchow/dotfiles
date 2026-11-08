@@ -9,8 +9,9 @@
 // waits on you; a row leading with the agent's own title, with the tab someone
 // named dimmed after it; a sub-agent with its own row not repeated under its
 // parent; a row without a space header leading with the agent's own name;
-// the time label dropping first in a narrow sidebar; and hover tooltips in plain
-// words for the context, the time label, the badge, and the line counts.
+// the name growing with the sidebar's width; the time label dropping first in a
+// narrow sidebar; and hover tooltips in plain words for the context, the time
+// label, the badge, and the line counts.
 
 import { View, div, image, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
@@ -454,6 +455,14 @@ export default class Agents extends View {
     // only the program's name ("Claude Code") counts as unnamed, and an
     // automatic tab number shows only when two rows would otherwise read the same.
     const tabs = spaces().flatMap(s => s.tabs);
+    // An unnamed tab's name is its position label, like "2"; a tab someone named
+    // after the program gets its position instead, so two of them still differ.
+    const tabNumber = (a) => {
+      const own = spaces().find(s => s.tabs.some(tab => tab.id === a.tab))?.tabs ?? [];
+      const at = own.findIndex(tab => tab.id === a.tab);
+      if (at === -1) return null;
+      return own[at].named ? String(at + 1) : own[at].name;
+    };
     const namedTab = (a) => {
       const tab = tabs.find(tab => tab.id === a.tab);
       return tab?.named && tab.name !== a.program?.name ? tab.name : null;
@@ -462,7 +471,7 @@ export default class Agents extends View {
     const seen = {};
     for (const a of list) { const k = `${a.space_name}\u0000${detail.get(a.address) ?? ""}`; seen[k] = (seen[k] ?? 0) + 1; }
     for (const a of list) {
-      if (detail.get(a.address) == null && seen[`${a.space_name}\u0000`] > 1) detail.set(a.address, String(a.tab_index));
+      if (detail.get(a.address) == null && seen[`${a.space_name}\u0000`] > 1) detail.set(a.address, tabNumber(a));
     }
 
     const row = (a, i, subs = []) => {
@@ -547,8 +556,8 @@ export default class Agents extends View {
               this.folded.has(a.address) ? this.folded.delete(a.address) : this.folded.add(a.address);
               cx.notify();
             })).child(pic)))
-          // The 36px floor sits on the name and space together, so a short name
-          // keeps its width and the space follows right after it.
+          // The 36px floor sits on the name and the dimmed tab and space together, so a
+          // short name keeps its width and the dimmed text follows right after it.
           .child(h_flex().flex_1().min_w(36).gap(5).items_center()
             .child(div().min_w(0).max_w(nameMax).truncate().text_color(idle ? t.muted : t.foreground).child(name))
             .when(Boolean(after), el => el.child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(after))))
