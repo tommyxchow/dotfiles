@@ -130,45 +130,6 @@ for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   link "plugins/tc/skills/$name" "$HOME/.claude/skills/$name"
 done
 
-# Herdr runs a linked plugin from the repo path, so these are links too, only
-# registered through the running herdr server instead of the filesystem. Every
-# folder under herdr/plugins is one plugin, named by the id in its manifest.
-link_herdr_plugins() {
-  local dir name id path
-  for dir in "$DOTFILES"/herdr/plugins/*/; do
-    [ -f "$dir/herdr-plugin.toml" ] || continue
-    name="$(basename "$dir")"
-    id="$(awk -F'"' '/^id[[:space:]]*=/ { print $2; exit }' "$dir/herdr-plugin.toml")"
-    path="${dir%/}"
-    if ! command -v herdr >/dev/null 2>&1; then
-      printf "  SKIP  herdr plugin %s (herdr not on PATH)\n" "$id"
-      continue
-    fi
-    [ "$WINDOWS" = 1 ] && path="$(cygpath -w "$path")"
-    if herdr plugin list --json 2>/dev/null | grep -q "\"plugin_id\":\"$id\""; then
-      printf "  OK    herdr plugin %s\n" "$id"
-    elif herdr plugin link "$path" >/dev/null 2>&1; then
-      printf "  LINK  herdr plugin %s -> herdr/plugins/%s\n" "$id" "$name"
-    else
-      printf "  SKIP  herdr plugin %s (start herdr, then re-run or: herdr plugin link %s)\n" "$id" "$path"
-    fi
-  done
-  # Plugins since merged into tc, unlinked only once tc is registered so their
-  # jobs never stop running. Unlinking only unregisters them; the files are
-  # already gone from this repo.
-  command -v herdr >/dev/null 2>&1 || return 0
-  herdr plugin list --json 2>/dev/null | grep -q '"plugin_id":"tc"' || return 0
-  for id in tc.pr-badge tc.worktree-bootstrap; do
-    herdr plugin list --json 2>/dev/null | grep -q "\"plugin_id\":\"$id\"" || continue
-    if herdr plugin unlink "$id" >/dev/null 2>&1; then
-      printf "  UNLINK herdr plugin %s (merged into tc)\n" "$id"
-    else
-      printf "  WARN  herdr plugin %s is still linked (run: herdr plugin unlink %s)\n" "$id" "$id"
-    fi
-  done
-}
-link_herdr_plugins
-
 # The Herdr desktop app's sidebar mods. Copied, not linked, because the app
 # reloads a mod only when a file in its own folder changes; badge.mjs is
 # linked, since node reads it fresh each run.
@@ -198,7 +159,7 @@ copy_herdr_app_mods() {
         printf "  COPY  %s -> herdr-app/mods/%s/%s\n" "$target" "$name" "$file"
       fi
     done
-    link "herdr/plugins/tc/badge.mjs" "$HERDR_APP_DIR/mods/$name/badge.mjs"
+    link "herdr-app/badge.mjs" "$HERDR_APP_DIR/mods/$name/badge.mjs"
   done
 }
 copy_herdr_app_mods

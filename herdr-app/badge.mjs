@@ -1,23 +1,12 @@
-// Fills three sidebar values for each git workspace: `pr`, the state of the
-// branch's pull request and its CI (or just the CI on the default branch, which
-// has no pull request), and `added` and `removed`, the uncommitted lines. Herdr
-// runs it with "all" on start and from the refresh action, and with "event" when
-// an agent settles, a workspace gets focus, or a worktree is opened. The values
-// show through the `$pr`, `$added`, and `$removed` slots in herdr's sidebar config.
-// The Herdr desktop app's tc mods run it as `json <folder>` instead, which prints
-// the same values for that folder's checkout, so both apps show one badge.
+// Prints the sidebar values for the git checkout around a folder, as JSON:
+// `branch`, `pr`, the state of the branch's pull request and its CI (or just the
+// CI on the default branch, which has no pull request), and `added` and
+// `removed`, the uncommitted lines. The Herdr desktop app's tc mods run it as
+// `node badge.mjs <folder>`, so both show one badge.
 import { spawnSync } from "node:child_process";
-import { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { lstatSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const herdr = process.env.HERDR_BIN_PATH ?? "herdr";
-// One fixed name: a workspace accepts values from at most 32 sources in its lifetime.
-const SOURCE = "tc-pr-badge";
-// Absorbs bursts, like a focus and a settle landing together; each refresh is a
-// GitHub call. Kept short because a skipped event is never retried, so a longer
-// window would drop the settle that ends a quick turn and leave the badge stale.
-const THROTTLE_MS = 10_000;
-const SETTLED = new Set(["idle", "done"]);
 const FAILED_CHECKS = new Set(["FAILURE", "ERROR", "TIMED_OUT", "STARTUP_FAILURE", "ACTION_REQUIRED"]);
 // Commit statuses have only a state; check runs have a status and a conclusion.
 const PENDING_STATES = new Set(["PENDING", "EXPECTED"]);
@@ -155,69 +144,9 @@ function diffCounts(checkout) {
   };
 }
 
-function report(workspaceId, values) {
-  const args = ["workspace", "report-metadata", workspaceId, "--source", SOURCE];
-  for (const [name, value] of Object.entries(values)) {
-    if (value === null) args.push("--clear-token", name);
-    else args.push("--token", `${name}=${value}`);
-  }
-  run(herdr, args);
-}
-
-// Herdr records the checkout only on workspaces it created as worktrees, so a
-// plain repo workspace falls back to its first pane's folder. Null when that
-// folder is not inside a git checkout.
-function checkoutOf(workspace) {
-  if (workspace.worktree?.checkout_path) return workspace.worktree.checkout_path;
-  const { panes } = JSON.parse(run(herdr, ["pane", "list", "--workspace", workspace.workspace_id])).result;
-  const cwd = panes[0]?.cwd;
-  if (!cwd) return null;
-  const result = spawnSync("git", ["-C", cwd, "rev-parse", "--show-toplevel"], { encoding: "utf8" });
-  return result.status === 0 ? result.stdout.trim() : null;
-}
-
-function refresh(workspaceId) {
-  const workspace = JSON.parse(run(herdr, ["workspace", "get", workspaceId])).result.workspace;
-  const checkout = checkoutOf(workspace);
-  if (!checkout) return; // not a git checkout, so there is nothing to show
-  const values = diffCounts(checkout);
-  try {
-    values.pr = prBadge(checkout);
-  } catch (error) {
-    // gh missing, signed out, offline, or not a GitHub repo: keep the last badge.
-    console.error(`${workspace.label}: PR badge left as is. ${error.message}`);
-  }
-  report(workspaceId, values);
-}
-
-function stateFile() {
-  const dir = process.env.HERDR_PLUGIN_STATE_DIR;
-  if (!dir) return null;
-  mkdirSync(dir, { recursive: true });
-  return join(dir, "last-refresh.json");
-}
-
-function readLastRefresh(file) {
-  if (!file || !existsSync(file)) return {};
-  try {
-    return JSON.parse(readFileSync(file, "utf8"));
-  } catch (error) {
-    console.error(`Ignoring unreadable ${file}: ${error.message}`);
-    return {};
-  }
-}
-
-// The workspace an event is about, or null when the event should be ignored.
-function eventWorkspace() {
-  const data = JSON.parse(process.env.HERDR_PLUGIN_EVENT_JSON ?? "{}").data ?? {};
-  if (process.env.HERDR_PLUGIN_EVENT === "pane.agent_status_changed" && !SETTLED.has(data.agent_status)) return null;
-  return data.workspace_id ?? data.workspace?.workspace_id ?? process.env.HERDR_WORKSPACE_ID ?? null;
-}
-
-// For the desktop app: the values refresh() reports, printed as JSON for the
-// checkout around `folder`, plus its branch. A folder outside git prints all
-// nulls. A failed PR lookup still prints the counts, with the reason in `error`
-// so the caller can log it.
+// A folder outside git prints all nulls. A failed PR lookup (gh missing, signed
+// out, offline, or not a GitHub repo) still prints the counts, with the reason
+// in `error` so the caller can log it.
 function printJson(folder) {
   // The app's spaces mod watches .git and reruns this on a change, so its git
   // calls must not write there (an index refresh would wake the watch again).
@@ -237,35 +166,8 @@ function printJson(folder) {
   console.log(JSON.stringify(values));
 }
 
-function main(mode) {
-  if (mode === "json") {
-    printJson(process.argv[3] ?? process.cwd());
-    return;
-  }
-  if (mode === "all") {
-    const { workspaces } = JSON.parse(run(herdr, ["workspace", "list"])).result;
-    for (const workspace of workspaces) {
-      // One broken checkout should not blank the badges of every other workspace.
-      try {
-        refresh(workspace.workspace_id);
-      } catch (error) {
-        console.error(`${workspace.label}: ${error.message}`);
-        process.exitCode = 1;
-      }
-    }
-    return;
-  }
-  const workspaceId = eventWorkspace();
-  if (!workspaceId) return;
-  const file = stateFile();
-  const lastRefresh = readLastRefresh(file);
-  if (Date.now() - (lastRefresh[workspaceId] ?? 0) < THROTTLE_MS) return;
-  refresh(workspaceId);
-  if (file) writeFileSync(file, JSON.stringify({ ...lastRefresh, [workspaceId]: Date.now() }));
-}
-
 try {
-  main(process.argv[2]);
+  printJson(process.argv[2] ?? process.cwd());
 } catch (error) {
   console.error(error.message);
   process.exit(1);

@@ -1,4 +1,4 @@
-# Follows the system's light or dark mode, so herdr's auto_switch does too.
+# Follows the system's light or dark mode.
 theme = light:Monokai Pro Light,dark:Monokai Pro
 background-opacity = 0.8
 background-blur = 60

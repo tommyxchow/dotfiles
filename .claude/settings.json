@@ -14,12 +14,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "h=\"$HOME/.claude/hooks/herdr-agent-state\"; if [ -f \"$h.sh\" ]; then bash \"$h.sh\" session; elif [ -f \"$h.ps1\" ]; then powershell -NoProfile -ExecutionPolicy Bypass -File \"$h.ps1\" session; fi",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "if [ \"$HERDR_ENV\" = 1 ]; then echo 'This session runs inside a herdr pane (HERDR_ENV is set), so the global rule for herdr panes applies.'; elif [ -n \"$HC_TERMINAL_ID\" ]; then echo 'This session runs inside the Herdr desktop app (HC_TERMINAL_ID is set), so the global rule for herdr applies.'; fi",
+            "command": "if [ -n \"$HC_TERMINAL_ID\" ]; then echo 'This session runs inside the Herdr desktop app (HC_TERMINAL_ID is set), so the global rule for the Herdr desktop app applies.'; fi",
             "timeout": 5
           }
         ]
@@ -71,7 +66,7 @@
   "autoMode": {
     "environment": [
       "$defaults",
-      "Linked git worktrees of the working repo, including the ones herdr creates under ~/.herdr/worktrees, are part of that repo"
+      "Linked git worktrees of the working repo, including the ones under ~/.herdr/worktrees, are part of that repo"
     ]
   }
 }

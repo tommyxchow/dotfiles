@@ -194,7 +194,7 @@ modelseg="${reset}${model}${reset}"
 # for the exact size. Both come from the same token count. It needs no label:
 # the token count is what tells it apart from the labeled rate-limit windows.
 # Orange is the soft ceiling of 50% on a window of 1M or more,
-# where compacting at the next break pays off; the herdr token below trips at
+# where compacting at the next break pays off; the ctxhigh label below trips at
 # the same point. A smaller window has no soft ceiling, since auto-compact
 # handles it, so 101 keeps orange from ever tripping there. Red means auto-compact is close, so it trips on room left rather than
 # percentage: under 50K tokens, which is 75% on a 200K window and 95% on 1M.
@@ -221,42 +221,14 @@ if [ -n "$used_raw" ] && [ "$used_raw" -gt 0 ] && [ -n "$size_raw" ] && [ "$size
   fi
 fi
 
-# Inside a herdr pane, publish the agent's effort and context as pane tokens,
-# so the sidebar shows them and an hq session reads them from `herdr agent
-# list`. The agent's name is the `tc` herdr plugin's token, and pane tokens are
-# shared across sources, so this never touches `name`. The model itself never
-# sees this line. Context goes out as `ctxhigh` instead of
-# `ctx` once it reaches the orange point above. The sidebar config can only
-# color a token by name, so the threshold lives here rather than in a sidebar
-# rule. The TTL outlives the 60s refresh, so the values vanish soon after Claude
-# exits. It runs in the background because the statusline must never wait on
-# herdr.
-if [ -n "$HERDR_PANE_ID" ]; then
-  herdr_bin="${HERDR_BIN_PATH:-herdr}"
-  if command -v "$herdr_bin" >/dev/null 2>&1; then
-    # A session with no context number yet, like one just after /clear,
-    # clears both so an older value doesn't linger until its TTL runs out.
-    ctx_args=(--clear-token ctx --clear-token ctxhigh)
-    # A model with no effort setting clears the token rather than sending an empty value.
-    effort_args=(--clear-token effort)
-    [ -n "$effort" ] && effort_args=(--token "effort=${effort}")
-    if [ -n "$pct" ]; then
-      if [ "$pct" -ge "$ctx_orange" ]; then
-        ctx_args=(--token "ctxhigh=${pct}% ${ctxtext}" --clear-token ctx)
-      else
-        ctx_args=(--token "ctx=${pct}% ${ctxtext}" --clear-token ctxhigh)
-      fi
-    fi
-    "$herdr_bin" pane report-metadata "$HERDR_PANE_ID" --source tc.statusline \
-      "${effort_args[@]}" "${ctx_args[@]}" --ttl-ms 180000 >/dev/null 2>&1 &
-  fi
-fi
-
-# The Herdr desktop app has no pane tokens, so the same values go out as
-# labels on the terminal, where hq reads them with `hc get`. Labels have no TTL;
-# they end with the terminal, and `key=` clears one. A herdr pane inside a
-# desktop app terminal inherits HC_TERMINAL_ID too, so the pane wins there.
-if [ -n "$HC_TERMINAL_ID" ] && [ -z "$HERDR_PANE_ID" ] && command -v hc >/dev/null 2>&1; then
+# In the Herdr desktop app, publish the agent's effort and context as labels on
+# its terminal, so the agents list shows them and hq reads them with `hc get`.
+# The model itself never sees this line. Context goes out as `ctxhigh` instead
+# of `ctx` once it reaches the orange point above, so the threshold lives here
+# rather than in the mod. Labels have no TTL; they end with the terminal, and
+# `key=` clears one. It runs in the background because the statusline must
+# never wait on hc.
+if [ -n "$HC_TERMINAL_ID" ] && command -v hc >/dev/null 2>&1; then
   labels=("effort=${effort}" "ctx=" "ctxhigh=")
   if [ -n "$pct" ]; then
     if [ "$pct" -ge "$ctx_orange" ]; then

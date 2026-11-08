@@ -6,8 +6,8 @@
 // Modified by tc from Herdr's shipped `spaces` mod (version in mod.json), under
 // the Apache License 2.0 (herdr-app/LICENSE in the dotfiles repo). Changes: after
 // ahead/behind, a local repo's PR or default-branch CI badge and its uncommitted
-// lines added and removed, from the herdr TUI plugin's badge script, so both
-// herdr apps show the same values; behind in gray, since it isn't an error; the
+// lines added and removed, from the dotfiles badge script, so this and the agents
+// mod show the same values; behind in gray, since it isn't an error; the
 // name truncating before the git tail in a narrow sidebar, which drops the line
 // counts and then ahead/behind first, never the badge; and hover tooltips in
 // plain words for ahead/behind, the badge, and the line counts.
@@ -16,19 +16,19 @@ import { View, div, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
 import { spaces, machines, panes, run, openOverlay, exec, hc, theme, shared, setShared, watchFolder, window, layout, appHome } from "herdr";
 
-// The herdr TUI plugin's badge script, linked into this folder by the dotfiles installer.
+// The dotfiles badge script, linked into this folder by the dotfiles installer.
 const badgeScript = () => `${appHome()}/mods/tc-spaces/badge.mjs`;
-// The TUI plugin's own throttle: bursts (an agent settling as a commit lands) make one call.
+// Bursts (an agent settling as a commit lands) make one call, since each run asks GitHub.
 const BADGE_THROTTLE_MS = 10000;
 
-// The TUI config's colors for a badge: red for a failed check or requested
+// A badge's colors: red for a failed check or requested
 // changes, orange while checks run, green once approved.
 function badgeColor(t, text) {
   if (/✗|changes/.test(text)) return t.ansi1;
   if (text.includes("◌")) return t.ansi3;
   if (text.includes("approved")) return t.ansi2;
   // Merged and closed are history, so they fade; an open PR or a CI result reads
-  // a step brighter, like the TUI's plain text.
+  // a step brighter.
   if (/merged|closed/.test(text)) return t.dim;
   return t.muted;
 }
@@ -300,12 +300,12 @@ export default class Spaces extends View {
     }
     this.badgeAt[key] = Date.now();
     cx.spawn(async (cx) => {
-      const r = await exec("node", [badgeScript(), "json", cwd]).catch((err) => this.warn("node badge.mjs", err));
+      const r = await exec("node", [badgeScript(), cwd]).catch((err) => this.warn("node badge.mjs", err));
       if (r && r.code !== 0) this.warn(`badge.mjs in ${cwd}`, r.stderr.trim());
       if (r?.code === 0) {
         try {
           const values = JSON.parse(r.stdout);
-          // gh signed out or offline: keep the last badge, as the TUI plugin does, but take the new counts.
+          // gh signed out or offline: keep the last badge, but take the new counts.
           if (values.error) this.warn(`PR badge in ${cwd}`, values.error);
           this.badge[key] = { ...values, pr: values.error ? this.badge[key]?.pr ?? null : values.pr };
         } catch (err) {

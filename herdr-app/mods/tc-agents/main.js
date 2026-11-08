@@ -17,8 +17,7 @@ import { agents, terminals, focused, spaces, run, theme, shared, setShared, setA
 
 // The context the dotfiles status line publishes, like "12% 126K/1M", at the end
 // of a row's name line as a small fill bar and the percent, with the token counts
-// in its tooltip; orange once it's `ctxhigh` past the soft ceiling. The herdr TUI
-// puts it on its own row only because its sidebar is too narrow.
+// in its tooltip; orange once it's `ctxhigh` past the soft ceiling.
 const CTX_BAR_PX = 18;
 function ctxLabel(t, k) {
   const l = k?.labels ?? {};
@@ -45,18 +44,18 @@ const gitFolders = () => [...new Set(terminals()
 
 const GIT_EVERY_MS = 90_000;
 
-// The herdr TUI plugin's badge script, linked into this folder by the dotfiles
-// installer, so both herdr apps compute the same badge.
+// The dotfiles badge script, linked into this folder by the dotfiles installer,
+// so this mod and the spaces mod compute the same badge.
 const badgeScript = () => `${appHome()}/mods/tc-agents/badge.mjs`;
 
-// The TUI config's colors for a badge: red for a failed check or requested
+// A badge's colors: red for a failed check or requested
 // changes, orange while checks run, green once approved.
 export function badgeColor(t, text) {
   if (/✗|changes/.test(text)) return t.ansi1;
   if (text.includes("◌")) return t.ansi3;
   if (text.includes("approved")) return t.ansi2;
   // Merged and closed are history, so they fade; an open PR or a CI result reads
-  // a step brighter, like the TUI's plain text.
+  // a step brighter.
   if (/merged|closed/.test(text)) return t.dim;
   return t.muted;
 }
@@ -198,7 +197,7 @@ export default class Agents extends View {
   // { branch, pr, added, removed } from the badge script, or {} when it can't
   // run. Its `error` (gh signed out, offline) still leaves the counts.
   async lookup(cwd) {
-    const r = await exec("node", [badgeScript(), "json", cwd]).catch((err) => this.warn("node badge.mjs", err));
+    const r = await exec("node", [badgeScript(), cwd]).catch((err) => this.warn("node badge.mjs", err));
     if (!r) return {};
     if (r.code !== 0) {
       this.warn(`badge.mjs in ${cwd}`, r.stderr.trim());
@@ -398,7 +397,7 @@ export default class Agents extends View {
     this.migratePins(all);
     this.byAddr = new Map(all.map((k) => [k.address, k]));
     // A worker that just started, or just finished a turn (a commit, a pushed
-    // PR), shouldn't wait for the next timer, as the herdr TUI plugin doesn't.
+    // PR), shouldn't wait for the next timer.
     const settled = all.some((k) => k.parent && this.kidWas?.[k.address] === "working" && k.status !== "working");
     this.kidWas = Object.fromEntries(all.filter((k) => k.parent).map((k) => [k.address, k.status]));
     if (settled || gitFolders().some((cwd) => !(cwd in this.git))) this.refreshGit(cx);
@@ -466,7 +465,7 @@ export default class Agents extends View {
 
     const row = (a, i, subs = []) => {
       const pic = icon(a.program, 16, t.foreground);
-      // The agent's own name, like the herdr TUI's $name, wins over its tab's:
+      // The agent's own name wins over its tab's:
       // two sessions sharing a tab would otherwise read the same.
       const term = this.byAddr.get(a.address);
       const more = term?.name || term?.labels?.["tc.agent"] || detail.get(a.address);

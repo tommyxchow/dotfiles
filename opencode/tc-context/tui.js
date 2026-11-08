@@ -2,8 +2,7 @@
 // use as labels on its terminal, the same `effort`, `ctx`, and `ctxhigh` values
 // .claude/statusline-command.sh writes for Claude Code. The tc-agents sidebar
 // mod draws its context bar from them, and an OpenCode hq reads its own `ctx`
-// with `hc get`. Herdr's terminal app reads OpenCode's footer instead
-// (herdr/plugins/tc/agent-tokens.mjs), so this stays out of herdr panes.
+// with `hc get`.
 import { execFile } from "node:child_process";
 
 // The Claude statusline's soft ceiling: 50% on a window of 1M or more.
@@ -75,8 +74,7 @@ async function labelsFor(sessionID) {
 // OpenCode 2's TUI calls `setup` and runs the function it returns on dispose.
 function setup(api) {
   const terminal = process.env.HC_TERMINAL_ID;
-  // A herdr pane inside a desktop app terminal inherits HC_TERMINAL_ID too.
-  if (!terminal || process.env.HERDR_PANE_ID) return;
+  if (!terminal) return;
 
   const routeSession = () => {
     const route = api.ui.router.current();

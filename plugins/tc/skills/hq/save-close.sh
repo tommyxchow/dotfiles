@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Claude Code Stop hook for hq. Saves a named herdr agent's last message to
+# Claude Code Stop hook for hq. Saves a named Herdr desktop agent's last message to
 # ~/.local/state/hq/closes/<name>.md, so hq reads the whole close instead of a
 # screen that cuts long ones off. settings.json runs it; it must stay portable
 # to Git Bash on Windows and bash 3.2 on macOS.
@@ -9,17 +9,13 @@ dir="$HOME/.local/state/hq"
 
 input=$(cat)
 
-# A failed lookup (herdr or hc not answering) just means no name.
-if [ "$HERDR_ENV" = 1 ] && [ -n "$HERDR_PANE_ID" ]; then
-  name=$(herdr agent get "$HERDR_PANE_ID" 2>/dev/null | jq -r '.result.agent.name // empty' 2>/dev/null)
-elif [ -n "$HC_TERMINAL_ID" ]; then
-  # A worker hq started carries an hc name; a session it picked up only a label.
-  # hq clears a stale label to an empty string, which counts as no name.
-  name=$(hc get "$HC_TERMINAL_ID" --json 2>/dev/null |
-    jq -r '[.name, .labels["tc.agent"]] | map(select(. != null and . != "")) | first // empty' 2>/dev/null)
-else
-  exit 0
-fi
+[ -n "$HC_TERMINAL_ID" ] || exit 0
+
+# A worker hq started carries an hc name; a session it picked up only a label.
+# hq clears a stale label to an empty string, which counts as no name. A failed
+# lookup (hc not answering) just means no name.
+name=$(hc get "$HC_TERMINAL_ID" --json 2>/dev/null |
+  jq -r '[.name, .labels["tc.agent"]] | map(select(. != null and . != "")) | first // empty' 2>/dev/null)
 
 name=$(printf '%s' "$name" | tr -d '\r')
 # No dots or slashes, so the name can't point outside closes/.
