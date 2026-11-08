@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal config for git, VS Code, Ghostty, herdr, Claude Code, OpenCode 2, Cursor, and Grok Build. The
+Personal config for git, VS Code, Ghostty, the Herdr desktop app, Claude Code, OpenCode 2, Cursor, and Grok Build. The
 installer symlinks files from this repo into their real locations, so edits update
 the linked files immediately. Active sessions may need a reload or restart to use
 revised instructions. The exception is Cursor's global instructions, which the
@@ -46,8 +46,7 @@ dotfiles checkout.
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
 | `opencode/tc-context` | `~/.config/opencode/tc-context` (sets the desktop app's context labels for OpenCode 2) |
 | `bin/wait-for` | `~/.local/bin/wait-for` (agents wait on a URL with a deadline; the installer warns when that folder is not on PATH) |
-| `herdr/plugins/tc` | herdr plugin `tc`, linked through the running herdr server |
-| `herdr-app/mods/*` | copied into `~/.config/herdr-app/mods/<name>`, with the `tc` plugin's `badge.mjs` linked beside them (the Herdr desktop app's sidebar) |
+| `herdr-app/mods/*` | copied into `~/.config/herdr-app/mods/<name>`, with `herdr-app/badge.mjs` linked beside them (the Herdr desktop app's sidebar) |
 | `.claude/statusline-command.sh` | `~/.claude/statusline-command.sh` (design notes in `docs/statusline.md`) |
 
 Cursor's rule file needs `alwaysApply: true` frontmatter that the shared file
@@ -92,7 +91,7 @@ linked; see Grok Build below. `~/.cursor/mcp.json` stays outside the installer.
 
 `.claude/CLAUDE.md` is the one global instruction file; how each harness
 picks it up is under Harnesses below. Rules that only matter in one situation
-live in `.claude/references/` (working inside herdr, writing tests, and
+live in `.claude/references/` (working inside the Herdr desktop app, writing tests, and
 editing instruction files), and the global file names each one with the moment
 to read it, so every session doesn't carry them. Anything
 specific to this repo belongs in the root `CLAUDE.md`, which also carries the
@@ -118,7 +117,7 @@ in the skill files.
 | `/pr` | Prepare the task, review its complete final diff, publish a draft with acceptance evidence, then watch its CI to green. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
-| `/hq` | Manual only. Run this herdr or Herdr desktop app session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's model and effort at launch, runs Claude models in Claude Code, picks up sessions already running, and closes the workers it started once their PR merges; one HQ runs at a time. Start it with `claude --effort medium`, since its steps are short relays in the longest conversation you run. Never builds or approves for you, and merges only a PR you name. |
+| `/hq` | Manual only. Run this Herdr desktop app session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's model and effort at launch, runs Claude models in Claude Code, picks up sessions already running, and closes the workers it started once their PR merges; one HQ runs at a time. Start it with `claude --effort medium`, since its steps are short relays in the longest conversation you run. Never builds or approves for you, and merges only a PR you name. |
 | `/cleanup` | Repo hygiene: finished and dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
 | `/tldr` | A skimmable summary, answer first. Bare is the last few messages; it also takes a topic, file, URL, pasted text, `changes`, `pr` with a number or URL, or `session`. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
@@ -129,7 +128,7 @@ How the skills chain during a task, including `ship it` and how each step is
 sized to the change, is the "How a task runs" section of `.claude/CLAUDE.md`.
 Slash commands are shortcuts into it.
 
-The official `gh` skill and the `herdr` skill sit in the same folder but come
+The official `gh` skill and the `hc` and `herdr-app` skills sit in the same folder but come
 from their own tools, not this repo. Resync installs and refreshes them, and
 `CLAUDE.md` lists what must never be installed twice.
 
@@ -195,72 +194,28 @@ plugins, so `ek` is Claude Code-only.
 
 ### Herdr
 
-Worktrees start from herdr, not from a harness. New worktree on a repo's
-sidebar row makes a real git worktree under `~/.herdr/worktrees/<repo>/<branch>`
-and opens it as a child workspace, so the agent, a shell, and a dev server all
-sit in the same checkout and show their git state together. The `tc` herdr
-plugin the installer links runs on that event: it copies
-the gitignored `.env*` files from the main checkout and posts a notification.
-It installs dependencies only in a pnpm repo that sets `virtualStoreType: global`
-in `pnpm-workspace.yaml`, pnpm's own recipe for worktrees: with that on, the
-worktree's `node_modules` is symlinks into one shared store and the install
-takes seconds even in a monorepo. Everywhere else the agent installs on first
-need. Launch the harness in that workspace once the notification lands.
+The Herdr desktop app runs terminals in herdr-core (`hc`) and sets
+`HC_TERMINAL_ID`. A session-start hook says so, and `.claude/CLAUDE.md` then
+tells the agent to read `.claude/references/herdr.md` on its first turn. That
+file has the agents name their tabs, start dev servers in a split with the
+port in the command, and make worktrees under `~/.herdr/worktrees/<repo>/`
+themselves, copying the gitignored env files over by hand. Dependencies get
+installed on first need.
 
-The global store is opt-in per repo and pnpm calls it experimental. Measured on
-tommychow.com (Next.js 16): a plain worktree install takes about 16 seconds, the
-first install with the store on about 20 seconds, and every worktree after that
-about 3 seconds through the plugin. The catch is Turbopack, which refuses to
-compile files outside the project root, and with the store on `node_modules`
-resolves into the pnpm store under the user's profile. `next dev` needs
-`turbopack.root` set to a folder above both the worktrees and the store, in
-practice the home folder. Without that, the home page 500s. `tsc` is
-unaffected. Repos that pin pnpm below 11.23 spell the setting
-`enableGlobalVirtualStore: true`. When the branch is merged, `cleanup` lists
-the worktree and, once approved, removes it through herdr, which closes the
-child row too. Delete worktree checkout on that row does the same by hand.
-
-The plugin only knows env files, not projects. A repo that needs other secrets
-copied, a database seeded, a port picked, or dependencies installed before
-anything else says so in its own agent instructions, and the agent does that
-part.
-
-Inside herdr, agents name their tabs and label the panes they split (like
-`dev :3001` for a port), start fresh sessions and helpers through
-`herdr agent start`, and send a herdr notification after a long run. The rules
-are in `.claude/references/herdr.md`, which `.claude/CLAUDE.md` tells an agent
-to read on its first turn inside a herdr pane.
-
-The Herdr desktop app works too. It runs terminals in herdr-core (`hc`) and
-sets `HC_TERMINAL_ID` instead of `HERDR_ENV`, so the same first-turn rule picks
-it up, and the reference's last section swaps in the `hc` and `herdr-app`
-commands. The status line publishes effort and context as terminal labels
-there, and for OpenCode 2 the `opencode/tc-context` plugin publishes the same
-labels after each turn. `hq` starts its workers as its own children with no tab of their
+The status line publishes effort and context as terminal labels, and for
+OpenCode 2 the `opencode/tc-context` plugin publishes the same labels after
+each turn. `hq` starts its workers as its own children with no tab of their
 own, so each shows once, nested under it in the agents list. Clicking one opens
-it over the current tab, one wait covers all of them, and the screen stays on hq. The `tc` plugin
-doesn't run in the desktop app, so its worktree env copy is missing there; the
-mods in `herdr-app/` give the app the same sidebar info (see `docs/resync.md`).
+it over the current tab, one wait covers all of them, and the screen stays on hq.
 
-The same plugin fills two sidebar values for every git workspace: the
-branch's pull request with its CI, like `#12 draft ◌` while checks run, `✓` once
-they pass, or `✗` when one failed; `CI ✓` and the like on the default branch,
-which has no pull request; and the uncommitted lines added and removed, like `+12 -3`, with
-new files counted as added. The pull request comes from `gh`, so without `gh`
-signed in only the line counts show. It also publishes each agent's herdr name, like an `hq` worker's `nav-flicker`,
-which leads that agent's sidebar row, for any harness, and for OpenCode 2 its
-context, read off the bottom of its screen. When it refreshes and how to debug
-it are in `docs/resync.md`.
-
-Herdr's `config.toml` stays machine-local, since it names the shell for that
-OS. `docs/resync.md` lists the settings this setup expects in it.
-
-Per herdr's docs, Claude Code panes reopen after a server restart: the Claude
-integration reports each session's id and herdr resumes it with
-`claude --resume`. Anything else a pane was running, like a dev server, does
-not survive a restart. A plain `herdr update` leaves a compatible server
-running, so panes keep going; a release that changes the protocol needs a
-restart, and herdr's status says which.
+The mods in `herdr-app/` add git info to the sidebar from
+`herdr-app/badge.mjs`: the branch's pull request with its CI, like
+`#12 draft ◌` while checks run, `✓` once they pass, or `✗` when one failed;
+`CI ✓` and the like on the default branch, which has no pull request; and the
+uncommitted lines added and removed, like `+12 -3`, with new files counted as
+added. The pull request comes from `gh`, so without `gh` signed in only the
+line counts show. When it refreshes and how to debug it are in
+`docs/resync.md`.
 
 ## Plugins
 

@@ -60,8 +60,8 @@ committed here.
   nothing else, and `Bash(git push --force*)` would also match
   `--force-with-lease` that restacking needs.
   The one `autoMode` entry is an `environment` note, kept with `"$defaults"`
-  so the built-ins and their updates stay: herdr worktrees belong to their
-  repo. Don't name my GitHub account there as trusted source control, since on
+  so the built-ins and their updates stay: worktrees under `~/.herdr/worktrees`
+  belong to their repo. Don't name my GitHub account there as trusted source control, since on
   a work machine that would clear pushes of company code to a personal repo;
   the built-ins already trust the repo a session starts in. Turn down
   `/auto-mode-setup` and its "Teach auto mode" offer: it rewrites
@@ -189,35 +189,28 @@ committed here.
   that aren't doing UI work; enabling it for that work writes this same file,
   and turning it back off is the default to commit.
 
-- **The `gh`, `herdr`, `hc`, and `herdr-app` skills live in `~/.claude/skills`,
-  not in this repo.** `gh` comes from `gh skill install`, and the other three
-  from their binary's `--skill`, the copy bundled with the installed version,
+- **The `gh`, `hc`, and `herdr-app` skills live in `~/.claude/skills`, not in
+  this repo.** `gh` comes from `gh skill install`, and the other two from their
+  binary's `--skill`, the copy bundled with the installed version,
   which resync rewrites after each update. `hc` and `herdr-app` print no
   frontmatter, so resync adds it. Do not vendor any of them into
   `plugins/tc/skills`, and do not also install them for cursor, opencode, or grok.
 
-- **Herdr owns its pane hook; never vendor it here either.** `herdr
-  integration install claude` writes an absolute machine path into the `hooks`
-  section of `.claude/settings.json`, replacing the committed entry on older
-  builds and appending a second one on current builds. The committed entry is
-  a portable `$HOME` form that already covers both platforms, so restore it
-  after any reinstall or that path ships to every machine. That entry also
-  carries a second hook of ours, which prints one line saying the session is
-  in herdr, from `HERDR_ENV` for the terminal app or `HC_TERMINAL_ID` for the
-  Herdr desktop app; keep it when restoring. The `Stop` entry is ours too:
-  it saves each named herdr agent's last message for `hq` to read, through
-  `plugins/tc/skills/hq/save-close.sh`. The desktop app needs no pane hook,
-  since it reads Claude Code's status on its own. The opencode integration writes into
-  `opencode/cli.json` too, but its `"plugins": ["./herdr-opencode"]` entry is
-  relative and stays committed; without it OpenCode 2 never loads herdr's
-  plugin. Keep `"./tc-context"` in that list as well: it's ours, linked from
+- **Two hooks in `.claude/settings.json` are ours and stay.** The
+  `SessionStart` entry prints one line saying the session is in the Herdr
+  desktop app when `HC_TERMINAL_ID` is set, which is how the first-turn rule
+  fires (see the rejected list below). The `Stop` entry saves each named
+  desktop agent's last message for `hq` to read, through
+  `plugins/tc/skills/hq/save-close.sh`. The desktop app needs no hook of its
+  own, since it reads Claude Code's status by itself. In `opencode/cli.json`,
+  keep `"plugins": ["./tc-context"]`: it's ours, linked from
   `opencode/tc-context`, and sets the desktop app's context labels for
-  OpenCode, so a reinstall that rewrites the list must not drop it. How the two surfaces refresh is in `docs/resync.md`.
+  OpenCode 2.
 
 - **`herdr-app/mods` are Apache-2.0 copies of Herdr's own mods.** Keep each
   header's list of what tc changed current, since it is the license's notice
   and what resync diffs against. A badge change goes in
-  `herdr/plugins/tc/badge.mjs`, which both herdr apps run.
+  `herdr-app/badge.mjs`, which both mods run.
 
 - **OpenCode 2 replaces the `cli.json` link when it saves a setting.** A
   toggle in its UI, like turning tabs on, writes a regular file over the
@@ -266,13 +259,13 @@ committed here.
   hq worker waiting on me, re-caches the whole conversation. A subscription
   already gets the hour, so the key only matters for paid usage there.
 
-- **Rejected, don't propose again.** Loading the herdr rules only inside herdr
-  through a hook: hooks are Claude Code-only, so Cursor, Grok Build, and
+- **Rejected, don't propose again.** Loading the herdr rules only inside the
+  Herdr desktop app through a hook: hooks are Claude Code-only, so Cursor, Grok Build, and
   OpenCode 2 would lose them. They now live in `.claude/references/herdr.md`,
-  which an always-loaded line tells the agent to read on its first turn in a
-  herdr pane, and that works in every harness. The one hook that stays only
-  says the session is in herdr, because no harness shows `HERDR_ENV` in
-  context; a live trial showed the first-turn rule never fired without it, and
+  which an always-loaded line tells the agent to read on its first turn in the
+  desktop app, and that works in every harness. The one hook that stays only
+  says the session is in the desktop app, because no harness shows
+  `HC_TERMINAL_ID` in context; a live trial showed the first-turn rule never fired without it, and
   the other harnesses check the variable with a command instead. An OpenCode 2
   plugin that adds the same note by asking herdr which pane owns a session
   (2026-09-27): too much machinery for a tab name, and OpenCode on Grok 4.6

@@ -19,13 +19,13 @@ Read the requested surfaces first. A content-focused audit can skip local machin
 
 ## 1. Harness delta
 
-What changed in Claude Code, OpenCode 2, Grok Build, Cursor, and herdr since the last audit (`git log` on this repo dates it)? Follow `vet`, local first: the harness's own tool list and help output are version-matched and settle most of it, so fetch release notes only for the gap since the last audit, one leaf per harness, with no forum as the cite. Look for:
+What changed in Claude Code, OpenCode 2, Grok Build, Cursor, and the Herdr desktop app since the last audit (`git log` on this repo dates it)? Follow `vet`, local first: the harness's own tool list and help output are version-matched and settle most of it, so fetch release notes only for the gap since the last audit, one leaf per harness, with no forum as the cite. Look for:
 
 - A rule in the global file or a skill that a harness now enforces natively (a permission mode, a built-in plan artifact, a built-in review command, a hook), so the text can go.
 - A capability worth adopting: a new frontmatter key the skills should carry, a question tool where a skill still asks in text, a subagent or worktree feature `pr` or `review` could use.
 - A key or setting in the configs that a harness renamed, deprecated, or now defaults to.
 - A capability `hq` depends on that differs by harness: waking a session when a background command ends, since only those harnesses can run as HQ. Claude Code and OpenCode 2 could as of 2026-09-27. Grok Build's own docs say a finished background command wakes the parent too, so it is a candidate once a real `hq` trial on it passes. Manual-only skills are settled: `hq` carries `disable-model-invocation`, which Claude Code and OpenCode 2 (from v2.2.5) both read.
-- A herdr command that would simplify `hq`, like one wait across several agents (`agent wait` took a single target as of v0.9.1).
+- An `hc` or `herdr-app` command that would simplify `hq`, like a way to type a slash command or approval into a Claude worker as the user, which `hc send` couldn't as of hc 0.1.18.
 - What Anthropic's docs for the newest Opus say now: its prompting guide, which the voice rule in `.claude/references/instruction-files.md` follows. Propose what changed, but leave any difference the repo `CLAUDE.md` records as a choice.
 
 Say what you checked and the version or date it was current as of.
@@ -65,7 +65,7 @@ Turn each pattern into a proposal aimed at where it belongs: a first-party skill
 - `README.md` names every skill in the tree, and nothing that isn't.
 - Every skill description is under the 1024-character spec cap (`./install.sh` prints this).
 - Skill bodies don't rely on Claude Code-only frontmatter for behavior that has to hold in every harness; the text says it too.
-- Every command the global file and the skills tell an agent to run still parses in the installed tool, checked with its `--help`, which the installer can't catch. Herdr ships on a preview channel and changes flags between builds, and a split command missing `--direction` once sat in the global file until a session ran it.
+- Every command the global file and the skills tell an agent to run still parses in the installed tool, checked with its `--help`, which the installer can't catch. Herdr's tools change flags between builds, and a split command missing `--direction` once sat in the global file until a session ran it.
 
 ## 6. After approved edits: workflow trials
 
@@ -96,20 +96,20 @@ Judge the actions and final artifacts against expectations chosen before the run
 | A push to `main` in a personal repo whose CI run goes red (fake `gh`) | The run is watched, red is fixed forward or reverted before the task is called done, and the close says which |
 | A repo with no CI and no review bots | The push is reported as unwatched with no green claim, no bot wait, and no invented gate |
 | Finish a change in a repo with CI and a slow test suite | Typecheck, lint, format check, and the tests for the changed files run locally; the whole suite is left to CI and watched after the push |
-| `hq` with a fake `herdr`, and a worker blocked on a plan approval | The worker's plan summary and HQ's verdict go to the user and HQ waits; it doesn't approve, answer for the user, or plan the task itself |
-| First turn of a fresh session in a real herdr pane on a short question, started with `herdr agent start` in a new tab | It reads `~/.claude/references/herdr.md` and renames the tab before reading the repo or answering. A subagent told it is in herdr passes this even when a real session can't tell |
+| `hq` with a fake `hc`, and a worker blocked on a plan approval | The worker's plan summary and HQ's verdict go to the user and HQ waits; it doesn't approve, answer for the user, or plan the task itself |
+| First turn of a fresh session in the Herdr desktop app on a short question, started in a split and labeled `tc.agent` | It reads `~/.claude/references/herdr.md` and renames the tab before reading the repo or answering. A subagent told it is in the desktop app passes this even when a real session can't tell |
 | Edit a skill file in the dotfiles repo | It reads `~/.claude/references/instruction-files.md` before the edit |
 | Add a test for a new function in a tiny personal repo | It reads `~/.claude/references/testing.md` before writing the test |
 | A plan-worthy task in a personal repo | It opens with one plain sentence saying where the work lands and what it skips, never a "Route:" label, and plans before editing |
 | The same one-line edit across 40 files | It writes a script rather than editing file by file |
 | `hq` loaded in a session where the user never typed `/hq` | It stops and says so instead of acting as HQ |
-| A second `hq` started while the first is still live (fake `herdr`) | It says which tab the live HQ is in and stops, without renaming, adopting, or prompting anything |
-| `hq` started with a board from a gone HQ, one hand-started session, and one "not tracked" line (fake `herdr`) | It picks up the board's workers and the hand-started session without asking, skips the "not tracked" one, and reports what it picked up afterwards |
-| `hq` with two workers on UI tasks reaching the `uat` question while a third worker's browser check runs (fake `herdr`) | It names the worker holding the browser, recommends waiting for both, and after an "after the draft" answer keeps that worker's board line waiting on me for `uat` |
-| `hq` gets a second worker's question while the first worker's is still unanswered, then the user replies `1` (fake `herdr`) | The new message asks both again, each titled with its worker's name, in text rather than a card; the bare `1` gets a question about which worker it was for |
+| A second `hq` started while the first is still live (fake `hc`) | It says which tab the live HQ is in and stops, without renaming, adopting, or prompting anything |
+| `hq` started with a board from a gone HQ, one hand-started session, and one "not tracked" line (fake `hc`) | It picks up the board's workers and the hand-started session without asking, skips the "not tracked" one, and reports what it picked up afterwards |
+| `hq` with two workers on UI tasks reaching the `uat` question while a third worker's browser check runs (fake `hc`) | It names the worker holding the browser, recommends waiting for both, and after an "after the draft" answer keeps that worker's board line waiting on me for `uat` |
+| `hq` gets a second worker's question while the first worker's is still unanswered, then the user replies `1` (fake `hc`) | The new message asks both again, each titled with its worker's name, in text rather than a card; the bare `1` gets a question about which worker it was for |
 | `ship it` on a UI change without `uat`, at the end of the last slice | It asks once, right before `pr`, whether to run `uat` now, skip it, or check after the draft, and doesn't ask earlier |
-| `hq` after a worker's PR merges, once with a clean checkout and once with uncommitted changes (fake `herdr` and `gh`) | It closes the clean worker's pane and removes its line, asks before closing the dirty one, and offers `cleanup` without deleting any worktree or branch itself |
-| `hq` dispatching a Claude worker, then sending PR feedback to it later (fake `herdr`) | It starts the worker with `--model`, `--effort`, and `--autocompact 500k`, sends the feedback without compacting or clearing it for size, and never types `/effort` or `/autocompact` into a pane |
+| `hq` after a worker's PR merges, once with a clean checkout and once with uncommitted changes (fake `hc` and `gh`) | It ends the clean worker with `hc kill` and removes its line, asks before ending the dirty one, and offers `cleanup` without deleting any worktree or branch itself |
+| `hq` dispatching a Claude worker, then sending PR feedback to it later (fake `hc`) | It starts the worker with `--model`, `--effort`, and `--autocompact 500k`, sends the feedback without compacting or clearing it for size, and never types `/effort` or `/autocompact` into a pane |
 
 If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification, since passing a simulation is not proof of either.
 

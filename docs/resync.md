@@ -7,7 +7,7 @@ here. This is not a docs rewrite or a plugin redesign, and it never runs the
 
 Harnesses: **Claude Code** and **OpenCode 2** are the daily CLIs, **Grok Build**
 is occasional, and **Cursor** is the desktop editor, which never runs inside
-herdr. The installer is enough for instructions and first-party skills on all of
+the Herdr desktop app. The installer is enough for instructions and first-party skills on all of
 those. Marketplace plugins (`ek`, `frontend-design`, `typescript-lsp`) need the
 `claude` CLI; skip that section if it is not installed.
 
@@ -44,9 +44,8 @@ clone.
 
 It links configs, first-party skills, the statusline script, and `bin/wait-for`
 into `~/.local/bin`, prunes links from older layouts, copies Cursor's local `tc`
-plugin, and links the herdr plugins (worktree bootstrap and PR badge) when herdr
-is on PATH and its server is running. The `gh` and `herdr` skills are not
-installer links; see Third-party skills below. It also seeds
+plugin, and copies the Herdr desktop app's mods with the badge script linked
+beside them. The `gh`, `hc`, and `herdr-app` skills are not installer links; see Third-party skills below. It also seeds
 `~/.grok/config.toml` from `grok/config.toml` on new machines and on re-runs
 patches only that file's non-default keys, because Grok writes runtime state
 into it, so it is never symlinked. It seeds `~/.grok/lsp.json` the same way but
@@ -171,6 +170,14 @@ Delete only what is clearly leftover from an older layout:
   `installed_plugins.json` (skip this if there is no Claude plugin cache)
 - Empty `~/.agents` / `~/.agents/skills` / `~/.config/opencode/skills` after
   pruning
+- What the retired herdr CLI left behind: `~/.claude/skills/herdr`,
+  `~/.claude/hooks/herdr-agent-state.*`, `~/.config/opencode/herdr-opencode/`,
+  `~/.config/opencode/herdr-tui-session.js`,
+  `~/.config/opencode/plugins/herdr-agent-state.js`,
+  `~/.config/opencode/tui.jsonc` when it lists only herdr's plugin, and
+  `~/.grok/hooks/herdr-agent-state.*` and `~/.grok/hooks/herdr.json`. Never
+  touch `~/.herdr/worktrees`, where the desktop app's worktrees live. The herdr
+  binary itself is the user's to uninstall, so report it rather than removing it
 
 Do not delete skills in `~/.claude/skills` that are not from this repo. Do not
 delete the `ek@chow` cache while that plugin is installed.
@@ -233,206 +240,32 @@ in the report.
 
 ## Third-party skills
 
-Two skills in `~/.claude/skills` come from somewhere other than the installer:
-`gh` from `cli/cli` through `gh skill`, and `herdr` from the herdr binary. Both
-are user scope, Claude Code agent only; Cursor, Grok Build, and OpenCode 2 read
-that same folder, so do not install them again for those agents.
+Three skills in `~/.claude/skills` come from somewhere other than the
+installer: `gh` from `cli/cli` through `gh skill`, and `hc` and `herdr-app`
+from the Herdr desktop app's own binaries. All are user scope, Claude Code
+agent only; Cursor, Grok Build, and OpenCode 2 read that same folder, so do not
+install them again for those agents.
 
 If `gh` is on PATH, refresh its skill with `gh skill update`. `gh skill list`
 shows what is installed; install it when missing with
 `gh skill install cli/cli gh --agent claude-code --scope user`.
 
-The herdr skill is the copy bundled with the installed binary, which herdr's
-docs say to reinstall after every upgrade, so write it after the `herdr update`
-in the next section:
-
-```bash
-mkdir -p ~/.claude/skills/herdr && herdr --skill > ~/.claude/skills/herdr/SKILL.md
-```
-
-Skip it when the binary is not on PATH. An older copy that `gh skill list`
-shows as installed from `herdrdev/herdr` tracks the latest tag rather than the
-binary; delete `~/.claude/skills/herdr` and write the bundled one. `gh skill`
-has no remove command, and `gh skill list` reads the folders themselves, so the
-bundled copy then lists with no source repo.
-
-The Herdr desktop app bundles two more skills the same way: `hc --skill` for
-herdr-core and `herdr-app --skill` for the window. Neither carries frontmatter,
-so add it while writing them. Write each one after its binary updates, and skip
-either one when its binary is not on PATH:
+The desktop app bundles its two: `hc --skill` for herdr-core and
+`herdr-app --skill` for the window. Neither carries frontmatter, so add it
+while writing them. Write each one after its binary updates, and skip either
+one when its binary is not on PATH:
 
 ```bash
 mkdir -p ~/.claude/skills/hc && {
-  printf -- '---\nname: hc\ndescription: "%s"\n---\n\n' "Control herdr-core with hc, the runtime behind the Herdr desktop app: start, read, wait on, message, and close terminals and agents. Use only inside the Herdr desktop app (HC_TERMINAL_ID is set), when the herdr rules or hq need a command beyond the tab rename. Not for the herdr terminal app, which is the herdr skill."
+  printf -- '---\nname: hc\ndescription: "%s"\n---\n\n' "Control herdr-core with hc, the runtime behind the Herdr desktop app: start, read, wait on, message, and close terminals and agents. Use only inside the Herdr desktop app (HC_TERMINAL_ID is set), when the herdr rules or hq need a command beyond the tab rename."
   hc --skill
 } > ~/.claude/skills/hc/SKILL.md
 
 mkdir -p ~/.claude/skills/herdr-app && {
-  printf -- '---\nname: herdr-app\ndescription: "%s"\n---\n\n' "Drive the Herdr desktop app window with herdr-app: spaces, tabs, panes, layouts, keys, themes, and mods. Use only inside the Herdr desktop app (HC_TERMINAL_ID is set), when the herdr rules or hq need a window command or the user asks to change what Herdr shows. Not for the herdr terminal app, which is the herdr skill."
+  printf -- '---\nname: herdr-app\ndescription: "%s"\n---\n\n' "Drive the Herdr desktop app window with herdr-app: spaces, tabs, panes, layouts, keys, themes, and mods. Use only inside the Herdr desktop app (HC_TERMINAL_ID is set), when the herdr rules or hq need a window command or the user asks to change what Herdr shows."
   herdr-app --skill
 } > ~/.claude/skills/herdr-app/SKILL.md
 ```
-
-## Herdr pane hook
-
-Skip this section if `herdr` is not on PATH.
-
-Update the binary first: `herdr update`, run outside a herdr session since it
-refuses to swap itself from inside one. The channel is preview, because
-integration fixes ship in preview builds well before a stable tag; `herdr
-channel show` confirms it and `herdr channel set preview` restores it.
-
-A plain `herdr update` swaps the client and leaves the running server on the old
-build, which `herdr status` reports as `server_binary_stale: yes`. Leave it: the
-server picks up the new build the next time herdr restarts, and a restart ends
-whatever the panes are running. Report it and let the user pick the moment.
-Never stop the server from inside a session.
-
-The pane hook is the other surface, and it is per agent rather than per machine.
-Run `herdr integration status --outdated-only` and reinstall whatever it lists
-with `herdr integration install <agent>`. Keep that set to claude, opencode,
-and grok, the CLIs that run in herdr panes; Codex is never used, and Cursor is
-used only as its desktop app, outside herdr. If a codex or cursor integration is
-still installed, report it and leave its removal to the user. Two of those write
-into files this repo tracks: claude into `.claude/settings.json`, opencode into
-`opencode/cli.json` through the `~/.config/opencode/cli.json` link. Read both
-diffs after installing. Grok's is self-contained in its own config directory and
-needs no cleanup. When a pane shows the wrong state, `herdr agent explain
-<pane>` says which rule decided it.
-
-Keep the `"plugins": ["./herdr-opencode"]` entry the opencode install adds to
-`opencode/cli.json`; it is relative to the config directory, so it works on
-every machine, and it is the only way OpenCode 2 loads herdr's plugin. Without
-it herdr gets no working, idle, or blocked state from OpenCode 2 and no session
-to restore, and `herdr integration status` reports opencode as `needs repair`.
-Keep our `"./tc-context"` in the same list, so the result reads
-`["./herdr-opencode", "./tc-context"]`; it sets the desktop app's context
-labels for OpenCode 2, and an install that rewrites the list drops it.
-
-The `tc` herdr plugin under `herdr/plugins/tc` (worktree env files, PR badges,
-and agent names, described in the README's Herdr section) is the third surface.
-The installer links it through `herdr plugin link`, which needs the server up,
-so a `SKIP` line there means start herdr and re-run the installer. It also
-unlinks `tc.pr-badge` and `tc.worktree-bootstrap`, the two plugins `tc`
-replaced, and prints an `UNLINK` line for each. `herdr plugin list --json`
-shows it registered and `herdr plugin log list` shows its last runs with exit
-codes and output, which is where to look when a new worktree came up without
-its env, or a badge or name is missing. The badge refreshes when herdr starts,
-when an agent settles, when a workspace gets focus, when a new worktree opens,
-and by hand through `herdr plugin action invoke tc.refresh`. The name refreshes
-when herdr starts and on every agent status change, since herdr has no rename
-event, so a freshly renamed agent shows its name at its next status change, or
-at once through `herdr plugin action invoke tc.names`, which `hq` runs after
-adopting workers.
-
-Then check `git diff .claude/settings.json`. Installing the claude integration
-writes a hook command with an absolute path into this machine's home directory,
-which does not belong in a public repo and is dead on the other platform. Older
-builds replaced the committed portable command with it. Current builds leave
-the committed entry alone and append a second `SessionStart` entry, so until
-that entry is removed the hook also runs twice.
-
-Restore the committed form. When the hook is the only pending change,
-`git checkout -- .claude/settings.json` does it. When another settings edit is
-pending, delete the added entry by editing the JSON so that edit survives.
-Herdr's entry only matches `startup`, `resume`, `clear`, `compact`, and `fork`;
-the committed `*` matcher already covers those, so keep `*`. The committed
-command already covers both platforms. Herdr writes
-`hooks/herdr-agent-state.ps1` and a `powershell -NoProfile -ExecutionPolicy
-Bypass -File` command on Windows, and `hooks/herdr-agent-state.sh` with `bash
-'<path>' session` everywhere else, which is exactly what the committed dispatch
-tests for by name.
-
-Still read the diff rather than restoring blind. If a future version ever writes
-another filename, widen the dispatch to match it, because an unmatched name is
-the bad case: the command exits 0 and the hook silently never runs.
-
-Reinstalls stay occasional. `herdr integration status` reads the version marker
-in the script file and ignores the settings entry, so the portable command
-survives and only a real version bump puts claude on the outdated list.
-
-## Herdr config
-
-Skip this section if `herdr` is not on PATH.
-
-Herdr's `config.toml` is machine-local; `herdr --help` prints its path. This
-setup expects five settings in it:
-
-- **Theme** follows the terminal's light or dark mode, like Claude Code's
-  `theme: auto`. Herdr's default theme is catppuccin, so the file sets only
-  `auto_switch`, which swaps in its `catppuccin-latte` sibling on a light
-  terminal. Picking a theme by hand in herdr's Settings writes a `name` and
-  turns `auto_switch` back off.
-- **Toast delivery** is `system`, the one that shows outside the herdr window,
-  since the global rules have agents send a notification after a long run.
-- **Pane border labels** are on, so each pane's border names the harness
-  running in it. Herdr's source labels the border with the harness, not the
-  agent's name.
-- **Agent rows** give Claude Code, OpenCode 2, and Grok Build the same shape:
-  the agent's herdr name in bold, which the `tc` plugin publishes for every
-  harness, then its tab, and on a second row its context. The name stands in
-  for the workspace and the session title, which only repeated it, most of all
-  under `hq`, whose workers carry the task in their workspace, tab, and name.
-  Every session names itself under the herdr rules, so an unnamed agent is
-  rare and shows only its machine and tab. No row names the harness, since the
-  pane border already does. Claude's second row is the context the statusline
-  publishes (see `docs/statusline.md`), OpenCode's the context the `tc` plugin
-  reads off its screen; it turns orange as `$ctxhigh` past the soft ceiling,
-  and a row with nothing reported yet disappears. Grok has no context reading,
-  so its entry is the one row. Effort and model stay out: both are fixed at
-  launch, and `hq`, which picks them, reads the `effort` token from
-  `herdr agent list`. Any other harness uses `rows`, herdr's default with the
-  name added after the harness, like `codex · nav-flicker`. An entry replaces
-  `rows` rather than adding to it. The Herdr desktop app's `tc-agents` mod
-  shows the same name and context; see Herdr desktop app below.
-- **Spaces rows** are herdr's defaults plus the `$pr`, `$added`, and `$removed` slots
-  the `tc` plugin fills: the PR or default-branch CI state, then the
-  uncommitted lines added in green and removed in red. A slot shows nothing
-  until a value is reported. The first matching rule wins, so the red rules
-  for a failed check and for requested changes come first, then orange for
-  running checks. An inline table has to stay on one line.
-
-The colors are mid-tones rather than catppuccin's pastels, because a rule takes
-only a fixed hex and the pastels vanish on the light theme.
-
-```toml
-[theme]
-auto_switch = true
-
-[ui.toast]
-delivery = "system"
-
-[ui]
-show_agent_labels_on_pane_borders = true
-
-[ui.sidebar.agents]
-rows = [
-  ["state_icon", "machine", "workspace", "tab"],
-  ["agent", { token = "$name", bold = true }],
-]
-
-[ui.sidebar.agents.rows_by_agent]
-claude = [
-  ["state_icon", "machine", { token = "$name", bold = true }, "tab"],
-  ["$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
-]
-opencode = [
-  ["state_icon", "machine", { token = "$name", bold = true }, "tab"],
-  ["$ctx", { token = "$ctxhigh", fg = "#e8762c" }],
-]
-grok = [
-  ["state_icon", "machine", { token = "$name", bold = true }, "tab"],
-]
-
-[ui.sidebar.spaces]
-rows = [
-  ["state_icon", "workspace"],
-  ["branch", "git_status", { token = "$pr", rules = [{ contains = "✗", fg = "#e5484d" }, { contains = "changes", fg = "#e5484d" }, { contains = "◌", fg = "#e8762c" }, { contains = "approved", fg = "#3fa34d" }, { contains = "merged", dim = true }, { contains = "closed", dim = true }] }, { token = "$added", fg = "#3fa34d" }, { token = "$removed", fg = "#e5484d" }],
-]
-```
-
-After an edit, `herdr config check` validates the file and `herdr server
-reload-config` applies it.
 
 ## Herdr desktop app
 
@@ -440,14 +273,16 @@ Skip this section if `herdr-app` is not on PATH or its window isn't open,
 since these commands talk to the running app.
 
 The installer copies the `tc-agents` and `tc-spaces` mods from `herdr-app/mods`
-into `~/.config/herdr-app/mods` and links the `tc` plugin's `badge.mjs` into
-each, so the app's sidebar shows what the herdr config above shows: each
-space's branch, PR or CI badge, and uncommitted lines, and each agent's name
-and context, the context at the end of the name line since the app's sidebar
-is wide enough. The app adds two things the terminal app doesn't have: a line
-saying what an agent is doing, from Claude Code's own status report, which
-`herdr agent get` doesn't expose (checked in 0.9.4), and the branch and badge
-on a paneless `hq` worker, which has no space row of its own.
+into `~/.config/herdr-app/mods` and links `herdr-app/badge.mjs` into each, so
+the app's sidebar shows each space's branch, PR or CI badge, and uncommitted
+lines; each agent's name, with its context at the end of the name line; a line
+saying what an agent is doing, from Claude Code's own status report; and the
+branch and badge on a paneless `hq` worker, which has no space row of its own.
+The spaces mod reruns the badge when a checkout changes, at most every 10
+seconds, and the agents mod every 90 seconds and when a worker ends a turn.
+When a badge or count looks wrong, run `node herdr-app/badge.mjs <folder>` by
+hand: it prints the same JSON the mods read, with the reason in `error` when
+the PR lookup failed.
 The installer copies rather than links because the app reloads a mod only
 when a file in its own folder changes, so rerun it after editing a mod.
 
