@@ -1,10 +1,11 @@
 # dotfiles
 
-Personal config for git, VS Code, Ghostty, the Herdr desktop app, Claude Code, OpenCode 2, Cursor, and Grok Build. The
-installer symlinks files from this repo into their real locations, so edits update
-the linked files immediately. Active sessions may need a reload or restart to use
-revised instructions. The exception is Cursor's global instructions, which the
-installer copies instead (see below the table).
+Personal config for git, VS Code, Ghostty, the Herdr desktop app, Claude Code,
+OpenCode 2, Cursor, and Grok Build. The installer symlinks files from this repo
+into their real locations, so edits update the linked files immediately. Active
+sessions may need a reload or restart to use revised instructions. The exception
+is Cursor's global instructions, which the installer copies instead (see below
+the table).
 
 ## Install
 

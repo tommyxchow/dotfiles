@@ -112,10 +112,11 @@ the agents list colors `ctxhigh`. Anthropic documents that quality drops as
 context fills but publishes no threshold, so 50% is a judgment call: 500K
 tokens is already two and a half full 200K windows of history, every turn re-
 sends all of it, and the flag only suggests a `/compact` at the next break, so
-an early one costs little. hq watches it for its own terminal; its workers compact
-on their own at 500K. A smaller window has no soft ceiling and never reports
-`ctxhigh`, because auto-compact handles it well enough. The flag marks where a
-`/compact` at the next break starts paying off, not where the window runs out.
+an early one costs little. hq watches it for its own terminal; its workers
+compact on their own near 470K, inside the 500K window hq gives them. A smaller
+window has no soft ceiling and never reports `ctxhigh`, because auto-compact
+handles it well enough. The flag marks where a `/compact` at the next break
+starts paying off, not where the window runs out.
 
 The label write runs in the background, so the statusline never waits on
 `hc`. Grok Build has no statusline hook, so its agents show no context.

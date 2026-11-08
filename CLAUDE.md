@@ -61,10 +61,10 @@ committed here.
   `--force-with-lease` that restacking needs.
   The one `autoMode` entry is an `environment` note, kept with `"$defaults"`
   so the built-ins and their updates stay: worktrees under `~/.herdr/worktrees`
-  belong to their repo. Don't name my GitHub account there as trusted source control, since on
-  a work machine that would clear pushes of company code to a personal repo;
-  the built-ins already trust the repo a session starts in. Turn down
-  `/auto-mode-setup` and its "Teach auto mode" offer: it rewrites
+  belong to their repo. Don't name my GitHub account there as trusted source
+  control, since on a work machine that would clear pushes of company code to a
+  personal repo; the built-ins already trust the repo a session starts in. Turn
+  down `/auto-mode-setup` and its "Teach auto mode" offer: it rewrites
   `environment` without `"$defaults"`, which replaces that entry and freezes
   the built-ins at today's text.
 
@@ -260,43 +260,42 @@ committed here.
   already gets the hour, so the key only matters for paid usage there.
 
 - **Rejected, don't propose again.** Loading the herdr rules only inside the
-  Herdr desktop app through a hook: hooks are Claude Code-only, so Cursor, Grok Build, and
-  OpenCode 2 would lose them. They now live in `.claude/references/herdr.md`,
-  which an always-loaded line tells the agent to read on its first turn in the
-  desktop app, and that works in every harness. The one hook that stays only
-  says the session is in the desktop app, because no harness shows
-  `HC_TERMINAL_ID` in context; a live trial showed the first-turn rule never fired without it, and
-  the other harnesses check the variable with a command instead. An OpenCode 2
-  plugin that adds the same note by asking herdr which pane owns a session
+  Herdr desktop app through a hook: hooks are Claude Code-only, so Cursor, Grok
+  Build, and OpenCode 2 would lose them. They now live in
+  `.claude/references/herdr.md`, which an always-loaded line tells the agent to
+  read on its first turn in the desktop app, and that works in every harness.
+  The one `SessionStart` hook that stays only says the session is in the desktop
+  app, because no harness shows `HC_TERMINAL_ID` in context; a live trial showed
+  the first-turn rule never fired without it, and the other harnesses check the
+  variable with a command instead. An OpenCode 2 plugin that adds the same note
   (2026-09-27): too much machinery for a tab name, and OpenCode on Grok 4.6
   skipping the check is accepted. Moving the whole coding workflow into an
-  on-demand skill (2026-09-27): coding is most sessions, so they'd save
-  nothing, and the always-loaded file is the only text every harness
-  re-injects after compaction, while Claude Code keeps 5K tokens of a loaded
-  skill and the others drop it. Moving the handoff and mechanical-loop rules
-  into a reference file: it saved about 1.4KB, and its trigger fires late in a
-  long session, which is when rules are followed worst. Generating
-  `.claude/CLAUDE.web.md` from a shared block: it would squeeze the most-tuned
-  rules into about 3KB for a chat file that rarely changes. A `gh`-based
-  scoreboard script: the audit's PR retro asks the same question in words, and
-  a script here goes stale. A plan-time check of open branches for file
-  overlap: one branch and worktree per ticket, phases stacked on top, so
-  overlap is rare and resolved at merge by hand. The `tc/` branch prefix stays
-  dropped. It was a sidebar grouping trick; the global Git section uses the
-  ticket id in the tracker's own case, or `<github-login>/kebab-phrase` with
-  no ticket. A rule naming a model's early-stop habits, like the list in
-  Anthropic's prompting guides (a summary that announces the next step, an
-  offer to continue, and the rest), globally or under `ship it`, and any rule
-  setting how often to post progress updates: how often a model reports and
-  where it ends a turn is left to each model's default. A watcher like
-  herd-orchestrator-cli on top of `hq`: HQ already collects the decisions that
-  need me, so revisit it only if HQ misses them. Two `review` lens lines from
-  the 2026-09-23 audit: a new-dependency check (the package is the intended
-  one, not a hallucinated or typosquatted name) and prompt injection into a
-  model that can call tools. Neither mistake has happened, and none of my
-  repos gives a model tools. Revisit the first if an agent ever adds a wrong
-  package, the second once an app calls a model with tools. From the
-  2026-09-27 hq review: renaming `hq`, which stays. Making the
+  on-demand skill (2026-09-27): coding is most sessions, so they'd save nothing,
+  and the always-loaded file is the only text every harness re-injects after
+  compaction, while Claude Code keeps 5K tokens of a loaded skill and the others
+  drop it. Moving the handoff and mechanical-loop rules into a reference file:
+  it saved about 1.4KB, and its trigger fires late in a long session, which is
+  when rules are followed worst. Generating `.claude/CLAUDE.web.md` from a
+  shared block: it would squeeze the most-tuned rules into about 3KB for a chat
+  file that rarely changes. A `gh`-based scoreboard script: the audit's PR retro
+  asks the same question in words, and a script here goes stale. A plan-time
+  check of open branches for file overlap: one branch and worktree per ticket,
+  phases stacked on top, so overlap is rare and resolved at merge by hand. The
+  `tc/` branch prefix stays dropped. It was a sidebar grouping trick; the global
+  Git section uses the ticket id in the tracker's own case, or
+  `<github-login>/kebab-phrase` with no ticket. A rule naming a model's
+  early-stop habits, like the list in Anthropic's prompting guides (a summary
+  that announces the next step, an offer to continue, and the rest), globally or
+  under `ship it`, and any rule setting how often to post progress updates: how
+  often a model reports and where it ends a turn is left to each model's
+  default. A watcher like herd-orchestrator-cli on top of `hq`: HQ already
+  collects the decisions that need me, so revisit it only if HQ misses them. Two
+  `review` lens lines from the 2026-09-23 audit: a new-dependency check (the
+  package is the intended one, not a hallucinated or typosquatted name) and
+  prompt injection into a model that can call tools. Neither mistake has
+  happened, and none of my repos gives a model tools. Revisit the first if an
+  agent ever adds a wrong package, the second once an app calls a model with
+  tools. From the 2026-09-27 hq review: renaming `hq`, which stays. Making the
   fresh-context final review a judgment call like the other steps: it stays
   fixed, since on a small diff it is one read and it is the step most likely
   to catch something. A plain "go" opening the draft PR in a repo that isn't

@@ -252,8 +252,8 @@ shows what is installed; install it when missing with
 
 The desktop app bundles its two: `hc --skill` for herdr-core and
 `herdr-app --skill` for the window. Neither carries frontmatter, so add it
-while writing them. Write each one after its binary updates, and skip either
-one when its binary is not on PATH:
+while writing them. Rewrite both on every resync, since nothing here tells when
+the app updated, and skip either one when its binary is not on PATH:
 
 ```bash
 mkdir -p ~/.claude/skills/hc && {
