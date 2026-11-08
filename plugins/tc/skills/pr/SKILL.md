@@ -44,7 +44,7 @@ Include the relevant UI states, keyboard path, and mutation failure paths from t
 
 In order:
 
-1. **Ledger.** Run section 1 on the whole checklist. Settle now anything unverified that a process-local test or run could settle cheaply. A browser or device check waits for `uat`.
+1. **Ledger.** Run section 1 on the whole checklist. Settle now anything unverified that a process-local test or run could settle cheaply. A check in a visible window or on a phone waits for `uat`.
 2. **Pass.** Follow `pass` on this task's changes, reusing valid work already done. Skip it when the last slice already closed through `pass` on this exact tree. `pass` prepares and commits the slice, but it does not replace the final correctness review.
 3. **Review the final task.** Run `review all` against the intended base, including committed, pending, and untracked task changes, with the ledger as the statement of intent. It runs in a fresh context. Reuse an equivalent review of this final diff if one already ran. Apply the global mechanical/docs/config/instruction-only skip. The review only reports, so likely findings stay reported. Say which mode ran.
 4. **Finish.** Close through `pass`, which applies the confirmed findings with a test for the corrected behavior where testable. Any substantive edits made since that review get reviewed too. Rerun affected evidence and the local check if invalidated, then commit the fixes. Don't restart polish on unchanged files. Inspect the task's complete final diff and staged ownership before publishing. Squash unpushed fix-and-follow-up commits under the global Git rules.
