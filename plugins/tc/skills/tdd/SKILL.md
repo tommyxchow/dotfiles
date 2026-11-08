@@ -20,7 +20,7 @@ Decide this first, then say in a sentence whether you'll write the tests first, 
 
 ## 2. Name the cases before the first test
 
-- **If the plan has an acceptance checklist or the user gave cases**, that is the list, used as given. Write one or more cases per checklist criterion, in the criterion's words. Either way, add the edges they didn't mention and say which ones you added.
+- **If the plan has an acceptance checklist or the user gave cases**, that is the list, used as given. Write one or more cases per checklist criterion, in the criterion's words. Either way, add the edges they didn't mention and say which ones you added. Tag the user's own cases "(yours)" in the list and the close, keep each in their words even when you'd phrase it differently, and name the test that covers it.
 - **If neither, derive them**: the happy path, the sad paths a user can hit, the edges most likely to break (empty, one, many, the boundary value), with realistic data, and for a bug, the exact failure reported.
 - **If you're changing code that has no tests**, pin its current behavior first with a characterization test, which asserts what the code does today, even the odd parts. Then start the loop for the change. Without that test, you can't tell a deliberate change from an accident.
 - **Say where you'll test them.** That might be the function, the module's public surface, the route's response, or what the component renders. Pick the outermost boundary that still fails for one clear reason, because a test bound to internals breaks on every refactor and proves nothing about behavior.
