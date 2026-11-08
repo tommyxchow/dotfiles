@@ -6,13 +6,14 @@
 // agent's context as a fill bar and percent at the end of its name line; under a paneless hq worker, a
 // line with its branch, PR badge, and uncommitted lines (it has no space row of
 // its own); a line with what the agent reports it's doing while it works or
-// waits on you; a row without a space header leading with the agent's own name;
+// waits on you; a row leading with the agent's own title, with the tab someone
+// named dimmed after it; a row without a space header leading with the agent's own name;
 // the time label dropping first in a narrow sidebar; and hover tooltips in plain
 // words for the context, the time label, the badge, and the line counts.
 
 import { View, div, image, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
-import { agents, terminals, panes, focused, spaces, run, theme, shared, setShared, setAgentOrder, openOverlay, closeOverlay, props, window, layout, exec, appHome } from "herdr";
+import { agents, terminals, focused, spaces, run, theme, shared, setShared, setAgentOrder, openOverlay, closeOverlay, props, window, layout, exec, appHome } from "herdr";
 
 // The context the dotfiles status line publishes, like "12% 126K/1M", at the end
 // of a row's name line as a small fill bar and the percent, with the token counts
@@ -97,16 +98,12 @@ function toggleSidebar() {
 
 const clean = (s) => (s ?? "").replace(/^[^\p{L}\p{N}]+/u, "").trim();
 
-function lead(tab, all = panes()) {
-  const mine = all.filter(p => p.tab === tab.id && p.terminal);
-  return mine.find(p => p.program?.agent) ?? mine.find(p => p.focused) ?? mine[0];
-}
-
-function title(tab, l) {
-  const prog = l?.program?.name;
-  const live = clean(l?.title);
-  const telling = live && live !== prog && !/^[~/]|^[A-Za-z]:\\/.test(live) && !live.includes("@") && live.toLowerCase() !== l?.program?.key;
-  return (tab.name === prog || !tab.named) && telling ? live : tab.name;
+// The terminal's title when it names the work, like Claude Code's own session
+// title; null when it only repeats the program, a path, or user@host.
+function ownTitle(raw, program) {
+  const live = clean(raw);
+  const telling = live && live !== program?.name && !/^[~/]|^[A-Za-z]:\\/.test(live) && !live.includes("@") && live.toLowerCase() !== program?.key;
+  return telling ? live : null;
 }
 const RANK = { blocked: 4, done: 3, working: 2, idle: 1 };
 // A sub-agent without a pane isn't in agents(): its raw word, error counting as
@@ -451,19 +448,20 @@ export default class Agents extends View {
         .when(!open, (el) => el.child(String(subs.length)));
     };
 
-    // A row reads "space \u00b7 detail": the detail is a tab someone named or the
-    // agent's own title, never an automatic tab number unless two rows would
-    // otherwise read the same.
+    // A row leads with the agent's own title, or the tab someone named when the
+    // harness sets none, and dims that named tab after a title. A tab carrying
+    // only the program's name ("Claude Code") counts as unnamed, and an
+    // automatic tab number shows only when two rows would otherwise read the same.
     const tabs = spaces().flatMap(s => s.tabs);
-    const label = (a) => {
+    const namedTab = (a) => {
       const tab = tabs.find(tab => tab.id === a.tab);
-      return tab ? title(tab, lead(tab)) : a.title || a.program?.name || "";
+      return tab?.named && tab.name !== a.program?.name ? tab.name : null;
     };
-    const detail = new Map(list.map(a => [a.address, /^\d+$/.test(label(a)) ? null : label(a)]));
+    const detail = new Map(list.map(a => [a.address, ownTitle(a.title, a.program) ?? namedTab(a)]));
     const seen = {};
     for (const a of list) { const k = `${a.space_name}\u0000${detail.get(a.address) ?? ""}`; seen[k] = (seen[k] ?? 0) + 1; }
     for (const a of list) {
-      if (detail.get(a.address) == null && seen[`${a.space_name}\u0000`] > 1) detail.set(a.address, label(a));
+      if (detail.get(a.address) == null && seen[`${a.space_name}\u0000`] > 1) detail.set(a.address, String(a.tab_index));
     }
 
     const row = (a, i, subs = []) => {
@@ -511,8 +509,15 @@ export default class Agents extends View {
       // Without a space header above (priority, pinned) the row adds its space,
       // after the agent's own name so a narrow sidebar cuts the space, not the name.
       const full = byPriority || isPinned;
-      const name = more ?? (/^\d+$/.test(label(a)) ? a.program?.name || label(a) : label(a));
+      const name = more ?? (a.program?.name || a.tab_name);
       const where = full && a.space_name && a.space_name !== name ? a.space_name : null;
+      const tab = namedTab(a) !== name ? namedTab(a) : null;
+      // The tab before the space, so a narrow sidebar cuts the space first.
+      const after = [tab, where && `· ${where}`].filter(Boolean).join(" ");
+      // A wide sidebar gives a long title its room beside the icon, context bar,
+      // time, and status (160px), plus a tab's worth for `after` (80px more).
+      const room = Math.min(sidebarWidth(), 2000) - (after ? 240 : 160);
+      const nameMax = Math.max(after ? 120 : 200, room);
       // Under the name, past the 16px icon and its 9px gap.
       const extra = this.extras(t, this.byAddr.get(a.address), a.status, pic ? 25 : 0);
       return v_flex()
@@ -544,8 +549,8 @@ export default class Agents extends View {
           // The 36px floor sits on the name and space together, so a short name
           // keeps its width and the space follows right after it.
           .child(h_flex().flex_1().min_w(36).gap(5).items_center()
-            .child(div().min_w(0).max_w(where ? 120 : 200).truncate().text_color(idle ? t.muted : t.foreground).child(name))
-            .when(Boolean(where), el => el.child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(`\u00b7 ${where}`))))
+            .child(div().min_w(0).max_w(nameMax).truncate().text_color(idle ? t.muted : t.foreground).child(name))
+            .when(Boolean(after), el => el.child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(after))))
           .when(Boolean(machine), el => el.child(div().text_size(10).text_color(t.dim).child(machine)))
           .when(subs.length > 0, el => el.child(fold(a, subs)))
           .when(this.hovered === a.address, el => el.child(pin))
