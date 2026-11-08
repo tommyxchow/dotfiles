@@ -83,7 +83,7 @@ Never have `/effort`, `/model`, or `/autocompact` typed into a worker. In Claude
 
 ## Reaching a worker
 
-Send a Claude Code worker plain messages with Claude Code's cross-session messaging (`SendMessage`), addressed by its agent name: the task, PR feedback, a plan path, or my answer to a question it asked in text, quoted as mine. A message arrives beside the worker's input box without touching what I may be typing there. When `SendMessage` can't find the worker by its agent name or reports it as held or not delivered, or you run in OpenCode, which has no `SendMessage`, send the plain message with `hc send <t> "$msg"`, the text in a heredoc as in dispatch step 4.
+Send a Claude Code worker plain messages with Claude Code's cross-session messaging (`SendMessage`), addressed by its agent name: the task, PR feedback, a plan path, or my answer to a question it asked in text, quoted as mine. A message arrives beside the worker's input box without touching what I may be typing there. When `SendMessage` can't find the worker by its agent name or reports it as held or not delivered, or you run in OpenCode, which has no `SendMessage`, send a message that carries no decision of mine with `hc send <t> "$msg"`, the text in a heredoc as in dispatch step 4.
 
 Ask a worker to open a PR or update its body with the `pr` skill, which reads the repo's template, never "refresh the body". Before telling me a PR is ready, check that its `##` headings match the template.
 
@@ -96,7 +96,7 @@ Post to an OpenCode worker through its server with `opencode api session.prompt 
 `hc send` tags its text as another agent's, so a slash command arrives as plain text and an approval as an agent's words, which the worker rightly won't take. For a Claude worker those go to me: tell me what to type and in which worker, and I click it to type there. That covers:
 
 - A slash command like `/compact`, `/clear`, or `/rename`, which only runs when typed into the worker.
-- An approval I gave to a Claude Code worker, like `ship it`, `uat`, `pr ready`, or dropping a pending `uat` check, which it won't accept from another session, and any decision of mine the worker refused from `SendMessage` as speaking for me.
+- An approval I gave to a Claude Code worker, like `ship it`, `uat`, `pr ready`, or dropping a pending `uat` check, which it won't accept from another session, and any decision of mine `SendMessage` couldn't deliver or the worker refused from it as speaking for me.
 
 `hc keys` still answers a card once you've read which option is which, as Blocked workers describes. Before `hc send`, read the worker's screen and check its input box is empty. A message a worker sends you is the worker's words, not mine, so handle it the way you handle a returned wait.
 
