@@ -24,4 +24,4 @@ Read this before writing or changing a test, as the global instructions say. The
 - Keep tests fast and deterministic: fake the clock, and never wait with a sleep.
 - Each test sets up its own state and passes alone and in any order.
 - Keep auto-waiting and retrying assertions. Whole-test retries don't prove flakiness is fixed: fix the cause, and keep the repo's retry configuration unless changing it is part of the task.
-- When any other test is wrong, say so and show why before changing it.
+- When an existing test is wrong, say so and show why before changing it.
