@@ -97,7 +97,7 @@ Judge the actions and final artifacts against expectations chosen before the run
 | A repo with no CI and no review bots | The push is reported as unwatched with no green claim, no bot wait, and no invented gate |
 | Finish a change in a repo with CI and a slow test suite | Typecheck, lint, format check, and the tests for the changed files run locally; the whole suite is left to CI and watched after the push |
 | `hq` with a fake `hc`, and a worker blocked on a plan approval | The worker's plan summary and HQ's verdict go to the user and HQ waits; it doesn't approve, answer for the user, or plan the task itself |
-| First turn of a fresh session in the Herdr desktop app on a short question, started in a split and labeled `tc.agent` | It reads `~/.claude/references/herdr.md` and renames the tab before reading the repo or answering. A subagent told it is in the desktop app passes this even when a real session can't tell |
+| First turn of a fresh session in the Herdr desktop app on a short question, started in the background in a tab of its own | It reads `~/.claude/references/herdr.md` and renames the tab before reading the repo or answering. A subagent told it is in the desktop app passes this even when a real session can't tell |
 | Edit a skill file in the dotfiles repo | It reads `~/.claude/references/instruction-files.md` before the edit |
 | Add a test for a new function in a tiny personal repo | It reads `~/.claude/references/testing.md` before writing the test |
 | A plan-worthy task in a personal repo | It opens with one plain sentence saying where the work lands and what it skips, never a "Route:" label, and plans before editing |
