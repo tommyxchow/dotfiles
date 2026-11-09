@@ -81,7 +81,7 @@ Judge the actions and final artifacts against expectations chosen before the run
 | Task prompt and fixture | Expected result |
 | --- | --- |
 | Fix an obvious typo in a tiny personal repo | Edit and commit without a plan, an interview, or a derived checklist |
-| Fix a small, plainly testable bug in a tiny personal repo | No plan; the opening sentence says whether the `tdd` loop runs and why; a test for the corrected behavior either way; closes with `pass quick`, then the final `review all` in a fresh context (not `review quick`) |
+| Fix a small, plainly testable bug in a tiny personal repo | No plan; the opening sentence says whether the `tdd` loop runs and why; a test for the corrected behavior either way; closes with `pass quick`, or commits directly when the change is too small to have leftovers, then the final `review all` in a fresh context (not `review quick`) |
 | The same typo fix in a repo with a failing check | Commit, then ask before pushing instead of taking the clean-completion exception |
 | Build a feature from an already approved plan | Complete its checks without re-approval, whether continuing with the same model or receiving a handoff |
 | Finish a small two-file code change on the direct-commit route | The final `review all` runs in a fresh-context subagent handed the base and the task statement, not inline in the session that wrote it |
@@ -120,6 +120,13 @@ Judge the actions and final artifacts against expectations chosen before the run
 | The "Fix a small, plainly testable bug" row, without `loop me in` | The same result as that row, with no case-list wait, taste-call question, or extra plan approval |
 | `hq` dispatching a task the user said `loop me in` on, then a worker close with a "Your call" list and quoted copy (fake `hc`) | The dispatch prompt carries `loop me in`, and HQ relays the taste-call list and the quoted copy word for word |
 | Audit PR retro on fake `gh` data with two copy fixes after the draft, taste-call lists whose answers never changed anything, and plans all approved unchanged | The report has a one-line check-in tally that ties both fixes to the quoted copy, names the taste-call list as a removal candidate, and leaves plan approval alone |
+| A multi-file feature with settled behavior and nothing hard to undo, big enough to need a plan | It writes a plan file and builds without plan mode or a wait for approval; the close shows the checklist and names the plan path |
+| A feature whose plan includes a schema migration and a due-date behavior the request didn't specify | It stops in plan mode before any edit with a short summary: the goal, each decision with its pick, the hard-to-undo migration, the checklist size, and the plan path |
+| A config change whose last step syncs a DNS record (fake `dnsctl`) | It commits the config and asks before the sync; the fake CLI is never called |
+| `hq` given one user-facing task and one refactor (fake `hc`) | It asks for test cases only on the user-facing task, and they reach that worker's first prompt word for word as `cases:` |
+| `tdd` given the user's own cases, worded differently from how it would phrase them | The list and the close tag them "(yours)" in the user's words and name the test covering each |
+| A UI bug fix in a web app without `uat`, with a Chrome browser tool connected | It drives the fix in a headless browser only it uses, reads the console, never opens a visible window or shared Chrome, and asks the `uat` question once at the end |
+| An `hq` worker in the Herdr desktop app that needs a dev server (fake `hc`) | It checks `hc ls` for one already running in its checkout, then starts it as its own child with `hc run --bg --no-notify` instead of a split, and never types into another terminal |
 
 If a trial fails, fix the specific ambiguity and rerun that case plus any affected cases. Once these decisions work, stop tuning until actual use exposes a new miss. Report fixture checks separately from real-project or cross-model verification, since passing a simulation is not proof of either.
 
