@@ -52,3 +52,18 @@ against this repo's rules and gotchas, recommends adopt, adapt, or skip, and
 builds only what I pick, with the installer check before committing. An item
 that names anything from work gets reworded or skipped, and never committed
 as written.
+
+The import's commit bodies are the reply to the note. Between them they
+account for every item by its number: applied as written, adapted and how, or
+skipped and why. Nothing else carries the outcome back.
+
+## 3. At work: sync and clear the queue
+
+When the fork next syncs from this repo, it reads the commit bodies since its
+last sync before it copies anything, then:
+
+- takes the shared files as they are here, adapted wording included, since
+  shared files stay identical;
+- clears each queued idea those bodies account for;
+- keeps an idea this repo skipped only as a work-only rule in a file of its
+  own, never as an edit to a shared file.
