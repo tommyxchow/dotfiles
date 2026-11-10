@@ -57,7 +57,7 @@ Run this section once near the end, not per slice. In repos with push-triggered 
 ## 3. Update
 
 1. **Head check.** Make sure you are on the PR's head branch and that the `headRefOid` from `gh pr view` is an ancestor of `HEAD` (`git merge-base --is-ancestor <headRefOid> HEAD`). Local commits ahead of it are normal, since this section ends in a push. Stop only for the wrong branch or a diverged history, and then say which branch is where. With several worktrees open, that is the mistake that costs an hour.
-2. **Body.** Reconcile the current diff and ledger with section 6. Publish the refreshed body after the batch's push, so its claims describe the remote head rather than unpublished local changes. If no push is needed, repair stale text directly.
+2. **Body.** Reconcile the current diff and ledger with section 6. Publish the refreshed body after the batch's push, so its claims describe the remote head rather than unpublished local changes. If no push is needed, repair stale text directly. When the body has grown well past what the change needs, run the final pass from section 6 rather than patching it.
 3. **Threads.** Read every page with GraphQL, because REST comments carry no thread ids and `gh` has no resolve command. First fetch the threads:
 
    ```bash
@@ -104,14 +104,14 @@ Don't trigger bots to re-review, and don't try to detect which bot posted. The o
 
 Both modes use the same evidence, and `check` stays report-only as the top of this skill says. Explicit `ready` approval permits in-scope fixes through Update, and then you recheck the resulting head before flipping the draft.
 
-- Local `HEAD` matches the remote PR head, no pending task edits remain, and the body reflects that head. A local check with dirty task files does not prove the published PR. In `check`, report the mismatch. In `ready`, finish and push the task through Update first.
+- Local `HEAD` matches the remote PR head, no pending task edits remain, and the body reflects that head. A local check with dirty task files does not prove the published PR. In `check`, report the mismatch, and report when the body needs the final pass from section 6. In `ready`, finish and push the task through Update first.
 - Every ledger item is proven, exercised, or unverified with a reason the user has accepted. An item pending a `uat` check after the draft blocks until the check runs or the user drops it.
 - No actionable threads are unresolved, checked with the complete thread and comment lookup in section 3. Apply that section's resolution policy: human pushback or judgment threads with an outcome reply may stay open when no implementation work or user decision remains outstanding.
 - The local check is green on this head, and `gh pr checks` shows the required checks passing, which is where the whole suite's result comes from. Pending is not green. When a repo has no check of its own, say so and count it as unverified, never as a pass.
 - The whole PR diff has been reviewed on this head. Reuse an equivalent complete review from Open or Update, and otherwise run `review pr <number>` as the final task review, in a fresh context. Apply the global mechanical/docs/config/instruction-only skip. In `check`, report the findings. In `ready`, send confirmed findings through Update, then restart this check. Per-push reviews of separate pieces do not replace a whole-diff review.
 - The PR is stacked only on parents that are merged or themselves ready, and it says so.
 
-In `check`, report whether the criteria hold and stop. In `ready`, run `gh pr ready <number>` only when all of them hold. Otherwise report the blocker and leave the PR as a draft. Never merge or enable auto-merge as part of either mode.
+In `check`, report whether the criteria hold and stop. In `ready`, run the final pass from section 6, then run `gh pr ready <number>` only when all of them hold. Otherwise report the blocker and leave the PR as a draft. Never merge or enable auto-merge as part of either mode.
 
 ## 5. Restack
 
@@ -139,6 +139,8 @@ Write the body in the global External writing voice, sized to the change. When t
 8. **Stack.** Add `Stacked on #N` and `Depends on #M` when they apply.
 
 Include numbers whenever they are cheap to get and change how the reader reads the PR: sizes, test counts, before-and-after timings on a performance PR. Include bundle deltas and Lighthouse scores only when the repo already measures them. Never invent a metric.
+
+**Final pass.** A body refreshed push after push collects history: earlier heads, the play-by-play of merges from the base, and decisions a later round replaced. In `ready`, and whenever Update finds a body grown well past what the change needs, rewrite the title and body as the reviewer's document for the current head. Keep what holds now, drop the history, and fold evidence into `<details>`. The template's order and headings and the rule to omit empty sections still apply. Sections a reviewer or operator acts on, like an operator or migration checklist or a "For the reviewer" section, stay intact. Check that the title still names the whole change in the repo's title convention, and that linked issues, labels, and stack lines still match, then publish with `gh pr edit --title <title> --body-file <tmp>`. Sized to the change is the bar, not a character count.
 
 ## Report
 
