@@ -22,6 +22,8 @@ A question is worth asking when its answer changes what gets built. Drop everyth
 
 A ticket usually says nothing about some things that a PM notices on the first click: the empty, loading, and error states of new UI, what happens on a retry or a double submit, and who else is affected by a shared change. Ask about those when the plan doesn't answer them.
 
+Also map the design calls the plan leaves open: what the change reuses and what it duplicates, and any meaningfully better approach than the obvious one, like a new module boundary, middleware versus per-call, or a data-model, API-shape, or library choice. A pattern copied for a third time or a second path beside one that already does the job is a question: centralize now or as a follow-up, with the cost of each.
+
 ## A round
 
 Follow the global Session flow rules for question tools and the text fallback. Give each question a short title. Answers that change the remaining frontier come before the next round. The decisions are the user's, so never answer your own round and carry on.
