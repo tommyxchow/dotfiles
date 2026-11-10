@@ -235,8 +235,12 @@ committed here.
   a bug class that is costly to miss. Don't propose the move again.
 
 - **Models are set by alias, and effort stays at each model's default, except
-  Opus 5.5 at `high`.** `model` is `opus`, since Opus 5.5 outranks Fable 5.1
-  on Artificial Analysis (2026-10-04). `advisorModel` stays unset, which
+  Opus 5.5 at `high`.** `model` is `opus`, the one model every plan and
+  machine of mine has. Fable 5.2 leads Artificial Analysis (2026-11-09), but
+  it sits outside the Pro plan, takes at most half of Max's weekly limit, and
+  a work machine may not have it at all, so it is never the saved default.
+  On a plan that includes it, start the session with `claude --model fable`,
+  not `/model fable`, which saves it into this file. `advisorModel` stays unset, which
   turns the advisor off: my choice (2026-10-30), since it slowed sessions
   down for little gain over Opus alone. Aliases follow the newest release of each family, so a new model
   needs no edit here. Pin a version or add a suffix like `[1m]` only when the model docs
