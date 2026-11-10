@@ -56,6 +56,19 @@ if [[ "$model_id" == *"[1m]" || "$model" == *"(1M context)"* ]] ||
   size="1M"
 fi
 
+# Claude Code's used_percentage and context_window_size always describe the full
+# window, even when auto-compact is capped lower, and nothing in the input says
+# so. The cap is only visible as CLAUDE_CODE_AUTO_COMPACT_WINDOW, which hq sets
+# on its workers, so measure against it: 457K of a 500K cap is nearly out of
+# room. Only a plain token count below the window counts as a cap.
+capped=""
+cap="${CLAUDE_CODE_AUTO_COMPACT_WINDOW:-}"
+if [[ "$cap" =~ ^[1-9][0-9]*$ ]] && [ -n "$size_raw" ] && [ "$cap" -ge 100000 ] && [ "$cap" -lt "$size_raw" ]; then
+  size_raw=$cap
+  size="$((cap / 1000))K"
+  capped=1
+fi
+
 # display_name already carries a "(… context)" suffix on extended-context models;
 # strip it so the size isn't stated twice.
 model="${model% (*)}"
@@ -196,18 +209,25 @@ modelseg="${reset}${model}${reset}"
 # Orange is the soft ceiling of 50% on a window of 1M or more,
 # where compacting at the next break pays off; the ctxhigh label below trips at
 # the same point. A smaller window has no soft ceiling, since auto-compact
-# handles it, so 101 keeps orange from ever tripping there. Red means auto-compact is close, so it trips on room left rather than
-# percentage: under 50K tokens, which is 75% on a 200K window and 95% on 1M.
+# handles it, so 101 keeps orange from ever tripping there; a session capped
+# below its window is the exception, set below. Red means auto-compact is
+# close, so it trips on room left rather than percentage: under 50K tokens,
+# which is 75% on a 200K window, 90% on a 500K cap, and 95% on 1M.
 # Anything smaller or unreported keeps 75 rather than scaling past it.
 ctxseg=""
 pct=""
 if [ -n "$used_raw" ] && [ "$used_raw" -gt 0 ] && [ -n "$size_raw" ] && [ "$size_raw" -gt 0 ]; then
   pct=$(( used_raw * 100 / size_raw ))
+  # A capped session can sit just past its cap until the compaction lands.
+  [ "$pct" -gt 100 ] && pct=100
   ctx_orange=101
   ctx_red=75
   if [ -n "$size_raw" ] && [ "$size_raw" -ge 1000000 ]; then
     ctx_orange=50
   fi
+  # A capped session compacts at its cap, so orange (and ctxhigh) trips at 80%
+  # to leave time to compact on purpose first; red below keeps the 50K rule.
+  [ -n "$capped" ] && ctx_orange=80
   if [ -n "$size_raw" ] && [ "$size_raw" -gt 200000 ]; then
     ctx_red=$(( 100 - 50000 * 100 / size_raw ))
   fi

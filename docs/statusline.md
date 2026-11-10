@@ -60,9 +60,12 @@ something wants attention, so it's findable without reading the line.
   the same token count, and only the percentage takes a color: orange at 50% on a window of 1M or more,
   the soft ceiling hq and the Herdr sidebar also use, and red under 50K tokens
   of room, which is 75% on a 200K window and 95% on a 1M one (see Color
-  thresholds). The window is the model's, not an `--autocompact` one: Claude
-  Code doesn't pass that to the statusline, so an hq worker started with
-  `--autocompact 500k` still shows `/1M` and compacts at about 470K.
+  thresholds). Claude Code reports the model's window even when
+  `--autocompact` caps it lower, and passes nothing about the cap. The one
+  place a script can see it is the `CLAUDE_CODE_AUTO_COMPACT_WINDOW` variable,
+  so hq sets that on its workers and the segment measures against it: a worker
+  at 457K reads `91% 457K/500K` rather than a calm `45% 457K/1M`. The variable
+  counts only as a plain token count below the window.
 - **`cold`**: the prompt cache has expired (`prompt_cache.warm` is false), so
   the next message re-caches the whole conversation. It shows only from 50K
   tokens, where that re-cache costs enough to matter, and it's the moment a
@@ -113,9 +116,10 @@ context fills but publishes no threshold, so 50% is a judgment call: 500K
 tokens is already two and a half full 200K windows of history, every turn re-
 sends all of it, and the flag only suggests a `/compact` at the next break, so
 an early one costs little. hq watches it for its own terminal; its workers
-compact on their own near 470K, inside the 500K window hq gives them. A smaller
-window has no soft ceiling and never reports `ctxhigh`, because auto-compact
-handles it well enough. The flag marks where a `/compact` at the next break
+compact on their own near 470K, inside the 500K cap hq gives them, and a
+capped session reports `ctxhigh` from 80% of its cap, which leaves time to
+compact on purpose first. A smaller window has no soft ceiling and never
+reports `ctxhigh`, because auto-compact handles it well enough. The flag marks where a `/compact` at the next break
 starts paying off, not where the window runs out.
 
 The label write runs in the background, so the statusline never waits on
@@ -154,17 +158,17 @@ idle, showing whatever was true at the last message. 60s keeps them honest.
 ## Color thresholds
 
 Context gives each color one meaning. Orange is the soft ceiling, a
-percentage that only windows of 1M or more have, because it tracks how full the conversation is and matches the
+percentage that only windows of 1M or more and capped sessions have, because it tracks how full the conversation is and matches the
 `ctxhigh` label above. Red is auto-compact's deadline, which Claude Code derives
 from the window minus reserved output rather than a fixed percentage, so red
 trips on the tokens left: 50K of room is the same amount of work on any
 window, while 75% used is 50K on a 200K window and 250K on a 1M one.
 
-|        | Context        | Rate-limit window   |
-| ------ | -------------- | ------------------- |
-| low    | none           | none                |
-| orange | 500k+ (1M)     | 75%+ used           |
-| red    | under 50K left | 90%+ used, or `out` |
+|        | Context                      | Rate-limit window   |
+| ------ | ---------------------------- | ------------------- |
+| low    | none                         | none                |
+| orange | 500k+ (1M), or 80%+ of a cap | 75%+ used           |
+| red    | under 50K left               | 90%+ used, or `out` |
 
 "None" is the terminal's default foreground, not a gray: uncolored values stay
 fully legible, they just carry no signal. Green and yellow are gone entirely,
