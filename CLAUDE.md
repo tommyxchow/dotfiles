@@ -252,7 +252,13 @@ committed here.
   `effortLevel` overrides every model's own default. This covers saved
   settings only: `hq` picks a worker's effort per launch with `--effort` and
   gives it a 500K auto-compact window with `--autocompact 500k`, both lasting
-  one session and writing nothing back. Other sessions keep Claude Code's
+  one session and writing nothing back. Its worker list picks by role (the
+  cheapest, the small one, the daily driver, the top model) with today's
+  Claude model beside each, so another vendor's model can take a role when I
+  name it. The pairings follow Artificial Analysis's score and cost per task
+  (2026-11-09): Fable at `medium` cost about what Opus at `high` did and
+  scored higher, and Haiku at `xhigh` beat Sonnet at `low` and `medium` for
+  less. Recheck them when a model in a role changes. Other sessions keep Claude Code's
   default window, since I can compact or clear the ones I sit in.
   `promptCacheTtl` is `1h` (2026-10-04) because API and Vertex billing default
   the main conversation's cache to 5 minutes, and a pause past that, like an
@@ -312,7 +318,9 @@ committed here.
   so they stay. From the 2026-10-31 audit: setting `notes = false` in
   herdr-core's config so `hq` could type slash commands and approvals into
   desktop workers. It is machine-wide and strips the tag that marks every
-  `hc` message as another agent's, so those stay with me.
+  `hc` message as another agent's, so approvals stay with me. Slash commands
+  no longer do (2026-11-09): `hq` types them with `hc keys`, which needs no
+  setting.
 
 - **Where the global file differs from Anthropic's prompting advice, it does so on purpose.**
   Anthropic leans toward prose with little bold, calm emphasis, and saying what
