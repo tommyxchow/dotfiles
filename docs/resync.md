@@ -275,8 +275,9 @@ since these commands talk to the running app.
 The installer copies the `tc-agents` and `tc-spaces` mods from `herdr-app/mods`
 into `~/.config/herdr-app/mods` and links `herdr-app/badge.mjs` into each, so
 the app's sidebar shows each space's branch, PR or CI badge, and uncommitted
-lines; each agent's name, with its context at the end of the name line; a line
-saying what an agent is doing, from Claude Code's own status report; and the
+lines; each agent as two lines that never change height, its name, then what
+it is doing (from Claude Code's own status report) or where it runs, with its
+context at the end of that line; and the
 branch and badge on a paneless `hq` worker, which has no space row of its own.
 The spaces mod reruns the badge when a checkout changes, at most every 10
 seconds, and the agents mod every 90 seconds and when a worker ends a turn.

@@ -1,24 +1,26 @@
 // Agents in grouped or priority views; parents take their most urgent sub-agent's place.
 //
 // Modified by tc from Herdr's shipped `agents` mod (version in mod.json), under
-// the Apache License 2.0 (herdr-app/LICENSE in the dotfiles repo). Changes: the
-// agent's context as a fill bar and percent at the end of its name line; under a paneless hq worker, a
-// line with its branch, PR badge, and uncommitted lines (it has no space row of
-// its own); a line with what the agent reports it's doing while it works or
-// waits on you; a row leading with the agent's own title, with the tab someone
-// named dimmed after it; a sub-agent with its own row not repeated under its
-// parent; a row without a space header leading with the agent's own name;
-// the name growing with the sidebar's width; the time label dropping first in a
-// narrow sidebar; and hover tooltips in plain words for the context, the time
-// label, the badge, and the line counts.
+// the Apache License 2.0 (herdr-app/LICENSE in the dotfiles repo). Changes:
+// every row is two lines of fixed height, the name with its status, then one
+// line that never comes and goes; that line's left end says what the agent
+// reports it's doing while it works or waits on you, and otherwise where it
+// runs (its tab and space, or a paneless hq worker's branch and uncommitted
+// lines, since it has no space row of its own); its right end keeps the
+// worker's PR badge, the agent's context as a fill bar and percent, and the
+// time label, which drops first in a narrow sidebar; a row leading with the
+// agent's own title; a sub-agent with its own row not repeated under its
+// parent; a row without a space header leading with the agent's own name; and
+// hover tooltips in plain words for the context, the time label, the badge,
+// and the line counts.
 
 import { View, div, image, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
 import { agents, terminals, focused, spaces, run, theme, shared, setShared, setAgentOrder, openOverlay, closeOverlay, props, window, layout, exec, appHome } from "herdr";
 
 // The context the dotfiles status line publishes, like "12% 126K/1M", at the end
-// of a row's name line as a small fill bar and the percent, with the token counts
-// in its tooltip; orange once it's `ctxhigh` past the soft ceiling.
+// of the line under a row's name as a small fill bar and the percent, with the
+// token counts in its tooltip; orange once it's `ctxhigh` past the soft ceiling.
 const CTX_BAR_PX = 18;
 function ctxLabel(t, k) {
   const l = k?.labels ?? {};
@@ -84,7 +86,7 @@ function find(node, id) {
 // The sidebar's rail goes by its width, not a flag: dragging its edge narrows it too.
 const sidebarWidth = () => find(layout(), "sidebar")?.size?.px ?? Infinity;
 const narrow = () => sidebarWidth() < 160;
-// Below this width a row drops its time label so the name keeps room.
+// Below this width a row drops its time label, so the line under the name keeps room.
 const TIME_MIN_PX = 190;
 
 // To the rail (on macOS wide enough for the traffic lights), or back to the width it had.
@@ -225,27 +227,35 @@ export default class Agents extends View {
     return null;
   }
 
-  // The lines under a row: on a worker "branch · #12 draft ✓ +3 -1", then what
-  // it's doing while it works or waits on you. `rail` draws tree lines in front
-  // of a sub-agent's.
-  extras(t, k, status, indent, rail = []) {
-    if (!k) return [];
-    const g = (k.parent && this.git[k.cwd]) || {};
-    const bits = [];
-    if (g.branch) bits.push(div().min_w(0).truncate().child(g.branch));
-    if (g.pr) bits.push(div().id(`badge-${k.address}`).flex_none().text_color(badgeColor(t, g.pr)).tooltip(badgeTip(g.pr)).child(g.pr));
+  // The one line under a name. Its left end says what the agent is doing while
+  // it works or waits on you, and otherwise where it runs: a worker's branch
+  // and uncommitted lines, or a row's tab and space. Its right end keeps the
+  // worker's PR badge, the context and the age. Every row has exactly this
+  // line, even when it has nothing to say, so a row never changes height and nothing below it moves when an
+  // agent starts or stops. `rail` draws tree lines in front of a sub-agent's.
+  extras(t, k, status, indent, rail = [], tail = {}) {
+    const g = (k?.parent && this.git[k.cwd]) || {};
+    const id = k?.address ?? "none";
     const counts = [g.added && div().flex_none().text_color(t.ansi2).child(g.added), g.removed && div().flex_none().text_color(t.ansi1).child(g.removed)].filter(Boolean);
     const changed = [g.added && `${g.added.slice(1)} added`, g.removed && `${g.removed.slice(1)} removed`].filter(Boolean).join(", ");
-    if (counts.length) bits.push(h_flex().id(`lines-${k.address}`).flex_none().gap(4).tooltip(`Not committed yet: ${changed} lines`).children(counts));
+    const where = [];
+    if (g.branch) where.push(div().min_w(0).truncate().child(g.branch));
+    if (counts.length) where.push(h_flex().id(`lines-${id}`).flex_none().gap(4).tooltip(`Not committed yet: ${changed} lines`).children(counts));
+    // A sub-agent with a row of its own has both a branch and a tab.
+    if (tail.where) where.push(div().min_w(0).truncate().child(tail.where));
     const doing = status === "working" || status === "blocked" ? activity(k) : null;
-    const line = (children) => h_flex().h(16).items_center().text_size(11).text_color(t.dim)
+    const left = doing
+      ? [div().min_w(0).truncate().text_color(status === "blocked" ? t.blocked : t.muted).child(doing)]
+      : where.flatMap((b, i) => (i ? [div().flex_none().child("·"), b] : [b]));
+    // The badge gives way before the sentence does: it truncates, and the left end keeps a floor.
+    const badge = g.pr ? div().id(`badge-${id}`).min_w(0).truncate().text_color(badgeColor(t, g.pr)).tooltip(badgeTip(g.pr)).child(g.pr) : null;
+    const right = [badge, ctxLabel(t, k), tail.when].filter(Boolean);
+    return [h_flex().h(16).items_center().text_size(11).text_color(t.dim)
       .children(rail.map((l) => div().w(9).mr(4).h_full().flex_none().when(l === "│" || l === "├", (el) => el.border_l(1.5).border_color(t.input))))
       .child(div().w(indent).flex_none())
-      .child(h_flex().flex_1().min_w(0).gap(5).items_center().children(children));
-    const out = [];
-    if (bits.length) out.push(line(bits.flatMap((b, i) => (i ? [div().flex_none().child("·"), b] : [b]))));
-    if (doing) out.push(line([div().min_w(0).truncate().text_color(status === "blocked" ? t.blocked : t.muted).child(doing)]));
-    return out;
+      .child(h_flex().flex_1().min_w(0).gap(8).items_center()
+        .child(h_flex().flex_1().min_w(60).gap(5).items_center().children(left))
+        .children(right))];
   }
 
   // Stamps agents whose state changed. Done and idle count as one: looking at a
@@ -346,16 +356,16 @@ export default class Agents extends View {
       .id(`sub-${k.address}`)
       .pl(39)
       .pr(8)
-      // With extra lines the name row tightens, so the gaps above, between and below even out.
-      .pt(extra.length ? 2 : 0)
-      .pb(extra.length ? 5 : 0)
+      // The name row is tight, so the gaps above, between and below even out.
+      .pt(2)
+      .pb(5)
       .rounded(8)
       .flex_none()
       .when(on, (el) => el.bg(t.raised))
       .hover((s) => s.bg(t.hover))
       .on_click(() => this.peek(k.address))
       .child(h_flex()
-        .h(extra.length ? 22 : 26)
+        .h(22)
         .gap(0)
         .items_center()
         .text_size(12.5)
@@ -364,7 +374,6 @@ export default class Agents extends View {
           .when(l === "└" || l === "├", el => el.border_b(1.5).rounded_bl(6))))
         .when(Boolean(pic), el => el.child(div().mr(8).child(pic)))
         .child(div().flex_1().truncate().text_color(on ? t.foreground : t.muted).child(k.name || k.template || k.program?.name || k.address))
-        .when(Boolean(ctxLabel(t, k)), el => el.child(div().mr(8).child(ctxLabel(t, k))))
         .child(this.status(t, { status: st }, compact)))
       .children(extra);
   }
@@ -441,7 +450,7 @@ export default class Agents extends View {
     };
 
     // A row leads with the agent's own title, or the tab someone named when the
-    // harness sets none, and dims that named tab after a title. A tab carrying
+    // harness sets none, and puts that named tab on the line below a title. A tab carrying
     // only the program's name ("Claude Code") counts as unnamed, and an
     // automatic tab number shows only when two rows would otherwise read the same.
     const tabs = spaces().flatMap(s => s.tabs);
@@ -506,25 +515,24 @@ export default class Agents extends View {
         })
         .child(svg(`mods/workspace-chrome/${isPinned ? "pin-off" : "pin"}.svg`).size(13));
       // Under a space header the space goes without saying; an automatic tab number says nothing.
-      // Without a space header above (priority, pinned) the row adds its space,
-      // after the agent's own name so a narrow sidebar cuts the space, not the name.
+      // Without a space header above (priority, pinned) the row adds its space
+      // to the line below, after the tab so a narrow sidebar cuts the space first.
       const full = byPriority || isPinned;
       const name = more ?? (a.program?.name || a.tab_name);
       const where = full && a.space_name && a.space_name !== name ? a.space_name : null;
       const tab = namedTab(a) !== name ? namedTab(a) : null;
       // The tab before the space, so a narrow sidebar cuts the space first.
-      const after = [tab, where && `· ${where}`].filter(Boolean).join(" ");
-      // A wide sidebar gives a long title its room beside the icon, context bar,
-      // time, and status (160px), plus a tab's worth for `after` (80px more).
-      const room = Math.min(sidebarWidth(), 2000) - (after ? 240 : 160);
-      const nameMax = Math.max(after ? 120 : 200, room);
+      const after = [tab, where].filter(Boolean).join(" · ");
+      const age = Boolean(when) && sidebarWidth() >= TIME_MIN_PX
+        ? div().id(`when-${a.address}`).flex_none().tooltip(timeTip(a.status, now - when)).child(duration(now - when))
+        : null;
       // Under the name, past the 16px icon and its 9px gap.
-      const extra = this.extras(t, this.byAddr.get(a.address), a.status, pic ? 25 : 0);
+      const extra = this.extras(t, this.byAddr.get(a.address), a.status, pic ? 25 : 0, [], { where: after, when: age });
       return v_flex()
         .id(`ag-${a.address}`)
         .px(8)
-        .pt(extra.length ? 3 : 0)
-        .pb(extra.length ? 7 : 0)
+        .pt(3)
+        .pb(7)
         .flex_none()
         .rounded(8)
         .when(a.focused, (el) => el.bg(t.selected))
@@ -537,7 +545,7 @@ export default class Agents extends View {
         })
         .on_click(() => run("pane.focus", { pane: a.pane }))
         .child(h_flex()
-          .h(extra.length ? 24 : 30)
+          .h(24)
           .items_center()
           .gap(9)
           .when(Boolean(pic), el => el.child(div().id(`agent-fold-${a.address}`)
@@ -546,17 +554,11 @@ export default class Agents extends View {
               this.folded.has(a.address) ? this.folded.delete(a.address) : this.folded.add(a.address);
               cx.notify();
             })).child(pic)))
-          // The 36px floor sits on the name and the dimmed tab and space together, so a
-          // short name keeps its width and the dimmed text follows right after it.
-          .child(h_flex().flex_1().min_w(36).gap(5).items_center()
-            .child(div().min_w(0).max_w(nameMax).truncate().text_color(idle ? t.muted : t.foreground).child(name))
-            .when(Boolean(after), el => el.child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(after))))
+          .child(div().flex_1().min_w(36).truncate().text_color(idle ? t.muted : t.foreground).child(name))
           .when(Boolean(machine), el => el.child(div().text_size(10).text_color(t.dim).child(machine)))
           .when(subs.length > 0, el => el.child(fold(a, subs)))
-          .when(this.hovered === a.address, el => el.child(pin))
-          .when(Boolean(ctxLabel(t, this.byAddr.get(a.address))), el => el.child(ctxLabel(t, this.byAddr.get(a.address))))
-          .when(this.hovered !== a.address && Boolean(when) && sidebarWidth() >= TIME_MIN_PX, el => el.child(div().id(`when-${a.address}`).flex_none().text_size(11).text_color(t.dim)
-            .tooltip(timeTip(a.status, now - when)).child(duration(now - when))))
+          // The pin's slot is always there, so the name doesn't re-truncate on hover.
+          .child(this.hovered === a.address ? pin : div().size(17).flex_none())
           .child(this.status(t, a, byPriority && !isPinned)))
         .children(extra);
     };
