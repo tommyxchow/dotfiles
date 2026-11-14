@@ -59,6 +59,9 @@
   },
   "showClearContextOnPlanAccept": true,
   "tui": "fullscreen",
+  "claudeMdExcludes": [
+    "**/dotfiles/.claude/CLAUDE.md"
+  ],
   "theme": "auto",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
@@ -68,8 +71,5 @@
       "$defaults",
       "Linked git worktrees of the working repo, including the ones under ~/.herdr/worktrees, are part of that repo"
     ]
-  },
-  "claudeMdExcludes": [
-    "**/dotfiles/.claude/CLAUDE.md"
-  ]
+  }
 }
