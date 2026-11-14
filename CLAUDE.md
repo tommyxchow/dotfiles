@@ -88,6 +88,14 @@ nothing that names work gets committed here.
   installed Claude plugins and skills. `.claude/CLAUDE.md` is global, so
   anything specific to this repo belongs in this file instead.
 
+- **`claudeMdExcludes` in `.claude/settings.json` stops the global file
+  loading twice.** A session started outside this checkout already has the
+  global file through the home link, and the first file it reads in here
+  loaded the repo's `.claude/CLAUDE.md` as a second copy, about 12,000 tokens
+  (checked 2026-11-14: one copy with the key, two without). The pattern
+  matches by folder name, so it holds on any machine whose checkout is named
+  `dotfiles`. A session started in this checkout loads one copy either way.
+
 - **Slash commands write into the repo through that link.** `/model`, `/effort`,
   and anything else Claude Code saves as a default lands in
   `.claude/settings.json`, so a dirty settings file after a session is usually a
