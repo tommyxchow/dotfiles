@@ -5,12 +5,13 @@ make sense for my personal setup come back here as plain-text notes, never as
 patches, pushes, or cherry-picks. This repo is public, so nothing from work
 lands here except the idea, reworded.
 
-The whole loop is two things I do: say `upstream note` at work, then paste
-what lands on the clipboard into a session here.
+The whole loop is three things I do: say `upstream note` at work, paste what
+lands on the clipboard into a session here, and say `sync from personal` at
+work to take the result back.
 
-Which half of this file applies depends on where the session runs. A checkout
-whose `origin` is not `github.com/tommyxchow/dotfiles` is the fork, and
-`upstream note` there means export. In this repo, a pasted `UPSTREAM NOTE`
+Which part of this file applies depends on where the session runs. A checkout
+whose `origin` is not `github.com/tommyxchow/dotfiles` is the fork, and the
+two phrases only mean something there. In this repo, a pasted `UPSTREAM NOTE`
 block means import.
 
 ## Keep the fork easy to read
@@ -31,8 +32,11 @@ fork, or send anything anywhere.
 1. Get this repo's current state. Fetch the remote that points at
    `github.com/tommyxchow/dotfiles` if there is one; otherwise clone it into
    a temporary folder.
-2. Find what the fork last synced, and read this repo's commit bodies since
-   then. An import's bodies account for every item of an earlier note by its
+2. Find what the fork last synced, which the `Synced-from` trailer on its
+   newest sync commit names, and read this repo's commit bodies since then.
+   With no trailer yet, the newest commit here whose shared files the fork
+   matches is the starting point.
+   An import's bodies account for every item of an earlier note by its
    number, so anything they call applied, adapted, or skipped is already
    answered and stays out of this note.
 3. Find candidates from the work side only: the fork's own commits to shared
@@ -87,13 +91,32 @@ The import's commit bodies are the reply to the note. Between them they
 account for every item by its number: applied as written, adapted and how, or
 skipped and why. Nothing else carries the outcome back.
 
-## 3. At work: sync and clear the queue
+## 3. At work: `sync from personal`
 
-When the fork next syncs from this repo, it reads the commit bodies since its
-last sync before it copies anything, then:
+When I say `sync from personal` in the fork, bring it up to date with this
+repo. Everything in this step stays on the laptop and in the fork; nothing is
+ever pushed to this repo.
 
-- takes the shared files as they are here, adapted wording included, since
-  shared files stay identical;
-- clears each queued idea those bodies account for;
-- keeps an idea this repo skipped only as a work-only rule in a file of its
-  own, never as an edit to a shared file.
+1. Get this repo's current state the way step 1 does, and find the fork's
+   last sync the same way.
+2. Read this repo's commit bodies since that sync before copying anything.
+   They say what each change is for, and an import's bodies say what happened
+   to each item of a note.
+3. Take the shared files as they are here, adapted wording included, since
+   shared files stay identical. Bring over the rest of what this repo tracks
+   the way the fork already does, and leave the fork's work-only files alone.
+4. Settle the queue, meaning the fork's own edits to shared files. An idea
+   the bodies account for is cleared, so this repo's text replaces the fork's
+   edit. An idea this repo skipped stays only as a work-only rule in a file
+   of its own. An edit no note has carried yet is kept on top of the new
+   text, so the next `upstream note` still finds it.
+5. Run `./install.sh` from the permanent checkout and read its output, since
+   new links and copies exist only after it runs.
+6. Commit the sync as one commit whose body ends with a
+   `Synced-from: <short hash>` trailer naming the commit here that it took.
+   The next sync and the next note start from that trailer.
+
+Then say in a few sentences what changed for me in everyday terms, which
+queued ideas were cleared, moved to a work-only file, or are still waiting to
+be sent, and anything the installer warned about. With nothing new here, say
+so and change nothing.

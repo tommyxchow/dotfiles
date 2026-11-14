@@ -43,11 +43,12 @@ repo-local.
 
 ## Upstream from work
 
-When I say upstream note or upstream from work, or paste an `UPSTREAM NOTE`:
-read `docs/upstream.md` and follow it. In the work fork, `upstream note`
-builds the note and copies it to the clipboard; here, a pasted note gets
-imported. Ideas from my work fork arrive as reworded notes, never patches, and
-nothing that names work gets committed here.
+When I say upstream note, sync from personal, or upstream from work, or paste
+an `UPSTREAM NOTE`: read `docs/upstream.md` and follow it. In the work fork,
+`upstream note` builds the note and copies it to the clipboard, and
+`sync from personal` brings the fork up to date with this repo; here, a
+pasted note gets imported. Ideas from my work fork arrive as reworded notes,
+never patches, and nothing that names work gets committed here.
 
 ## Gotchas
 
