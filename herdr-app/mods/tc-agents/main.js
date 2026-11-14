@@ -1,5 +1,4 @@
 // Agents in grouped or priority views; parents take their most urgent sub-agent's place.
-// A viewed done agent stays in Done until left.
 //
 // Modified by tc from Herdr's shipped `agents` mod (version in mod.json), under
 // the Apache License 2.0 (herdr-app/LICENSE in the dotfiles repo). Changes: the
@@ -103,7 +102,9 @@ const clean = (s) => (s ?? "").replace(/^[^\p{L}\p{N}]+/u, "").trim();
 // title; null when it only repeats the program, a path, or user@host.
 function ownTitle(raw, program) {
   const live = clean(raw);
-  const telling = live && live !== program?.name && !/^[~/]|^[A-Za-z]:\\/.test(live) && !live.includes("@") && live.toLowerCase() !== program?.key;
+  // clean() would strip a path's leading ~ or /: test the title with only its status glyph gone.
+  const path = /^[~/]|^[A-Za-z]:\\/.test((raw ?? "").replace(/^[^\p{L}\p{N}~/]+/u, ""));
+  const telling = live && live !== program?.name && !path && !live.includes("@") && live.toLowerCase() !== program?.key;
   return telling ? live : null;
 }
 const RANK = { blocked: 4, done: 3, working: 2, idle: 1 };
@@ -288,18 +289,8 @@ export default class Agents extends View {
     return this.changed[a.address]?.at ?? 0;
   }
 
-  // Looking at a done agent makes it idle; it stays with Done until you leave
-  // it rather than drop away under you. Any other change moves it at once.
-  hold(list) {
-    const cur = list.find((a) => a.focused);
-    const same = cur && cur.address === this.held?.address;
-    // Arriving, or any change but done turning idle, sets what it was.
-    if (!same || cur.status !== "idle") this.held = cur ? { address: cur.address, rank: RANK[cur.status] ?? 0 } : null;
-  }
-
   rank(a) {
-    const sawDone = a.address === this.held?.address && this.held.rank === RANK.done && a.status === "idle";
-    return sawDone ? RANK.done : RANK[a.status] ?? 0;
+    return RANK[a.status] ?? 0;
   }
 
   sortMenu(t) {
@@ -407,7 +398,6 @@ export default class Agents extends View {
     const shown = focused()?.agent;
     const now = Date.now();
     this.track(list, now);
-    this.hold(list);
     const byPriority = sort.id === "priority";
     const urgency = new Map(list.map((a) => [a.address, Math.max(this.rank(a), ...this.tree(all, a.address).map((s) => RANK[kidStatus(s.t, this.listed)] ?? 0))]));
     const rankOf = (a) => urgency.get(a.address);
