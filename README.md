@@ -123,7 +123,7 @@ in the skill files.
 | `/tldr` | A skimmable summary, answer first. Bare is the last few messages; it also takes a topic, file, URL, pasted text, `changes`, `pr` with a number or URL, or `session`. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
 | **audit** (this repo) | This **setup**. Follow `docs/audit.md`: re-examine the instructions and skills against current harnesses and recent pain, then propose. |
-| **upstream from work** (this repo) | Ideas from a work fork. Follow `docs/upstream.md`: a prompt run at work prints a reworded note, and a prompt here proposes what to adopt. |
+| **upstream from work** (this repo) | Ideas from a work fork. Follow `docs/upstream.md`: saying `upstream note` at work copies a reworded note to the clipboard, and pasting it here proposes what to adopt. |
 
 How the skills chain during a task, including `ship it` and how each step is
 sized to the change, is the "How a task runs" section of `.claude/CLAUDE.md`.
