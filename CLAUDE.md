@@ -179,7 +179,10 @@ never patches, and nothing that names work gets committed here.
   second, stale copy of the skills as `tc:` entries. If `tc:`-prefixed skills
   or `tc@synced` show up, the plugin is installed on claude.ai; uninstall it
   there rather than adding a local override. claude.ai's own skills (docx,
-  pptx, xlsx, and the rest) sync the same way and stay on purpose.
+  pptx, xlsx, and the rest) synced the same way until 2026-11-14, when
+  `syncClaudeAiSkills` went to `false` in `.claude/settings.json`: 18 of them
+  cost about 2,700 tokens of descriptions in every terminal session, and none
+  is for coding. They still work on claude.ai and in the desktop app.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`

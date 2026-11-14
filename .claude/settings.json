@@ -62,6 +62,7 @@
   "claudeMdExcludes": [
     "**/dotfiles/.claude/CLAUDE.md"
   ],
+  "syncClaudeAiSkills": false,
   "theme": "auto",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,

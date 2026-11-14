@@ -103,7 +103,9 @@ it `--scope user` (needs `claude`). Snapshot `enabledPlugins` first; restore any
 key the uninstall punched (it must not resurrect `tc@chow`). If
 `~/.claude/plugins/synced/*/tc` exists, the plugin is installed on claude.ai;
 that cannot be undone from here, so report it and leave the sync settings alone.
-claude.ai's own skills under `~/.claude/skills/synced` are expected.
+claude.ai's own skills no longer sync, since `syncClaudeAiSkills` is `false`
+in the settings file, so a `~/.claude/skills/synced` folder with skills in it
+means that key was lost.
 
 **Cursor:** `~/.cursor/plugins/local/tc/rules/global.mdc` must match
 `.claude/CLAUDE.md` plus `alwaysApply: true` and no `description`. Delete
