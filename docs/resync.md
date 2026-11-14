@@ -68,17 +68,14 @@ Read `.claude/settings.json` `enabledPlugins` **after** the pull. That list is
 what should be installed at **user** scope. `enabledPlugins` does not install;
 `claude plugin list` is the truth.
 
-For each plugin in `enabledPlugins` that is missing at user scope, including
-`ek@chow`, which is listed as `false`:
+For each plugin in `enabledPlugins` that is missing at user scope:
 
 ```bash
 claude plugin install <name> --scope user
 ```
 
-Installing enables a plugin, so after installing `ek@chow` run
-`claude plugin disable ek@chow --scope user` and check that
-`git diff .claude/settings.json` is clean. It stays installed and current, off
-until UI work turns it on.
+Installing enables a plugin, which matches the list, so
+`git diff .claude/settings.json` should be clean afterwards.
 
 Then update the ones that do not come from this working tree:
 

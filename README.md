@@ -145,15 +145,13 @@ linked:
 
 ```bash
 claude plugin install ek@chow --scope user
-claude plugin disable ek@chow --scope user
 claude plugin install typescript-lsp@claude-plugins-official --scope user
 claude plugin install frontend-design@claude-plugins-official --scope user
 ```
 
-`ek@chow` is disabled in `settings.json` by default, so its design and
-animation skills stay out of sessions that aren't doing UI work. Turn it on
-for that work with `claude plugin enable ek@chow --scope user`; that writes the
-linked `settings.json`, so keep or discard the diff afterward.
+`ek@chow` is enabled in `settings.json`, so its design and animation skills
+are there in every session, for about 2,100 tokens of descriptions. It is on
+as a trial; `CLAUDE.md` says when to keep or uninstall it.
 
 Use the CLI over the interactive `/plugin` menu: the menu installs to
 **project** scope, which pins the plugin to one repo while user-scope

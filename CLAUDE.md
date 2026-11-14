@@ -194,10 +194,12 @@ never patches, and nothing that names work gets committed here.
   section of `README.md` says why.
 
 - **`ek@chow` is upstream-only.** Never vendor, copy, or edit its skill files here.
-  Refresh it with `/plugin update ek@chow`. It stays installed but disabled in
-  `.claude/settings.json`, so its skill descriptions don't load into sessions
-  that aren't doing UI work; enabling it for that work writes this same file,
-  and turning it back off is the default to commit.
+  Refresh it with `/plugin update ek@chow`. It is on in `.claude/settings.json`
+  as a trial from 2026-11-14: left off, its skills never loaded and so never
+  helped, and on they cost about 2,100 tokens of descriptions per session.
+  After two weeks of UI work, check whether any of them fired (the Stats tab
+  of `/plugin`), then keep it on or uninstall it. Off but installed is the one
+  state not to go back to.
 
 - **The `gh`, `hc`, and `herdr-app` skills live in `~/.claude/skills`, not in
   this repo.** `gh` comes from `gh skill install`, and the other two from their
