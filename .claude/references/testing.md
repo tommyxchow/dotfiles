@@ -25,3 +25,4 @@ Read this before writing or changing a test, as the global instructions say. The
 - Each test sets up its own state and passes alone and in any order.
 - Keep auto-waiting and retrying assertions. Whole-test retries don't prove flakiness is fixed: fix the cause, and keep the repo's retry configuration unless changing it is part of the task.
 - When an existing test is wrong, say so and show why before changing it.
+- **Trim when you touch a test file.** Delete the tests in it that these rules reject, like a wording pin, a removed-value check, or an exact duplicate, and name each one in the close. A deletion with a stated reason is cleanup, not the loosening the global rule forbids. When the trim would outgrow the change, list it as a follow-up instead.
