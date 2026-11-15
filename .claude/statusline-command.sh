@@ -241,20 +241,22 @@ if [ -n "$used_raw" ] && [ "$used_raw" -gt 0 ] && [ -n "$size_raw" ] && [ "$size
   fi
 fi
 
-# In the Herdr desktop app, publish the agent's effort and context as labels on
-# its terminal, so the agents list shows them and hq reads them with `hc get`.
+# In the Herdr desktop app, publish the agent's model, effort, and context as
+# labels on its terminal, so the agents list shows them and hq reads them with
+# `hc get`. The model is the live one, so it follows `/model`.
 # The model itself never sees this line. Context goes out as `ctxhigh` instead
 # of `ctx` once it reaches the orange point above, so the threshold lives here
 # rather than in the mod. Labels have no TTL; they end with the terminal, and
 # `key=` clears one. It runs in the background because the statusline must
 # never wait on hc.
 if [ -n "$HC_TERMINAL_ID" ] && command -v hc >/dev/null 2>&1; then
-  labels=("effort=${effort}" "ctx=" "ctxhigh=")
+  [ "$model" = "--" ] && label_model="" || label_model="$model"
+  labels=("model=${label_model}" "effort=${effort}" "ctx=" "ctxhigh=")
   if [ -n "$pct" ]; then
     if [ "$pct" -ge "$ctx_orange" ]; then
-      labels=("effort=${effort}" "ctxhigh=${pct}% ${ctxtext}" "ctx=")
+      labels=("model=${label_model}" "effort=${effort}" "ctxhigh=${pct}% ${ctxtext}" "ctx=")
     else
-      labels=("effort=${effort}" "ctx=${pct}% ${ctxtext}" "ctxhigh=")
+      labels=("model=${label_model}" "effort=${effort}" "ctx=${pct}% ${ctxtext}" "ctxhigh=")
     fi
   fi
   hc label "$HC_TERMINAL_ID" "${labels[@]}" >/dev/null 2>&1 &

@@ -45,7 +45,7 @@ async function contextWindow(model) {
   return windows.get(key);
 }
 
-const CLEARED = ["effort=", "ctx=", "ctxhigh="];
+const CLEARED = ["model=", "effort=", "ctx=", "ctxhigh="];
 
 // Null means the read failed, so the labels already there stay put.
 async function labelsFor(sessionID) {
@@ -60,15 +60,16 @@ async function labelsFor(sessionID) {
   // the current labels; an empty session has nothing to show yet.
   if (!last) return messages.length ? null : CLEARED;
   const effort = `effort=${last.model?.variant ?? ""}`;
+  const model = `model=${last.model?.modelID ?? ""}`;
   const window = last.model ? await contextWindow(last.model) : undefined;
   // `input` excludes cached tokens here. This is the sum OpenCode's footer shows.
   const { input = 0, output = 0, reasoning = 0, cache = {} } = last.tokens;
   const used = input + output + reasoning + (cache.read ?? 0) + (cache.write ?? 0);
-  if (!window || !used) return [effort, "ctx=", "ctxhigh="];
+  if (!window || !used) return [model, effort, "ctx=", "ctxhigh="];
   const pct = Math.min(100, Math.floor((used * 100) / window));
   const label = `${pct}% ${tok(used)}/${tok(window)}`;
-  if (pct >= CTX_HIGH_PCT && window >= CTX_HIGH_MIN_WINDOW) return [effort, `ctxhigh=${label}`, "ctx="];
-  return [effort, `ctx=${label}`, "ctxhigh="];
+  if (pct >= CTX_HIGH_PCT && window >= CTX_HIGH_MIN_WINDOW) return [model, effort, `ctxhigh=${label}`, "ctx="];
+  return [model, effort, `ctx=${label}`, "ctxhigh="];
 }
 
 // OpenCode 2's TUI calls `setup` and runs the function it returns on dispose.

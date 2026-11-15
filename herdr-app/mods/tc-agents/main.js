@@ -6,9 +6,10 @@
 // line that never comes and goes; that line's left end says what the agent
 // reports it's doing while it works or waits on you, and otherwise where it
 // runs (its tab and space, or a paneless hq worker's branch and uncommitted
-// lines, since it has no space row of its own); its right end keeps the
-// worker's PR badge, the agent's context as a fill bar and percent, and the
-// time label, which drops first in a narrow sidebar; a row leading with the
+// lines, since it has no space row of its own), and when it has neither, the
+// model and effort the agent runs on, like "Fable · medium"; its right end
+// keeps the worker's PR badge, the agent's context as a fill bar and percent,
+// and the time label, which drops first in a narrow sidebar; a row leading with the
 // agent's own title; a sub-agent with its own row not repeated under its
 // parent; a row without a space header leading with the agent's own name; and
 // hover tooltips in plain words for the context, the time label, the badge,
@@ -37,6 +38,16 @@ function ctxLabel(t, k) {
 }
 
 const activity = (k) => (typeof k?.report === "string" ? k.report : k?.report?.msg) || null;
+
+// "Fable · medium" from the model and effort labels the dotfiles status line
+// publishes (the OpenCode plugin too); either part drops out when unknown.
+function modelLine(k) {
+  const raw = k?.labels?.model;
+  // Claude names like "Fable 5.2" read as the family; anything else shows as given.
+  const family = raw?.match(/fable|opus|sonnet|haiku/i)?.[0].toLowerCase();
+  const model = family ? family[0].toUpperCase() + family.slice(1) : raw;
+  return [model, k?.labels?.effort].filter(Boolean).join(" · ") || null;
+}
 
 // Folders of live paneless workers on this computer: the only rows that show
 // git, since an agent with a pane has its space's row for that. Another
@@ -229,8 +240,9 @@ export default class Agents extends View {
 
   // The one line under a name. Its left end says what the agent is doing while
   // it works or waits on you, and otherwise where it runs: a worker's branch
-  // and uncommitted lines, or a row's tab and space. Its right end keeps the
-  // worker's PR badge, the context and the age. Every row has exactly this
+  // and uncommitted lines, or a row's tab and space, and failing both, its
+  // model and effort, which also fills a working report with no sentence yet.
+  // Its right end keeps the worker's PR badge, the context and the age. Every row has exactly this
   // line, even when it has nothing to say, so a row never changes height and nothing below it moves when an
   // agent starts or stops. `rail` draws tree lines in front of a sub-agent's.
   extras(t, k, status, indent, rail = [], tail = {}) {
@@ -244,9 +256,12 @@ export default class Agents extends View {
     // A sub-agent with a row of its own has both a branch and a tab.
     if (tail.where) where.push(div().min_w(0).truncate().child(tail.where));
     const doing = status === "working" || status === "blocked" ? activity(k) : null;
+    const model = !doing && !where.length ? modelLine(k) : null;
     const left = doing
       ? [div().min_w(0).truncate().text_color(status === "blocked" ? t.blocked : t.muted).child(doing)]
-      : where.flatMap((b, i) => (i ? [div().flex_none().child("·"), b] : [b]));
+      : model
+        ? [div().min_w(0).truncate().child(model)]
+        : where.flatMap((b, i) => (i ? [div().flex_none().child("·"), b] : [b]));
     // The badge gives way before the sentence does: it truncates, and the left end keeps a floor.
     const badge = g.pr ? div().id(`badge-${id}`).min_w(0).truncate().text_color(badgeColor(t, g.pr)).tooltip(badgeTip(g.pr)).child(g.pr) : null;
     const right = [badge, ctxLabel(t, k), tail.when].filter(Boolean);
