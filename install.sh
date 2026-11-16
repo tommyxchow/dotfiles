@@ -134,8 +134,13 @@ done
 # reloads a mod only when a file in its own folder changes; badge.mjs is
 # linked, since node reads it fresh each run.
 HERDR_APP_DIR="${HERDR_APP_HOME:-$HOME/.config/herdr-app}"
+# True when version $1 sorts before $2. An unknown version is never older.
+version_older() {
+  [ -n "$1" ] && [ -n "$2" ] && [ "$1" != "$2" ] &&
+    [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -n 1)" = "$1" ]
+}
 copy_herdr_app_mods() {
-  local dir name file src target
+  local dir name file src target app_version mod_version
   if ! command -v herdr-app >/dev/null 2>&1; then
     printf "  SKIP  herdr-app mods (herdr-app not on PATH)\n"
     # Still repoint the badge link in each mod folder an earlier run made, so an
@@ -147,9 +152,27 @@ copy_herdr_app_mods() {
     done
     return
   fi
+  app_version="$(herdr-app --version 2>/dev/null | tr -d '\r' | awk '{print $NF}')"
   for dir in "$DOTFILES"/herdr-app/mods/*/; do
     name="$(basename "$dir")"
+    mod_version="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "${dir}mod.json")"
+    # A copy uses what Herdr added up to the version it was ported from, so an
+    # older app can't load it. What is installed stays until Herdr updates,
+    # and a mod that was never installed gets no folder, which the app would
+    # report as a mod without a main.js.
+    if version_older "$app_version" "$mod_version"; then
+      if [ -f "$HERDR_APP_DIR/mods/$name/main.js" ]; then
+        printf "  WARN  %s is ported from Herdr %s and this app is %s; update Herdr and re-run (kept the installed copy)\n" "$name" "$mod_version" "$app_version"
+        link "herdr-app/badge.mjs" "$HERDR_APP_DIR/mods/$name/badge.mjs"
+      else
+        printf "  WARN  %s is ported from Herdr %s and this app is %s; update Herdr and re-run (not installed)\n" "$name" "$mod_version" "$app_version"
+      fi
+      continue
+    fi
     mkdir -p "$HERDR_APP_DIR/mods/$name"
+    if version_older "$mod_version" "$app_version"; then
+      printf "  NOTE  %s is ported from Herdr %s and this app is %s; docs/resync.md says how to port\n" "$name" "$mod_version" "$app_version"
+    fi
     for file in main.js mod.json; do
       src="$DOTFILES/herdr-app/mods/$name/$file"
       target="$HERDR_APP_DIR/mods/$name/$file"
@@ -419,6 +442,35 @@ check_reference_paths() {
   fi
 }
 check_reference_paths
+
+# On Amazon Bedrock and Google Cloud's Agent Platform the sonnet and haiku
+# aliases resolve to older models than the Anthropic API gives, so lookups and
+# cheap workers would quietly run on them. The ids differ per provider, so
+# each machine pins its own, in its environment or in the env block of its
+# settings file. A session that runs this script passes on whatever its
+# settings files set, managed ones included; a bare shell only shows its own
+# exports, so no line there doesn't mean pinned.
+check_model_pins() {
+  local settings="$DOTFILES/.claude/settings.json"
+  local provider="" missing="" var
+  for var in CLAUDE_CODE_USE_BEDROCK CLAUDE_CODE_USE_VERTEX; do
+    if [ -n "${!var}" ] || grep -q "\"$var\"" "$settings" 2>/dev/null; then
+      provider="$var"
+    fi
+  done
+  [ -n "$provider" ] || return 0
+  for var in ANTHROPIC_DEFAULT_SONNET_MODEL ANTHROPIC_DEFAULT_HAIKU_MODEL; do
+    if [ -z "${!var}" ] && ! grep -q "\"$var\"" "$settings" 2>/dev/null; then
+      missing="$missing $var"
+    fi
+  done
+  if [ -n "$missing" ]; then
+    printf "  WARN  %s is set without%s; sonnet and haiku resolve to older models there, so pin each to the newest id your provider lists\n" "$provider" "$missing"
+  else
+    printf "  OK    sonnet and haiku are pinned for %s\n" "$provider"
+  fi
+}
+check_model_pins
 
 printf "\n"
 printf "Done.\n"

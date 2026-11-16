@@ -9,7 +9,9 @@ every platform. See `README.md` for the full mapping.
 before calling a change here verified, and read its output: it validates every
 skill description against the 1024-character spec cap and `.claude/CLAUDE.web.md`
 against grok.com's 4000-character limit, reports every link target, and rewrites
-Cursor's copy of the global file. A `WARN` line is a failing check.
+Cursor's copy of the global file. It also warns when this machine's provider
+needs the small models pinned, and when its Herdr is older than the sidebar
+mods. A `WARN` line is a failing check.
 
 It is a gate with side effects, since it repoints the machine's live links, so
 it runs from the permanent checkout and never from a worktree.

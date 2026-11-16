@@ -111,7 +111,10 @@ ever pushed to this repo.
    of its own. An edit no note has carried yet is kept on top of the new
    text, so the next `upstream note` still finds it.
 5. Run `./install.sh` from the permanent checkout and read its output, since
-   new links and copies exist only after it runs.
+   new links and copies exist only after it runs. A `WARN` about this machine,
+   like model names left unpinned on its provider or a Herdr older than the
+   sidebar mods, gets fixed on the machine or in the fork's own settings
+   before the sync is committed.
 6. Commit the sync as one commit whose body ends with a
    `Synced-from: <short hash>` trailer naming the commit here that it took.
    The next sync and the next note start from that trailer.
