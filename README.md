@@ -165,8 +165,9 @@ this repo does all of this.
 ### Cursor
 
 The installer links editor settings and writes the local `tc` plugin above.
-Enable **Rules, Skills, Subagents → Include third-party Plugins, Skills, and
-other configs** so Cursor also loads installed Claude plugins and skills. Cursor
+Cursor also loads installed Claude plugins and skills while **Cursor Settings
+→ Agents → Third-Party Imports → Include Third-Party Plugins, Skills, and Other
+Configs** is on, which is its default. Cursor
 does not run Claude's marketplace install, so install those plugins in Claude
 Code first.
 
@@ -197,7 +198,7 @@ plugins, so `ek` is Claude Code-only.
 The Herdr desktop app runs terminals in herdr-core (`hc`) and sets
 `HC_TERMINAL_ID`. A session-start hook says so, and `.claude/CLAUDE.md` then
 tells the agent to read `.claude/references/herdr.md` on its first turn. That
-file has the agents name their tabs, start dev servers in a split with the
+file has the agents start dev servers in a split with the
 port in the command, and make worktrees under `~/.herdr/worktrees/<repo>/`
 themselves, copying the gitignored env files over by hand. Dependencies get
 installed on first need.

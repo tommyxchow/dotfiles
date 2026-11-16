@@ -29,6 +29,16 @@ bots review every push, or that someone else reads the PR needs a solo path too.
 This repo is public, so nothing here names an employer, an internal repo, or a
 work-only tool.
 
+## Sessions do the work
+
+I use this repo only through agent sessions: I ask about it, or say resync,
+audit, upstream note, or sync from personal. So a step belongs in one of two
+places. The installer does or checks whatever is mechanical, and prints a
+`WARN` a session can act on. A playbook tells the session to do everything
+else, including what takes a lookup or a judgment call. Don't write a step for
+me to run by hand; when only I can do it, like a sign-in or a paste into a web
+app, say so in the close.
+
 ## Resync
 
 When I say resync, update this machine, sync this machine, or catch this machine up: read
@@ -147,6 +157,11 @@ never patches, and nothing that names work gets committed here.
   load; see the `tc` gotcha below), and do not install `mattpocock-skills` from
   the official marketplace (its `grill-me` collides with ours).
 
+- **Claude Code and OpenCode 2 set the bar (2026-11-15).** A rule or feature
+  has to work in those two. Cursor and Grok Build keep reading the same
+  files, but they no longer limit the design, so a rule that must never bend
+  may also become a Claude Code hook, with its text kept for OpenCode.
+
 - **Keep shared skills portable Agent Skills** (`name` and `description`
   required). Claude Code-only `context` / `agent` / `background` are fine where
   a skill should fork, and `disable-model-invocation` is read by Claude Code,
@@ -207,8 +222,9 @@ never patches, and nothing that names work gets committed here.
   Refresh it with `/plugin update ek@chow`. It is on in `.claude/settings.json`
   as a trial from 2026-11-14: left off, its skills never loaded and so never
   helped, and on they cost about 2,100 tokens of descriptions per session.
-  After two weeks of UI work, check whether any of them fired (the Stats tab
-  of `/plugin`), then keep it on or uninstall it. Off but installed is the one
+  After two weeks of UI work, check whether any of them fired (the skill
+  report in `docs/audit.md` section 2 lists each skill's uses), then keep it
+  on or uninstall it. Off but installed is the one
   state not to go back to.
 
 - **The `gh`, `hc`, and `herdr-app` skills live in `~/.claude/skills`, not in
@@ -305,7 +321,7 @@ never patches, and nothing that names work gets committed here.
   app, because no harness shows `HC_TERMINAL_ID` in context; a live trial showed
   the first-turn rule never fired without it, and the other harnesses check the
   variable with a command instead. An OpenCode 2 plugin that adds the same note
-  (2026-09-27): too much machinery for a tab name, and OpenCode on Grok 4.6
+  (2026-09-27): too much machinery for one first-turn read, and OpenCode on Grok 4.6
   skipping the check is accepted. Moving the whole coding workflow into an
   on-demand skill (2026-09-27): coding is most sessions, so they'd save nothing,
   and the always-loaded file is the only text every harness re-injects after

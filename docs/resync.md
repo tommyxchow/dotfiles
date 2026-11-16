@@ -50,7 +50,10 @@ script linked beside the mods. The `gh`, `hc`, and `herdr-app` skills are not in
 patches only that file's non-default keys, because Grok writes runtime state
 into it, so it is never symlinked. It seeds `~/.grok/lsp.json` the same way but
 never overwrites an existing one, and warns if `typescript-language-server` is
-not on PATH. Re-running is safe. This is the step that makes Claude Code,
+not on PATH. Act on what it warns about yourself: add the `~/.local/bin`
+export line it prints to the shell profile, and pin the model names it says
+are unpinned in this machine's settings, looking the ids up in the provider's
+model list. Re-running is safe. This is the step that makes Claude Code,
 Cursor, Grok Build, and OpenCode 2 pick up the instructions and every skill
 under `plugins/tc/skills` on a new machine.
 
@@ -255,7 +258,7 @@ the app updated, and skip either one when its binary is not on PATH:
 
 ```bash
 mkdir -p ~/.claude/skills/hc && {
-  printf -- '---\nname: hc\ndescription: "%s"\n---\n\n' "Control herdr-core with hc, the runtime behind the Herdr desktop app: start, read, wait on, message, and close terminals and agents. Use only inside the Herdr desktop app (HC_TERMINAL_ID is set), when the herdr rules or hq need a command beyond the tab rename."
+  printf -- '---\nname: hc\ndescription: "%s"\n---\n\n' "Control herdr-core with hc, the runtime behind the Herdr desktop app: start, read, wait on, message, and close terminals and agents. Use only inside the Herdr desktop app (HC_TERMINAL_ID is set), when the herdr rules or hq need a command."
   hc --skill
 } > ~/.claude/skills/hc/SKILL.md
 

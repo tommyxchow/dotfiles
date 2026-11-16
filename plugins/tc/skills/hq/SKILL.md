@@ -7,6 +7,8 @@ argument-hint: "[<tasks to dispatch> | status]"
 
 # HQ
 
+This file is longer than what survives a compaction, since Claude Code keeps only the first part of a loaded skill. After any compaction or resume, load this skill again, or read this file from its path, before you act on a worker.
+
 Run this skill only when I typed `/hq`, picked it from OpenCode's skills menu, or asked for HQ mode in so many words. If you loaded it any other way, stop and tell me instead of acting as HQ.
 
 You coordinate; the workers build. Each task runs in its own worker agent, in its own worktree, under the same global instructions a session I opened would follow. Your job is to start those workers, keep track of them, bring me the decisions only I can make, and tell me where everything stands.

@@ -28,13 +28,13 @@ Page fetches stay in child windows, and the coordinator keeps only the section 4
 
 For example, one claim ("does `Map` use `has`?") is one leaf. A pasted plan with independent facts (HGIG vs DTM, Fine Tune Dark Areas with HGIG, whether a C3 needs ColorControl) gets one leaf per fact, all spawned in the same turn.
 
-## 1. Pick the mode (don't stall asking "what to review")
+## 1. Pick the mode
 
 - **Bare `vet` / `research` / search / look this up / cross-check / is this still true**: check the last response or the named topic using section 3, and give the short answer from section 4.
 - **"is anyone else hitting this" / known issue / workaround**: follow the known-issue path in section 3.
 - **Pasted plan from another model** ("chatgpt said", "wdyt", "what do you think"): audit the claims in the paste. Give the same short answer unless several claims are wrong or uncertain.
 - **"vet" attached to a forward task** ("build X and vet it", "what's the best Y"): do the task with research behind it. Check each checkable fact against a current source before asserting it, and cite inline as you go.
-- **Ambiguous**: check the last checkable claims if the last turn asserted a fact, or the last code change if the user means correctness. Ask only if there is genuinely nothing to act on.
+- **Ambiguous**: check the last checkable claims if the last turn asserted a fact. If the user means whether code is correct, say that is `review` rather than searching. Ask only if there is genuinely nothing to act on.
 - **`quick` / "quick vet" / "quick check"**: check the claims that would change what we do next, up to three, with the named one first. Spawn no leaves. For each claim, try section 2's local sources first, and stop there if they settle it. Otherwise, run one search and fetch the canonical page, plus one more page only when that page is partial or ambiguous. If the claim is still unsettled after that, say so and stop. A quick vet never rules "not documented", since proving an absence takes the full budget. Open the verdict line with "Quick vet" so nothing counts it as the full check.
 - **`deep` / "deeper" / "dig deeper" / "vet thoroughly" / "research thoroughly"**: the slow tier, for when a wrong answer costs more than the wait. It widens section 3's budget, not the answer's shape. As coordinator, spawn leaves even for a single claim, split by angle: the official docs, the changelog and releases, and the project's issues plus independent reports. Every fact needs two independent sources that agree, and when they disagree, report the disagreement rather than picking one. Issues and forums count as evidence of real-world behavior, never as the source for a fact. "Not documented" needs the vendor's docs, source, and releases checked, not just two searches. Each leaf may take about twice the normal fetches before it stops. Open the verdict line with "Deep vet", and after the misses add one line on where sources disagreed and one on what is still uncertain.
 

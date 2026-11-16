@@ -6,6 +6,8 @@ argument-hint: "[check | ready | rebase | <focus or pasted feedback>]"
 
 # PR
 
+This file is longer than what survives a compaction, since Claude Code keeps only the first part of a loaded skill. After any compaction or resume, load this skill again, or read this file from its path, before you open, update, or mark a PR.
+
 This skill publishes and maintains the task's acceptance evidence in a PR. Read the repo's PR template, `AGENTS.md`, `CONTRIBUTING.md`, and review config first, because their requirements win over the defaults here.
 
 `$ARGUMENTS` holds an optional mode first (`check`, `ready`, `rebase`), then focus text or pasted feedback. A bare `pr` decides what to do by state.
@@ -121,7 +123,7 @@ Read [references/restack.md](references/restack.md) only when this mode runs, wh
 
 Write the body in the global External writing voice, sized to the change. When the repo has a PR template, its order and headings win, and you fill its sections with the content below. A small PR gets a summary plus a test plan that carries the evidence. The review table and the criteria list are worth including on a PR with a multi-item ledger or several areas to read. Omit empty sections rather than writing "N/A," and fold long details inside `<details>`.
 
-1. **Summary.** Give a short explanation in app terms, plus `Closes #N` or a ticket link when applicable. For a change with a mechanism worth knowing, follow it with how it works: the pieces and the flow between them in three to five sentences, a small diagram when the flow has more than two steps, and the one snippet that carries the idea, so the reader has the model before the diff.
+1. **Summary.** Give a short explanation in app terms, plus `Closes #N` or a ticket link when applicable. For a change with a mechanism worth knowing, follow it with how it works: the pieces and the flow between them in a short paragraph, a small diagram when the flow has more than two steps, and the one snippet that carries the idea, so the reader has the model before the diff.
 2. **What to review, for substantial changes.** Group the rows by concern, not per file, with the worst risk first, and keep to about eight rows at most, even on a big PR. Take the sizes from `git diff --stat <base>...HEAD`, and put a total line at the bottom. The read/skim/skip call is the same split `review` makes when it triages.
 
    | Area | What changed | Size | Review |
