@@ -1,4 +1,7 @@
 *.bak
 .claude/worktrees/
+# `herdr-app check` writes editor type files into the mod folder it loads.
+/herdr-app/mods/*/gpui-kit.d.ts
+/herdr-app/mods/*/jsconfig.json
 # OpenCode 2 only reads AGENTS.md. The installer links the root file to CLAUDE.md.
 /AGENTS.md

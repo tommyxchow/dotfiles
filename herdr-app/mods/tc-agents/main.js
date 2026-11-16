@@ -109,15 +109,19 @@ function toggleSidebar() {
   run("layout.resize", { id: "sidebar", px: narrow() ? (shared("sidebar.width") ?? 268) : window()?.platform === "macos" ? 76 : 44 });
 }
 
-const clean = (s) => (s ?? "").replace(/^[^\p{L}\p{N}]+/u, "").trim();
+// Drops what an agent puts before its title: a status glyph or spinner and the separator
+// after it ("✦  Working", "⠋ - Thinking"), and Codex's blinking "[ ! ] " / "[ . ] " mark.
+// Stops at an opening bracket or quote, so a title that starts with one ("[web] login") keeps it.
+const clean = (s) => (s ?? "").replace(/^[^\p{L}\p{N}\p{Ps}\p{Pi}]+/u, "").replace(/^\[ [!.] \] /, "").trim();
 
 // The terminal's title when it names the work, like Claude Code's own session
-// title; null when it only repeats the program, a path, or user@host.
-function ownTitle(raw, program) {
+// title; null when it only repeats the program, its terminal's address, a path,
+// or user@host.
+function ownTitle(raw, program, address) {
   const live = clean(raw);
   // clean() would strip a path's leading ~ or /: test the title with only its status glyph gone.
   const path = /^[~/]|^[A-Za-z]:\\/.test((raw ?? "").replace(/^[^\p{L}\p{N}~/]+/u, ""));
-  const telling = live && live !== program?.name && !path && !live.includes("@") && live.toLowerCase() !== program?.key;
+  const telling = live && live !== address && live !== program?.name && !path && !live.includes("@") && live.toLowerCase() !== program?.key;
   return telling ? live : null;
 }
 const RANK = { blocked: 4, done: 3, working: 2, idle: 1 };
@@ -172,8 +176,10 @@ export default class Agents extends View {
     if (props()?.sortMenu) return;
     this.folded = new Set();
     // Each agent's last state and when it changed (ms), kept across restarts.
-    this.changed = JSON.parse(localStorage.getItem("changed") ?? "{}");
-    this.pendingPins = JSON.parse(localStorage.getItem("pins") ?? "[]");
+    try { this.changed = JSON.parse(localStorage.getItem("changed") ?? "{}"); } catch { this.changed = {}; }
+    if (!this.changed || typeof this.changed !== "object" || Array.isArray(this.changed)) this.changed = {};
+    try { this.pendingPins = JSON.parse(localStorage.getItem("pins") ?? "[]"); } catch { this.pendingPins = []; }
+    if (!Array.isArray(this.pendingPins)) this.pendingPins = [];
     if (!this.pendingPins.length) localStorage.removeItem("pins");
     this.migratingPins = new Set();
     this.git = {};
@@ -481,7 +487,7 @@ export default class Agents extends View {
       const tab = tabs.find(tab => tab.id === a.tab);
       return tab?.named && tab.name !== a.program?.name ? tab.name : null;
     };
-    const detail = new Map(list.map(a => [a.address, ownTitle(a.title, a.program) ?? namedTab(a)]));
+    const detail = new Map(list.map(a => [a.address, ownTitle(a.title, a.program, a.address) ?? namedTab(a)]));
     const seen = {};
     for (const a of list) { const k = `${a.space_name}\u0000${detail.get(a.address) ?? ""}`; seen[k] = (seen[k] ?? 0) + 1; }
     for (const a of list) {
