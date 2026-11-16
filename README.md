@@ -48,6 +48,7 @@ dotfiles checkout.
 | `opencode/tc-context` | `~/.config/opencode/tc-context` (sets the desktop app's context labels for OpenCode 2) |
 | `bin/wait-for` | `~/.local/bin/wait-for` (agents wait on a URL with a deadline; the installer warns when that folder is not on PATH) |
 | `herdr-app/mods/*` | copied into `~/.config/herdr-app/mods/<name>`, with `herdr-app/badge.mjs` linked beside them (the Herdr desktop app's sidebar) |
+| `herdr-app/themes/*` | copied into `~/.config/herdr-app/themes` (Flexoki dark and light, converted from the Ghostty versions) |
 | `.claude/statusline-command.sh` | `~/.claude/statusline-command.sh` (design notes in `docs/statusline.md`) |
 
 Cursor's rule file needs `alwaysApply: true` frontmatter that the shared file

@@ -164,6 +164,18 @@ copy_herdr_app_mods() {
     done
     link "herdr-app/badge.mjs" "$HERDR_APP_DIR/mods/$name/badge.mjs"
   done
+  # Themes are copied like the mods; a linked theme reloading is untested.
+  mkdir -p "$HERDR_APP_DIR/themes"
+  for src in "$DOTFILES"/herdr-app/themes/*.json; do
+    name="$(basename "$src")"
+    target="$HERDR_APP_DIR/themes/$name"
+    if cmp -s "$src" "$target"; then
+      printf "  OK    %s\n" "$target"
+    else
+      cp "$src" "$target"
+      printf "  COPY  %s -> herdr-app/themes/%s\n" "$target" "$name"
+    fi
+  done
 }
 copy_herdr_app_mods
 
