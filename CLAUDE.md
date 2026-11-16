@@ -43,6 +43,8 @@ app, say so in the close.
 
 When I say resync, update this machine, sync this machine, or catch this machine up: read
 `docs/resync.md` and follow it. That playbook is repo-local, not a global skill.
+In the work fork, a sync or resync that names dotfiles or my personal repo as
+the source is `sync from personal` instead, under Upstream from work below.
 
 Refreshing a **product** repo (packages, framework migrations, shadcn) is the
 `refresh` skill. There, resync means only a `git pull`.
@@ -59,8 +61,9 @@ When I say upstream note, sync from personal, or upstream from work, or paste
 an `UPSTREAM NOTE`: read `docs/upstream.md` and follow it. In the work fork,
 `upstream note` builds the note and copies it to the clipboard, and
 `sync from personal`, or any phrase about catching the fork up with my
-personal dotfiles repo, like upstream from dotfiles, brings the fork up to
-date with this repo; here, a pasted note gets imported. Ideas from my work fork arrive as reworded notes,
+personal dotfiles repo, like sync from dotfiles or resync with dotfiles,
+brings the fork up to date with this repo; here, a pasted note gets
+imported. I say upstream only when I want a note. Ideas from my work fork arrive as reworded notes,
 never patches, and nothing that names work gets committed here.
 
 ## Gotchas
