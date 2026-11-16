@@ -11,8 +11,11 @@ work to take the result back.
 
 Which part of this file applies depends on where the session runs. A checkout
 whose `origin` is not `github.com/tommyxchow/dotfiles` is the fork, and the
-two phrases only mean something there. In this repo, a pasted `UPSTREAM NOTE`
-block means import.
+two phrases only mean something there. I don't always say them exactly: in the
+fork, any phrase about catching it up with this repo, like "upstream from
+dotfiles" or "sync from dotfiles", means `sync from personal`, and only
+`upstream note` builds a note. In this repo, a pasted `UPSTREAM NOTE` block
+means import.
 
 ## Keep the fork easy to read
 

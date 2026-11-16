@@ -58,8 +58,9 @@ repo-local.
 When I say upstream note, sync from personal, or upstream from work, or paste
 an `UPSTREAM NOTE`: read `docs/upstream.md` and follow it. In the work fork,
 `upstream note` builds the note and copies it to the clipboard, and
-`sync from personal` brings the fork up to date with this repo; here, a
-pasted note gets imported. Ideas from my work fork arrive as reworded notes,
+`sync from personal`, or any phrase about catching the fork up with my
+personal dotfiles repo, like upstream from dotfiles, brings the fork up to
+date with this repo; here, a pasted note gets imported. Ideas from my work fork arrive as reworded notes,
 never patches, and nothing that names work gets committed here.
 
 ## Gotchas
