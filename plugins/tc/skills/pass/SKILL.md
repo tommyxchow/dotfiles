@@ -46,8 +46,7 @@ A taste call is a change that swaps one reasonable choice for another, where not
 
 Some changes look like taste and aren't, so they're still fixed: anything with a concrete failure scenario, even in copy (a typo, a wrong count, copy that contradicts what the code does, an error that doesn't say what went wrong, a missing error message); anything the repo already decides, through lint, an existing naming pattern, or a `REVIEW.md` rule; and an internal name, placeholder or not, which `polish` renames on its own. A name this same change introduces, whose every caller is in this change too, counts as internal even when it is exported, since nothing outside the diff sees it yet.
 
-Taste calls reach a pass from review's "Your call" tail, from polish's summary, and from step 1's findings. The code as written stands, and the slice still commits. When `loop me in` is on, ask them with the question tool before step 5's check, and apply what the user picks, so the check covers it.
-
+Taste calls reach a pass from review's "Your call" tail, from polish's summary, and from step 1's findings. The code as written stands, and the slice still commits.
 ## Report
 
 Follow the global Communication and Session flow rules. Open with `✅ Ready to commit.` or `❌ Not yet.` and what the slice does in app terms. A quick run says "quick" in that line. Mention meaningful fixes, verification results, and anything outstanding or unverified that affects confidence. Include the commit hash when you committed.
