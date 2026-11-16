@@ -162,6 +162,14 @@ never patches, and nothing that names work gets committed here.
   files, but they no longer limit the design, so a rule that must never bend
   may also become a Claude Code hook, with its text kept for OpenCode.
 
+- **`.claude/agents/reviewer.md` is the final review as a Claude Code agent.**
+  The installer links it into `~/.claude/agents`. It fixes what the `review`
+  skill otherwise asks the building session to remember: the session's model,
+  `high` effort, the `review` skill preloaded, and no Edit or Write tool. It has no
+  body on purpose, since a body would replace Claude Code's own system
+  prompt. OpenCode 2 reads no such file, so the skill keeps the same asks in
+  words.
+
 - **Keep shared skills portable Agent Skills** (`name` and `description`
   required). Claude Code-only `context` / `agent` / `background` are fine where
   a skill should fork, and `disable-model-invocation` is read by Claude Code,

@@ -130,6 +130,14 @@ for skill_dir in "$DOTFILES"/plugins/tc/skills/*/; do
   link "plugins/tc/skills/$name" "$HOME/.claude/skills/$name"
 done
 
+# Claude Code agent definitions. Linked one file at a time, so agents made on
+# this machine can sit in the same folder.
+for agent in "$DOTFILES"/.claude/agents/*.md; do
+  [ -f "$agent" ] || continue
+  name="$(basename "$agent")"
+  link ".claude/agents/$name" "$HOME/.claude/agents/$name"
+done
+
 # The Herdr desktop app's sidebar mods. Copied, not linked, because the app
 # reloads a mod only when a file in its own folder changes; badge.mjs is
 # linked, since node reads it fresh each run.
@@ -217,7 +225,7 @@ sweep() {
     fi
   done
 }
-sweep "$HOME"/.claude/* "$HOME"/.claude/skills/* "$HOME"/.agents/skills/* \
+sweep "$HOME"/.claude/* "$HOME"/.claude/skills/* "$HOME"/.claude/agents/* "$HOME"/.agents/skills/* \
   "$HOME"/.config/opencode/* "$HOME"/.config/opencode/skills/* "$HOME"/.config/opencode/commands/* \
   "$HOME"/.codex/* "$HERDR_APP_DIR"/mods/*/*
 for dir in "$HOME/.agents/skills" "$HOME/.agents" "$HOME/.config/opencode/skills" "$HOME/.config/opencode/commands"; do

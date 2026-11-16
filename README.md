@@ -44,6 +44,7 @@ dotfiles checkout.
 | `.claude/references/` | `~/.claude/references` (situational rules the global file tells agents to read) |
 | `CLAUDE.md` | `AGENTS.md` in this repo (OpenCode 2 project instructions; installer-only) |
 | `plugins/tc/skills/*` | `~/.claude/skills/<name>` (OpenCode 2 reads this path too) |
+| `.claude/agents/*.md` | `~/.claude/agents/<name>.md` (Claude Code agent definitions; `reviewer` is the fresh-context final review) |
 | `opencode/cli.json` | `~/.config/opencode/cli.json` |
 | `opencode/tc-context` | `~/.config/opencode/tc-context` (sets the desktop app's context labels for OpenCode 2) |
 | `bin/wait-for` | `~/.local/bin/wait-for` (agents wait on a URL with a deadline; the installer warns when that folder is not on PATH) |
