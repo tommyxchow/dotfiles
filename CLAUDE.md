@@ -359,8 +359,11 @@ never patches, and nothing that names work gets committed here.
   tools. From the 2026-09-27 hq review: renaming `hq`, which stays. Making the
   fresh-context final review a judgment call like the other steps: it stays
   fixed, since on a small diff it is one read and it is the step most likely
-  to catch something. A plain "go" opening the draft PR in a repo that isn't
-  mine: it commits on a branch and offers the PR, and `ship it` opens it. From
+  to catch something. A plain "go" opening the draft PR in a repo that is new
+  to me or belongs to someone outside: there it commits on a branch and
+  offers the PR, and `ship it` opens it. Where I work regularly the draft
+  opens on its own, which I changed on 2026-11-15, since I act freely on
+  familiar ground and want a brief check anywhere else. From
   the 2026-09-27 audit: cutting the global file's second good/bad example
   pair, since the two show different shapes, a close and a why answer; cutting
   the readiness line, since it duplicates the `pr` description only where a
