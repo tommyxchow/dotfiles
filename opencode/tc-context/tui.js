@@ -1,8 +1,8 @@
-// In the Herdr desktop app, publish this OpenCode session's effort and context
-// use as labels on its terminal, the same `effort`, `ctx`, and `ctxhigh` values
-// .claude/statusline-command.sh writes for Claude Code. The tc-agents sidebar
-// mod draws its context bar from them, and an OpenCode hq reads its own `ctx`
-// with `hc get`.
+// In the Herdr desktop app, publish this OpenCode session's model, effort, and
+// context use as labels on its terminal, the same `model`, `effort`, `ctx`, and
+// `ctxhigh` values .claude/statusline-command.sh writes for Claude Code. The
+// tc-agents sidebar mod draws a row's model and effort and its context bar from
+// them, and an OpenCode hq reads its own `ctx` with `hc get`.
 import { execFile } from "node:child_process";
 
 // The Claude statusline's soft ceiling: 50% on a window of 1M or more.
@@ -60,7 +60,7 @@ async function labelsFor(sessionID) {
   // the current labels; an empty session has nothing to show yet.
   if (!last) return messages.length ? null : CLEARED;
   const effort = `effort=${last.model?.variant ?? ""}`;
-  const model = `model=${last.model?.modelID ?? ""}`;
+  const model = `model=${last.model?.id ?? ""}`;
   const window = last.model ? await contextWindow(last.model) : undefined;
   // `input` excludes cached tokens here. This is the sum OpenCode's footer shows.
   const { input = 0, output = 0, reasoning = 0, cache = {} } = last.tokens;
