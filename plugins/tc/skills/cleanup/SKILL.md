@@ -48,7 +48,7 @@ List the exact stale remote-tracking refs by comparing the selected remote's adv
 
 Don't use an unrestricted `git fetch --prune`, because it can prune more than the approved list. Exclude symbolic refs, including remote HEAD aliases. After approval, recheck each stale ref against a successful remote lookup, and confirm it is still a direct ref in the verified remote-tracking namespace. Delete only that ref, with `git update-ref --no-deref -d <ref> <approved-old-sha>`. The old-SHA guard rejects a changed value, and `--no-deref` keeps git from following a symbolic pointer. If the SHA changed or the lookup failed, skip that ref.
 
-Report loose objects and offer `git gc` when it would help, but let the user run it. Don't run GC, expire reflogs, or prune objects as part of this skill.
+Report loose objects and offer `git gc` when it would help, and run it only on the user's yes to that offer. Say in the offer what a plain run also removes: unreachable objects older than two weeks, reflog entries past git's 30- and 90-day defaults, and worktree registrations stale for three months. Run it plain, with no `--prune=now` and no `--aggressive`.
 
 ## 5. Ask, then recheck and apply
 
