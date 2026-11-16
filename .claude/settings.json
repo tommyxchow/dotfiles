@@ -52,17 +52,14 @@
     }
   },
   "promptCacheTtl": "1h",
-  "modelSettings": {
-    "claude-opus-5-5": {
-      "effortLevel": "high"
-    }
-  },
   "showClearContextOnPlanAccept": true,
   "tui": "fullscreen",
   "claudeMdExcludes": [
     "**/dotfiles/.claude/CLAUDE.md"
   ],
   "syncClaudeAiSkills": false,
+  "syncClaudeAiPlugins": false,
+  "disableClaudeAiConnectors": true,
   "theme": "auto",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,

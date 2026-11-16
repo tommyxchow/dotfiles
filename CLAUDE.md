@@ -174,15 +174,20 @@ never patches, and nothing that names work gets committed here.
   The catalog entry serves machines that install the plugin instead of running
   the installer. On claude.ai the plugin only surfaces in chat; it
   does not update itself from GitHub (a snapshot there still served a retired
-  skill two days after the pushes), and Claude Code syncs every claude.ai
-  plugin down to `~/.claude/plugins/synced`, so every terminal session loads a
-  second, stale copy of the skills as `tc:` entries. If `tc:`-prefixed skills
-  or `tc@synced` show up, the plugin is installed on claude.ai; uninstall it
-  there rather than adding a local override. claude.ai's own skills (docx,
+  skill two days after the pushes). Claude Code also used to sync every
+  claude.ai plugin down to `~/.claude/plugins/synced`, so every terminal
+  session loaded a second, stale copy of the skills as `tc:` entries. If
+  `tc:`-prefixed skills or `tc@synced` show up again, uninstall the plugin on
+  claude.ai rather than adding a local override. claude.ai's own skills (docx,
   pptx, xlsx, and the rest) synced the same way until 2026-11-14, when
   `syncClaudeAiSkills` went to `false` in `.claude/settings.json`: 18 of them
   cost about 2,700 tokens of descriptions in every terminal session, and none
-  is for coding. They still work on claude.ai and in the desktop app.
+  is for coding. They still work on claude.ai and in the desktop app. On
+  2026-11-15 `syncClaudeAiPlugins` went to `false` and
+  `disableClaudeAiConnectors` to `true` for the same reason: a claude.ai
+  plugin no longer syncs down at all, so `tc:` entries now mean that key was
+  lost, and the account's connectors (Google Sheets, Spotify, Claude Docs) no
+  longer load their tools into terminal sessions.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`
@@ -249,9 +254,9 @@ never patches, and nothing that names work gets committed here.
   are Next.js, globals are the source of truth, and the security line guards
   a bug class that is costly to miss. Don't propose the move again.
 
-- **Models are set by alias, and effort stays at each model's default, except
-  Opus 5.5 at `high`.** `model` is `opus`, the one model every plan and
-  machine of mine has. Fable 5.2 leads Artificial Analysis (2026-11-09), but
+- **Models are set by alias, and effort stays at each model's default.**
+  `model` is `opus`, the one model every plan and
+  machine of mine has. Fable leads Artificial Analysis (checked 2026-11-09), but
   it sits outside the Pro plan, takes at most half of Max's weekly limit, and
   a work machine may not have it at all, so it is never the saved default.
   On a plan that includes it, start the session with `claude --model fable`,
@@ -259,11 +264,13 @@ never patches, and nothing that names work gets committed here.
   turns the advisor off: my choice (2026-10-30), since it slowed sessions
   down for little gain over Opus alone. Aliases follow the newest release of each family, so a new model
   needs no edit here. Pin a version or add a suffix like `[1m]` only when the model docs
-  say the bare alias falls short. The one kept `modelSettings` entry,
-  `claude-opus-5-5` at `high`, is my choice (2026-09-27); it is keyed to that
-  model id, so when the `opus` alias moves on, resync's Opus effort step moves
-  the entry to the new id at the same level, or at the level Anthropic
-  recommends for that model. Any other `modelSettings` entry
+  say the bare alias falls short. They do on Amazon Bedrock and Google
+  Cloud's Agent Platform, where `sonnet` and `haiku` resolve to the 4.5
+  models (checked 2026-11-15), so a machine on one of those pins
+  `ANTHROPIC_DEFAULT_SONNET_MODEL` and `ANTHROPIC_DEFAULT_HAIKU_MODEL` in its
+  own settings, and the installer warns when they are missing. No effort is
+  saved, so every model runs at its own default, which keeps sessions cheaper
+  and faster, and the final review asks for `high` itself. Any `modelSettings` entry
   or top-level `effortLevel` or `autoCompactWindow` that appears is a
   `/effort`, `/model`, or `/autocompact` write-back; discard it unless I say
   to keep that level. A stray top-level `effortLevel` does more harm here than elsewhere:
@@ -275,9 +282,12 @@ never patches, and nothing that names work gets committed here.
   cheapest, the small one, the daily driver, the top model) with today's
   Claude model beside each, so another vendor's model can take a role when I
   name it. The pairings follow Artificial Analysis's score and cost per task
-  (2026-11-09): Fable at `medium` cost about what Opus at `high` did and
-  scored higher, and Haiku at `xhigh` beat Sonnet at `low` and `medium` for
-  less. Recheck them when a model in a role changes. Other sessions keep Claude Code's
+  (2026-11-09), where Fable at `medium` cost about what Opus at `high` did
+  and scored higher, and Anthropic's effort docs (2026-11-15): Haiku runs at
+  `high`, not the `xhigh` those numbers favored, because Anthropic's notes
+  say Haiku at `xhigh` can end a turn with no visible text, which reaches
+  `hq` as an empty close, and Sonnet at `medium`, the documented start for
+  well-specified work. Recheck them when a model in a role changes. Other sessions keep Claude Code's
   default window, since I can compact or clear the ones I sit in.
   `promptCacheTtl` is `1h` (2026-10-04) because API and Vertex billing default
   the main conversation's cache to 5 minutes, and a pause past that, like an

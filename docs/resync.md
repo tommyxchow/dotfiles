@@ -85,8 +85,8 @@ claude plugin update ek@chow
 ```
 
 Skip `tc@chow`. First-party skills are installer links into `~/.claude/skills`.
-Enabling the plugin loads a second cached copy, and so does installing it on
-claude.ai, which Claude Code syncs down to `~/.claude/plugins/synced`.
+Enabling the plugin loads a second cached copy. A copy installed on claude.ai
+no longer reaches terminal sessions, since `syncClaudeAiPlugins` is `false`.
 
 Official plugins (`typescript-lsp`, `frontend-design`) have no `autoUpdate`.
 Install if missing; do not invent extra official plugins.
@@ -100,12 +100,11 @@ If `claude` is missing, say so in the report and continue.
 **First-party skills:** every directory under `plugins/tc/skills/` must be a
 symlink in `~/.claude/skills`. If `tc@chow` is installed or enabled, uninstall
 it `--scope user` (needs `claude`). Snapshot `enabledPlugins` first; restore any
-key the uninstall punched (it must not resurrect `tc@chow`). If
-`~/.claude/plugins/synced/*/tc` exists, the plugin is installed on claude.ai;
-that cannot be undone from here, so report it and leave the sync settings alone.
-claude.ai's own skills no longer sync, since `syncClaudeAiSkills` is `false`
-in the settings file, so a `~/.claude/skills/synced` folder with skills in it
-means that key was lost.
+key the uninstall punched (it must not resurrect `tc@chow`). Neither claude.ai
+plugins nor claude.ai's own skills sync any more, since `syncClaudeAiPlugins`
+and `syncClaudeAiSkills` are `false` in the settings file. So a
+`~/.claude/plugins/synced/*/tc` folder, or a `~/.claude/skills/synced` folder
+with skills in it, means that key was lost: report it and put the key back.
 
 **Cursor:** `~/.cursor/plugins/local/tc/rules/global.mdc` must match
 `.claude/CLAUDE.md` plus `alwaysApply: true` and no `description`. Delete
@@ -319,22 +318,6 @@ repo, so there is no upstream file to diff; credits for borrowed ideas live in
 and its update already ran, and do not install `mattpocock-skills` from the
 marketplace, whose `grill-me` would collide with ours.
 
-## Opus effort
-
-`.claude/settings.json` keeps Opus at `high` through a `modelSettings` entry
-keyed by the canonical model id, like `claude-opus-5-5`. Claude Code matches
-that model's alias to the entry, but the entry doesn't follow the `opus` alias
-to a newer model, so a new Opus would quietly run at its own default. Find the
-id `opus` resolves to now in Claude Code's
-[model config docs](https://code.claude.com/docs/en/model-config). When
-`modelSettings` has no entry for it, or only an `/effort` write-back that the
-models gotcha in `CLAUDE.md` says to discard, give the new id the old Opus
-entry's level and remove the old key, unless Anthropic's
-[effort docs](https://platform.claude.com/docs/en/build-with-claude/effort)
-recommend a different starting level for that model in coding or agentic work,
-which wins. Update the date and model name in the models gotcha in `CLAUDE.md`
-to match, and name the change in the report.
-
 ## Memory
 
 Review Claude Code's memory folders under `~/.claude/projects/*/memory`. Delete
@@ -351,7 +334,7 @@ What changed, anything still broken, and what the user must do.
 
 - Cursor: **Developer: Reload Window** after the local plugin rewrite.
 - Grok Build / OpenCode 2: links are updated on disk. Reload or start a new session if it has not loaded the revised instructions; link presence alone does not prove that.
-- Claude Code: `/reload-plugins` if marketplace plugins changed, and a new session to pick up an Opus effort entry the step above moved.
-- If the installer warned that `~/.local/bin` is not on PATH, add the export line it prints to your shell profile; `wait-for` doesn't resolve until then.
+- Claude Code: `/reload-plugins` if marketplace plugins changed.
+- If the installer warned that `~/.local/bin` is not on PATH, you added the export line it prints to the shell profile: say which file, and that `wait-for` resolves from the next shell on.
 
 Do not commit. Do not push.
