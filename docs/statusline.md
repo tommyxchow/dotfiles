@@ -100,12 +100,14 @@ something wants attention, so it's findable without reading the line.
 
 ## Herdr labels
 
-In the Herdr desktop app the script also writes two labels on its terminal
-with `hc label`: `effort`, and the context as `34% 340K/1M`, the same text as
-the statusline, under `ctx` or `ctxhigh`, clearing the one that doesn't apply.
+In the Herdr desktop app the script also writes three labels on its terminal
+with `hc label`: `model`, the live model's name, so it follows `/model`;
+`effort`; and the context as `34% 340K/1M`, the same text as the statusline,
+under `ctx` or `ctxhigh`, clearing the one that doesn't apply.
 The model never sees its own statusline, so this is how an `hq` session reads
 a worker's context and effort, with `hc get <terminal> --json`. The sidebar's
-agents list shows the context next to each agent. Labels have no TTL and end
+agents list shows the context next to each agent, and the model and effort on
+a row with nothing else to say. Labels have no TTL and end
 with the terminal. For OpenCode 2, which has no statusline hook, the
 `opencode/tc-context` plugin writes the same labels after each turn.
 

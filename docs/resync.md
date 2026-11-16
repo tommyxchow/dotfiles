@@ -44,8 +44,8 @@ clone.
 
 It links configs, first-party skills, the statusline script, and `bin/wait-for`
 into `~/.local/bin`, prunes links from older layouts, copies Cursor's local `tc`
-plugin, and copies the Herdr desktop app's mods with the badge script linked
-beside them. The `gh`, `hc`, and `herdr-app` skills are not installer links; see Third-party skills below. It also seeds
+plugin, and copies the Herdr desktop app's mods and themes, with the badge
+script linked beside the mods. The `gh`, `hc`, and `herdr-app` skills are not installer links; see Third-party skills below. It also seeds
 `~/.grok/config.toml` from `grok/config.toml` on new machines and on re-runs
 patches only that file's non-default keys, because Grok writes runtime state
 into it, so it is never symlinked. It seeds `~/.grok/lsp.json` the same way but

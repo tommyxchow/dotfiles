@@ -119,7 +119,7 @@ in the skill files.
 | `/pr` | Prepare the task, review its complete final diff, publish a draft with acceptance evidence, then watch its CI to green. Again later to address feedback and update the body. `pr check` reports readiness; `pr ready` checks and flips the draft; an explicit `pr rebase` restacks. Never merges. |
 | `/refresh` | Occasional package/framework catch-up in a **product** repo. |
 | `/grill-me` | Stress-test a plan through the harness's question tool. Ends in the acceptance checklist `tdd` and `pr` work from. |
-| `/hq` | Manual only. Run this Herdr desktop app session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's model and effort at launch, runs Claude models in Claude Code, picks up sessions already running, and closes the workers it started once their job is over; one HQ runs at a time. Start it with `claude --effort medium`, since its steps are short relays in the longest conversation you run. Never builds or approves for you, and merges only a PR you name. |
+| `/hq` | Manual only. Run this Herdr desktop app session as a coordinator: dispatch tasks to workers in their own worktrees, wait on them, relay their questions, report status. Picks each worker's model and effort at launch, runs Claude models in Claude Code, picks up sessions already running, and closes the workers it started once their job is over; one HQ runs at a time. Start it with `claude --name hq --effort medium`: workers' messages reach it by that name, and its steps are short relays in the longest conversation you run. Never builds or approves for you, and merges only a PR you name. |
 | `/cleanup` | Repo hygiene: finished and dead worktrees, merged branches, stale refs. Shows the exact list and asks what to delete. |
 | `/tldr` | A skimmable summary, answer first. Bare is the last few messages; it also takes a topic, file, URL, pasted text, `changes`, `pr` with a number or URL, or `session`. |
 | **resync** (this repo) | This **machine**. Follow `docs/resync.md`. |
@@ -202,7 +202,7 @@ port in the command, and make worktrees under `~/.herdr/worktrees/<repo>/`
 themselves, copying the gitignored env files over by hand. Dependencies get
 installed on first need.
 
-The status line publishes effort and context as terminal labels, and for
+The status line publishes model, effort, and context as terminal labels, and for
 OpenCode 2 the `opencode/tc-context` plugin publishes the same labels after
 each turn. `hq` starts its workers as its own children with no tab of their
 own, so each shows once, nested under it in the agents list. Clicking one opens
@@ -285,4 +285,5 @@ components, that's a conflict and the plugin fails to load. Switch the entry to
 ## Credits
 
 - [emilkowalski/skills](https://github.com/emilkowalski/skills) - © Emil Kowalski, MIT. Referenced by `ek@chow`; not modified in this repo.
+- [kepano/flexoki](https://github.com/kepano/flexoki) - © Steph Ango, MIT. The two Herdr themes use its palette, converted from the Ghostty versions in iTerm2-Color-Schemes.
 - [mattpocock/skills](https://github.com/mattpocock/skills) - © 2026 Matt Pocock, MIT. Nothing here is a copy of his files. `grill-me` is written from scratch and keeps his design-tree and frontier framing. `tdd` is also from scratch, with its seam idea and its anti-patterns adapted from that repo's `tdd`, plus the red-before-green gates from [obra/superpowers](https://github.com/obra/superpowers) and the find-the-repo's-test-command rule from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills).

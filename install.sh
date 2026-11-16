@@ -402,7 +402,7 @@ check_web_instructions() {
 }
 check_web_instructions
 
-# The global file keeps situational rules (herdr, long work, instruction
+# The global file keeps situational rules (herdr, testing, instruction
 # files) in reference files it tells the agent to read by path, and skills
 # name them too. A path to a missing file fails silently, so check each.
 check_reference_paths() {
