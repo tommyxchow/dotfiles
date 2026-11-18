@@ -155,7 +155,8 @@ All six checklist items are proven by tests. The two visual ones are covered by 
 
 Nothing else outstanding.
 
-Next
-- [1] Mark it ready after your check (recommended: every item is proven and CI is green)
-- [2] Leave it as a draft
+Next (reply 1a or 1b)
+- **1.** Mark the PR ready. Every item is proven and CI is green, so this is whether the draft flips now.
+  - **a.** It's marked ready after your check. *Recommended: nothing is left to prove.*
+  - **b.** It stays a draft.
 ```

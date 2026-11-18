@@ -57,7 +57,7 @@ Follow the global Communication and Session flow rules. Open with `✅ Ready to 
 I removed the old localStorage helper and combined two duplicate save handlers. The local check passes. Committed as `<hash>`.
 ```
 
-When taste calls are open, end with a short "Your call" list, below any Next block, numbered so the user can answer like `Your call 2`, which keeps it apart from a Next block's bare `1`. Each item says what the code does now and the alternative, in a sentence. List them once in the task's close, which is this report when the pass is the last step, and on the PR route also in the PR body's decisions section, where `pr` carries them. They are not Next-block choices, because those repeat in every message until answered, and a taste call shouldn't nag.
+When taste calls are open, end with a short "Your call" list, below any Next block, numbered so the user can answer like `Your call 2`, which keeps it apart from a Next block's numbered choices. Each item says what the code does now and the alternative, in a sentence. List them once in the task's close, which is this report when the pass is the last step, and on the PR route also in the PR body's decisions section, where `pr` carries them. They are not Next-block choices, because those repeat in every message until answered, and a taste call shouldn't nag.
 
 ```
 Your call (the code stays as written until you pick):
