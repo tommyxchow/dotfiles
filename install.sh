@@ -451,6 +451,26 @@ check_reference_paths() {
 }
 check_reference_paths
 
+# Deleting the end of a line with an agent's edit tool can take the line break
+# with it, which has glued a bullet or a list step onto the line before it
+# twice. The text is all still there, so nothing else notices: the step just
+# drops out of its list.
+check_joined_lines() {
+  local found hit
+  found="$(cd "$DOTFILES" && grep -nE '[a-z)"`]\.(- |[0-9]+\. )' \
+    CLAUDE.md .claude/CLAUDE.md .claude/CLAUDE.web.md .claude/references/*.md \
+    .claude/agents/*.md plugins/tc/skills/*/SKILL.md \
+    plugins/tc/skills/*/references/*.md docs/*.md 2>/dev/null | cut -d: -f1,2)"
+  if [ -z "$found" ]; then
+    printf "  OK    no bullet or list step is joined onto the line before it\n"
+    return 0
+  fi
+  for hit in $found; do
+    printf "  WARN  %s has a bullet or list step joined onto the line before it; put it back on its own line\n" "$hit"
+  done
+}
+check_joined_lines
+
 # On Amazon Bedrock and Google Cloud's Agent Platform the sonnet and haiku
 # aliases resolve to older models than the Anthropic API gives, so lookups and
 # cheap workers would quietly run on them. The ids differ per provider, so
