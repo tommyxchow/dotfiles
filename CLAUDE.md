@@ -251,7 +251,8 @@ never patches, and nothing that names work gets committed here.
   desktop app when `HC_TERMINAL_ID` is set, which is how the first-turn rule
   fires (see the rejected list below). The `Stop` entry saves each named
   desktop agent's last message for `hq` to read, through
-  `plugins/tc/skills/hq/save-close.sh`. The desktop app needs no hook of its
+  `plugins/tc/skills/hq/save-close.sh`. `finished-workers.sh` beside it is not
+  a hook: `hq` runs it itself to see which finished workers can end. The desktop app needs no hook of its
   own, since it reads Claude Code's status by itself. In `opencode/cli.json`,
   keep `"plugins": ["./tc-context"]`: it's ours, linked from
   `opencode/tc-context`, and sets the desktop app's context labels for
