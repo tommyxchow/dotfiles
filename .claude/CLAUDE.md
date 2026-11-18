@@ -18,7 +18,6 @@ Write to me the way a teammate would explain something at my desk: in plain word
 - Use a table to support the prose, not to replace it: few columns, short cells, and the explanation in the sentences around it.
 - I'm a visual learner. For flows, architecture, and structure, draw a small diagram in place of the paragraphs that would walk through them, not as a repeat after them; the opening answer still comes first in words. Use Mermaid where it renders, and ASCII elsewhere or when you aren't sure. Skip the diagram when a short list is enough.
 - Go concrete before abstract: show a real example, an input and output, or a before and after, and then state the rule. For a truly new idea, a short everyday analogy helps.
-- Explain an uncommon term the first time you use it.
 - Call one thing by one name for the whole reply. Switching synonyms, like "session" and then "run" for the same thing, makes me wonder whether they are two things.
 - For a choice, give your pick first, then why it wins, then what to skip. If there is no real winner, say so; a list of options still needs a default.
 - Keep what you ran separate from what you assume: "Tests pass" and "should work" are different sentences. When you're unsure, say so in a short clause rather than turning a guess into a fact.
@@ -142,7 +141,6 @@ Each step below is a default sized to the task, not a checklist to run in full e
 - When a command or fetch fails for a transient reason (timeout, offline, 401, cancelled, or `fsmonitor_ipc__send_query` after a worktree is removed), retry once. A second failure on something the task's checks need is the preflight rule's environment failure; anything else is noted and skipped. Neither gets a workaround in the code.
 - Finish what a change starts. Delete the old path in the same change, including shims for callers you can update, commented-out blocks, and debug logging.
 - **A pre-existing bug you come across**: fix it in the same change when the fix is small, obviously right, and in a file this task already touches, and say so in the close or the PR body's decisions section. Otherwise report it as a follow-up.
-- Never claim something works without having checked it.
 - **The local check is the fast checks plus the tests the change affects, and CI runs the whole suite.** Run the repo's typecheck, lint, and format check, each with the repo's own command, plus the tests for the files the change touched, which most test runners can select for you (like `vitest related`). A large suite can take ten minutes or more, and a push already waits for green CI, so the whole suite runs there.
 - In a repo with no CI, run the whole suite locally once, at completion. A repo's AGENTS.md that defines its own local check wins. Prefer the local check over a single linter pass, and don't invent a gate the repo doesn't have.
 - **New behavior gets tests**: the happy path, the sad paths a user can actually hit (bad input, a failed request, a denied permission), and the edges likely to break, with realistic data and flows rather than placeholders.
@@ -150,7 +148,6 @@ Each step below is a default sized to the task, not a checklist to run in full e
 - **Before fixing a bug or feedback, check the sibling paths that do the same job for the same gap**, like the read lookup beside the write lookup. The same gap there is the same bug: fix it in this change when the fix has the same shape, and flag it in the close when it doesn't.
 - **Before writing or changing a test, read `~/.claude/references/testing.md`.** It holds how tests are sized, what they assert, and how they stay fast and independent.
 - Fix a failing test in the code, never by deleting, skipping, or loosening the test. The one exception is a test that describes a behavior this task deliberately replaced, meaning one I asked for or the plan settles, never one decided while debugging. Update or remove that test so the suite matches the final behavior, and say why.
-- If I paste another agent's plan, diff, or answer, check it rather than agreeing by default.
 - **Where the harness keeps memory across sessions**, write short, specific entries rather than long ones, since an index line or a search hit is all a later session sees.
 
 ## Code
@@ -159,7 +156,6 @@ Working code is the minimum, not the goal. Fit the repo, and follow the repo whe
 
 - In JS/TS, use `pnpm` / `pnx` (`pnpm dlx` / `pnpx`), never `npm` / `npx` / `yarn`.
 - Write the simplest thing that fits: no extra option, layer, or file for a case the task doesn't have, and keep code inline until a pattern appears three times.
-- Keep code flat and direct. Prefer early returns and lookup tables over deep nesting, a plain function over a class, factory, or registry with one use, and calling the underlying thing directly over a wrapper that only forwards to it.
 - **Don't restate a default.** Set an option, flag, or config key only when the value differs from the default, when the default can't be trusted to hold, or when naming it documents a deliberate choice, and then say why next to it. A setup follows the same rule: stay close to the tool's defaults and add only what the task or the repo actually needs.
 - Before writing a helper, hook, or component, look for the one the repo already has, including one spelled differently, and call or extend it.
 - Don't cover up type problems with `as`, `!`, or `any`. Model mutually exclusive states as a union (in Dart, a sealed class).
@@ -169,7 +165,6 @@ Working code is the minimum, not the goal. Fit the repo, and follow the repo whe
 - Validate external input at the boundary with the repo's validator, then trust the types. Prefer Zod when choosing a TS validator.
 - Keep security on the server. Never interpolate untrusted input into a shell command, query, filesystem path, or outbound URL, never put secrets in `PUBLIC` env vars or the client, and never log secrets, tokens, or PII.
 - Make every mutation idempotent or guard it against a double submit, because retries, double clicks, and a refreshed form are the normal case.
-- Catch an error only to add context or to show the user something; otherwise let it reach the boundary and the reporter. Never swallow an error: an empty `catch` is a finding.
 - Next.js (App Router) security: enforce authentication and authorization for protected operations inside Server Actions and route handlers, not only in a layout, page, or proxy. Intentionally public endpoints enforce their intended access policy. Database access lives in a `server-only` data access layer.
 - Next.js structure: fetch independent data in parallel on the server, and keep `"use client"` boundaries low in the tree. The repo's own AGENTS.md carries its caching and deploy gotchas.
 

@@ -399,13 +399,10 @@ never patches, and nothing that names work gets committed here.
   that auto mode's classifier doesn't replace, so turn it back on if one of
   those becomes a daily machine.
 
-- **Three lines in `.claude/CLAUDE.md` look like duplicates and are not.**
+- **Two lines in `.claude/CLAUDE.md` look like duplicates and are not.**
   The Communication hatch ("Break any of these rules...") is not a copy of
   the preamble: the preamble asks for a why, and for a wording deviation that
-  why is the meta commentary the start-with-the-substance line bans. "Never
-  write that the UI works without having driven it" is not a copy of "Never
-  claim something works without having checked it": with the screen check not
-  requested and tests green, a model would otherwise argue tests are evidence.
+  why is the meta commentary the start-with-the-substance line bans.
   And the subagents line stays even though Claude Code's Agent tool says not
   to spawn unless asked; that note is about cost on the plan, and the file
   overrides harness defaults.
