@@ -5,9 +5,11 @@
 #
 #   end    every PR it found is merged, and nothing in its checkout is unsaved
 #   keep   one of its PRs is still open
-#   check  uncommitted or unpushed work, a PR closed without merging, a failed
-#          lookup, or no PR at all, so hq judges from the close and the board
+#   check  uncommitted work, commits no merged PR holds, a PR closed without
+#          merging, a failed lookup, a path it couldn't read, or no PR at all,
+#          so hq judges from the close and the board
 #
+# hq ends a worker marked end without asking, so every doubt comes out as check.
 # A worker's PRs are the ones on its checkout's branch plus any PR link in its
 # close file, when hq hasn't deleted that file yet.
 
@@ -38,52 +40,94 @@ fi
 # The numbers of this worker's PRs in one state, like "#41, #44".
 numbers() { printf '%s\n' "$prs" | awk -v state="$1" '$1 == state { printf "%s#%s", sep, $2; sep = ", " }'; }
 
+# A checkout's remote default branch, like origin/main, or nothing when it
+# can't be told.
+default_ref() {
+  local ref
+  ref=$(git -C "$1" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)
+  if [ -n "$ref" ]; then
+    printf '%s' "$ref"
+  elif git -C "$1" rev-parse --verify --quiet origin/main >/dev/null 2>&1; then
+    printf 'origin/main'
+  elif git -C "$1" rev-parse --verify --quiet origin/master >/dev/null 2>&1; then
+    printf 'origin/master'
+  fi
+}
+
+# Sets $unsaved when the checkout at $1 holds work that isn't safely merged.
+# $2 is set for a path that only the close names.
+unsaved_in() {
+  local path="$1" head base ahead
+  if ! git -C "$path" rev-parse --git-dir >/dev/null 2>&1; then
+    # Nothing was inspected, so it can't pass as clean: a path from the close
+    # may be a real worktree that was parsed wrong, and a worker whose own
+    # folder isn't a checkout did its work somewhere this script can't see.
+    if [ -n "$2" ]; then
+      unsaved="its close names $path, which can't be read as a checkout"
+    else
+      unsaved="its folder $path isn't a checkout, so unsaved work can't be ruled out"
+    fi
+    return
+  fi
+  # --no-optional-locks keeps status from taking the index lock, which could
+  # fail a commit another session is making in the same checkout.
+  if [ -n "$(git --no-optional-locks -C "$path" status --porcelain 2>/dev/null | head -n 1)" ]; then
+    unsaved="uncommitted changes in $path"
+    return
+  fi
+  # A head that one of its PRs holds is saved, which also covers a squash merge
+  # whose branch was deleted. Any other commit has to be on the default branch.
+  # Being on some remote branch isn't enough: a commit pushed after the merge,
+  # or to a branch name an earlier PR used, is in no merged PR.
+  head=$(git -C "$path" rev-parse HEAD 2>/dev/null)
+  case "$prs" in *" $head "*) return ;; esac
+  base=$(default_ref "$path")
+  if [ -z "$base" ]; then
+    unsaved="the default branch of $path can't be told, so its commits can't be checked"
+    return
+  fi
+  ahead=$(git -C "$path" rev-list --count HEAD --not "$base" 2>/dev/null)
+  if [ "${ahead:-1}" -gt 0 ]; then
+    unsaved="commits in $path that no merged PR or the default branch holds"
+  fi
+}
+
 # The list comes in on its own descriptor so no command in the loop can read it.
 while IFS=$'\t' read -r address name cwd <&3; do
   close="$closes/$name.md"
   prs=""
+  named=""
   lookup_failed=""
 
   # The default branch is skipped, since a fork's PR can also come from a
   # branch called main and would be counted as this worker's.
   branch=$(git -C "$cwd" branch --show-current 2>/dev/null)
-  default=$(git -C "$cwd" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)
-  if [ -n "$branch" ] && [ "origin/$branch" != "$default" ]; then
+  if [ -n "$branch" ] && [ "origin/$branch" != "$(default_ref "$cwd")" ]; then
     found=$(cd "$cwd" && gh pr list --head "$branch" --state all \
       --json number,state,headRefOid,url | jq -r "$pr_fields") || lookup_failed=1
     prs="$found"
   fi
 
-  paths="$cwd"
   if [ -f "$close" ]; then
     for url in $(grep -oE 'https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/pull/[0-9]+' "$close" | sort -u); do
       found=$(gh pr view "$url" --json number,state,headRefOid,url | jq -r "[.] | $pr_fields") || lookup_failed=1
       prs=$(printf '%s\n%s' "$prs" "$found")
     done
-    named=$(grep -oE "[^[:space:]\`'\"()]*\.herdr/worktrees/[^[:space:]\`'\"(),]*" "$close" | sed "s|^~|$HOME|" | tr '\\' '/')
-    paths=$(printf '%s\n%s' "$paths" "$named")
+    # Worktree paths the close names, in either slash style, with the markup
+    # and punctuation around them trimmed off.
+    named=$(tr '\\' '/' <"$close" |
+      grep -oE "[^[:space:]\`'\"()]*\.herdr/worktrees/[^[:space:]\`'\"()]*" |
+      sed -e 's|^[^A-Za-z~/]*||' -e "s|^~|$HOME|" -e 's|[^A-Za-z0-9_-]*$||' | grep . | sort -u)
   fi
   prs=$(printf '%s\n' "$prs" | tr -d '\r' | grep . | sort -u)
-  paths=$(printf '%s\n' "$paths" | sed 's|[./]*$||' | grep . | sort -u)
 
   unsaved=""
+  unsaved_in "$cwd"
   while IFS= read -r path; do
-    git -C "$path" rev-parse --git-dir >/dev/null 2>&1 || continue
-    if [ -n "$(git -C "$path" status --porcelain 2>/dev/null | head -n 1)" ]; then
-      unsaved="uncommitted changes in $path"
-      break
-    fi
-    # A squash merge with its remote branch deleted leaves the local commits on
-    # no remote, so a head that matches one of the PRs counts as pushed.
-    head=$(git -C "$path" rev-parse HEAD 2>/dev/null)
-    case "$prs" in *" $head "*) continue ;; esac
-    ahead=$(git -C "$path" rev-list --count HEAD --not --remotes 2>/dev/null)
-    if [ "${ahead:-0}" -gt 0 ]; then
-      unsaved="unpushed commits in $path"
-      break
-    fi
+    [ -z "$unsaved" ] || break
+    [ -z "$path" ] || unsaved_in "$path" named
   done <<EOF
-$paths
+$named
 EOF
 
   open=$(numbers OPEN)
