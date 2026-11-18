@@ -3,7 +3,8 @@
 # the worker can end. It only reads: it never ends a worker, deletes a file, or
 # fetches. It must stay portable to Git Bash on Windows and bash 3.2 on macOS.
 #
-#   end    every PR it found is merged, and nothing in its checkout is unsaved
+#   end    every PR it found is merged, a checkout of its sits on a merged PR's
+#          head, and nothing in its checkouts is unsaved
 #   keep   one of its PRs is still open
 #   check  uncommitted work, commits no merged PR holds, a PR closed without
 #          merging, a failed lookup, a path it couldn't read, or no PR at all,
@@ -80,6 +81,10 @@ unsaved_in() {
   # Being on some remote branch isn't enough: a commit pushed after the merge,
   # or to a branch name an earlier PR used, is in no merged PR.
   head=$(git -C "$path" rev-parse HEAD 2>/dev/null)
+  if printf '%s\n' "$prs" | awk -v head="$head" '$1 == "MERGED" && $3 == head { found = 1 } END { exit !found }'; then
+    merged_head=1
+    return
+  fi
   case "$prs" in *" $head "*) return ;; esac
   base=$(default_ref "$path")
   if [ -z "$base" ]; then
@@ -116,12 +121,13 @@ while IFS=$'\t' read -r address name cwd <&3; do
     # Worktree paths the close names, in either slash style, with the markup
     # and punctuation around them trimmed off.
     named=$(tr '\\' '/' <"$close" |
-      grep -oE "[^[:space:]\`'\"()]*\.herdr/worktrees/[^[:space:]\`'\"()]*" |
+      grep -oE "[^[:space:]\`'\"()]*\.herdr/worktrees/[^[:space:]\`'\"()/]+/[^[:space:]\`'\"()/]+" |
       sed -e 's|^[^A-Za-z~/]*||' -e "s|^~|$HOME|" -e 's|[^A-Za-z0-9_-]*$||' | grep . | sort -u)
   fi
   prs=$(printf '%s\n' "$prs" | tr -d '\r' | grep . | sort -u)
 
   unsaved=""
+  merged_head=""
   unsaved_in "$cwd"
   while IFS= read -r path; do
     [ -z "$unsaved" ] || break
@@ -148,6 +154,10 @@ EOF
     else
       hint=check why="no PR and no close file"
     fi
+  elif [ -z "$merged_head" ]; then
+    # A merged PR that a close only cites, or one an earlier task opened from
+    # the same branch name, says nothing about this worker's own work.
+    hint=check why="PR $merged merged, but no checkout of its sits on that PR's head"
   else
     hint=end why="PR $merged merged, and nothing is unsaved"
   fi
