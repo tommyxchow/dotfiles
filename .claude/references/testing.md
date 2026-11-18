@@ -5,6 +5,7 @@ Read this before writing or changing a test, as the global instructions say. The
 - Before a behavior-preserving refactor of untested logic, add a characterization test that pins what the code does today. A deliberate behavior change is not one of these; don't pin the behavior you are replacing.
 - Don't add test scaffolding for formatting, a mechanical rename, or a similarly low-impact edit with no behavior change.
 - Test at the lowest level that can catch the failure: pure logic as a unit test, wiring as an integration test, and end-to-end only on critical journeys.
+- Test across the seam: when a change consumes another module's output (a view fed by a table's filters, a page fed by a shared query), at least one test drives the real producer rather than a hand-built input.
 - Tests assert what the user sees. A UI test finds elements the way a user does, by role and visible label, with a test id as the last resort.
 - **Tests match the final behavior.** The tests in a change describe how the code works when the change is done. When the behavior changes along the way, update or delete the test for the earlier version rather than leaving both.
 - Don't add a test that only records a step you passed through, including a check that the old value is absent (`not`, `not.toContain`, `not in` the value you removed). A negative test stays when the absence is something a user can observe today, like no email sent without consent or a viewer getting a 403. It goes only when its sole reason is a state the code passed through, like asserting a removed config key is gone.
@@ -23,6 +24,7 @@ Read this before writing or changing a test, as the global instructions say. The
 - When a test fails, its message says what was expected and what happened, so the cause is obvious without a debugger.
 - Use real dependencies where practical. At a slow, nondeterministic, or out-of-process boundary, prefer a fake (a small working stand-in) over a stub or mock.
 - For vendor SDKs, prefer a wrapper you own when one fits; intercepting network requests is also valid.
+- Fixtures for secrets (signing keys, tokens, passwords) use obviously fake values like `FAKE-TEST-SIGNING-KEY-not-a-real-secret`, never a real key format, header, or encoded value, since those read like a leak and can trip secret scanners. Where a test needs a real format, like a parser checking a PEM header, generate a throwaway key inside the test.
 - Keep tests fast and deterministic: fake the clock, and never wait with a sleep.
 - Each test sets up its own state and passes alone and in any order.
 - Keep auto-waiting and retrying assertions. Whole-test retries don't prove flakiness is fixed: fix the cause, and keep the repo's retry configuration unless changing it is part of the task.
