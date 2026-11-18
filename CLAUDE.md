@@ -135,7 +135,7 @@ never patches, and nothing that names work gets committed here.
   brief` line exists so a terse default does not win; don't prune it because
   the harness you are testing in already reads fine. Don't move the shared
   Communication rules into a Claude Code output style either: styles are
-  Claude-only, so Cursor and Grok Build would lose them, and
+  Claude-only, so OpenCode 2 would lose them, and
   `keep-coding-instructions` defaults to false, so a style that forgets the
   flag strips coding instructions. `outputStyle` stays unset in
   `.claude/settings.json`.
@@ -203,20 +203,19 @@ never patches, and nothing that names work gets committed here.
   The catalog entry serves machines that install the plugin instead of running
   the installer. On claude.ai the plugin only surfaces in chat; it
   does not update itself from GitHub (a snapshot there still served a retired
-  skill two days after the pushes). Claude Code also used to sync every
-  claude.ai plugin down to `~/.claude/plugins/synced`, so every terminal
-  session loaded a second, stale copy of the skills as `tc:` entries. If
-  `tc:`-prefixed skills or `tc@synced` show up again, uninstall the plugin on
-  claude.ai rather than adding a local override. claude.ai's own skills (docx,
+  skill two days after the pushes). claude.ai's own skills (docx,
   pptx, xlsx, and the rest) synced the same way until 2026-11-14, when
   `syncClaudeAiSkills` went to `false` in `.claude/settings.json`: 18 of them
   cost about 2,700 tokens of descriptions in every terminal session, and none
   is for coding. They still work on claude.ai and in the desktop app. On
   2026-11-15 `syncClaudeAiPlugins` went to `false` and
   `disableClaudeAiConnectors` to `true` for the same reason: a claude.ai
-  plugin no longer syncs down at all, so `tc:` entries now mean that key was
-  lost, and the account's connectors (Google Sheets, Spotify, Claude Docs) no
-  longer load their tools into terminal sessions.
+  plugin no longer syncs down at all, and the account's connectors (Google
+  Sheets, Spotify, Claude Docs) no longer load their tools into terminal
+  sessions. If `tc:`-prefixed skills or `tc@synced` show up, that key was lost
+  and the plugin is installed on claude.ai: put the key back, uninstall the
+  plugin there, and don't add a local override. Each terminal session would
+  otherwise load a second, stale copy of the skills.
 
 - **The `chow` marketplace resolves from GitHub's default branch, not this working
   tree.** That matters for `ek@chow` and for machines that install `tc@chow`
